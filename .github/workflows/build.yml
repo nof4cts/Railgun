@@ -1,0 +1,35 @@
+name: Build Railgun jar
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Fetch Forge 1.20.1 MDK and overlay the mod
+        run: |
+          curl -L -o mdk.zip https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.2.0/forge-1.20.1-47.2.0-mdk.zip
+          mkdir mdk && unzip -q mdk.zip -d mdk
+          rm -rf mdk/src
+          cp -r src mdk/src
+          cp gradle.properties mdk/gradle.properties
+      - name: Build
+        working-directory: mdk
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon
+      - name: Collect jar
+        run: |
+          mkdir out
+          cp mdk/build/libs/*.jar out/
+          rm -f out/*-sources.jar
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: railgun-mod-jar
+          path: out/*.jar
