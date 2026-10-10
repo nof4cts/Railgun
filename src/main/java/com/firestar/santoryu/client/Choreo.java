@@ -699,8 +699,8 @@ final class Choreo {
         for (int i = 0; i < count; i++) {
             Vec3 a = c.local((rr.nextDouble() - 0.5) * 1.2, 0.6 + rr.nextDouble() * 1.4, 0.3 + rr.nextDouble() * 0.4);
             Vec3 b = a.add((rr.nextDouble() - 0.5) * reach * 2, (rr.nextDouble() - 0.3) * reach, (rr.nextDouble() - 0.5) * reach * 2);
-            Shapes.bolt(out, a, b, tick * 13 + i, reach * 0.5, 0.35F, on * 0.5F, VIOLET, Ribbon.Style.GLOW);
-            Shapes.bolt(out, a, b, tick * 13 + i, reach * 0.5, 0.07F, on, 0x020004, Ribbon.Style.INK);
+            Shapes.bolt(out, a, b, tick * 13 + i, reach * 0.5, 0.25F, on * 0.5F, VIOLET, Ribbon.Style.GLOW);
+            Shapes.bolt(out, a, b, tick * 13 + i, reach * 0.5, 0.04F, on * 0.85F, 0x020004, Ribbon.Style.INK);
         }
     }
 
