@@ -7,7 +7,6 @@ import com.geto.csm.network.FxPacket;
 import com.geto.csm.network.QuestionPacket;
 import com.geto.csm.network.StatePacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.phys.Vec3;
 
 public final class ClientPacketHandler {
 
@@ -24,9 +23,6 @@ public final class ClientPacketHandler {
         switch (CutType.byId(p.type)) {
             case SUMMON -> CameraDirector.play(Cutscenes.summon(p.anchor, CurseKind.byId(p.arg(0))));
             case UZUMAKI -> CameraDirector.play(Cutscenes.uzumaki(p.anchor, p.arg(0), p.arg(1) == 1));
-            case STAR -> CameraDirector.play(SpellCutscenes.star(p.anchor, new Vec3(p.arg(0) / 10.0, p.arg(1) / 10.0, p.arg(2) / 10.0)));
-            case HOLE -> CameraDirector.play(SpellCutscenes.hole(p.anchor, new Vec3(p.arg(0) / 10.0, p.arg(1) / 10.0, p.arg(2) / 10.0)));
-            case LANCE -> CameraDirector.play(SpellCutscenes.lance(p.anchor, new Vec3(p.arg(0) / 10.0, p.arg(1) / 10.0, p.arg(2) / 10.0), p.arg(3) / 10f));
         }
     }
 

@@ -3,9 +3,7 @@ package com.geto.csm;
 import com.geto.csm.entity.*;
 import com.geto.csm.item.CurseOrbItem;
 import com.geto.csm.item.ManipulationItem;
-import com.geto.csm.item.SpellItem;
 import com.geto.csm.item.UzumakiItem;
-import com.geto.csm.server.Spells;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
@@ -28,9 +26,6 @@ public final class ModRegistry {
     public static final RegistryObject<Item> MANIPULATION = ITEMS.register("cursed_spirit_manipulation", ManipulationItem::new);
     public static final RegistryObject<Item> UZUMAKI = ITEMS.register("maximum_uzumaki", UzumakiItem::new);
     public static final RegistryObject<Item> CURSE_ORB = ITEMS.register("curse_orb", CurseOrbItem::new);
-    public static final RegistryObject<Item> FALLING_STAR = ITEMS.register("spell_falling_star", () -> new SpellItem(Spells.Spell.FALLING_STAR));
-    public static final RegistryObject<Item> EVENT_HORIZON = ITEMS.register("spell_event_horizon", () -> new SpellItem(Spells.Spell.EVENT_HORIZON));
-    public static final RegistryObject<Item> SKYFALL_LANCE = ITEMS.register("spell_skyfall_lance", () -> new SpellItem(Spells.Spell.SKYFALL_LANCE));
 
     public static final RegistryObject<EntityType<WyrmEntity>> WYRM = mob("gloomscale_wyrm", WyrmEntity::new, 2.4f, 2.0f, true);
     public static final RegistryObject<EntityType<WormEntity>> WORM = mob("maw_burrower", WormEntity::new, 2.6f, 5.0f, false);
@@ -69,9 +64,6 @@ public final class ModRegistry {
                 out.accept(MANIPULATION.get());
                 out.accept(UZUMAKI.get());
                 out.accept(CURSE_ORB.get());
-                out.accept(FALLING_STAR.get());
-                out.accept(EVENT_HORIZON.get());
-                out.accept(SKYFALL_LANCE.get());
             })
             .build());
 
