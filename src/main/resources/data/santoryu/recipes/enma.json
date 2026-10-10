@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [" AN", "AN ", "GA "],
+  "key": { "N": { "item": "minecraft:netherite_ingot" }, "A": { "item": "minecraft:amethyst_shard" }, "G": { "item": "minecraft:gold_block" } },
+  "result": { "item": "santoryu:enma" }
+}

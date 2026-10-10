@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["  D", " D ", "RO "],
+  "key": { "D": { "item": "minecraft:diamond" }, "R": { "item": "minecraft:redstone_block" }, "O": { "item": "minecraft:obsidian" } },
+  "result": { "item": "santoryu:sandai_kitetsu" }
+}
