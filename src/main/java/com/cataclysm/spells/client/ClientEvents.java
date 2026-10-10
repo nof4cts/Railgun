@@ -38,6 +38,10 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent e) {
         RenderLevelStageEvent.Stage stage = e.getStage();
+        if (stage == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            SpaceSky.render(e.getPoseStack());
+            return;
+        }
         boolean solid = stage == RenderLevelStageEvent.Stage.AFTER_ENTITIES;
         boolean glow = stage == RenderLevelStageEvent.Stage.AFTER_PARTICLES;
         if (!solid && !glow) return;
@@ -62,12 +66,14 @@ public final class ClientEvents {
             Draw.worldPassEnd();
         } else {
             ScreenFx.captureMatrices(new Matrix4f(ps.last().pose()), new Matrix4f(e.getProjectionMatrix()), camPos);
+            ScreenFx.captureCamLeft(Vfx.v3(e.getCamera().getLeftVector()));
             Draw.worldPassBegin(true);
             BufferBuilder b = Draw.begin(VertexFormat.Mode.QUADS);
             ctx.vc = b;
             Vfx.renderGlow(ctx);
             Draw.end(b);
             Draw.worldPassEnd();
+            Plasma.flush(ps, e.getCamera(), camPos);
         }
     }
 
@@ -97,6 +103,7 @@ public final class ClientEvents {
 
     @SubscribeEvent
     public static void onGuiPre(RenderGuiEvent.Pre e) {
+        PostPipeline.run();
         ScreenFx.preGui(e.getGuiGraphics());
     }
 
@@ -111,6 +118,7 @@ public final class ClientEvents {
         Vfx.clear();
         ScreenFx.clear();
         Sfx.clear();
+        SpaceSky.clear();
     }
 
     private ClientEvents() {}

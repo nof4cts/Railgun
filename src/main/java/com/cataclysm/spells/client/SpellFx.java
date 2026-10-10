@@ -65,7 +65,10 @@ public final class SpellFx {
             Matrix4f m = c.m();
             Vec3 cam = c.camRel(p);
             VertexConsumer vc = c.vc;
-            Draw.glowOrb(vc, m, 0, 0, 0, 3.2 + heat * 1.5, 0xFFFFC870, 1f);
+            Plasma.sun(p, 2.4 + heat * 0.8, 0xFFFFC870, 1f);
+            PostPipeline.keep(1f);
+            PostPipeline.light(p, 1.3f, 0xFFFFD8A0);
+            Draw.glowOrb(vc, m, 0, 0, 0, 3.2 + heat * 1.5, 0xFFFFC870, 0.45f);
             Draw.sphere(vc, m, 0, 0, 0, 7 + heat * 5, 10, 14, Draw.alpha(0xFFFF6A20, 0.12f));
             Draw.cone(vc, m, d.scale(2.6), d.scale(-1), 9, 5 + heat * 2, Draw.alpha(0xFFFFFFFF, 0.7f), Draw.alpha(0xFFFF6A20, 0f), 28);
             Vec3 u = Draw.perp(d), v = d.cross(u);
@@ -126,6 +129,11 @@ public final class SpellFx {
         @Override
         public void glow(Vfx.Ctx c) {
             float p = p(c.t);
+            if (p < 0.4f) {
+                Plasma.sun(at.add(0, r(c.t) * 0.2, 0), r(c.t) * 0.6, 0xFFFFB060, 1f - p / 0.4f);
+                PostPipeline.keep(1f);
+                PostPipeline.light(at.add(0, 2, 0), 1.6f * (1f - p / 0.4f), 0xFFFFC890);
+            }
             if (p > 0.5f) return;
             c.at(at);
             Draw.glowOrb(c.vc, c.m(), 0, 0, 0, r(c.t) * 1.05, 0xFFFF8A2A, (0.5f - p) * 1.6f);
@@ -235,6 +243,10 @@ public final class SpellFx {
         public void glow(Vfx.Ctx c) {
             double r = r(c.t);
             if (r < 0.02) return;
+            ScreenFx.lens(at, r * 1.25);
+            Plasma.disk(at, axis, r * 1.45, 0xFFFFE0B0, 1f);
+            PostPipeline.keep(0.9f);
+            PostPipeline.light(at, 0.55f, 0xFFFFC890);
             double s = age(c.t) / 1000.0;
             c.at(at);
             Matrix4f m = c.m();
@@ -287,6 +299,7 @@ public final class SpellFx {
             float p = p(c.t);
             double s = age(c.t) / 1000.0;
             float a = (p < 0.15f ? p / 0.15f : p > 0.85f ? (1 - p) / 0.15f : 1f) * (0.75f + 0.25f * (float) Math.sin(s * 9));
+            PostPipeline.keep(0.7f);
             for (Vec3 at : new Vec3[]{center.add(0, 0.15, 0), center.add(0, 70, 0)}) {
                 c.at(at);
                 Matrix4f m = c.m();
@@ -356,6 +369,9 @@ public final class SpellFx {
             Matrix4f m = c.m();
             VertexConsumer vc = c.vc;
             Vec3 top = new Vec3(0, 170, 0);
+            Plasma.beam(cp, Draw.Y, 170, 3.2 * w, 0xFFFFD86A, a);
+            PostPipeline.keep(1f);
+            PostPipeline.light(cp.add(0, 2, 0), 1.4f * a, 0xFFFFF0C0);
             glowTube(vc, m, Vec3.ZERO, top, 3.6 * w, Draw.alpha(0xFFFFC040, 0.45f * a), Draw.alpha(0xFFFFC040, 0.15f * a), 24);
             glowTube(vc, m, Vec3.ZERO, top, 1.5 * w, Draw.alpha(0xFFFFFFFF, 0.95f * a), Draw.alpha(0xFFFFF4D0, 0.6f * a), 18);
             for (int i = 0; i < 9; i++) {
@@ -381,6 +397,222 @@ public final class SpellFx {
                 float age01 = (float) Math.min(1, (reached - k0) * 2.5);
                 int col = Draw.lerp(0xFFFFE070, 0xFF801808, age01);
                 Draw.quad(vc, c.m(), p0.add(side), p1.add(side), p1.subtract(side), p0.subtract(side), Draw.alpha(col, a * (1 - age01 * 0.5f)));
+            }
+            c.pop();
+        }
+    }
+
+    // ═══════════════ extra layers ═══════════════
+
+    /** A burning fragment that splits off the star and slams down nearby. */
+    public static final class Fragment extends Vfx.Effect {
+        final Vec3 from, to;
+        boolean landed;
+
+        public Fragment(Vec3 from, Vec3 to, long life) {
+            super(life); this.from = from; this.to = to;
+        }
+
+        @Override
+        public void glow(Vfx.Ctx c) {
+            float p = p(c.t);
+            float u = (float) Math.pow(p, 1.8);
+            Vec3 pos = from.lerp(to, u);
+            Vec3 d = to.subtract(from).normalize();
+            c.at(pos);
+            Plasma.sun(pos, 0.7, 0xFFFFA040, 0.9f);
+            PostPipeline.keep(0.6f);
+            Draw.glowOrb(c.vc, c.m(), 0, 0, 0, 1.0, 0xFFFFA040, 0.5f);
+            Draw.ribbon(c.vc, c.m(), Vec3.ZERO, d.scale(-22), 0.9, 0.0, 0xFFFFE0A0, Draw.alpha(0xFFFF4A10, 0f), c.camRel(pos));
+            c.pop();
+            if (p >= 1f && !landed) {
+                landed = true;
+                Vec3 g = to;
+                Sfx.later(0, () -> {
+                    Vfx.add(new Fireball(g.add(0, 0.3, 0), 3.5, 1600));
+                    Vfx.add(Vfx.Shockwave.ground(g, 8, 0xFFFF8A2A, 700));
+                    Vfx.add(new Vfx.Debris(g, 22, 1.3, 1800));
+                    Vfx.add(new Vfx.Spikes(g.add(0, 0.5, 0), 20, 6, 0xFFFFC870, 350, new Vec3(0, 1, 0), 0.8));
+                    if (FxDispatcher.feels(g, 60)) {
+                        CameraDirector.shake(1.0f, 300);
+                        ScreenFx.ring(g, 450);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void solid(Vfx.Ctx c) {
+            Vec3 pos = from.lerp(to, (float) Math.pow(p(c.t), 1.8));
+            c.at(pos);
+            Draw.sphere(c.vc, c.m(), 0, 0, 0, 0.45, 8, 10, 0xFF3A1A0C);
+            c.pop();
+        }
+    }
+
+    /** Glowing embers drifting down over an area. */
+    public static final class EmberRain extends Vfx.Effect {
+        final Vec3 at; final double R; final int n;
+
+        public EmberRain(Vec3 at, double R, int n, long life) {
+            super(life); this.at = at; this.R = R; this.n = n;
+        }
+
+        @Override
+        public void glow(Vfx.Ctx c) {
+            double s = age(c.t) / 1000.0;
+            float fade = 1 - p(c.t);
+            c.at(at);
+            for (int i = 0; i < n; i++) {
+                double ph = (s * (0.25 + Draw.hash(i * 3L) * 0.25) + Draw.hash(i)) % 1.0;
+                double a = Draw.hash(i * 7L) * Math.PI * 2, r = Math.sqrt(Draw.hash(i * 11L)) * R;
+                Vec3 p = new Vec3(Math.cos(a) * r + Math.sin(s * 2 + i) * 0.6, 22 * (1 - ph), Math.sin(a) * r + Math.cos(s * 1.7 + i) * 0.6);
+                int col = i % 3 == 0 ? 0xFFFFF0B0 : 0xFFFF7A2A;
+                Draw.billboard(c.vc, c.m(), p, 0.09 + 0.06 * Draw.hash(i * 13L), Draw.alpha(col, fade * (float) (0.4 + 0.6 * Math.sin(s * 12 + i) * 0.5 + 0.3)),
+                        c.cam.getLeftVector(), c.cam.getUpVector());
+            }
+            c.pop();
+        }
+    }
+
+    /** Branching lava cracks spreading out from an impact, cooling as they age. */
+    public static final class GroundCracks extends Vfx.Effect {
+        final Vec3 at; final double R; final int branches;
+        final java.util.List<Vec3[]> segs = new java.util.ArrayList<>();
+
+        public GroundCracks(Vec3 at, double R, int branches, long life) {
+            super(life); this.at = at; this.R = R; this.branches = branches;
+            for (int b = 0; b < branches; b++) grow(at, Draw.hash(b * 31L + (long) at.x) * Math.PI * 2, R * (0.6 + 0.4 * Draw.hash(b)), b * 97L, 0);
+        }
+
+        private void grow(Vec3 from, double ang, double len, long seed, int depth) {
+            Vec3 p = from;
+            int steps = 8;
+            for (int i = 0; i < steps; i++) {
+                ang += (Draw.hash(seed + i) - 0.5) * 0.7;
+                double l = len / steps;
+                Vec3 q = p.add(Math.cos(ang) * l, 0, Math.sin(ang) * l);
+                q = new Vec3(q.x, groundY(q.x, q.z, at.y) + 0.06, q.z);
+                segs.add(new Vec3[]{p, q, new Vec3((double) i / steps, depth, 0)});
+                if (depth < 2 && Draw.hash(seed * 7 + i) > 0.72) grow(q, ang + (Draw.hash(seed + i * 3) > 0.5 ? 0.8 : -0.8), len * 0.45, seed * 13 + i, depth + 1);
+                p = q;
+            }
+        }
+
+        @Override
+        public void glow(Vfx.Ctx c) {
+            float p = p(c.t);
+            float spread = Ease.outCubic(Math.min(1f, age(c.t) / 900f));
+            int col = Draw.lerp(0xFFFFE070, 0xFF801808, p);
+            float a = 1 - p * p;
+            c.at(at);
+            for (Vec3[] sgm : segs) {
+                if (sgm[2].x > spread) continue;
+                Vec3 a0 = sgm[0].subtract(at), b0 = sgm[1].subtract(at);
+                double w = 0.35 / (1 + sgm[2].y) * (1 - sgm[2].x * 0.6);
+                Vec3 d = b0.subtract(a0);
+                Vec3 side = new Vec3(-d.z, 0, d.x).normalize().scale(w);
+                Draw.quad(c.vc, c.m(), a0.add(side), b0.add(side), b0.subtract(side), a0.subtract(side), Draw.alpha(col, a));
+                Draw.quad(c.vc, c.m(), a0.add(side.scale(3)), b0.add(side.scale(3)), b0.subtract(side.scale(3)), a0.subtract(side.scale(3)), Draw.alpha(col, a * 0.25f));
+            }
+            c.pop();
+        }
+    }
+
+    /** A low wall of dust rolling outward from ground zero. */
+    public static final class DustWall extends Vfx.Effect {
+        final Vec3 at; final double R; final int col;
+
+        public DustWall(Vec3 at, double R, int col, long life) {
+            super(life); this.at = at; this.R = R; this.col = col;
+        }
+
+        @Override
+        public void solid(Vfx.Ctx c) {
+            float p = p(c.t);
+            double r = R * Ease.outCubic(p);
+            float a = (p < 0.1f ? p / 0.1f : 1f) * (1 - p) * 0.85f;
+            c.at(at);
+            int n = 40;
+            for (int i = 0; i < n; i++) {
+                double ang = i * Math.PI * 2 / n + Draw.hash(i) * 0.1;
+                double rr = r * (0.9 + Draw.hash(i * 3L) * 0.2);
+                double y = groundY(at.x + Math.cos(ang) * rr, at.z + Math.sin(ang) * rr, at.y) - at.y + 1.2;
+                Draw.sphere(c.vc, c.m(), Math.cos(ang) * rr, y, Math.sin(ang) * rr, 1.8 + 2.4 * p + Draw.hash(i) * 0.8, 6, 9, Draw.alpha(col, a));
+            }
+            c.pop();
+        }
+    }
+
+    /** Thin flickering targeting beam before the real strike lands. */
+    public static final class GuideBeam extends Vfx.Effect {
+        final Vec3 at;
+
+        public GuideBeam(Vec3 at, long life) {
+            super(life); this.at = at;
+        }
+
+        @Override
+        public void glow(Vfx.Ctx c) {
+            float flick = (c.t / 60) % 2 == 0 ? 1f : 0.45f;
+            float grow = Math.min(1f, age(c.t) / 400f);
+            c.at(at);
+            glowTube(c.vc, c.m(), Vec3.ZERO, new Vec3(0, 170, 0), 0.25 + 0.3 * grow, Draw.alpha(0xFFFF5A3A, 0.8f * flick), Draw.alpha(0xFFFFD86A, 0.3f * flick), 10);
+            Draw.ringXZ(c.vc, c.m(), new Vec3(0, 0.12, 0), 1.2, 1.6, Draw.alpha(0xFFFF5A3A, flick), 0, 32);
+            c.pop();
+        }
+    }
+
+    /** Lightning crawling up and down a vertical beam. */
+    public static final class BeamArcs extends Vfx.Effect {
+        final Vec3 start, dir; final double length; final long sweepMs;
+
+        public BeamArcs(Vec3 start, Vec3 dir, double length, long sweepMs, long life) {
+            super(life); this.start = start; this.dir = dir.normalize(); this.length = length; this.sweepMs = sweepMs;
+        }
+
+        @Override
+        public void glow(Vfx.Ctx c) {
+            double k = Mth.clamp((age(c.t) - 100) / (double) sweepMs, 0, 1);
+            Vec3 cp = start.add(dir.scale(length * k));
+            cp = new Vec3(cp.x, groundY(cp.x, cp.z, start.y), cp.z);
+            long frame = c.t / 45;
+            c.at(cp);
+            for (int arc = 0; arc < 5; arc++) {
+                Vec3 prev = new Vec3(0, Draw.hash(frame * 7 + arc) * 30, 0);
+                for (int i = 0; i < 9; i++) {
+                    Vec3 next = prev.add(Draw.randDir(frame * 31 + arc * 13 + i).scale(2.2)).add(0, 3.5, 0);
+                    Draw.ribbon(c.vc, c.m(), prev, next, 0.12, 0.08, 0xFFFFFFFF, Draw.alpha(0xFFFFD86A, 0.8f), c.camRel(cp));
+                    prev = next;
+                }
+            }
+            c.pop();
+        }
+    }
+
+    /** Smoke columns rising from a cooling trench. */
+    public static final class SmokeColumns extends Vfx.Effect {
+        final Vec3 start, dir; final double length;
+
+        public SmokeColumns(Vec3 start, Vec3 dir, double length, long life) {
+            super(life); this.start = start; this.dir = dir.normalize(); this.length = length;
+        }
+
+        @Override
+        public void solid(Vfx.Ctx c) {
+            float p = p(c.t);
+            double s = age(c.t) / 1000.0;
+            c.at(start);
+            for (int i = 0; i < 14; i++) {
+                double k = (i + 0.5) / 14.0;
+                Vec3 base = dir.scale(length * k);
+                double gy = groundY(start.x + base.x, start.z + base.z, start.y) - start.y;
+                for (int j = 0; j < 5; j++) {
+                    double ph = (s * 0.35 + j * 0.2 + Draw.hash(i)) % 1.0;
+                    float a = (float) ((1 - ph) * (1 - p) * 0.5);
+                    Draw.sphere(c.vc, c.m(), base.x + Math.sin(s + i + j) * 0.8, gy + ph * 14, base.z + Math.cos(s * 0.8 + i) * 0.8,
+                            1.0 + ph * 2.5, 6, 8, Draw.alpha(0xFF3C383C, a));
+                }
             }
             c.pop();
         }

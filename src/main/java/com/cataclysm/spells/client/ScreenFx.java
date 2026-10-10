@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -65,10 +66,105 @@ public final class ScreenFx {
     private static final Matrix4f PROJ = new Matrix4f();
     private static Vec3 camPos = Vec3.ZERO;
 
+    private static Vec3 camLeft = new Vec3(1, 0, 0);
+
     public static void captureMatrices(Matrix4f view, Matrix4f proj, Vec3 cam) {
         VIEW.set(view);
         PROJ.set(proj);
         camPos = cam;
+    }
+
+    public static void captureCamLeft(Vec3 left) {
+        camLeft = left;
+    }
+
+    // ─────────── shader-driven cinematic layer ───────────
+
+    public static final int S_POST = 0, S_INK = 1, S_NEG = 2, S_DUO = 3, S_BLEACH = 4;
+    private record SFrame(long start, long dur, int mode, int tint, float fx, float fy, float seed) {}
+    private static final List<SFrame> SFRAMES = new ArrayList<>();
+    private static long postStart, postLife;
+    private static float postPower, postFx = 0.5f, postFy = 0.5f;
+    private static long ringStart = -1, ringLife;
+    private static float ringFx = 0.5f, ringFy = 0.5f;
+    private static long heatUntil;
+    private static float heatPower;
+    private static Vec3 lensWorld;
+    private static double lensWorldR;
+    private static long lensUntil;
+    private static int gradeColor;
+    private static long gradeStart, gradeIn, gradeHold, gradeOut;
+    private static float gradeMax;
+
+    public static boolean shaderReady() {
+        return SpellShaders.IMPACT != null;
+    }
+
+    /** Queue a hand-timed sequence of shader impact frames (modes/durations), starting after a delay. */
+    public static void frames(Vec3 focus, int tint, long delay, int[] modes, long[] durs) {
+        float[] f = project(focus);
+        long t = Vfx.now() + delay;
+        for (int i = 0; i < modes.length; i++) {
+            SFRAMES.add(new SFrame(t, durs[i], modes[i], tint, f[0], f[1], (float) Draw.hash(t + i)));
+            t += durs[i];
+        }
+    }
+
+    /** Post layer: aberration + zoom blur + grain, decaying over life. */
+    public static void post(Vec3 focus, float power, long life) {
+        float[] f = project(focus);
+        postFx = f[0]; postFy = f[1];
+        postStart = Vfx.now(); postLife = life; postPower = power;
+    }
+
+    /** A refraction shock ring expanding across the screen from a world point. */
+    public static void ring(Vec3 focus, long life) {
+        float[] f = project(focus);
+        ringFx = f[0]; ringFy = f[1];
+        ringStart = Vfx.now(); ringLife = life;
+    }
+
+    public static void heat(float power, long life) {
+        heatPower = power;
+        heatUntil = Vfx.now() + life;
+    }
+
+    /** Called every frame by a black hole that is on screen. */
+    public static void lens(Vec3 world, double worldRadius) {
+        lensWorld = world;
+        lensWorldR = worldRadius;
+        lensUntil = Vfx.now() + 80;
+    }
+
+    /** Colour grade over the whole frame (multiply), with fade in / hold / fade out. */
+    public static void grade(int color, float strength, long in, long hold, long out) {
+        gradeColor = color; gradeMax = strength;
+        gradeStart = Vfx.now(); gradeIn = in; gradeHold = hold; gradeOut = out;
+    }
+
+    /** The signature hit: bleach → ink → negative → duotone → ink → negative, then aberration and a shock ring. */
+    public static void cineHit(Vec3 focus, int tint, float power) {
+        if (!shaderReady()) {
+            impactLegacy(GOLD, 300, focus);
+            return;
+        }
+        if (power >= 1f) {
+            frames(focus, tint, 0, new int[]{S_BLEACH, S_INK, S_NEG, S_DUO, S_INK, S_NEG, S_DUO},
+                    new long[]{45, 55, 50, 60, 45, 40, 50});
+        } else {
+            frames(focus, tint, 0, new int[]{S_INK, S_NEG, S_DUO}, new long[]{45, 40, 45});
+        }
+        post(focus, 0.6f + power, 700 + (long) (power * 500));
+        ring(focus, 650 + (long) (power * 300));
+    }
+
+    /** World → normalised screen (unclamped), or null if behind the camera. */
+    public static float[] projectRaw(Vec3 world) {
+        Vector4f v = new Vector4f((float) (world.x - camPos.x), (float) (world.y - camPos.y), (float) (world.z - camPos.z), 1f);
+        VIEW.transform(v);
+        PROJ.transform(v);
+        if (v.w <= 0.05f) return null;
+        return new float[]{v.x / v.w * 0.5f + 0.5f, 1f - (v.y / v.w * 0.5f + 0.5f)};
     }
 
     /** World → normalised screen [0,1]. Falls back to centre if behind the camera. */
@@ -85,6 +181,22 @@ public final class ScreenFx {
     // ─────────── triggers ───────────
 
     public static void impact(int style, long life, Vec3 focus) {
+        if (shaderReady()) {
+            int tint = style == RED ? 0xFFFF2A3A : style == GOLD ? 0xFFFFC850 : 0xFFFFFFFF;
+            long a = Math.max(30, life / 3), b = Math.max(30, life - 2 * a);
+            switch (style) {
+                case INVERT -> frames(focus, tint, 0, new int[]{S_BLEACH, S_NEG, S_INK}, new long[]{a, b, a});
+                case INK -> frames(focus, tint, 0, new int[]{S_INK, S_NEG, S_INK}, new long[]{a, b, a});
+                case RED, GOLD -> frames(focus, tint, 0, new int[]{S_DUO, S_NEG, S_DUO}, new long[]{a, b, a});
+                default -> frames(focus, tint, 0, new int[]{S_INK}, new long[]{life});
+            }
+            post(focus, 0.5f, 500);
+            return;
+        }
+        impactLegacy(style, life, focus);
+    }
+
+    private static void impactLegacy(int style, long life, Vec3 focus) {
         float[] f = project(focus);
         IMPACTS.add(new Impact(Vfx.now(), life, style, f[0], f[1], Vfx.now() * 31));
     }
@@ -121,6 +233,7 @@ public final class ScreenFx {
 
     public static void clear() {
         IMPACTS.clear(); FLASHES.clear(); CARDS.clear(); split = null; speedUntil = 0;
+        SFRAMES.clear(); postLife = 0; ringStart = -1; heatUntil = 0; lensUntil = 0; gradeMax = 0;
         letterTarget = letterNow = 0; vignetteTarget = vignetteNow = 0; rulesStart = -1;
     }
 
@@ -272,6 +385,76 @@ public final class ScreenFx {
 
     /** Runs before the HUD: slices the rendered world along a diagonal and shoves the halves apart. */
     public static void preGui(GuiGraphics g) {
+        splitPass(g);
+        shaderPass(g);
+    }
+
+    private static void shaderPass(GuiGraphics g) {
+        ShaderInstance sh = SpellShaders.IMPACT;
+        if (sh == null) return;
+        long t = Vfx.now();
+        SFRAMES.removeIf(f -> t > f.start + f.dur);
+        SFrame frame = null;
+        for (SFrame f : SFRAMES) if (t >= f.start) { frame = f; break; }
+        float post = 0f;
+        if (t - postStart < postLife) {
+            float p = (t - postStart) / (float) postLife;
+            post = postPower * (1 - p) * (1 - p);
+        }
+        float ringR = -1f;
+        if (ringStart >= 0 && t - ringStart < ringLife) ringR = 0.02f + 1.5f * Ease.outCubic((t - ringStart) / (float) ringLife);
+        float heat = t < heatUntil ? heatPower : 0f;
+        float w = g.guiWidth(), h = g.guiHeight();
+        float aspect = w / Math.max(1f, h);
+        float lensR = 0f, lx = 0.5f, ly = 0.5f;
+        if (t < lensUntil && lensWorld != null) {
+            float[] c = project(lensWorld);
+            float[] edge = project(lensWorld.add(camLeft.scale(lensWorldR)));
+            Vector4f chk = new Vector4f((float) (lensWorld.x - camPos.x), (float) (lensWorld.y - camPos.y), (float) (lensWorld.z - camPos.z), 1f);
+            VIEW.transform(chk);
+            PROJ.transform(chk);
+            if (chk.w > 0.1f) {
+                lx = c[0]; ly = c[1];
+                lensR = (float) Math.hypot((edge[0] - c[0]) * aspect, edge[1] - c[1]);
+                lensR = Math.min(lensR, 0.35f);
+            }
+        }
+        if (frame == null && post < 0.01f && ringR < 0 && heat <= 0 && lensR <= 0) return;
+
+        grabFrame();
+        float fx = frame != null ? frame.fx : (ringR > 0 ? ringFx : postFx);
+        float fy = frame != null ? frame.fy : (ringR > 0 ? ringFy : postFy);
+        int tint = frame != null ? frame.tint : 0xFFFFFFFF;
+        sh.safeGetUniform("Time").set((t % 100000) / 1000f);
+        sh.safeGetUniform("Mode").set(frame != null ? (float) frame.mode : 0f);
+        sh.safeGetUniform("Focus").set(fx, 1f - fy);
+        sh.safeGetUniform("Strength").set(frame != null ? 1f : Math.max(post, ringR > 0 ? 0.5f : 0f));
+        sh.safeGetUniform("Radius").set(ringR);
+        sh.safeGetUniform("Tint").set(((tint >> 16) & 255) / 255f, ((tint >> 8) & 255) / 255f, (tint & 255) / 255f);
+        sh.safeGetUniform("Seed").set(frame != null ? frame.seed : 0f);
+        sh.safeGetUniform("Aspect").set(aspect);
+        sh.safeGetUniform("LensPos").set(lx, 1f - ly);
+        sh.safeGetUniform("LensR").set(lensR);
+        sh.safeGetUniform("Heat").set(heat);
+
+        Matrix4f m = g.pose().last().pose();
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableBlend();
+        RenderSystem.setShader(() -> sh);
+        RenderSystem.setShaderTexture(0, copy.getColorTextureId());
+        BufferBuilder b = Tesselator.getInstance().getBuilder();
+        b.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        b.vertex(m, 0, 0, 0).uv(0, 1).endVertex();
+        b.vertex(m, 0, h, 0).uv(0, 0).endVertex();
+        b.vertex(m, w, h, 0).uv(1, 0).endVertex();
+        b.vertex(m, w, 0, 0).uv(1, 1).endVertex();
+        BufferUploader.drawWithShader(b.end());
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+
+    private static void splitPass(GuiGraphics g) {
         Split s = split;
         if (s == null) return;
         long el = Vfx.now() - s.start;
@@ -380,6 +563,16 @@ public final class ScreenFx {
         for (Flash f : FLASHES) {
             float p = (t - f.start) / (float) f.life;
             rect(m, 0, 0, w, h, Draw.alpha(f.color, (1 - p) * (1 - p)));
+        }
+
+        if (gradeMax > 0) {
+            long ge = t - gradeStart;
+            float ga = ge < gradeIn ? ge / (float) Math.max(1, gradeIn) : ge < gradeIn + gradeHold ? 1f : 1f - (ge - gradeIn - gradeHold) / (float) Math.max(1, gradeOut);
+            if (ga > 0) {
+                RenderSystem.blendFunc(GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.ZERO);
+                rect(m, 0, 0, w, h, Draw.lerp(0xFFFFFFFF, gradeColor, gradeMax * Math.min(1f, ga)));
+                RenderSystem.defaultBlendFunc();
+            } else gradeMax = 0;
         }
 
         if (letterNow > 0.005f) {

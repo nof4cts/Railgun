@@ -144,6 +144,7 @@ public final class Vfx {
         public void glow(Ctx c) {
             float p = p(c.t);
             float a = (1 - p) * (1 - p);
+            PostPipeline.keep(0.6f * a);
             double s = r * (0.35 + 0.65 * Ease.outExpo(p));
             c.at(pos);
             Matrix4f m = c.m();
