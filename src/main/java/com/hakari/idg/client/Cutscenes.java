@@ -32,8 +32,8 @@ public final class Cutscenes {
       c.cut(1.95, -2.6, 1.6, -1.2, 1.5, 0.0, 0.8, 72.0, 9.0);
       c.key(2.4, -3.0, 1.9, -1.0, 1.5, 0.0, 1.0, 76.0, 6.0, Ease.OUT_CUBIC);
       // the barrier: crane up and out as it blooms and eats the world
-      c.cut(2.45, -4.0, 3.2, 0.6, 0.0, 0.0, -0.4, 64.0, -4.0);
-      c.key(3.9, -15.0, 11.0, 10.0, 0.0, 0.0, 0.0, 84.0, 0.0, Ease.OUT_EXPO);
+      c.cut(2.45, -30.0, 16.0, 9.0, 0.0, 0.0, 2.0, 62.0, -4.0);
+      c.key(3.9, -42.0, 24.0, 22.0, 0.0, 0.0, 4.0, 70.0, 0.0, Ease.OUT_CUBIC);
       // inside: high corner reveal, sweeping across the station
       c.cut(3.95, 10.0, -9.0, 0.8, 0.0, 0.0, -0.6, 72.0, 0.0);
       c.key(5.5, 10.0, 9.0, 4.6, 0.0, 0.0, -0.6, 72.0, 3.0, Ease.IN_OUT);
@@ -107,7 +107,7 @@ public final class Cutscenes {
             Vfx.add(Vfx.Shockwave.ground(feet, 26.0 + wave * 6.0, col, 1000L));
             for (int i = 0; i < 10; i++) {
                double a = (i + wave * 0.5) * Math.PI * 2.0 / 10.0;
-               double r = 12.0 + wave * 4.0;
+               double r = 20.5 + wave * 2.5;
                Vfx.add(new Vfx.Pillar(feet.add(Math.cos(a) * r, 0.0, Math.sin(a) * r), 18.0 + wave * 4.0, 0.9, col, 800L));
             }
             com.hakari.idg.client.post.Post.flash(col & 0xFFFFFF, 0.35F, 260L);

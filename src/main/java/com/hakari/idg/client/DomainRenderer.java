@@ -50,7 +50,7 @@ public final class DomainRenderer {
             Vec3 camRel = c.camRel(center);
             if (e >= 2.45F && e < 3.95F) {
                float f = Mth.clamp((e - 2.45F) / 1.45F, 0.0F, 1.0F);
-               double r = R * (double)Ease.outExpo(f);
+               double r = R * (double)Ease.outCubic(f);
                fresnelSphere(c.vc, m, r, camRel, -16449531, -45128);
             } else if (e >= 3.95F) {
                if (v.openedAt < 0L) {
@@ -76,9 +76,33 @@ public final class DomainRenderer {
             c.at(center);
             if (e >= 2.45F && e < 3.95F) {
                float f = Mth.clamp((e - 2.45F) / 1.45F, 0.0F, 1.0F);
-               double r = R * (double)Ease.outExpo(f);
+               double r = R * (double)Ease.outCubic(f);
                Draw.sphere(c.vc, c.m(), 0.0, 0.0, 0.0, r * 1.03, 16, 24, Draw.alpha(-53894, 0.18F * (1.0F - f * 0.5F)));
                Draw.ringXZ(c.vc, c.m(), new Vec3(0.0, 0.1, 0.0), r * 0.98, r * 1.15, Draw.alpha(-45128, 0.9F), 0, 64);
+               // the parlour's neon lattice crawling over the dome as it swells, a bright band scanning up it
+               Vec3 camRel = c.camRel(center);
+               float scan = (float)Math.sin(Math.PI * 0.5 * f);
+               for (int lat = 1; lat < 9; lat++) {
+                  double th = lat * Math.PI / 18.0;
+                  double y = r * Math.sin(th), rr = r * Math.cos(th);
+                  boolean lit = Math.abs(th / (Math.PI / 2.0) - scan) < 0.12;
+                  int col = lat % 3 == 0 ? 0xFFFFD34D : 0xFFFF4FB8;
+                  float al = lit ? 1.0F : 0.55F;
+                  Draw.ringXZ(c.vc, c.m(), new Vec3(0.0, y, 0.0), rr * 1.005, rr * 1.005 + (lit ? 0.5 : 0.18), Draw.alpha(col, al), Draw.alpha(col, 0.0F), 64);
+               }
+               for (int mer = 0; mer < 16; mer++) {
+                  double ph = mer * Math.PI * 2.0 / 16.0 + f * 0.6;
+                  int col = mer % 2 == 0 ? 0xFFFF4FB8 : 0xFF39FF7A;
+                  Vec3 prev = null;
+                  for (int k = 0; k <= 10; k++) {
+                     double th = k * Math.PI / 20.0;
+                     Vec3 q = new Vec3(Math.cos(ph) * Math.cos(th) * r * 1.008, Math.sin(th) * r * 1.008, Math.sin(ph) * Math.cos(th) * r * 1.008);
+                     if (prev != null) {
+                        Draw.ribbon(c.vc, c.m(), prev, q, 0.16, 0.16, Draw.alpha(col, 0.6F), Draw.alpha(col, 0.6F), camRel);
+                     }
+                     prev = q;
+                  }
+               }
             } else if (e >= 3.95F) {
                interiorGlow(c, s, v, R);
             }
