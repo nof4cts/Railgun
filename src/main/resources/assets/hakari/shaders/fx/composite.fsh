@@ -124,13 +124,6 @@ void main() {
         vec3 graded = mix(GradeShadow, GradeHot, smoothstep(0.08, 0.95, l));
         graded = mix(graded, col * (0.6 + 0.6 * GradeHot), smoothstep(0.7, 1.0, l) * 0.6);
         col = mix(col, graded, Haki * 0.75);
-        // crackling at the edges of frame
-        float glow;
-        vec2 edgeC = vec2(hash11(floor(Time * 14.0)) , hash11(floor(Time * 14.0) + 5.0));
-        float edgeBolt = blackLightning(p, edgeC, aspect, floor(Time * 14.0), glow);
-        float edge = smoothstep(0.35, 0.75, length(c * vec2(aspect, 1.0)));
-        col = mix(col, Accent * 1.4, glow * edge * Haki * 0.5);
-        col = mix(col, vec3(0.0), edgeBolt * edge * Haki);
     }
 
     float grey = lum(col);

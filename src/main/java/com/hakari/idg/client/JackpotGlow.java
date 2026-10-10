@@ -39,7 +39,7 @@ public final class JackpotGlow {
         float build = s.jackpotCutTicks > 0 ? Mth.clamp(1.0F - s.jackpotCutTicks / 110.0F, 0.0F, 1.0F) : 1.0F;
         float time = (System.currentTimeMillis() % 100000L) / 1000.0F;
         float breathe = 0.75F + 0.25F * Mth.sin(time * 4.2F);
-        float a = 0.42F * build * breathe;
+        float a = 0.26F * build * breathe;
         if (a <= 0.01F) {
             return;
         }
@@ -54,7 +54,7 @@ public final class JackpotGlow {
                 pose.translate(0.0F, -0.02F * layer, 0.0F);
                 pose.scale(scale, scale, scale);
                 MultiBufferSource src = layer == 0 ? glow
-                        : (type -> new Tint(base.getBuffer(RenderType.lightning()), 0.12F, 0.85F, 0.35F, a * 0.45F));
+                        : (type -> new Tint(base.getBuffer(RenderType.lightning()), 0.12F, 0.85F, 0.35F, a * 0.35F));
                 event.getRenderer().render(player, Mth.lerp(event.getPartialTick(), player.yRotO, player.getYRot()), event.getPartialTick(), pose, src, 0xF000F0);
                 pose.popPose();
             }

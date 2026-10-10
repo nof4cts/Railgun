@@ -87,7 +87,35 @@ public final class Cutscenes {
          CameraDirector.shake(0.8F, 1400L);
          com.hakari.idg.client.post.Post.punch(0.7F, 900L);
          com.hakari.idg.client.post.Post.aberration(0.8F, 1400L);
+         Vec3 p = anchorPos(caster);
+         if (p != null) {
+            Vec3 feet = p.add(0.0, -1.2, 0.0);
+            Vfx.add(Vfx.Shockwave.ground(feet, 30.0, 0xFFFF4FB8, 1400L));
+            Vfx.add(Vfx.Shockwave.ground(feet, 22.0, 0xFF39FF7A, 1100L));
+         }
       });
+      // the barrier's edge rolls outward in neon waves, pillars of light rising round the rim as it eats the land
+      for (int w = 0; w < 3; w++) {
+         final int wave = w;
+         c.at(2.85 + w * 0.36, () -> {
+            Vec3 p = anchorPos(caster);
+            if (p == null) {
+               return;
+            }
+            Vec3 feet = p.add(0.0, -1.2, 0.0);
+            int col = wave == 1 ? 0xFF39FF7A : wave == 2 ? 0xFFFFD34D : 0xFFFF4FB8;
+            Vfx.add(Vfx.Shockwave.ground(feet, 26.0 + wave * 6.0, col, 1000L));
+            for (int i = 0; i < 10; i++) {
+               double a = (i + wave * 0.5) * Math.PI * 2.0 / 10.0;
+               double r = 12.0 + wave * 4.0;
+               Vfx.add(new Vfx.Pillar(feet.add(Math.cos(a) * r, 0.0, Math.sin(a) * r), 18.0 + wave * 4.0, 0.9, col, 800L));
+            }
+            com.hakari.idg.client.post.Post.flash(col & 0xFFFFFF, 0.35F, 260L);
+            com.hakari.idg.client.post.Post.punch(0.35F, 300L);
+            CameraDirector.shake(0.6F, 300L);
+            Sfx.play(SoundEvents.AMETHYST_BLOCK_RESONATE, 0.8F, 0.6F + wave * 0.25F);
+         });
+      }
       c.at(3.95, () -> {
          ScreenFx.flash(-1, 650L);
          com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.DOMAIN, anchorPos(caster), com.hakari.idg.client.post.Post.GOLD);

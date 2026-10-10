@@ -528,9 +528,9 @@ public final class DomainRenderer {
             Vec3 p = new Vec3(Math.cos(a) * r, y, Math.sin(a) * r);
             if (prev != null) {
                float al = (float)(Math.sin(Math.PI * Math.pow(u, 0.8)) * power);
-               int c0 = Draw.lerp(AURA_MINT, AURA_GREEN, (float)u);
+               int c0 = Draw.lerp(Draw.lerp(AURA_MINT, AURA_GREEN, 0.55F), AURA_GREEN, (float)u);
                Draw.ribbon(vc, m, prev, p, 0.11 * (1.0 - u * 0.7), 0.11 * (1.0 - u * 0.7) * 0.9,
-                  Draw.alpha(c0, al * 0.85F), Draw.alpha(AURA_GREEN, al * 0.6F), cam);
+                  Draw.alpha(c0, al * 0.7F), Draw.alpha(AURA_DEEP, al * 0.5F), cam);
             }
             prev = p;
          }
@@ -559,7 +559,7 @@ public final class DomainRenderer {
          double a = Draw.hash(i * 7L) * Math.PI * 2.0 + time;
          double r = 0.35 + Draw.hash(i * 3L) * 0.45 + ph * 0.35;
          Vec3 p = new Vec3(Math.cos(a) * r, 0.2 + ph * h * 1.15, Math.sin(a) * r);
-         Draw.billboard(vc, m, p, 0.12 + 0.28 * ph, Draw.alpha(i % 4 == 0 ? AURA_MINT : AURA_GREEN, (float)((1.0 - ph) * 0.35 * power)),
+         Draw.billboard(vc, m, p, 0.12 + 0.28 * ph, Draw.alpha(i % 4 == 0 ? AURA_GREEN : AURA_DEEP, (float)((1.0 - ph) * 0.2 * power)),
             c.cam.getLeftVector(), c.cam.getUpVector());
       }
 

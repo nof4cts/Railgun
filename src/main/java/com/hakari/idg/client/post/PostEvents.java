@@ -41,8 +41,8 @@ public final class PostEvents {
                     jackpot = true;
                 }
             }
-            Post.grade(jackpot ? 0.3F : 0.0F);
-            Post.bloom(inside ? 0.55F : jackpot ? 0.35F : 0.0F);
+            Post.grade(jackpot ? 0.16F : 0.0F);
+            Post.bloom(inside ? 0.45F : jackpot ? 0.18F : 0.0F);
             Post.vignette(inside ? 0x3A0030 : 0x02160A, inside ? 0.3F : jackpot ? 0.22F : 0.0F);
         }
 
