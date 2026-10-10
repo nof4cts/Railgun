@@ -83,7 +83,7 @@ public final class Films {
             case SANZEN_SEKAI -> {
                 s.add(Shot.cut(0, 20, (k, t) -> at(rel(c, F, 0, 0.6, l(k, 2.6, 2.2)), E, 50, 0)));
                 // the third blade between his teeth
-                s.add(Shot.cut(20, 40, (k, t) -> at(rel(c, F, 0.3, 1.58, l(k, 0.85, 0.7)), rel(c, F, 0.05, 1.55, 0), 30, 0)));
+                s.add(Shot.cut(20, 40, (k, t) -> at(rel(c, F, 0.45, 1.5, l(k, 1.5, 1.25)), rel(c, F, 0.0, 1.52, 0), 32, 0)));
                 // the windmills: half an orbit round him
                 s.add(Shot.cut(40, 72, (k, t) -> at(orbit(c, F, 3.2, l(k, -60, 120), 1.2), F.add(0, 1.2, 0), 56, 0)));
                 s.add(Shot.sweep(72, Beats.SANZEN_DASH, 6, (k, t) -> at(rel(c, F, 0.6, 0.35, -2.6), P, l(k, 40, 30), 0)));
@@ -97,13 +97,13 @@ public final class Films {
             }
             case ASURA -> {
                 // the eyes
-                s.add(Shot.cut(0, Beats.ASURA_AURA, (k, t) -> at(rel(c, F, 0.05, 1.62, l(k, 1.05, 0.9)), E, 32, 0)));
+                s.add(Shot.cut(0, Beats.ASURA_AURA, (k, t) -> at(rel(c, F, 0.1, 1.6, l(k, 1.75, 1.45)), E, 34, 0)));
                 // the aura rises: crane up from his feet
                 s.add(Shot.cut(Beats.ASURA_AURA, Beats.ASURA_MANIFEST, (k, t) -> at(rel(c, F, 1.6, l(k, 0.2, 2.4), 3.4), F.add(0, l(k, 0.8, 1.4), 0), 55, 0)));
                 // the demon appears: wide and frontal
                 s.add(Shot.cut(Beats.ASURA_MANIFEST, 110, (k, t) -> at(rel(c, F, 0, l(k, 1.6, 2.2), l(k, 6.5, 5.5)), F.add(0, 1.6, 0), 62, 0)));
                 // three faces in profile
-                s.add(Shot.cut(110, 130, (k, t) -> at(rel(c, F, l(k, 2.8, 2.4), 1.65, 0.5), E, 40, -4)));
+                s.add(Shot.cut(110, 130, (k, t) -> at(rel(c, F, l(k, 4.2, 3.8), 1.7, 1.4), E, 42, -4)));
                 s.add(Shot.sweep(130, Beats.ASURA_DASH, 6, (k, t) -> at(rel(c, F, 0.9, 2.0, -2.3), P, l(k, 45, 34), 0)));
                 // the target, as nine blades pass it
                 s.add(Shot.cut(Beats.ASURA_DASH, Beats.ASURA_HIT, (k, t) -> at(rel(c, P, 3.6, 0.0, -1.6), P, 70, -6)));
@@ -118,7 +118,7 @@ public final class Films {
                 // the conqueror's wave: high and wide
                 s.add(Shot.cut(Beats.RENGOKU_CONQUER, Beats.RENGOKU_CONQUER + 14, (k, t) -> at(rel(c, F, 2, l(k, 8, 9), 11), F, 72, 0)));
                 // black lightning on his face
-                s.add(Shot.cut(Beats.RENGOKU_CONQUER + 14, 100, (k, t) -> at(rel(c, F, 0.1, 1.62, l(k, 1.2, 1.0)), E, 30, 0)));
+                s.add(Shot.cut(Beats.RENGOKU_CONQUER + 14, 100, (k, t) -> at(rel(c, F, 0.15, 1.6, l(k, 1.8, 1.5)), E, 32, 0)));
                 s.add(Shot.sweep(100, Beats.RENGOKU_DASH, 6, (k, t) -> at(rel(c, F, -0.8, 0.4, -2.8), P, l(k, 42, 32), -2)));
                 s.add(Shot.cut(Beats.RENGOKU_DASH, Beats.RENGOKU_HIT, (k, t) -> {
                     Vec3 m = F.lerp(X, k);
@@ -134,7 +134,7 @@ public final class Films {
                 // three swords, a full circle round him
                 s.add(Shot.cut(70, 112, (k, t) -> at(orbit(c, F, 3.6, l(k, 0, 300), 1.3), F.add(0, 1.3, 0), 52, 0)));
                 // Wado in his teeth
-                s.add(Shot.cut(112, 158, (k, t) -> at(rel(c, F, 0.25, 1.58, l(k, 0.75, 0.62)), rel(c, F, 0.0, 1.56, 0), 28, 0)));
+                s.add(Shot.cut(112, 158, (k, t) -> at(rel(c, F, 0.45, 1.5, l(k, 1.5, 1.25)), rel(c, F, 0.0, 1.52, 0), 32, 0)));
                 // worm's-eye, up at the target
                 s.add(Shot.cut(158, Beats.DRAGON_LEAP, (k, t) -> at(rel(c, F, 0.4, 0.25, 1.4), P.add(0, 3, 0), l(k, 80, 72), 0)));
                 // ride the leap

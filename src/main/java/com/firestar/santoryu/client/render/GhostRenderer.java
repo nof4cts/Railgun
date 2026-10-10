@@ -42,7 +42,7 @@ public final class GhostRenderer {
         MultiBufferSource base = event.getMultiBufferSource();
         float yaw = Mth.rotLerp(event.getPartialTick(), player.yBodyRotO, player.yBodyRot);
         float flicker = 0.85F + 0.15F * Mth.sin(t * 1.7F);
-        MultiBufferSource ghost = type -> new Tint(base.getBuffer(RenderType.lightning()), 1.0F * a * flicker, 0.16F * a * flicker, 0.08F * a * flicker, a);
+        MultiBufferSource ghost = type -> new Tint(base.getBuffer(RenderType.lightning()), 1.0F, 0.22F, 0.1F, Math.min(1.0F, a * flicker * 0.9F));
         drawing = true;
         try {
             for (int side = -1; side <= 1; side += 2) {
@@ -51,9 +51,9 @@ public final class GhostRenderer {
                 float rx = (float) -Math.cos(rad), rz = (float) -Math.sin(rad);
                 float fx = (float) -Math.sin(rad), fz = (float) Math.cos(rad);
                 pose.pushPose();
-                pose.translate(rx * side * 0.62F - fx * 0.18F, 0.04F * Mth.sin(t * 0.2F + side), rz * side * 0.62F - fz * 0.18F);
-                pose.mulPose(Axis.YP.rotationDegrees(side * 24.0F));
-                pose.scale(1.04F, 1.04F, 1.04F);
+                pose.translate(rx * side * 0.95F - fx * 0.3F, 0.04F * Mth.sin(t * 0.2F + side), rz * side * 0.95F - fz * 0.3F);
+                pose.mulPose(Axis.YP.rotationDegrees(side * 28.0F));
+                pose.scale(1.08F, 1.08F, 1.08F);
                 renderer.render(player, Mth.lerp(event.getPartialTick(), player.yRotO, player.getYRot()), event.getPartialTick(), pose, ghost, 0xF000F0);
                 pose.popPose();
             }

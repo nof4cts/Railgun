@@ -127,7 +127,8 @@ public final class Director {
         }
         weight = Math.max(0.0F, Math.min(in, out));
 
-        CameraPose shot = clip(film.pose(t), film.cast.local(0, 1.4, 0));
+        CameraPose raw = film.pose(t);
+        CameraPose shot = clip(raw, raw.look());
         Vec3 eye = mc.player.getEyePosition(partial);
         Vec3 view = mc.player.getViewVector(partial);
         double fov = mc.options.fov().get();

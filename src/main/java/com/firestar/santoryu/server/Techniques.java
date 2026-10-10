@@ -262,10 +262,13 @@ public final class Techniques {
                 hold(c);
             }
             try {
+                Carve.floor = Math.min(c.anchor.y, c.exit.y);
                 run(c, t);
             } catch (RuntimeException ex) {
                 com.firestar.santoryu.SantoryuMod.LOGGER.error("Technique {} failed at tick {}", c.move, t, ex);
                 it.remove();
+            } finally {
+                Carve.floor = Double.NEGATIVE_INFINITY;
             }
         }
     }

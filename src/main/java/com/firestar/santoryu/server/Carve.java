@@ -21,6 +21,13 @@ public final class Carve {
      * @param hardest the hardest block (destroy speed) the cut gets through; obsidian is 50, stone 1.5
      */
     public static int slab(ServerLevel level, Vec3 a, Vec3 b, double radius, Vec3 normal, double thickness, float hardest, int budget) {
+        return slab(level, a, b, radius, normal, thickness, hardest, budget, floor);
+    }
+
+    /** Blocks below this height are never cut (set to the swordsman's feet for each technique). */
+    public static double floor = Double.NEGATIVE_INFINITY;
+
+    public static int slab(ServerLevel level, Vec3 a, Vec3 b, double radius, Vec3 normal, double thickness, float hardest, int budget, double minY) {
         if (!allowed(level) || budget <= 0) {
             return 0;
         }
@@ -28,12 +35,13 @@ public final class Carve {
         Vec3 ab = b.subtract(a);
         double len2 = Math.max(ab.lengthSqr(), 1.0E-6);
         int minX = (int) Math.floor(Math.min(a.x, b.x) - radius), maxX = (int) Math.ceil(Math.max(a.x, b.x) + radius);
-        int minY = (int) Math.floor(Math.min(a.y, b.y) - radius), maxY = (int) Math.ceil(Math.max(a.y, b.y) + radius);
+        int minYb = (int) Math.floor(Math.min(a.y, b.y) - radius), maxY = (int) Math.ceil(Math.max(a.y, b.y) + radius);
         int minZ = (int) Math.floor(Math.min(a.z, b.z) - radius), maxZ = (int) Math.ceil(Math.max(a.z, b.z) + radius);
         int cut = 0;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = minX; x <= maxX; x++) {
-            for (int y = Math.max(minY, level.getMinBuildHeight()); y <= Math.min(maxY, level.getMaxBuildHeight() - 1); y++) {
+            int lowest = Math.max(level.getMinBuildHeight(), (int) Math.floor(minY + 0.01));
+            for (int y = Math.max(Math.max(minYb, lowest), level.getMinBuildHeight()); y <= Math.min(maxY, level.getMaxBuildHeight() - 1); y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     Vec3 c = new Vec3(x + 0.5, y + 0.5, z + 0.5);
                     Vec3 rel = c.subtract(a);

@@ -137,6 +137,14 @@ public final class ClientEvents {
         }
 
         @SubscribeEvent
+        public static void onNameTag(net.minecraftforge.client.event.RenderNameTagEvent event) {
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            if (Director.active() && event.getEntity() == mc.player) {
+                event.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+            }
+        }
+
+        @SubscribeEvent
         public static void onPlayerRendered(RenderPlayerEvent.Post event) {
             GhostRenderer.after(event);
         }

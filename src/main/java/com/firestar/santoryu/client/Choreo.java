@@ -71,8 +71,8 @@ final class Choreo {
                     }
                 }
                 if (t >= 4 && t < 36) {
-                    for (int i = 0; i < 6; i++) {
-                        double a = (t * 0.7 + i * Math.PI / 3);
+                    for (int i = 0; i < 2; i++) {
+                        double a = (t * 0.7 + i * Math.PI);
                         double r = 1.5 + (t - 4) * 0.09;
                         Vec3 p = c.feet.add(Math.cos(a) * r, 0.2 + i * 0.6, Math.sin(a) * r);
                         level.addParticle(ParticleTypes.CLOUD, true, p.x, p.y, p.z, -Math.sin(a) * 0.3, 0.12, Math.cos(a) * 0.3);
@@ -150,7 +150,7 @@ final class Choreo {
                         double r = 2.0 + h * 0.45;
                         Vec3 p = c.point.add(Math.cos(a) * r, h, Math.sin(a) * r);
                         level.addParticle(ParticleTypes.LARGE_SMOKE, true, p.x, p.y, p.z, -Math.sin(a) * 0.4, 0.2, Math.cos(a) * 0.4);
-                        level.addParticle(dust(VIOLET, 2.0F), true, p.x, p.y, p.z, 0, 0.1, 0);
+                        level.addParticle(dust(VIOLET, 1.0F), true, p.x, p.y, p.z, 0, 0.1, 0);
                     }
                 }
                 if (t == Beats.KOKUJO_BURST) {
@@ -186,7 +186,7 @@ final class Choreo {
                     float k = smooth((t - Beats.ASURA_AURA) / 50.0F);
                     for (int i = 0; i < 1 + (int) (k * 4); i++) {
                         Vec3 p = c.local((level.random.nextDouble() - 0.5) * 1.6, level.random.nextDouble() * 2.2, (level.random.nextDouble() - 0.5) * 1.2);
-                        level.addParticle(dust(CRIMSON, 1.6F), true, p.x, p.y, p.z, 0, 0.12, 0);
+                        level.addParticle(dust(CRIMSON, 0.8F), true, p.x, p.y, p.z, 0, 0.12, 0);
                         if (i == 0) level.addParticle(ParticleTypes.LARGE_SMOKE, true, p.x, p.y, p.z, 0, 0.08, 0);
                     }
                 }
@@ -214,7 +214,7 @@ final class Choreo {
                 if (t >= Beats.RENGOKU_DRAIN && t < Beats.RENGOKU_HIT) {
                     if (t % 2 == 0) {
                         Vec3 p = c.local(0.45 + level.random.nextDouble() * 0.5, 0.9 + level.random.nextDouble() * 0.9, 0.3);
-                        level.addParticle(dust(VIOLET, 1.4F), true, p.x, p.y, p.z, 0, 0.08, 0);
+                        level.addParticle(dust(VIOLET, 0.7F), true, p.x, p.y, p.z, 0, 0.08, 0);
                         level.addParticle(ParticleTypes.ELECTRIC_SPARK, true, p.x, p.y, p.z, 0, 0, 0);
                     }
                 }
@@ -243,7 +243,7 @@ final class Choreo {
                 if (t >= 70 && t < Beats.DRAGON_HIT && t % 2 == 0) {
                     Vec3 p = c.local((level.random.nextDouble() - 0.5) * 2.0, level.random.nextDouble() * 2.4, (level.random.nextDouble() - 0.5) * 2.0);
                     level.addParticle(ParticleTypes.ELECTRIC_SPARK, true, p.x, p.y, p.z, 0, 0, 0);
-                    level.addParticle(dust(VIOLET, 1.8F), true, p.x, p.y, p.z, 0, 0.1, 0);
+                    level.addParticle(dust(VIOLET, 0.8F), true, p.x, p.y, p.z, 0, 0.1, 0);
                 }
                 if (t == Beats.DRAGON_LEAP) play(c, ModSounds.DASH, chest, 2.0F, 0.6F);
                 if (t == Beats.DRAGON_LEAP + 4) play(c, ModSounds.DRAGON, c.point, 2.0F, 0.85F);
@@ -327,7 +327,7 @@ final class Choreo {
                 // haki creeping up the blades
                 float black = window(t, 4, 20, Beats.KOKUJO_FORM, Beats.KOKUJO_FORM + 6);
                 for (int i = 0; i < 3; i++) {
-                    Shapes.helix(out, c.local(0, 0.2, 0), 0.7, 0.9, 2.2, 1.5, t * 0.4 + i * 2.1, 0.12F, black * 0.8F, 0x08000C, Ribbon.Style.INK);
+                    Shapes.helix(out, c.local(0, 0.2, 0), 0.7, 0.9, 2.2, 1.5, t * 0.4 + i * 2.1, 0.05F, black * 0.5F, 0x08000C, Ribbon.Style.INK);
                     Shapes.helix(out, c.local(0, 0.2, 0), 0.75, 0.95, 2.2, 1.5, t * 0.4 + i * 2.1, 0.35F, black * 0.4F, VIOLET, Ribbon.Style.GLOW);
                 }
                 if (black > 0.2F) {
@@ -341,11 +341,11 @@ final class Choreo {
                 // the black dragon tornado
                 float rise = smooth((t - Beats.KOKUJO_FORM) / 14.0F);
                 float on = window(t, Beats.KOKUJO_FORM, Beats.KOKUJO_FORM + 4, Beats.KOKUJO_BURST, Beats.KOKUJO_BURST + 6);
-                for (int i = 0; i < 7; i++) {
-                    double phase = t * 0.42 + i * 0.8976;
-                    double h = 13.0 * rise;
-                    Shapes.helix(out, c.point, 1.5 + i * 0.3, 5.5 + i * 0.5, h, 2.3, phase, 0.9F, on * 0.95F, 0x060009, Ribbon.Style.INK);
-                    Shapes.helix(out, c.point, 1.6 + i * 0.3, 5.6 + i * 0.5, h, 2.3, phase + 0.1, 1.8F, on * 0.35F, VIOLET, Ribbon.Style.GLOW);
+                for (int i = 0; i < 12; i++) {
+                    double phase = t * (0.38 + i * 0.012) + i * 0.5236;
+                    double h = (11.0 + (i % 3)) * rise;
+                    Shapes.helix(out, c.point, 0.8 + i * 0.25, 4.5 + i * 0.45, h, 2.0 + (i % 4) * 0.25, phase, 0.38F, on * 0.75F, 0x060009, Ribbon.Style.INK);
+                    Shapes.helix(out, c.point, 0.9 + i * 0.25, 4.6 + i * 0.45, h, 2.0 + (i % 4) * 0.25, phase + 0.12, 1.0F, on * 0.3F, VIOLET, Ribbon.Style.GLOW);
                 }
                 // its head, circling the crown of the storm
                 double ha = t * 0.3;
@@ -394,7 +394,7 @@ final class Choreo {
                     double phase = t * 0.21 + i * 1.047;
                     float big = Beats.ASURA_MANIFEST <= t ? 1.0F : 0.6F;
                     Shapes.helix(out, c.feet.add(0, -0.2, 0), 0.6 * big, 1.6 * big, 3.2 * big, 0.9, phase, 0.45F, aura * 0.5F, CRIMSON, Ribbon.Style.GLOW);
-                    Shapes.helix(out, c.feet.add(0, -0.2, 0), 0.55 * big, 1.4 * big, 2.6 * big, 0.9, phase + 0.3, 0.25F, aura * 0.7F, 0x0A0000, Ribbon.Style.INK);
+                    Shapes.helix(out, c.feet.add(0, -0.2, 0), 0.65 * big, 1.5 * big, 2.6 * big, 0.9, phase + 0.3, 0.07F, aura * 0.55F, 0x0A0000, Ribbon.Style.INK);
                 }
                 float man = t - Beats.ASURA_MANIFEST;
                 if (man >= 0 && man < 16) {
@@ -447,8 +447,8 @@ final class Choreo {
             case DRAGON -> {
                 float aura = window(t, 10, 40, Beats.DRAGON_HIT, Beats.DRAGON_HIT + 30);
                 for (int i = 0; i < 5; i++) {
-                    Shapes.helix(out, c.feet, 0.5, 1.4, 3.0, 1.1, t * 0.27 + i * 1.256, 0.45F, aura * 0.45F, VIOLET, Ribbon.Style.GLOW);
-                    Shapes.helix(out, c.feet, 0.45, 1.2, 2.6, 1.1, t * 0.27 + i * 1.256 + 0.3, 0.2F, aura * 0.8F, 0x050008, Ribbon.Style.INK);
+                    Shapes.helix(out, c.feet, 0.6, 1.5, 3.0, 1.1, t * 0.27 + i * 1.256, 0.3F, aura * 0.45F, VIOLET, Ribbon.Style.GLOW);
+                    Shapes.helix(out, c.feet, 0.55, 1.3, 2.6, 1.1, t * 0.27 + i * 1.256 + 0.3, 0.06F, aura * 0.5F, 0x050008, Ribbon.Style.INK);
                 }
                 blackLightning(out, c, t, window(t, 60, 80, Beats.DRAGON_LEAP, Beats.DRAGON_LEAP + 2), 5, 1.8);
                 float wave = t - Beats.DRAGON_CONQUER;
@@ -474,11 +474,12 @@ final class Choreo {
                 // the serpent coils round the target, then closes
                 float coil = window(t, Beats.DRAGON_LEAP + 4, Beats.DRAGON_HIT - 4, Beats.DRAGON_HIT + 6, Beats.DRAGON_HIT + 26);
                 float close = smooth((t - Beats.DRAGON_LEAP - 4) / 18.0F);
-                for (int i = 0; i < 3; i++) {
-                    double phase = t * 0.5 + i * 2.094;
-                    Shapes.helix(out, c.point.add(0, -3, 0), 5.0 - 3.0 * close, 1.2, 9.0, 2.6, phase, 1.4F, coil * 0.5F, VIOLET, Ribbon.Style.GLOW);
-                    Shapes.helix(out, c.point.add(0, -3, 0), 4.9 - 3.0 * close, 1.1, 9.0, 2.6, phase + 0.05, 0.55F, coil, 0x050008, Ribbon.Style.INK);
-                    Shapes.helix(out, c.point.add(0, -3, 0), 5.0 - 3.0 * close, 1.2, 9.0, 2.6, phase, 0.12F, coil, WHITE, Ribbon.Style.GLOW);
+                for (int i = 0; i < 5; i++) {
+                    double phase = t * 0.5 + i * 1.2566;
+                    double r0 = 5.5 - 3.5 * close + (i % 2) * 0.4;
+                    Shapes.helix(out, c.point.add(0, -3, 0), r0, 1.0, 9.0, 3.2, phase, 0.9F, coil * 0.45F, VIOLET, Ribbon.Style.GLOW);
+                    Shapes.helix(out, c.point.add(0, -3, 0), r0 - 0.05, 0.9, 9.0, 3.2, phase + 0.04, 0.22F, coil * 0.85F, 0x050008, Ribbon.Style.INK);
+                    Shapes.helix(out, c.point.add(0, -3, 0), r0, 1.0, 9.0, 3.2, phase, 0.06F, coil, WHITE, Ribbon.Style.GLOW);
                 }
                 float rev = (t - Beats.DRAGON_HIT) / 2.0F;
                 float fade = 1.0F - smooth((t - Beats.DRAGON_HIT - 10) / 26.0F);
@@ -681,7 +682,11 @@ final class Choreo {
             }
             Vec3 p = projectile(c, tt, fire, speed);
             Vec3 centre = p.subtract(c.dir.scale(radius * 0.7 * scale));
-            Shapes.blade(out, centre, c.dir, side, radius * scale, -75, 75, width, 1, fade * (ghost == 0 ? 1.0F : 0.35F / ghost), rgb);
+            float a = fade * (ghost == 0 ? 1.0F : 0.35F / ghost);
+            Shapes.blade(out, centre, c.dir, side, radius * scale, -75, 75, width, 1, a, rgb);
+            Vec3 lift = side.cross(c.dir).normalize();
+            Vec3 up = lift.y < 0 ? lift.scale(-1) : lift;
+            Shapes.blade(out, p.add(up.scale(radius * 0.55 * scale)), up.scale(-1), side, radius * scale, -70, 70, width * 0.8F, 1, a * 0.9F, rgb);
         }
     }
 
