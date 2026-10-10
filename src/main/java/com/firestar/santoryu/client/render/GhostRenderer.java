@@ -42,7 +42,7 @@ public final class GhostRenderer {
         MultiBufferSource base = event.getMultiBufferSource();
         float yaw = Mth.rotLerp(event.getPartialTick(), player.yBodyRotO, player.yBodyRot);
         float flicker = 0.85F + 0.15F * Mth.sin(t * 1.7F);
-        MultiBufferSource ghost = type -> new Tint(base.getBuffer(RenderType.lightning()), 1.0F, 0.22F, 0.1F, Math.min(1.0F, a * flicker * 0.9F));
+        MultiBufferSource ghost = type -> new Tint(base.getBuffer(RenderType.lightning()), 1.0F, 0.22F, 0.1F, Math.min(1.0F, a * flicker * 0.65F));
         drawing = true;
         try {
             for (int side = -1; side <= 1; side += 2) {

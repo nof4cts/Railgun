@@ -50,7 +50,7 @@ public final class SwordLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
                 pose.mulPose(Axis.YP.rotationDegrees(180.0F));
                 pose.scale(0.85F, -0.85F, -0.85F);
                 // the sprite runs corner to corner; a quarter-turn less 45 lays the blade flat across the mouth
-                pose.mulPose(Axis.ZP.rotationDegrees(-45.0F));
+                pose.mulPose(Axis.ZP.rotationDegrees(45.0F));
                 // bite near the hilt, not mid-blade: slide the sword out toward its tip
                 pose.translate(0.38F, 0.0F, 0.0F);
                 mc.getItemRenderer().renderStatic(mouth, ItemDisplayContext.FIXED, light, OverlayTexture.NO_OVERLAY, pose, buffers, player.level(), 0);

@@ -134,7 +134,7 @@ public final class Films {
                 // three swords, a full circle round him
                 s.add(Shot.cut(70, 112, (k, t) -> at(orbit(c, F, 3.6, l(k, 0, 300), 1.3), F.add(0, 1.3, 0), 52, 0)));
                 // Wado in his teeth
-                s.add(Shot.cut(112, 158, (k, t) -> at(rel(c, F, 0.45, 1.5, l(k, 1.5, 1.25)), rel(c, F, 0.0, 1.52, 0), 32, 0)));
+                s.add(Shot.cut(112, 158, (k, t) -> at(rel(c, F, 0.6, 1.55, l(k, 2.6, 2.2)), rel(c, F, 0.0, 1.52, 0), 26, 0)));
                 // worm's-eye, up at the target
                 s.add(Shot.cut(158, Beats.DRAGON_LEAP, (k, t) -> at(rel(c, F, 0.4, 0.25, 1.4), P.add(0, 3, 0), l(k, 80, 72), 0)));
                 // ride the leap

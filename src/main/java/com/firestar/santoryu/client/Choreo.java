@@ -293,7 +293,7 @@ final class Choreo {
             case POUND_HO -> {
                 float draw = window(t, 0, 6, Beats.POUND_FIRE, Beats.POUND_FIRE + 1);
                 Shapes.blade(out, chest.add(f.scale(-0.2)), f.scale(-1), r, 0.9, -50, 50, 0.08F, 1, draw, STEEL);
-                flyingSlash(out, c, t, Beats.POUND_FIRE, Beats.POUND_FLIGHT, Beats.POUND_SPEED, 1.7, 0.42F, STEEL, 1);
+                flyingSlash(out, c, t, Beats.POUND_FIRE, Beats.POUND_FLIGHT, Beats.POUND_SPEED, 2.4, 0.6F, STEEL, 1);
             }
             case SHISHI_SONSON -> {
                 dashTrail(out, c, t, Beats.SHISHI_VANISH, 5, WHITE, 1);
