@@ -151,7 +151,7 @@ public final class Vfx {
                double y = (Draw.hash((long)i) - 0.5) * 2.4 * (1.0 - ph);
                Vec3 a = new Vec3(Math.cos(th) * rad, y, Math.sin(th) * rad);
                Vec3 b = new Vec3(Math.cos(th - 0.5) * rad * 0.82, y * 0.82, Math.sin(th - 0.5) * rad * 0.82);
-               int col = i % 3 == 0 ? -1 : -49766;
+               int col = i % 3 == 0 ? -1 : 0xFF39FF7A;
                Draw.ribbon(c.vc, m, a, b, 0.0, 0.05, Draw.alpha(col, 0.0F), Draw.alpha(col, (float)ph * 0.9F), cam);
             }
 
@@ -163,12 +163,12 @@ public final class Vfx {
 
                for (int s = 1; s <= 5; s++) {
                   Vec3 next = dir.scale((double)s * 0.22 * (0.4 + (double)p)).add(Draw.randDir(frame * 7L + (long)(k * 31) + (long)s).scale(0.12));
-                  Draw.ribbon(c.vc, m, prev, next, 0.025, 0.02, -7952, -855691910, cam);
+                  Draw.ribbon(c.vc, m, prev, next, 0.025, 0.02, 0xFFC8FFD8, 0xAA39FF7A, cam);
                   prev = next;
                }
             }
 
-            Draw.glowOrb(c.vc, m, 0.0, 0.0, 0.0, 0.18 + 0.35 * (double)p, -53894, 0.8F);
+            Draw.glowOrb(c.vc, m, 0.0, 0.0, 0.0, 0.18 + 0.35 * (double)p, 0xFF39FF7A, 0.8F);
             c.pop();
          }
       }

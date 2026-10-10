@@ -79,6 +79,61 @@ public final class HakariLogic {
       }
    }
 
+
+   /** Cast ticks left when the barrier has closed round everyone (2.45 s into the cinematic): the sweep starts then. */
+   private static final int CLEAR_START = 180 - 49;
+   private static final int CLEAR_PER_TICK = 900;
+
+   /**
+    * Everything inside the domain from the caster's feet up is taken by it, so no stray terrain pokes through the
+    * station, the train or the machine. Ordered centre-outward so it reads as the domain eating the world.
+    */
+   private static void queueClear(ServerPlayer sp, HakariState st) {
+      ServerLevel lvl = sp.serverLevel();
+      net.minecraft.core.BlockPos c = net.minecraft.core.BlockPos.containing(st.domainCenter);
+      int r = (int)Math.ceil(st.radius);
+      int floorY = (int)Math.floor(st.domainCenter.y + 0.01);
+      List<net.minecraft.core.BlockPos> list = new ArrayList<>();
+      double r2 = (st.radius + 0.5) * (st.radius + 0.5);
+      for (int x = -r; x <= r; x++) {
+         for (int z = -r; z <= r; z++) {
+            for (int y = floorY; y <= c.getY() + r; y++) {
+               double dy = y + 0.5 - st.domainCenter.y;
+               double dx = x + 0.5 - (st.domainCenter.x - c.getX());
+               double dz = z + 0.5 - (st.domainCenter.z - c.getZ());
+               if (dx * dx + dy * dy + dz * dz <= r2 && y < lvl.getMaxBuildHeight() && y >= lvl.getMinBuildHeight()) {
+                  list.add(new net.minecraft.core.BlockPos(c.getX() + x, y, c.getZ() + z));
+               }
+            }
+         }
+      }
+      Vec3 ctr = st.domainCenter;
+      list.sort(java.util.Comparator.comparingDouble(p -> p.distToCenterSqr(ctr.x, ctr.y, ctr.z)));
+      st.clearQueue = list;
+      st.clearIndex = 0;
+   }
+
+   private static void sweep(ServerLevel lvl, HakariState st) {
+      int done = 0;
+      while (st.clearIndex < st.clearQueue.size() && done < CLEAR_PER_TICK) {
+         net.minecraft.core.BlockPos pos = st.clearQueue.get(st.clearIndex++);
+         net.minecraft.world.level.block.state.BlockState state = lvl.getBlockState(pos);
+         if (state.isAir() && state.getFluidState().isEmpty()) {
+            continue;
+         }
+         if (state.getDestroySpeed(lvl, pos) < 0.0F) {
+            continue;
+         }
+         lvl.removeBlockEntity(pos);
+         lvl.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2 | 16);
+         done++;
+      }
+      if (st.clearIndex >= st.clearQueue.size()) {
+         st.clearQueue = new ArrayList<>();
+         st.clearIndex = 0;
+      }
+   }
+
    private static int startDomain(ServerPlayer sp, HakariState st) {
       ServerLevel lvl = sp.serverLevel();
       st.castTicks = 180;
@@ -90,6 +145,7 @@ public final class HakariLogic {
       st.chanceBonus = 0.0F;
       st.riichiTicks = 0;
       st.pose = 1;
+      queueClear(sp, st);
       AABB box = sp.getBoundingBox().inflate(20.0);
 
       for (LivingEntity le : lvl.getEntitiesOfClass(LivingEntity.class, box, ex -> ex != sp && ex.isAlive() && !ex.isSpectator() && ex.distanceTo(sp) <= 20.0F)) {
@@ -296,6 +352,10 @@ public final class HakariLogic {
                openDomain(sp, st);
                dirty = true;
             }
+         }
+
+         if ((st.castTicks > 0 && st.castTicks <= CLEAR_START) || st.domainActive) {
+            sweep(lvl, st);
          }
 
          if (st.domainActive) {

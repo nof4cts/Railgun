@@ -486,59 +486,112 @@ public final class DomainRenderer {
       }
    }
 
+   // Hakari's jackpot cursed energy: green, boiling off him for the whole 4 minutes 11 seconds
+   static final int AURA_GREEN = 0xFF39FF7A;
+   static final int AURA_DEEP = 0xFF0FC65A;
+   static final int AURA_MINT = 0xFFC8FFD8;
+   static final int AURA_GOLD = 0xFFFFD34D;
+
    private static void aura(Vfx.Ctx c, StatePacket s) {
       Entity e = Vfx.entity(s.entityId);
-      if (e != null) {
-         Vec3 base = e.getPosition(c.partial);
-         long t = c.t;
-         c.at(base);
-         VertexConsumer vc = c.vc;
-         Matrix4f m = c.m();
-         Vec3 cam = c.camRel(base);
-         double time = (double)t / 1000.0;
+      if (e == null) {
+         return;
+      }
+      Vec3 base = e.getPosition(c.partial);
+      long t = c.t;
+      c.at(base);
+      VertexConsumer vc = c.vc;
+      Matrix4f m = c.m();
+      Vec3 cam = c.camRel(base);
+      double time = (double)t / 1000.0;
+      // the jackpot cutscene builds it up; the last ten seconds it gutters
+      float build = s.jackpotCutTicks > 0 ? Mth.clamp(1.0F - s.jackpotCutTicks / 110.0F, 0.0F, 1.0F) : 1.0F;
+      float left = ClientState.jackpotSecondsLeft(s);
+      float gutter = s.jackpotTicks > 0 && left < 10.0F ? 0.45F + 0.55F * Mth.clamp(left / 10.0F, 0.0F, 1.0F)
+            * (0.7F + 0.3F * Mth.sin((float)time * 18.0F)) : 1.0F;
+      float power = build * gutter;
+      if (power <= 0.01F) {
+         c.pop();
+         return;
+      }
+      double h = 2.7 * (0.6 + 0.4 * power);
 
-         for (int h = 0; h < 3; h++) {
-            Vec3 prev = null;
+      // flame strands: green tongues twisting up off him, white-mint at the root
+      for (int strand = 0; strand < 7; strand++) {
+         Vec3 prev = null;
+         double phase = strand * 0.8976 + Draw.hash(strand * 31L) * 2.0;
+         for (int k = 0; k <= 24; k++) {
+            double u = k / 24.0;
+            double y = u * h;
+            double a = time * (2.6 + strand * 0.15) + phase + u * 2.4;
+            double r = (0.52 + 0.18 * Math.sin(time * 3.1 + strand + u * 5.0)) * (1.0 - 0.55 * u);
+            Vec3 p = new Vec3(Math.cos(a) * r, y, Math.sin(a) * r);
+            if (prev != null) {
+               float al = (float)(Math.sin(Math.PI * Math.pow(u, 0.8)) * power);
+               int c0 = Draw.lerp(AURA_MINT, AURA_GREEN, (float)u);
+               Draw.ribbon(vc, m, prev, p, 0.11 * (1.0 - u * 0.7), 0.11 * (1.0 - u * 0.7) * 0.9,
+                  Draw.alpha(c0, al * 0.85F), Draw.alpha(AURA_GREEN, al * 0.6F), cam);
+            }
+            prev = p;
+         }
+      }
 
-            for (int k = 0; k <= 26; k++) {
-               double y = (double)k * 0.085;
-               double a = time * 4.0 + (double)h * 2.094 + (double)k * 0.33;
-               double r = 0.72 + 0.12 * Math.sin(time * 3.0 + (double)k * 0.4);
-               Vec3 p = new Vec3(Math.cos(a) * r, y, Math.sin(a) * r);
-               if (prev != null) {
-                  float al = (float)Math.sin(Math.PI * (double)k / 26.0);
-                  Draw.ribbon(vc, m, prev, p, 0.05, 0.05, Draw.alpha(-11443, al), Draw.alpha(-2880, al), cam);
-               }
+      // flame sheets: broad, faint, wavering - the shape of the aura round his body
+      for (int sheet = 0; sheet < 10; sheet++) {
+         double a = sheet * Math.PI * 2.0 / 10.0 + Math.sin(time * 0.7 + sheet) * 0.3;
+         Vec3 prev = null;
+         for (int k = 0; k <= 12; k++) {
+            double u = k / 12.0;
+            double sway = Math.sin(time * 5.0 + sheet * 1.7 + u * 4.0) * 0.12 * u;
+            double r = 0.62 + 0.12 * Math.sin(u * Math.PI) + sway;
+            Vec3 p = new Vec3(Math.cos(a) * r, u * h * 1.12, Math.sin(a) * r);
+            if (prev != null) {
+               float al = (float)(Math.sin(Math.PI * u) * 0.28 * power);
+               Draw.ribbon(vc, m, prev, p, 0.42 * (1.0 - u * 0.6), 0.42 * (1.0 - u * 0.6), Draw.alpha(AURA_DEEP, al), Draw.alpha(AURA_GREEN, al * 0.7F), cam);
+            }
+            prev = p;
+         }
+      }
 
-               prev = p;
+      // steam: soft green puffs boiling upward and fading
+      for (int i = 0; i < 22; i++) {
+         double ph = (time * (0.9 + Draw.hash(i * 13L) * 0.6) + Draw.hash(i)) % 1.0;
+         double a = Draw.hash(i * 7L) * Math.PI * 2.0 + time;
+         double r = 0.35 + Draw.hash(i * 3L) * 0.45 + ph * 0.35;
+         Vec3 p = new Vec3(Math.cos(a) * r, 0.2 + ph * h * 1.15, Math.sin(a) * r);
+         Draw.billboard(vc, m, p, 0.12 + 0.28 * ph, Draw.alpha(i % 4 == 0 ? AURA_MINT : AURA_GREEN, (float)((1.0 - ph) * 0.35 * power)),
+            c.cam.getLeftVector(), c.cam.getUpVector());
+      }
+
+      // ground: a glowing pool and rings pulsing out on the beat
+      Draw.ringXZ(vc, m, new Vec3(0.0, 0.04, 0.0), 0.0, 1.25, Draw.alpha(AURA_GREEN, 0.32F * power), 0, 36);
+      for (int ring = 0; ring < 2; ring++) {
+         float beat = (float)((t + ring * 350L) % 700L) / 700.0F;
+         Draw.ringXZ(vc, m, new Vec3(0.0, 0.05, 0.0), 0.7 + beat * 2.2, 0.86 + beat * 2.2, Draw.alpha(AURA_GREEN, (1.0F - beat) * power), 0, 48);
+      }
+
+      // green arcs crackling round him
+      long arcFrame = t / 70L;
+      if (arcFrame % 3L != 0L) {
+         for (int i = 0; i < 2; i++) {
+            Vec3 a0 = Draw.randDir(arcFrame * 7L + i).scale(0.45).add(0.0, 0.6 + Draw.hash(arcFrame * 11L + i) * 1.4, 0.0);
+            Vec3 prev = a0;
+            for (int k = 1; k <= 5; k++) {
+               Vec3 nx = prev.add(Draw.randDir(arcFrame * 13L + k + i * 5L).scale(0.22));
+               Draw.ribbon(vc, m, prev, nx, 0.03, 0.02, Draw.alpha(-1, power), Draw.alpha(AURA_GREEN, power), cam);
+               prev = nx;
             }
          }
-
-         float beat = (float)(t % 700L) / 700.0F;
-         Draw.ringXZ(vc, m, new Vec3(0.0, 0.05, 0.0), 0.6 + (double)beat * 1.6, 0.8 + (double)beat * 1.6, Draw.alpha(-11443, 1.0F - beat), 0, 40);
-         Draw.ringXZ(vc, m, new Vec3(0.0, 0.05, 0.0), 0.0, 1.0, Draw.alpha(-11443, 0.25F), 0, 32);
-
-         for (int i = 0; i < 16; i++) {
-            double ph = (time * 0.8 + Draw.hash((long)i)) % 1.0;
-            double a = Draw.hash((long)(i * 7)) * Math.PI * 2.0;
-            Vec3 p = new Vec3(Math.cos(a) * 0.6, ph * 2.6, Math.sin(a) * 0.6);
-            Draw.billboard(vc, m, p, 0.06 + 0.06 * (1.0 - ph), Draw.alpha(-2880, (float)(1.0 - ph)), c.cam.getLeftVector(), c.cam.getUpVector());
-         }
-
-         for (int i = 0; i < 8; i++) {
-            double ph = (time * 0.5 + Draw.hash((long)(i * 19))) % 1.0;
-            Vec3 p = new Vec3((Draw.hash((long)(i * 3)) - 0.5) * 0.7, 1.2 + ph * 1.6, (Draw.hash((long)(i * 5)) - 0.5) * 0.7);
-            Draw.billboard(vc, m, p, 0.3 + ph * 0.5, Draw.alpha(-1, (float)(0.12 * (1.0 - ph))), c.cam.getLeftVector(), c.cam.getUpVector());
-         }
-
-         if (t / 90L % 5L == 0L) {
-            Vec3 a = Draw.randDir(t / 90L).scale(0.5).add(0.0, 1.1, 0.0);
-            Vec3 b = a.add(Draw.randDir(t / 90L + 3L).scale(0.6));
-            Draw.ribbon(vc, m, a, b, 0.03, 0.01, -1, -45128, cam);
-         }
-
-         c.pop();
       }
+
+      // a few gold sparks: the jackpot's coins in the steam
+      for (int i = 0; i < 6; i++) {
+         double ph = (time * 0.7 + Draw.hash(i * 29L)) % 1.0;
+         double a = Draw.hash(i * 17L) * Math.PI * 2.0;
+         Vec3 p = new Vec3(Math.cos(a) * 0.7, 0.4 + ph * 2.4, Math.sin(a) * 0.7);
+         Draw.billboard(vc, m, p, 0.05, Draw.alpha(AURA_GOLD, (float)(1.0 - ph) * power), c.cam.getLeftVector(), c.cam.getUpVector());
+      }
+      c.pop();
    }
 
    private static void billboardText(Vfx.Ctx c, Font font, MultiBufferSource buffers, String s, Vec3 world, float scale, int color) {

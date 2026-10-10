@@ -75,9 +75,20 @@ public final class ScreenFx {
       }
    }
 
+   /**
+    * Impact frames now come from the post pipeline (real ink/invert/rainbow frames held on a timing sheet); the old
+    * flat overlay styles map onto its sheets so every existing call site gets the new look.
+    */
    public static void impact(int style, long life, Vec3 focus) {
-      float[] f = project(focus);
-      IMPACTS.add(new ScreenFx.Impact(Vfx.now(), life, style, f[0], f[1], Vfx.now() * 31L));
+      int[][] seq;
+      int accent;
+      switch (style) {
+         case INVERT -> { seq = life > 180L ? com.hakari.idg.client.post.Post.HEAVY : com.hakari.idg.client.post.Post.LIGHT; accent = com.hakari.idg.client.post.Post.PINK; }
+         case INK -> { seq = life > 180L ? com.hakari.idg.client.post.Post.DOMAIN : com.hakari.idg.client.post.Post.HEAVY; accent = com.hakari.idg.client.post.Post.PINK; }
+         case RED -> { seq = com.hakari.idg.client.post.Post.HEAVY; accent = 0xFF2D7A; }
+         default -> { seq = com.hakari.idg.client.post.Post.CONFIRM; accent = com.hakari.idg.client.post.Post.GOLD; }
+      }
+      com.hakari.idg.client.post.Post.impact(seq, focus, accent);
    }
 
    public static void flash(int color, long life) {

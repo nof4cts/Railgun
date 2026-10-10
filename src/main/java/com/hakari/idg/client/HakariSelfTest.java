@@ -79,7 +79,10 @@ public final class HakariSelfTest {
             t += 70;
         }
         // the domain: its whole cinematic, then the inside
-        step(t, null, back, p -> cast(p, ModRegistry.DOMAIN));
+        step(t, null, back, p -> {
+            reset(p);
+            cast(p, ModRegistry.DOMAIN);
+        });
         for (int k = 4; k <= 186; k += 9) {
             step(t + k, String.format("2_domain_t%03d", k), back, null);
         }

@@ -14,6 +14,9 @@ public final class FxDispatcher {
    private static final int GOLD = -11443;
    private static final int WHITE = -1;
    private static final int CYAN = -10685697;
+   /** Hakari's cursed energy is green; the pachinko machinery (balls, doors, lights) stays neon pink and gold. */
+   private static final int GREEN = 0xFF39FF7A;
+   private static final int MINT = 0xFFC8FFD8;
 
    private static boolean feels(FxPacket p, Vec3 pos, double range) {
       Minecraft mc = Minecraft.getInstance();
@@ -45,9 +48,9 @@ public final class FxDispatcher {
             Vfx.add(Vfx.Shockwave.ground(pos.add(0.0, -0.3, 0.0), close ? 3.0 : 1.6, -45128, 380L));
             Vfx.add(new Vfx.Debris(pos, close ? 10 : 5, 0.6, 1100L));
             if (close && feels(p, pos, 14.0)) {
-               ScreenFx.impact(0, 120L, pos);
                CameraDirector.shake(0.9F, 300L);
             }
+                           com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.LIGHT, pos, com.hakari.idg.client.post.Post.PINK);
             break;
          }
          case DOORS_SLAM: {
@@ -61,7 +64,8 @@ public final class FxDispatcher {
                Vfx.add(Vfx.Shockwave.ground(pos, 4.5, -45128, 450L));
                Vfx.add(new Vfx.Debris(pos, 12, 0.8, 1300L));
                if (feels(p, pos, 18.0)) {
-                  ScreenFx.impact(1, 140L, mid);
+                  com.hakari.idg.client.post.Post.punch(0.5F, 300L);
+                  com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.LIGHT, mid, com.hakari.idg.client.post.Post.PINK);
                   CameraDirector.shake(1.3F, 350L);
                }
             });
@@ -75,41 +79,45 @@ public final class FxDispatcher {
             break;
          case ROUGH_HIT:
             Vec3 dirRough = Draw.forward(p.a, p.b);
-            Vfx.add(new Vfx.Flash(pos, 2.6, -53894, 380L));
+            Vfx.add(new Vfx.Flash(pos, 2.6, GREEN, 380L));
 
             for (int i = 0; i < 3; i++) {
                int ii = i;
                Sfx.later(
                   (long)i * 45L,
-                  () -> Vfx.add(Vfx.Shockwave.facing(pos.add(dirRough.scale(0.8 + (double)ii * 1.3)), dirRough, 1.6 + (double)ii * 1.1, ii == 0 ? -1 : -53894, 420L))
+                  () -> Vfx.add(Vfx.Shockwave.facing(pos.add(dirRough.scale(0.8 + (double)ii * 1.3)), dirRough, 1.6 + (double)ii * 1.1, ii == 0 ? -1 : GREEN, 420L))
                );
             }
 
-            Vfx.add(new Vfx.Spikes(pos, 40, 5.5, -53894, 420L, dirRough, 1.4));
+            Vfx.add(new Vfx.Spikes(pos, 40, 5.5, GREEN, 420L, dirRough, 1.4));
             Vfx.add(new Vfx.Debris(pos.add(0.0, -1.3, 0.0), 22, 1.1, 1500L));
-            Vfx.add(Vfx.Shockwave.ground(pos.add(0.0, -1.4, 0.0), 6.0, -53894, 600L));
+            Vfx.add(Vfx.Shockwave.ground(pos.add(0.0, -1.4, 0.0), 6.0, GREEN, 600L));
 
             for (int i = 0; i < 4; i++) {
-               Vfx.add(new Vfx.Bolt(pos, pos.add(dirRough.scale(2.5)).add(Draw.randDir((long)i + Vfx.now()).scale(1.2)), -45128, 260L));
+               Vfx.add(new Vfx.Bolt(pos, pos.add(dirRough.scale(2.5)).add(Draw.randDir((long)i + Vfx.now()).scale(1.2)), GREEN, 260L));
             }
 
             if (feels(p, pos, 22.0)) {
-               ScreenFx.impact(0, 230L, pos);
+               com.hakari.idg.client.post.Post.punch(1.0F, 420L);
+               com.hakari.idg.client.post.Post.aberration(1.2F, 600L);
+               com.hakari.idg.client.post.Post.flash(0xC8FFD8, 0.6F, 260L);
+               com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.HEAVY, pos, com.hakari.idg.client.post.Post.GREEN);
                CameraDirector.shake(2.2F, 650L);
                ScreenFx.speed(400L, 1.0F);
             }
             break;
          case FEVER_KICK1:
-            Vfx.add(new Vfx.Trail(p.src, -45128, 450L));
+            Vfx.add(new Vfx.Trail(p.src, GREEN, 450L));
             Vfx.add(Vfx.Shockwave.ground(pos, 2.0, -1, 300L));
             break;
          case FEVER_KICK2:
             Vec3 dirxx = Draw.forward(p.a, -20.0F);
-            Vfx.add(new Vfx.Flash(pos, 1.8, -45128, 300L));
-            Vfx.add(new Vfx.Spikes(pos, 26, 3.4, -45128, 320L, dirxx, 1.0));
+            Vfx.add(new Vfx.Flash(pos, 1.8, GREEN, 300L));
+            Vfx.add(new Vfx.Spikes(pos, 26, 3.4, GREEN, 320L, dirxx, 1.0));
             Vfx.add(Vfx.Shockwave.facing(pos, dirxx, 2.6, -1, 350L));
             if (feels(p, pos, 18.0)) {
-               ScreenFx.impact(1, 150L, pos);
+               com.hakari.idg.client.post.Post.punch(0.6F, 300L);
+               com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.LIGHT, pos, com.hakari.idg.client.post.Post.GREEN);
                CameraDirector.shake(1.4F, 380L);
             }
             break;
@@ -120,11 +128,12 @@ public final class FxDispatcher {
             Vfx.add(new Vfx.Doors(pos, p.a, true, false, 900L));
             Sfx.later(200L, () -> {
                Vec3 mid = pos.add(0.0, 1.4, 0.0);
-               Vfx.add(new Vfx.Flash(mid, 2.0, -45128, 320L));
+               Vfx.add(new Vfx.Flash(mid, 2.0, GREEN, 320L));
                Vfx.add(new Vfx.Spikes(mid, 30, 3.6, -1, 340L));
-               Vfx.add(Vfx.Shockwave.ground(pos, 5.0, -45128, 500L));
+               Vfx.add(Vfx.Shockwave.ground(pos, 5.0, GREEN, 500L));
                if (feels(p, pos, 18.0)) {
-                  ScreenFx.impact(0, 200L, mid);
+                  com.hakari.idg.client.post.Post.punch(0.8F, 350L);
+                  com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.HEAVY, mid, com.hakari.idg.client.post.Post.GREEN);
                   CameraDirector.shake(1.6F, 400L);
                   ScreenFx.card(new ScreenFx.Card("COUNTER", "", "", 2, -45128, 700L, false));
                }
@@ -138,46 +147,49 @@ public final class FxDispatcher {
             }
             break;
          case VOLLEY_FIST:
-            Vfx.add(new Vfx.Fists(p.src, -11443, (long)(p.b * 50.0F)));
+            Vfx.add(new Vfx.Fists(p.src, GREEN, (long)(p.b * 50.0F)));
             if (isMe(p.src)) {
                ScreenFx.speed((long)(p.b * 50.0F), 0.8F);
             }
             break;
          case VOLLEY_FINISH:
             Vec3 dirx = Draw.forward(p.a, 0.0F);
-            Vfx.add(new Vfx.Flash(pos, 2.4, -11443, 360L));
-            Vfx.add(new Vfx.Spikes(pos, 40, 5.0, -11443, 400L, dirx, 1.2));
+            Vfx.add(new Vfx.Flash(pos, 2.4, GREEN, 360L));
+            Vfx.add(new Vfx.Spikes(pos, 40, 5.0, GREEN, 400L, dirx, 1.2));
             Vfx.add(Vfx.Shockwave.facing(pos, dirx, 3.4, -1, 400L));
             Vfx.add(Vfx.Shockwave.facing(pos.add(dirx), dirx, 4.4, -11443, 460L));
             if (feels(p, pos, 22.0)) {
-               ScreenFx.impact(3, 220L, pos);
+               com.hakari.idg.client.post.Post.punch(1.0F, 450L);
+               com.hakari.idg.client.post.Post.aberration(1.0F, 600L);
+               com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.FINISHER, pos, com.hakari.idg.client.post.Post.GREEN);
                CameraDirector.shake(2.0F, 500L);
             }
             break;
          case RUSH_DASH:
             long life = p.b > 0.5F ? 2700L : 600L;
-            Vfx.add(new Vfx.Trail(p.src, -11443, life));
+            Vfx.add(new Vfx.Trail(p.src, GREEN, life));
             Vfx.add(Vfx.Shockwave.ground(pos, 3.0, -11443, 400L));
             Vfx.add(new Vfx.Debris(pos, 8, 0.6, 1000L));
             break;
          case RUSH_SLAM:
-            Vfx.add(new Vfx.Flash(pos, 2.4, -11443, 360L));
-            Vfx.add(new Vfx.Spikes(pos, 36, 5.0, -11443, 380L, new Vec3(0.0, -1.0, 0.0), 1.3));
+            Vfx.add(new Vfx.Flash(pos, 2.4, GREEN, 360L));
+            Vfx.add(new Vfx.Spikes(pos, 36, 5.0, GREEN, 380L, new Vec3(0.0, -1.0, 0.0), 1.3));
             if (feels(p, pos, 22.0)) {
-               ScreenFx.impact(1, 210L, pos);
+               com.hakari.idg.client.post.Post.punch(0.9F, 400L);
+               com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.FINISHER, pos, com.hakari.idg.client.post.Post.GREEN);
                CameraDirector.shake(2.2F, 550L);
             }
             break;
          case OVERWHELM_HIT:
-            Vfx.add(new Vfx.Flash(pos, 1.3, -11443, 220L));
-            Vfx.add(new Vfx.Spikes(pos, 14, 2.4, -11443, 240L));
+            Vfx.add(new Vfx.Flash(pos, 1.3, GREEN, 220L));
+            Vfx.add(new Vfx.Spikes(pos, 14, 2.4, GREEN, 240L));
             if (feels(p, pos, 16.0)) {
                CameraDirector.shake(0.7F, 220L);
             }
             break;
          case OVERWHELM_THROW:
             Vec3 dirThrow = Draw.forward(p.a, 0.0F);
-            Vfx.add(new Vfx.Flash(pos, 3.4, -11443, 450L));
+            Vfx.add(new Vfx.Flash(pos, 3.4, GREEN, 450L));
 
             for (int i = 0; i < 4; i++) {
                int ii = i;
@@ -187,18 +199,21 @@ public final class FxDispatcher {
                );
             }
 
-            Vfx.add(new Vfx.Spikes(pos, 48, 7.0, -11443, 480L, dirThrow, 1.5));
+            Vfx.add(new Vfx.Spikes(pos, 48, 7.0, GREEN, 480L, dirThrow, 1.5));
             Vfx.add(new Vfx.Debris(pos.add(0.0, -1.0, 0.0), 26, 1.3, 1700L));
             Vfx.add(Vfx.Shockwave.ground(pos.add(0.0, -1.0, 0.0), 8.0, -11443, 700L));
             if (feels(p, pos, 26.0)) {
+               com.hakari.idg.client.post.Post.punch(1.2F, 600L);
+               com.hakari.idg.client.post.Post.aberration(1.4F, 800L);
+               com.hakari.idg.client.post.Post.flash(0xFFFFFF, 1.2F, 300L);
                float ang = (float)(Math.random() * 50.0 - 25.0);
                ScreenFx.split(ang, 480L, 22.0F);
-               ScreenFx.impact(0, 260L, pos);
+               com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.JACKPOT_HIT, pos, com.hakari.idg.client.post.Post.GREEN);
                CameraDirector.shake(3.0F, 800L);
             }
             break;
          case SURGE_LEAP:
-            Vfx.add(new Vfx.Trail(p.src, -11443, 900L));
+            Vfx.add(new Vfx.Trail(p.src, GREEN, 900L));
             Vfx.add(Vfx.Shockwave.ground(pos, 3.5, -1, 450L));
             Vfx.add(new Vfx.Debris(pos, 14, 0.9, 1200L));
             break;
@@ -207,27 +222,29 @@ public final class FxDispatcher {
             Vfx.add(Vfx.Shockwave.ground(pos, r * 1.4, -11443, 650L));
             Sfx.later(70L, () -> Vfx.add(Vfx.Shockwave.ground(pos, r * 2.2, -1, 800L)));
             Vfx.add(new Vfx.Debris(pos, (int)(r * 5.0), 1.4, 1800L));
-            Vfx.add(new Vfx.Flash(pos.add(0.0, 0.5, 0.0), r * 0.5, -11443, 380L));
+            Vfx.add(new Vfx.Flash(pos.add(0.0, 0.5, 0.0), r * 0.5, GREEN, 380L));
             Vfx.add(new Vfx.Spikes(pos.add(0.0, 0.3, 0.0), 30, r, -1, 400L, new Vec3(0.0, 1.0, 0.0), 0.8));
-            Vfx.add(new Vfx.Pillar(pos, 8.0, 1.2, -11443, 500L));
+            Vfx.add(new Vfx.Pillar(pos, 8.0, 1.2, GREEN, 500L));
             if (feels(p, pos, 26.0)) {
-               ScreenFx.impact(1, 200L, pos);
+               com.hakari.idg.client.post.Post.punch(1.0F, 500L);
+               com.hakari.idg.client.post.Post.aberration(1.0F, 700L);
+               com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.FINISHER, pos, com.hakari.idg.client.post.Post.GREEN);
                CameraDirector.shake(2.6F, 700L);
             }
             break;
          case SURGE_KICK:
             Vec3 dir = Draw.forward(p.a, -10.0F);
-            Vfx.add(new Vfx.Flash(pos, 2.0, -11443, 300L));
+            Vfx.add(new Vfx.Flash(pos, 2.0, GREEN, 300L));
             Vfx.add(Vfx.Shockwave.facing(pos, dir, 3.0, -1, 360L));
-            Vfx.add(new Vfx.Spikes(pos, 28, 4.0, -11443, 340L, dir, 1.2));
+            Vfx.add(new Vfx.Spikes(pos, 28, 4.0, GREEN, 340L, dir, 1.2));
             if (feels(p, pos, 20.0)) {
-               ScreenFx.impact(0, 150L, pos);
+               com.hakari.idg.client.post.Post.impact(com.hakari.idg.client.post.Post.HEAVY, pos, com.hakari.idg.client.post.Post.GREEN);
                CameraDirector.shake(1.5F, 400L);
             }
             break;
          case RHYTHM:
             Vfx.add(new Vfx.RhythmPulse(p.src, 10000L));
-            Vfx.add(new Vfx.Flash(pos.add(0.0, 1.0, 0.0), 1.6, -10685697, 300L));
+            Vfx.add(new Vfx.Flash(pos.add(0.0, 1.0, 0.0), 1.6, GREEN, 300L));
             if (isMe(p.src)) {
                ScreenFx.card(new ScreenFx.Card("RHYTHM", "cooldowns reset · moves accelerate", "", 2, -10685697, 1100L, false));
             }
@@ -253,7 +270,7 @@ public final class FxDispatcher {
             break;
          case SMALL_HIT:
             Vfx.add(new Vfx.Flash(pos, 0.9, -1, 200L));
-            Vfx.add(new Vfx.Spikes(pos, 10, 1.8, -45128, 220L));
+            Vfx.add(new Vfx.Spikes(pos, 10, 1.8, GREEN, 220L));
             if (feels(p, pos, 8.0)) {
                CameraDirector.shake(0.5F, 200L);
             }

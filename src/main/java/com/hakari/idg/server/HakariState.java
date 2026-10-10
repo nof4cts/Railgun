@@ -35,6 +35,9 @@ public class HakariState {
    public int rhythmTicks;
    public int windupTicks;
    public int pose;
+   /** Blocks inside the domain, nearest the centre first, still to be swallowed by the barrier. */
+   public java.util.List<net.minecraft.core.BlockPos> clearQueue = new java.util.ArrayList<>();
+   public int clearIndex;
 
    public static HakariState get(Player p) {
       return MAP.computeIfAbsent(p.getUUID(), k -> new HakariState());

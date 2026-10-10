@@ -74,6 +74,25 @@ public final class CameraDirector {
       cam.xRotO = c.outPitch;
    }
 
+   /** Keep the lens out of walls: if terrain stands between Hakari and the camera, pull in just short of it. */
+   private static void clip(Cutscene c, Minecraft mc) {
+      net.minecraft.world.entity.Entity anchor = c.anchor();
+      if (anchor == null) {
+         return;
+      }
+      net.minecraft.world.phys.Vec3 from = anchor.getEyePosition(lastPartial);
+      net.minecraft.world.phys.Vec3 to = c.outPos;
+      net.minecraft.world.phys.Vec3 d = to.subtract(from);
+      if (d.lengthSqr() < 1.0E-4) {
+         return;
+      }
+      net.minecraft.world.phys.BlockHitResult hit = mc.level.clip(new net.minecraft.world.level.ClipContext(from, to,
+            net.minecraft.world.level.ClipContext.Block.VISUAL, net.minecraft.world.level.ClipContext.Fluid.NONE, mc.player));
+      if (hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
+         c.outPos = hit.getLocation().subtract(d.normalize().scale(0.3));
+      }
+   }
+
    public static void frame(float partial) {
       Cutscene c = current;
       if (c != null) {
@@ -81,6 +100,7 @@ public final class CameraDirector {
          if (mc.level != null && mc.player != null && !c.done()) {
             lastPartial = partial;
             c.update(partial);
+            clip(c, mc);
             place(c);
             if (mc.getCameraEntity() != cam) {
                mc.setCameraEntity(cam);
