@@ -47,6 +47,8 @@ public final class ClientEvents {
         public static void onRenderTick(TickEvent.RenderTickEvent event) {
             if (event.phase == TickEvent.Phase.START) {
                 Director.frame(event.renderTickTime);
+            } else {
+                SelfTest.afterFrame();
             }
         }
 
@@ -56,6 +58,7 @@ public final class ClientEvents {
                 Keys.handle();
                 Casts.tick();
                 Director.tick();
+                SelfTest.tick();
             }
         }
 

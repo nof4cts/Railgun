@@ -31,6 +31,8 @@ minecraft {
         }
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
+            property 'santoryu.selftest', System.getenv('SANTORYU_SELFTEST') ?: 'false'
+            args '--width', '1280', '--height', '720'
         }
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
