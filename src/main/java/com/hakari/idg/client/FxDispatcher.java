@@ -74,23 +74,23 @@ public final class FxDispatcher {
             }
             break;
          case ROUGH_HIT:
-            Vec3 dirxxx = Draw.forward(p.a, p.b);
+            Vec3 dirRough = Draw.forward(p.a, p.b);
             Vfx.add(new Vfx.Flash(pos, 2.6, -53894, 380L));
 
             for (int i = 0; i < 3; i++) {
                int ii = i;
                Sfx.later(
                   (long)i * 45L,
-                  () -> Vfx.add(Vfx.Shockwave.facing(pos.add(dir.scale(0.8 + (double)ii * 1.3)), dir, 1.6 + (double)ii * 1.1, ii == 0 ? -1 : -53894, 420L))
+                  () -> Vfx.add(Vfx.Shockwave.facing(pos.add(dirRough.scale(0.8 + (double)ii * 1.3)), dirRough, 1.6 + (double)ii * 1.1, ii == 0 ? -1 : -53894, 420L))
                );
             }
 
-            Vfx.add(new Vfx.Spikes(pos, 40, 5.5, -53894, 420L, dirxxx, 1.4));
+            Vfx.add(new Vfx.Spikes(pos, 40, 5.5, -53894, 420L, dirRough, 1.4));
             Vfx.add(new Vfx.Debris(pos.add(0.0, -1.3, 0.0), 22, 1.1, 1500L));
             Vfx.add(Vfx.Shockwave.ground(pos.add(0.0, -1.4, 0.0), 6.0, -53894, 600L));
 
             for (int i = 0; i < 4; i++) {
-               Vfx.add(new Vfx.Bolt(pos, pos.add(dirxxx.scale(2.5)).add(Draw.randDir((long)i + Vfx.now()).scale(1.2)), -45128, 260L));
+               Vfx.add(new Vfx.Bolt(pos, pos.add(dirRough.scale(2.5)).add(Draw.randDir((long)i + Vfx.now()).scale(1.2)), -45128, 260L));
             }
 
             if (feels(p, pos, 22.0)) {
@@ -176,18 +176,18 @@ public final class FxDispatcher {
             }
             break;
          case OVERWHELM_THROW:
-            Vec3 dirxxx = Draw.forward(p.a, 0.0F);
+            Vec3 dirThrow = Draw.forward(p.a, 0.0F);
             Vfx.add(new Vfx.Flash(pos, 3.4, -11443, 450L));
 
             for (int i = 0; i < 4; i++) {
                int ii = i;
                Sfx.later(
                   (long)i * 40L,
-                  () -> Vfx.add(Vfx.Shockwave.facing(pos.add(dir.scale((double)ii * 1.5)), dir, 2.0 + (double)ii * 1.3, ii % 2 == 0 ? -1 : -11443, 480L))
+                  () -> Vfx.add(Vfx.Shockwave.facing(pos.add(dirThrow.scale((double)ii * 1.5)), dirThrow, 2.0 + (double)ii * 1.3, ii % 2 == 0 ? -1 : -11443, 480L))
                );
             }
 
-            Vfx.add(new Vfx.Spikes(pos, 48, 7.0, -11443, 480L, dirxxx, 1.5));
+            Vfx.add(new Vfx.Spikes(pos, 48, 7.0, -11443, 480L, dirThrow, 1.5));
             Vfx.add(new Vfx.Debris(pos.add(0.0, -1.0, 0.0), 26, 1.3, 1700L));
             Vfx.add(Vfx.Shockwave.ground(pos.add(0.0, -1.0, 0.0), 8.0, -11443, 700L));
             if (feels(p, pos, 26.0)) {

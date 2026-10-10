@@ -125,7 +125,7 @@ public final class Cutscenes {
       });
 
       for (int i = 0; i < 3; i++) {
-         int kx = i;
+         int k = i;
          c.at(0.25 + (double)i * 0.25, () -> {
             ScreenFx.impact(0, 90L, (Vec3)null);
             CameraDirector.shake(0.6F + (float)k * 0.3F, 250L);

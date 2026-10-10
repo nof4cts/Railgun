@@ -28,7 +28,7 @@ public final class ModRegistry {
    public static final List<RegistryObject<Item>> MOVE_SCROLLS = List.of(RESERVE_BALL, SHUTTER_DOORS, ROUGH_ENERGY, FEVER_BREAKER, COUNTER);
    public static final RegistryObject<EntityType<ReserveBallEntity>> RESERVE_BALL_ENTITY = ENTITIES.register(
       "reserve_ball",
-      () -> Builder.of(ReserveBallEntity::new, MobCategory.MISC).sized(0.35F, 0.35F).clientTrackingRange(8).updateInterval(1).build("reserve_ball")
+      () -> Builder.<ReserveBallEntity>of(ReserveBallEntity::new, MobCategory.MISC).sized(0.35F, 0.35F).clientTrackingRange(8).updateInterval(1).build("reserve_ball")
    );
    public static final RegistryObject<CreativeModeTab> TAB = TABS.register(
       "hakari",
