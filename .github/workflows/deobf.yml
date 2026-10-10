@@ -1,0 +1,25 @@
+name: Deobfuscate JJK
+on:
+  push:
+    branches: [jjk-deobf]
+permissions:
+  contents: write
+jobs:
+  deobf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - name: Deobfuscate to Mojang names
+        run: chmod +x gradlew && ./gradlew deobfJjk --no-daemon 2>&1 | tail -20
+      - name: Decompile
+        run: |
+          curl -sSfL -o vf.jar https://github.com/Vineflower/vineflower/releases/download/1.10.1/vineflower-1.10.1.jar
+          mkdir -p src-out && java -jar vf.jar -dgs=1 build/deobf/jjk-deobf.jar src-out > /dev/null
+          ls src-out | head
+      - name: Publish source to jjk-deobf-out
+        run: |
+          mkdir -p /tmp/out && cp -r src-out/. /tmp/out/ && cp build/deobf/jjk-deobf.jar /tmp/out/
+          cd /tmp/out && git init -q -b jjk-deobf-out && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "deobfuscated source" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" jjk-deobf-out

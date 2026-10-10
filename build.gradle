@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+}
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+}
+repositories {
+    flatDir { dirs 'libs' }
+    maven { url = 'https://maven.kosmx.dev/' }
+}
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly fg.deobf("local:jjk:1.0.0")
+    compileOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}")
+}
+// resolve the deobfuscated (Mojang-named) copy of the original jar
+tasks.register('deobfJjk') {
+    dependsOn configurations.compileClasspath
+    doLast {
+        def f = configurations.compileClasspath.resolve().find { it.name.startsWith('jjk-1.0.0') }
+        println "DEOBF_JAR=" + f
+        copy { from f; into 'build/deobf'; rename { 'jjk-deobf.jar' } }
+    }
+}
