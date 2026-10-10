@@ -40,12 +40,16 @@ public class TechniqueScrollItem extends Item {
       return this.technique == Technique.DOMAIN;
    }
 
-   // $VF: One or more variable merging failures!
-   // $VF: Could not properly define all variable types!
-   // Please report this to the Vineflower issue tracker, at https://github.com/Vineflower/vineflower/issues with a copy of the class file (if you have the rights to distribute it!)
    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tip, TooltipFlag flag) {
-      <unknown> var5;
-      for (String l : var5_1) {
+      String[] lines = switch (this.technique) {
+         case RESERVE_BALL -> new String[]{"Flick a pachinko reserve ball.", "Point-blank: ragdolls. Range: stuns.", "Counts as a visual inside the domain.", "\u00a76JACKPOT \u2014 Lucky Volley: 12-hit barrage + launcher"};
+         case SHUTTER_DOORS -> new String[]{"Two shutter doors slam shut on the target.", "AoE stun. Counts as a visual (hit or miss).", "\u00a76JACKPOT \u2014 Lucky Rushdown: dash grab, launch, spike"};
+         case ROUGH_ENERGY -> new String[]{"Wind up, then a sandpaper-rough cursed punch.", "Unblockable. Breaks shields.", "\u00a76JACKPOT \u2014 Overwhelming Luck: grab-run, then throw"};
+         case FEVER_BREAKER -> new String[]{"Dash kick. On hit: doors + launching second kick.", "Counts as a visual only if it lands.", "\u00a76JACKPOT \u2014 Energy Surge: leap, crater slam, kick"};
+         case COUNTER -> new String[]{"Doors parry the next hit and slam the attacker.", "Counts as a visual when it triggers.", "\u00a76JACKPOT \u2014 Rhythm: resets cooldowns, faster moves"};
+         case DOMAIN -> new String[]{"Domain Expansion: Idle Death Gamble.", "Traps everyone within 20 blocks.", "2 visuals = 1 spin (riichi). Odd jackpots raise future odds.", "3 misses \u2192 pity jackpot on the next spin."};
+      };
+      for (String l : lines) {
          tip.add(Component.literal(l).withStyle(ChatFormatting.GRAY));
       }
    }
