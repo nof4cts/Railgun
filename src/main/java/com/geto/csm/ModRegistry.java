@@ -63,7 +63,7 @@ public final class ModRegistry {
             .displayItems((params, out) -> {
                 out.accept(MANIPULATION.get());
                 out.accept(UZUMAKI.get());
-                out.accept(new ItemStack(CURSE_ORB.get(), 16));
+                out.accept(CURSE_ORB.get());
             })
             .build());
 
