@@ -18,6 +18,7 @@ public class CentipedeEntity extends CurseEntity {
     public CentipedeEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         setMaxUpStep(1.0f);
+        signatureCd = 160 + random.nextInt(600);
     }
 
     @Override
@@ -33,6 +34,17 @@ public class CentipedeEntity extends CurseEntity {
             return;
         }
         walkToward(t, 1.5);
+        if (distanceTo(t) < 2.2 && signatureCd <= 0) {
+            signatureCd = 1200;
+            action(1);
+            for (LivingEntity e : enemiesAround(position(), 3.0)) {
+                strike(e, 6f);
+                e.addEffect(new MobEffectInstance(MobEffects.POISON, 120, 1));
+            }
+            CsmNetwork.fx(this, FxType.CENTI_BITE, this, t, position().add(0, 0.4, 0), getYRot(), 1);
+            sound(SoundEvents.SPIDER_AMBIENT, 1.4f, 0.6f);
+            return;
+        }
         if (distanceTo(t) < 1.8 && attackCd <= 0) {
             attackCd = 14 + random.nextInt(8);
             action(1);

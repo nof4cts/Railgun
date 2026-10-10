@@ -27,6 +27,29 @@ You can have 3 summons out at once. Summoning a 4th dismisses the oldest.
 | **Tamamo-no-Mae** 玉藻前 | Special (folklore) | A floating nine-tailed fox. Homing foxfire, a nine-tail sweep, and the **Killing Stone**, which crashes down and leaves a withering miasma. |
 | **Ōnamazu** 大鯰 | 1 (folklore) | The earthquake catfish. It swims half-sunk in the ground and sends out rolling quake rings that launch enemies. |
 
+## Signature moves
+
+Normal attacks don't flash the screen. Each curse has **one signature move, used about once a minute**, and that's the only move that gets an impact frame:
+
+- Wyrm: dark-fire breath
+- Maw Burrower: swallow
+- Veil Ray: gust
+- Centipedes: venom burst
+- Pyre Wraith: flare
+- Kuchisake-onna: the binding-vow question
+- Tamamo-no-Mae: Killing Stone
+- Ōnamazu: quake
+
+## Cataclysm spells (40 s cooldown each)
+
+| Spell | What it does |
+|---|---|
+| **Falling Star** 流星 | Calls a star down from orbit onto where you look. 7 s cutscene. The impact deals up to 70 damage within 16 blocks, then a fireball, a 32-block mushroom cloud, a shock dome and a burning crater about 19 blocks wide. |
+| **Event Horizon** 事象の地平線 | Opens a black hole with an accretion disk and polar jets. It drags in enemies and rips up terrain, then collapses: 50 damage and a spherical crater. |
+| **Skyfall Lance** 天墜槍 | Draws a gold sigil in the ground and the sky, then a beam from orbit carves a 36-block molten trench (38 damage). |
+
+Every spell ends in a burst of rapid impact frames and a world split. **Warning: these flash hard.** Terrain damage follows the `mobGriefing` game rule, and chests and other block entities are never destroyed.
+
 ## Building
 
 GitHub Actions builds the jar automatically on every push. To build it yourself, install JDK 17 and run `gradlew build`. The jar ends up in `build/libs/`.

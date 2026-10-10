@@ -26,6 +26,7 @@ public class WormEntity extends CurseEntity {
     public WormEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         setNoGravity(true);
+        signatureCd = 0;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class WormEntity extends CurseEntity {
             emerge--;
             if (emerge == 8) {
                 for (LivingEntity e : enemiesAround(position().add(0, 1, 0), 3.2)) {
-                    if (swallowed == null) swallow(e);
+                    if (swallowed == null && signatureCd <= 0) swallow(e);
                     else launch(e, e.position().subtract(position()).normalize().scale(1.2).add(0, 1.0, 0));
                 }
             }
@@ -65,7 +66,7 @@ public class WormEntity extends CurseEntity {
             attackCd = 30;
             action(1);
             sound(SoundEvents.EVOKER_FANGS_ATTACK, 1.5f, 0.5f);
-            if (distanceTo(t) < 4.0) swallow(t);
+            if (distanceTo(t) < 4.0 && signatureCd <= 0) swallow(t);
             else {
                 strike(t, 8f);
                 CsmNetwork.fx(this, FxType.BITE, this, t, t.position().add(0, 1, 0), getYRot(), 0);
@@ -74,6 +75,7 @@ public class WormEntity extends CurseEntity {
     }
 
     private void swallow(LivingEntity t) {
+        signatureCd = 1200;
         swallowed = t;
         swallowTicks = 70;
         action(2);

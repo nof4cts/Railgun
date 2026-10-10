@@ -67,7 +67,7 @@ public class WyrmEntity extends CurseEntity {
         }
         if (d < 5.5 && attackCd <= 0) bite(t);
         else if (d < 7 && specialCd <= 0) tailSweep();
-        else if (d > 9 && d < 24 && specialCd <= 0) roar(t.position().add(0, 1, 0).subtract(getEyePosition()));
+        else if (d > 9 && d < 24 && signatureCd <= 0) roar(t.position().add(0, 1, 0).subtract(getEyePosition()));
     }
 
     private void bite(LivingEntity t) {
@@ -100,6 +100,7 @@ public class WyrmEntity extends CurseEntity {
     /** Breath of grave-dark fire along a direction. Used by the AI and by a rider. */
     public void roar(Vec3 dir) {
         specialCd = 160;
+        signatureCd = 1200;
         action(3);
         Vec3 d = dir.normalize();
         Vec3 from = getEyePosition().add(d.scale(1.5));

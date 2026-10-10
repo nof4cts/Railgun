@@ -64,10 +64,23 @@ public final class Cutscene {
         return this;
     }
 
+    private Vec3 fixedOrigin;
+    private float fixedYaw;
+
+    /** Anchor the rig to a fixed world point and heading instead of an entity's eyes. */
+    public Cutscene fixed(Vec3 origin, float yaw) {
+        fixedOrigin = origin;
+        fixedYaw = yaw;
+        return this;
+    }
+
     void begin() {
         start = Vfx.now();
         Entity a = anchor();
-        if (a != null) {
+        if (fixedOrigin != null) {
+            anchorStart = fixedOrigin;
+            yawStart = fixedYaw;
+        } else if (a != null) {
             anchorStart = a.getEyePosition(1f);
             yawStart = a.getYRot();
         }

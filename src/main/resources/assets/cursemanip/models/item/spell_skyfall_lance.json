@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "cursemanip:item/spell_skyfall_lance"
+  }
+}

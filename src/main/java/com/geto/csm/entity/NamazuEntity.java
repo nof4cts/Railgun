@@ -49,11 +49,11 @@ public class NamazuEntity extends CurseEntity {
             CsmNetwork.fx(this, FxType.BITE, this, t, t.position().add(0, 0.8, 0), getYRot(), 0);
             sound(SoundEvents.RAVAGER_ATTACK, 1.4f, 0.8f);
         }
-        if (d < 12 && specialCd <= 0) quake();
+        if (d < 12 && signatureCd <= 0) quake();
     }
 
     private void quake() {
-        specialCd = 100;
+        signatureCd = 1200;
         action(2);
         Vec3 c = position();
         sound(SoundEvents.RAVAGER_ROAR, 2f, 0.5f);

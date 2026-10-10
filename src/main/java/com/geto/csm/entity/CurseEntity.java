@@ -42,6 +42,8 @@ public abstract class CurseEntity extends PathfinderMob {
     protected int life = 20 * 60;
     protected int attackCd;
     protected int specialCd = 60;
+    /** The once-a-minute signature move (the only attack that gets an impact frame). */
+    protected int signatureCd = 160;
     /** While > 0 the curse is bound by a vow: it can't act or be hurt. */
     public int vowTicks;
 
@@ -141,6 +143,7 @@ public abstract class CurseEntity extends PathfinderMob {
         }
         if (attackCd > 0) attackCd--;
         if (specialCd > 0) specialCd--;
+        if (signatureCd > 0) signatureCd--;
         if (vowTicks > 0) {
             vowTicks--;
             setDeltaMovement(Vec3.ZERO);

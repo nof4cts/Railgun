@@ -1,7 +1,7 @@
 package com.geto.csm.network;
 
 public enum CutType {
-    SUMMON, UZUMAKI;
+    SUMMON, UZUMAKI, STAR, HOLE, LANCE;
 
     private static final CutType[] VALUES = values();
 

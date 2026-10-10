@@ -50,7 +50,7 @@ public class TamamoEntity extends CurseEntity {
             flyToward(t.position().add(Math.cos(a) * 7, 4, Math.sin(a) * 7), 0.7);
             faceToward(t.position());
         }
-        if (specialCd <= 0 && d < 30) killingStone(t);
+        if (signatureCd <= 0 && d < 30) killingStone(t);
         else if (tickCount % 40 == 0 && d < 30) foxfire(t);
     }
 
@@ -80,7 +80,7 @@ public class TamamoEntity extends CurseEntity {
     }
 
     private void killingStone(LivingEntity t) {
-        specialCd = 240;
+        signatureCd = 1200;
         action(3);
         Vec3 at = t.position();
         CsmNetwork.fx(this, FxType.KILLING_STONE, this, t, at, 0, 0);

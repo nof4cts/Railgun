@@ -483,9 +483,9 @@ public final class CsmFx {
                 Sfx.later(0, () -> {
                     Vfx.add(new Vfx.Flash(at, 1.4, 0xFFE0283C, 260));
                     Vfx.add(new Vfx.Spikes(at, 20, 3.0, 0xFFFFFFFF, 260));
-                    if (FxDispatcher.feels(at, 18)) {
-                        ScreenFx.impact(big ? ScreenFx.RED : ScreenFx.INVERT, big ? 220 : 90, at);
-                        CameraDirector.shake(big ? 1.8f : 0.6f, 400);
+                    if (big && FxDispatcher.feels(at, 18)) {
+                        ScreenFx.impact(ScreenFx.RED, 220, at);
+                        CameraDirector.shake(1.8f, 400);
                     }
                 });
             }

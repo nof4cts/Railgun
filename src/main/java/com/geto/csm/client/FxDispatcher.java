@@ -68,27 +68,22 @@ public final class FxDispatcher {
                 Vfx.add(new Vfx.Flash(pos, big ? 2.0 : 1.2, WHITE, 260));
                 Vfx.add(new Vfx.Spikes(pos, big ? 30 : 16, big ? 4 : 2.4, EMBER, 300));
                 Vfx.add(new Vfx.Debris(pos.add(0, -1, 0), big ? 14 : 6, 0.8, 1300));
-                if (feels(p, pos, 18)) {
-                    ScreenFx.impact(big ? ScreenFx.INK : ScreenFx.INVERT, big ? 170 : 90, pos);
-                    CameraDirector.shake(big ? 1.6f : 0.7f, 380);
-                }
+                if (feels(p, pos, 18)) CameraDirector.shake(big ? 0.8f : 0.35f, 300);
             }
             case TAIL_SWEEP -> {
                 double r = Math.max(3, p.b);
                 Vfx.add(Vfx.Shockwave.ground(pos.add(0, 0.3, 0), r, WHITE, 450));
                 Vfx.add(Vfx.Shockwave.ground(pos.add(0, 0.8, 0), r * 1.3, EMBER, 600));
                 Vfx.add(new Vfx.Debris(pos, 20, 1.2, 1500));
-                if (feels(p, pos, r + 10)) {
-                    ScreenFx.impact(ScreenFx.INVERT, 140, pos);
-                    CameraDirector.shake(1.8f, 500);
-                }
+                if (feels(p, pos, r + 10)) CameraDirector.shake(0.9f, 400);
             }
             case ROAR_BEAM -> {
                 Vec3 dir = Draw.forward(p.a, p.b);
                 Vfx.add(new CsmFx.BreathCone(pos, dir, 24, VIOLET, EMBER, 1300));
                 Vfx.add(Vfx.Shockwave.facing(pos.add(dir.scale(2)), dir, 4, WHITE, 400));
                 if (feels(p, pos, 30)) {
-                    CameraDirector.shake(1.4f, 1100);
+                    ScreenFx.impact(ScreenFx.INK, 200, pos.add(dir.scale(6)));
+                    CameraDirector.shake(1.8f, 1100);
                     ScreenFx.speed(900, 0.7f);
                 }
             }
@@ -121,11 +116,22 @@ public final class FxDispatcher {
             case GUST -> {
                 Vfx.add(Vfx.Shockwave.ground(pos, 6, CYAN, 500));
                 Vfx.add(Vfx.Shockwave.ground(pos.add(0, 0.6, 0), 4, WHITE, 400));
-                if (feels(p, pos, 12)) CameraDirector.shake(0.6f, 300);
+                if (feels(p, pos, 14)) {
+                    ScreenFx.impact(ScreenFx.INVERT, 140, pos);
+                    CameraDirector.shake(1.2f, 400);
+                }
             }
             case CENTI_BITE -> {
-                Vfx.add(new Vfx.Flash(pos, 0.5, 0xFF9CFF3A, 160));
-                Vfx.add(new Vfx.Spikes(pos, 6, 0.9, 0xFF9CFF3A, 180));
+                boolean venom = p.b > 0.5f;
+                Vfx.add(new Vfx.Flash(pos, venom ? 2.0 : 0.5, 0xFF9CFF3A, venom ? 320 : 160));
+                Vfx.add(new Vfx.Spikes(pos, venom ? 24 : 6, venom ? 3.0 : 0.9, 0xFF9CFF3A, 220));
+                if (venom) {
+                    Vfx.add(Vfx.Shockwave.ground(pos, 3.5, 0xFF9CFF3A, 450));
+                    if (feels(p, pos, 14)) {
+                        ScreenFx.impact(ScreenFx.INK, 150, pos);
+                        CameraDirector.shake(1.0f, 350);
+                    }
+                }
             }
             case PYRE_PULSE -> {
                 float k = (p.a - 120f) / 2880f;
@@ -207,11 +213,80 @@ public final class FxDispatcher {
                     CameraDirector.shake(3.4f, 1200);
                 }
             }
+            case STAR_FALL -> Vfx.add(new SpellFx.FallingStar(pos));
+            case STAR_IMPACT -> {
+                Vfx.add(new SpellFx.Fireball(pos.add(0, 0.5, 0), 15, 3200));
+                Vfx.add(new SpellFx.Mushroom(pos, 9500));
+                Vfx.add(new SpellFx.ShockDome(pos, 42, 0xFFFFE0B0, 1400));
+                Vfx.add(Vfx.Shockwave.ground(pos, 48, 0xFFFFFFFF, 1300));
+                Vfx.add(Vfx.Shockwave.ground(pos, 32, 0xFFFF8A2A, 1700));
+                Vfx.add(new Vfx.Debris(pos, 150, 2.6, 3500));
+                Vfx.add(new Vfx.Spikes(pos.add(0, 1, 0), 90, 26, 0xFFFFC870, 700, new Vec3(0, 1, 0), 0.5));
+                Vfx.add(new Vfx.Pillar(pos, 120, 9, 0xFFFFC870, 1400));
+                if (feels(pos, 140)) cataclysmFrames(pos, 0xFFFFF4E0, 38, 4.2f);
+            }
+            case HOLE_FORM -> {
+                Vfx.add(new SpellFx.BlackHole(pos));
+                Vfx.add(Vfx.Shockwave.ground(pos.add(0, -3.4, 0), 10, 0xFFFFC070, 900));
+            }
+            case HOLE_COLLAPSE -> {
+                Vfx.add(new SpellFx.ShockDome(pos, 26, 0xFFBFE6FF, 1100));
+                Vfx.add(new Vfx.Flash(pos, 8, 0xFFBFE6FF, 600));
+                Vfx.add(Vfx.Shockwave.facing(pos, new Vec3(0.25, 1, 0.15), 30, 0xFFFFFFFF, 1000));
+                Vfx.add(Vfx.Shockwave.ground(pos.add(0, -3.4, 0), 34, 0xFFFFC070, 1300));
+                Vfx.add(new Vfx.Spikes(pos, 100, 22, 0xFFBFE6FF, 600));
+                Vfx.add(new Vfx.Debris(pos.add(0, -3.4, 0), 90, 2.0, 3000));
+                if (feels(pos, 110)) cataclysmFrames(pos, 0xFFDDEEFF, -40, 3.6f);
+            }
+            case RIP_BLOCK -> {
+                Vfx.add(new Vfx.Flash(pos, 0.9, 0xFFFFC070, 200));
+                Vfx.add(new Vfx.Debris(pos, 4, 0.5, 900));
+            }
+            case LANCE_SIGIL -> {
+                Vec3 dir = Draw.forward(p.a, 0);
+                double len = p.b;
+                Vfx.add(new SpellFx.Sigil(pos.add(dir.scale(len / 2)), dir, len / 2 + 2, 4000));
+            }
+            case LANCE_STRIKE -> {
+                Vec3 dir = Draw.forward(p.a, 0);
+                double len = p.b;
+                Vfx.add(new SpellFx.LanceBeam(pos, dir, len, 2600));
+                if (feels(pos, 120)) {
+                    cataclysmFrames(pos, 0xFFFFF4D0, 26, 2.6f);
+                    ScreenFx.speed(1600, 0.8f);
+                }
+                for (int i = 0; i <= 10; i++) {
+                    final double k = i / 10.0;
+                    Sfx.later(100 + (long) (1550 * k), () -> {
+                        Vec3 c = pos.add(dir.scale(len * k));
+                        Vec3 g = new Vec3(c.x, SpellFx.groundY(c.x, c.z, c.y), c.z);
+                        Vfx.add(Vfx.Shockwave.ground(g, 7, 0xFFFFD86A, 600));
+                        Vfx.add(new Vfx.Debris(g, 14, 1.3, 1600));
+                        Vfx.add(new Vfx.Flash(g.add(0, 1, 0), 3, 0xFFFFF4D0, 260));
+                        if (feels(g, 50)) CameraDirector.shake(1.4f, 260);
+                    });
+                }
+            }
             case SMALL_HIT -> {
                 Vfx.add(new Vfx.Flash(pos, 0.8, WHITE, 200));
                 Vfx.add(new Vfx.Spikes(pos, 10, 1.6, VIOLET, 220));
             }
         }
+    }
+
+    /** The big one: a stuttering sequence of eye-searing impact frames, a world split and a long quake. */
+    static void cataclysmFrames(Vec3 pos, int flashCol, float splitAngle, float shake) {
+        ScreenFx.flash(flashCol, 900);
+        ScreenFx.impact(ScreenFx.INVERT, 160, pos);
+        Sfx.later(160, () -> ScreenFx.impact(ScreenFx.GOLD, 140, pos));
+        Sfx.later(300, () -> ScreenFx.impact(ScreenFx.INK, 150, pos));
+        Sfx.later(450, () -> ScreenFx.impact(ScreenFx.RED, 120, pos));
+        Sfx.later(570, () -> ScreenFx.impact(ScreenFx.INVERT, 80, pos));
+        ScreenFx.split(splitAngle, 900, 40);
+        CameraDirector.shake(shake, 1800);
+        ScreenFx.speed(1200, 1f);
+        Sfx.play(SoundEvents.LIGHTNING_BOLT_THUNDER, 0.5f, 1f);
+        Sfx.play(SoundEvents.GENERIC_EXPLODE, 0.5f, 1f);
     }
 
     private FxDispatcher() {}

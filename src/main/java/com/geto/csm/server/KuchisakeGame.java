@@ -92,7 +92,7 @@ public final class KuchisakeGame {
     private static void finish(Game g) {
         BY_TARGET.remove(g.t.getId());
         g.k.vowTicks = 0;
-        g.k.askCooldown = 300;
+        g.k.askCooldown = 1200;
         if (g.t instanceof ServerPlayer sp) CsmNetwork.toPlayer(sp, new QuestionPacket(g.k.getId(), 0, 0));
         KuchisakeEntity k = g.k;
         Scheduler.after(80, () -> k.setUnmasked(false));
@@ -121,7 +121,7 @@ public final class KuchisakeGame {
     }
 
     private static void escape(Game g) {
-        g.k.askCooldown = 400;
+        g.k.askCooldown = 1200;
         g.k.vowTicks = 60; // she stands there, confused
         CsmNetwork.fx(g.k, FxType.ACTION, g.k, g.t, g.k.position(), 4, 0);
     }

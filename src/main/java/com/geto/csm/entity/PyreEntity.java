@@ -56,11 +56,11 @@ public class PyreEntity extends CurseEntity {
             return;
         }
         walkToward(t, 1.1);
-        if (distanceTo(t) < 9 && specialCd <= 0) flare(t, h);
+        if (distanceTo(t) < 9 && signatureCd <= 0) flare(t, h);
     }
 
     private void flare(LivingEntity t, float h) {
-        specialCd = 110;
+        signatureCd = 1200;
         action(1);
         sound(SoundEvents.BLAZE_SHOOT, 2f, 0.5f);
         Vec3 d = t.position().subtract(position()).normalize();

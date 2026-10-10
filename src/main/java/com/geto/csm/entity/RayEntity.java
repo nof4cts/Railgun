@@ -56,7 +56,12 @@ public class RayEntity extends CurseEntity {
         LivingEntity t = findTarget(o, 24);
         if (t != null && distanceTo(t) < 9) {
             flyToward(t.position().add(0, 2.5, 0), 0.6);
-            if (distanceTo(t) < 5 && attackCd <= 0) {
+            if (distanceTo(t) < 4 && attackCd <= 0 && signatureCd > 0) {
+                attackCd = 30;
+                strike(t, 3f);
+                CsmNetwork.fx(this, FxType.SMALL_HIT, this, t, t.position().add(0, 1, 0), 0, 0);
+            } else if (distanceTo(t) < 5 && signatureCd <= 0) {
+                signatureCd = 1200;
                 attackCd = 60;
                 action(1);
                 sound(SoundEvents.PHANTOM_FLAP, 2f, 0.5f);
