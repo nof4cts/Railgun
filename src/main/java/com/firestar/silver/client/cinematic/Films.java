@@ -125,7 +125,7 @@ public final class Films {
                 s.add(Shot.cut(56, 90, (k, t) -> at(rel(c, F, 2.0, l(k, 0.4, 5.0), l(k, 5.0, 7.5)), F.add(0, l(k, 0.8, 1.6), 0), 62, 0)));
                 s.add(Shot.cut(90, Beats.ZENITH_SURGE, (k, t) -> at(rel(c, F, 0.1, 1.6, l(k, 1.8, 1.5)), E.subtract(0, 0.15, 0), 36, 0)));
                 // the summit: wide, then the calm close-up
-                s.add(Shot.cut(Beats.ZENITH_SURGE, 124, (k, t) -> at(rel(c, F, l(k, 0, 1.5), l(k, 2.0, 1.2), l(k, 7.5, 5.5)), F.add(0, 1.3, 0), 62, 0)));
+                s.add(Shot.cut(Beats.ZENITH_SURGE, 124, (k, t) -> at(rel(c, F, l(k, 4.6, 3.6), l(k, 2.2, 1.3), l(k, 3.6, 3.0)), F.add(0, 1.2, 0), 58, 0)));
                 s.add(Shot.cut(124, c.move.length, (k, t) -> at(rel(c, F, 0.35, 1.6, l(k, 1.5, 1.2)), E, 34, 0)));
             }
             default -> s.add(Shot.cut(0, c.move.length, (k, t) -> at(rel(c, F, 1.5, 2.0, -3.5), P, 60, 0)));

@@ -786,13 +786,15 @@ public final class Choreo {
             }
             case SPHERE -> {
                 float gather = window(t, 6, 30, Beats.SPHERE_THROW, Beats.SPHERE_THROW + 2);
-                fx.vignette(0x020A1C, 0.5F * gather);
-                fx.desaturate(0.3F * gather);
-                fx.bloom(0.5F * gather);
+                // the world dims as its light is borrowed
+                fx.vignette(0x020A1C, 0.75F * gather);
+                fx.desaturate(0.45F * gather);
+                fx.contrast(0.25F * gather);
+                fx.bloom(0.12F * gather);
                 fx.shake(0.15F * gather);
                 fx.punch(0.8F * hit(t, Beats.SPHERE_THROW, 4));
                 fx.impact(BOOM, t - Beats.SPHERE_BOOM, spherePos(c, Beats.SPHERE_BOOM - 0.01F), CYAN);
-                fx.flash(0xFFFFFF, 1.4F * hit(t, Beats.SPHERE_BOOM, 8));
+                fx.flash(0xFFFFFF, 1.0F * hit(t, Beats.SPHERE_BOOM, 5));
                 fx.shake(1.2F * hit(t, Beats.SPHERE_BOOM, 14));
                 fx.bloom(0.8F * hit(t, Beats.SPHERE_BOOM, 20));
             }
