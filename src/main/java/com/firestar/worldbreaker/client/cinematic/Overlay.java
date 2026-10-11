@@ -87,9 +87,9 @@ public final class Overlay {
                 continue;
             }
             String line = "「" + lines[i][1] + "」";
-            float scale = 1.5F;
+            float scale = bar > 18 ? 1.25F : 1.5F;
             g.pose().pushPose();
-            g.pose().translate(w / 2.0F - font.width(line) * scale / 2.0F, h - bar - 34, 0);
+            g.pose().translate(w / 2.0F - font.width(line) * scale / 2.0F, bar > 18 ? h - bar + (bar - 9 * scale) / 2.0F : h - bar - 34, 0);
             g.pose().scale(scale, scale, 1.0F);
             g.drawString(font, line, 0, 0, ((int) (a * 255)) << 24 | 0xF2F8FF, true);
             g.pose().popPose();

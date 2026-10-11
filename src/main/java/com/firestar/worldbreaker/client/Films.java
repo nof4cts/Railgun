@@ -48,7 +48,7 @@ public final class Films {
         List<Shot> s = new ArrayList<>();
 
         // 1. the tremor: over the caller's shoulder toward an empty horizon
-        s.add(Shot.cut(0, 36, (k, t) -> pose(P.subtract(D.scale(2.2)).add(S.scale(0.9)).add(0, 1.45, 0), P.add(D.scale(60)).add(0, 9 + 3 * k, 0),
+        s.add(Shot.cut(0, 36, (k, t) -> pose(P.subtract(D.scale(3.4 - 0.6 * k)).add(S.scale(1.5)).add(0, 1.75, 0), P.add(D.scale(60)).add(0, 9 + 3 * k, 0),
                 50 - 6 * k, 0)));
         // 2. the dust wall: down at the dirt, a telephoto on the horizon as it boils up
         s.add(Shot.cut(36, 70, (k, t) -> pose(P.subtract(D.scale(3)).add(S.scale(-2)).add(0, 5.5 - 2 * k, 0), P.add(D.scale(95)).add(0, 12 + 10 * k, 0),
