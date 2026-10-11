@@ -54,21 +54,14 @@ final class GiantBody {
         ps.mulPose(Axis.YP.rotation(0.07F * (w.swingL)));
         // pelvis
         s.ellipsoid(ps, 0, 0.015F, 0, 0.095F, 0.06F, 0.065F, seed + 21);
-        // kilt: bronze plates hanging round the hips, swinging with the legs
+        // kilt: a flared skirt of bronze from the belt to mid-thigh, swinging a little with the stride
+        ps.pushPose();
+        ps.mulPose(Axis.XP.rotation(-0.25F * (w.swingL + w.swingR) - 0.04F));
+        s.ellipsoid(ps, 0, -0.04F, 0.004F, 0.112F, 0.085F, 0.083F, seed + 80);
+        ps.popPose();
         if (s.detail) {
-            for (int i = 0; i < 8; i++) {
-                float ang = (float) (i / 8.0 * Math.PI * 2);
-                float x = Mth.sin(ang) * 0.1F, z = Mth.cos(ang) * 0.075F;
-                ps.pushPose();
-                ps.translate(x, 0.0F, z);
-                ps.mulPose(Axis.YP.rotation(ang));
-                float swing = (x < 0 ? w.swingR : w.swingL) * 0.35F;
-                ps.mulPose(Axis.XP.rotation(-0.12F - Math.max(0, -swing)));
-                s.ellipsoid(ps, 0, -0.06F, 0.008F, 0.036F, 0.07F, 0.01F, seed + 80 + i);
-                ps.popPose();
-            }
             // the belt
-            s.ellipsoid(ps, 0, 0.05F, 0, 0.1F, 0.016F, 0.072F, seed + 90);
+            s.ellipsoid(ps, 0, 0.045F, 0, 0.1F, 0.016F, 0.072F, seed + 90);
         }
         // abdomen, leaning very slightly into the walk
         ps.mulPose(Axis.XP.rotation(0.06F - 0.35F * w.k));
@@ -120,19 +113,9 @@ final class GiantBody {
         ps.translate(0, 0.5F, 0);
         ps.mulPose(Axis.ZP.rotation(w.hipRoll * 0.6F));
         s.ellipsoid(ps, 0, 0.015F, 0, 0.09F, 0.06F, 0.062F, seed + 21);
-        // a long skirt of gold-hemmed crimson to the knees
+        // a long crimson skirt to the knees
         s.material(m.cloth(), 1, 1, 1);
-        for (int i = 0; i < (s.detail ? 10 : 5); i++) {
-            float ang = (float) (i / (s.detail ? 10.0 : 5.0) * Math.PI * 2);
-            float x = Mth.sin(ang) * 0.085F, z = Mth.cos(ang) * 0.068F;
-            ps.pushPose();
-            ps.translate(x, 0.02F, z);
-            ps.mulPose(Axis.YP.rotation(ang));
-            float swing = (x < 0 ? w.swingR : w.swingL) * 0.5F;
-            ps.mulPose(Axis.XP.rotation(-0.1F - Math.max(0, -swing)));
-            s.ellipsoid(ps, 0, -0.12F, 0.01F, 0.05F, 0.13F, 0.012F, seed + 80 + i);
-            ps.popPose();
-        }
+        s.ellipsoid(ps, 0, -0.08F, 0.004F, 0.11F, 0.17F, 0.088F, seed + 80);
         s.material(m.gold(), 1, 1, 1);
         s.ellipsoid(ps, 0, 0.05F, 0, 0.096F, 0.02F, 0.07F, seed + 90);
         ps.mulPose(Axis.XP.rotation(-0.03F - 0.3F * w.k));
@@ -148,7 +131,7 @@ final class GiantBody {
 
         // the cloak: panels hung from the shoulders down the back, nearly to the ground, rippling as he walks
         s.material(m.cloth(), 1, 1, 1);
-        int panels = s.detail ? 7 : 4;
+        int panels = s.detail ? 5 : 3;
         for (int i = 0; i < panels; i++) {
             float f = (i - (panels - 1) / 2.0F) / ((panels - 1) / 2.0F);
             ps.pushPose();

@@ -95,14 +95,13 @@ public final class GiantRenderer {
                 double apparent = dist / h;
                 Sculpt s;
                 if (apparent < 2.2) {
-                    s = new Sculpt(mats.bronze(), inkBuf, light, 8, 14, true);
-                    s.inkWidth = 0.0035F;
-                } else if (apparent < 5) {
-                    s = new Sculpt(mats.bronze(), null, light, 6, 10, true);
-                } else if (apparent < 10) {
-                    s = new Sculpt(mats.bronze(), null, light, 5, 8, false);
+                    s = new Sculpt(mats.bronze(), null, light, 7, 12, true);
+                } else if (apparent < 4.5) {
+                    s = new Sculpt(mats.bronze(), null, light, 5, 9, false);
+                } else if (apparent < 9) {
+                    s = new Sculpt(mats.bronze(), null, light, 4, 7, false);
                 } else {
-                    s = new Sculpt(mats.bronze(), null, light, 3, 6, false);
+                    s = new Sculpt(mats.bronze(), null, light, 3, 5, false);
                 }
 
                 pose.pushPose();

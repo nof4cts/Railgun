@@ -54,7 +54,7 @@ metal = mix(dark, bright, np.clip(base * 1.1 - 0.05 + (fine - 0.5) * 0.25, 0, 1)
 # verdigris: mottled, and run downward in streaks (v is down the body)
 pat = noise(3, 2.4)
 runs = noise(4, 2.0, stretch=(5.0, 0.6))
-green = np.clip((pat * 0.65 + runs * 0.55 - 0.62) * 3.2, 0, 1)
+green = np.clip((pat * 0.65 + runs * 0.55 - 0.72) * 3.0, 0, 1)
 verd = mix(np.array([58, 112, 92.0]), np.array([104, 160, 132.0]), noise(5, 1.6))
 metal = mix(metal, verd, green * 0.85)
 # hammer dimples: soft dark rings
