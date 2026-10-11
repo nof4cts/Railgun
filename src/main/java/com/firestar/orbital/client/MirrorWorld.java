@@ -8,7 +8,6 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -25,11 +24,13 @@ public final class MirrorWorld {
     private MirrorWorld() {}
 
     private static final ResourceLocation WHITE = OrbitalMod.id("textures/misc/white.png");
-    private static final int N = 44;
+    private static final int N = 72;
+    /** The hanging land's radius, in zone radii: wide enough to fill the sky. */
+    static final float SPAN = 4.5F;
     private static final Map<Integer, float[][]> HEIGHTS = new HashMap<>();
 
     /** How far the land hangs at its deepest, relative to the zone's radius. */
-    static final float HANG = 0.7F;
+    static final float HANG = 0.9F;
 
     /** The height of the hanging land's base over the mark at time t, and how solid it is. */
     static float base(Strikes.Active a, float t) {
@@ -37,7 +38,7 @@ public final class MirrorWorld {
         float dmax = a.radius * HANG;
         if (t < I) {
             float k = Mth.clamp((t - 108) / (I - 108.0F), 0, 1);
-            return Mth.lerp((float) Math.pow(k, 1.7), 280, dmax);
+            return Mth.lerp((float) Math.pow(k, 1.7), 240, dmax);
         }
         float k = (t - I) / 70.0F;
         return dmax + 300 * k * k;
@@ -61,12 +62,13 @@ public final class MirrorWorld {
                         h[i][j] = 0;
                         continue;
                     }
-                    double n = fbm(u * 2.6, v * 2.6, seed);
-                    double peak = Math.max(0, (n - 0.42) / 0.58);
+                    double n = fbm(u * 7.0, v * 7.0, seed);
+                    double peak = Math.max(0, (n - 0.4) / 0.6);
                     double fall = 1 - r2;
-                    // the deepest point always hangs over the mark itself
-                    double centre = Math.exp(-r2 * 9.0);
-                    h[i][j] = (float) Math.min(1, Math.pow(peak, 1.4) * fall * 0.85 + centre);
+                    // the deepest point always hangs over the mark itself: a mountain upside down, a zone wide
+                    double centre = Math.exp(-r2 * SPAN * SPAN * 1.6);
+                    double ridges = Math.pow(peak, 1.6) * fall * 0.55 + Math.pow(1 - Math.abs(2 * fbm(u * 14, v * 14, seed + 3) - 1), 6) * 0.12 * fall;
+                    h[i][j] = (float) Math.min(1, ridges + centre * (0.9 + 0.1 * peak));
                 }
             }
             return h;
@@ -83,7 +85,7 @@ public final class MirrorWorld {
         }
         Minecraft mc = Minecraft.getInstance();
         float[][] h = heights(a);
-        float rm = a.radius * 1.45F;
+        float rm = a.radius * SPAN;
         float dmax = a.radius * HANG;
         float baseY = (float) a.target.y + base(a, t);
         Vec3 cam = event.getCamera().getPosition();
@@ -93,7 +95,7 @@ public final class MirrorWorld {
         Matrix4f m = ps.last().pose();
         Matrix3f nm = ps.last().normal();
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
-        RenderType type = RenderType.entityTranslucent(WHITE);
+        RenderType type = RenderType.debugQuads();
         VertexConsumer vc = buffers.getBuffer(type);
         float time = (System.nanoTime() % 1_000_000_000_000L) / 1.0E9F;
         for (int i = 0; i < N; i++) {
@@ -113,9 +115,11 @@ public final class MirrorWorld {
                     float nx = -dx, ny = -1, nz = -dz;
                     float l = Mth.sqrt(nx * nx + ny * ny + nz * nz);
                     float[] c = colour(u, v, d, a.seed, time);
-                    float edge = Mth.clamp((1 - (u * u + v * v)) * 6, 0, 1);
-                    vc.vertex(m, x, y, z).color(c[0], c[1], c[2], alpha * edge).uv(0.5F, 0.5F).overlayCoords(OverlayTexture.NO_OVERLAY)
-                            .uv2(0xF000F0).normal(nm, nx / l, ny / l, nz / l).endVertex();
+                    // its own light: the sun of its world is behind it; we see it lit from the side, rims bright
+                    float lit = 0.45F + 0.55F * Math.max(0, (nx * 0.6F - ny * 0.2F + nz * 0.5F) / l);
+                    float edge = Mth.clamp((1 - (u * u + v * v)) * 5, 0, 1);
+                    vc.vertex(m, x, y, z).color(Math.min(1, c[0] * lit + c[3]), Math.min(1, c[1] * lit + c[4]), Math.min(1, c[2] * lit + c[5]), alpha * edge)
+                            .endVertex();
                 }
             }
         }
@@ -128,17 +132,23 @@ public final class MirrorWorld {
         return u * u + v * v <= 1.08F ? 1 : 0;
     }
 
-    /** Crimson seas where it hangs shallow, violet-black rock where it hangs deep, fissures of light across it. */
+    /**
+     * Crimson seas where it hangs shallow, violet-black rock and teal moss where it hangs deep, and fissures of light
+     * across it. Returns the lit colour and, separately, the glow (which ignores the light).
+     */
     private static float[] colour(float u, float v, float d, long seed, float time) {
-        float sea = Mth.clamp(1 - d / 0.12F, 0, 1);
-        float r = Mth.lerp(sea, 0.16F, 0.42F), g = Mth.lerp(sea, 0.05F, 0.03F), b = Mth.lerp(sea, 0.22F, 0.08F);
-        double ridge = 1 - Math.abs(2 * fbm(u * 7 + 3, v * 7 - 1, seed + 7) - 1);
-        float fis = (float) Math.pow(ridge, 10) * (1 - sea);
-        float pulse = 0.8F + 0.2F * Mth.sin(time * 2.0F + u * 5);
-        r += fis * 1.0F * pulse;
-        g += fis * 0.2F * pulse;
-        b += fis * 0.6F * pulse;
-        return new float[]{Math.min(1, r), Math.min(1, g), Math.min(1, b)};
+        float sea = Mth.clamp(1 - d / 0.05F, 0, 1);
+        float moss = (float) Mth.clamp((fbm(u * 9 + 5, v * 9, seed + 11) - 0.5) * 6, 0, 1) * (1 - sea);
+        float r = Mth.lerp(sea, 0.30F, 0.62F), g = Mth.lerp(sea, 0.12F, 0.06F), b = Mth.lerp(sea, 0.36F, 0.14F);
+        r = Mth.lerp(moss, r, 0.10F);
+        g = Mth.lerp(moss, g, 0.42F);
+        b = Mth.lerp(moss, b, 0.42F);
+        // the sea shimmers a little
+        float wave = sea * 0.06F * Mth.sin(time * 1.3F + u * 40 + v * 30);
+        double ridge = 1 - Math.abs(2 * fbm(u * 18 + 3, v * 18 - 1, seed + 7) - 1);
+        float fis = (float) Math.pow(ridge, 12) * (1 - sea);
+        float pulse = 0.75F + 0.25F * Mth.sin(time * 2.0F + u * 9);
+        return new float[]{r + wave, g, b + wave, fis * 1.0F * pulse, fis * 0.25F * pulse, fis * 0.7F * pulse};
     }
 
     // ------------------------------------------------------------------------------------------------ noise

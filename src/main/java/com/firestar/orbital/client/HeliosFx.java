@@ -81,8 +81,9 @@ final class HeliosFx {
         // 5. above the array, down the lance as it fires at the Earth
         s.add(Shot.cut(130, 148, (k, t) -> {
             Space.View v = o.view();
-            Vec3 local = o.mark.scale(5.5 - 1.5 * k).add(o.east.scale(1.4)).add(o.north.scale(0.6));
-            space(v, arrayAt, local, axis.scale(60), o.east, 58 + 10 * k);
+            // from off to one side, so the lance runs down across the frame to the curve of the Earth
+            Vec3 local = o.mark.scale(1.6 - 0.4 * k).add(o.east.scale(5.5 - 1.0 * k)).add(o.north.scale(2.0));
+            space(v, arrayAt, local, axis.scale(22), o.mark, 62 + 8 * k);
             v.helios = true;
             v.axis = axis;
             v.unfold = 1;
@@ -93,11 +94,11 @@ final class HeliosFx {
             return Orbit.hold();
         }));
         // 6. wide on the land: the lance comes down out of the sky, silent
-        s.add(Shot.cut(148, 164, (k, t) -> pose(T.subtract(dir.scale(70)).add(side.scale(26)).add(0, 10, 0), T.add(0, 26 + 30 * (1 - k), 0), 62)));
+        s.add(Shot.cut(148, 164, (k, t) -> pose(T.subtract(dir.scale(80)).add(side.scale(30)).add(0, 22, 0), T.add(0, 40 + 40 * (1 - k), 0), 66)));
         // 7. closer, as the ground goes
-        s.add(Shot.cut(164, 188, (k, t) -> pose(T.subtract(dir.scale(36 - 6 * k)).add(side.scale(12)).add(0, 4 + 3 * k, 0), T.add(0, 8, 0), 58 + 8 * k)));
+        s.add(Shot.cut(164, 188, (k, t) -> pose(T.subtract(dir.scale(42 - 8 * k)).add(side.scale(16)).add(0, 16 + 4 * k, 0), T.add(0, 6, 0), 60 + 8 * k)));
         // 8. back to the caller, the lance in hand
-        s.add(Shot.cut(188, a.cannon.film, (k, t) -> pose(P.subtract(dir.scale(4.5 - 1.2 * k)).add(side.scale(1.1)).add(0, 1.9, 0), a.beam(0).add(0, 6, 0), 64)));
+        s.add(Shot.cut(188, a.cannon.film, (k, t) -> pose(P.subtract(dir.scale(5.5 - 1.2 * k)).add(side.scale(2.6)).add(0, 3.6, 0), a.beam(0).add(0, 4, 0), 66)));
 
         String[][] lines = {{"4", "Uplink established. Channel one."}, {"36", "Helios, wake up."}, {"66", "Open the mirrors."},
                 {"104", "Gather the sun."}, {"132", "Fire."}, {"190", "It's yours. Cut."}};

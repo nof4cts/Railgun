@@ -158,7 +158,8 @@ public final class Director {
             return pose;
         }
         Vec3 dir = pose.pos().subtract(subject);
-        if (dir.lengthSqr() < 1.0E-6) {
+        if (dir.lengthSqr() < 1.0E-6 || dir.lengthSqr() > 16 * 16) {
+            // a distant subject: whatever stands between is part of the view, not a wall to hide behind
             return pose;
         }
         return new CameraPose(hit.getLocation().subtract(dir.normalize().scale(0.35)), pose.look(), pose.fov(), pose.roll());

@@ -66,6 +66,8 @@ public final class Strikes {
         // Antipode
         int[][] columns;
         int done;
+        /** The zone's average ground height: the level the other world's relief is mirrored about. */
+        double mirror;
 
         Active(int id, Cannon cannon, ServerPlayer p, Vec3 target, long start, long seed, float radius) {
             this.id = id;
@@ -292,6 +294,14 @@ public final class Strikes {
         if (t == c.impact) {
             hurt(a, a.target, a.radius, OConfig.SERVER.antipodeDamage.get().floatValue(), true);
             a.columns = columns(a.radius);
+            double sum = 0;
+            int n = 0;
+            for (int i = 0; i < a.columns.length; i += 7) {
+                int[] col = a.columns[i];
+                sum += a.level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(a.target.x) + col[0], Mth.floor(a.target.z) + col[1]) - 1;
+                n++;
+            }
+            a.mirror = n > 0 ? sum / n : a.target.y;
         }
         if (a.columns == null || t < c.impact || a.done >= a.columns.length) {
             return budget;
@@ -331,7 +341,7 @@ public final class Strikes {
     private static int exchange(Active a, int dx, int dz) {
         ServerLevel l = a.level;
         int x = Mth.floor(a.target.x) + dx, z = Mth.floor(a.target.z) + dz;
-        int y0 = Mth.floor(a.target.y);
+        double y0 = a.mirror;
         double d = Math.sqrt(dx * dx + dz * dz);
         double edge = Mth.clamp((a.radius - d) / (a.radius * 0.25), 0, 1);
         edge = edge * edge * (3 - 2 * edge);
@@ -353,13 +363,16 @@ public final class Strikes {
                 used++;
             }
         }
-        // the other world's soil, from a little under the new surface up to it
-        boolean warped = Math.sin(x * 0.07 + z * 0.05 + a.seed % 13) + r.nextDouble() * 0.3 > 0.15;
+        // the other world's soil, from a little under the new surface up to it: a patchwork of its growths
+        double patch = Math.sin(x * 0.21 + a.seed % 13) + Math.cos(z * 0.17 - a.seed % 7) + Math.sin((x + z) * 0.11) * 0.8 + r.nextDouble() * 0.5;
+        boolean warped = patch > 0.25;
+        boolean sculk = Math.abs(patch - 0.25) < 0.22;
         for (int y = Math.min(n - 4, s - 3); y <= n; y++) {
             m.set(x, y, z);
             BlockState st;
             if (y == n) {
-                st = (d > a.radius - 1.3 ? Blocks.CRYING_OBSIDIAN : warped ? Blocks.WARPED_NYLIUM : Blocks.CRIMSON_NYLIUM).defaultBlockState();
+                st = (d > a.radius - 1.3 ? Blocks.CRYING_OBSIDIAN : sculk ? Blocks.SCULK : warped ? Blocks.WARPED_NYLIUM : Blocks.CRIMSON_NYLIUM)
+                        .defaultBlockState();
             } else if (r.nextInt(30) == 0) {
                 st = Blocks.CRYING_OBSIDIAN.defaultBlockState();
             } else {

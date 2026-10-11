@@ -100,7 +100,7 @@ final class AntipodeFx {
         s.add(Shot.cut(174, 206, (k, t) -> {
             double ang = Math.toRadians(-30 + 70 * k);
             Vec3 round = D.scale(-Math.cos(ang)).add(S.scale(Math.sin(ang)));
-            return pose(T.add(round.scale(R0 * 1.9)).add(0, R0 * 1.1, 0), T, 64);
+            return pose(T.add(round.scale(R0 * 2.3)).add(0, R0 * 1.6, 0), T, 62);
         }));
         // 7. back to the caller
         s.add(Shot.cut(206, a.cannon.film, (k, t) -> pose(P.subtract(D.scale(4.5 - 1.0 * k)).add(S.scale(1.2)).add(0, 1.9, 0), T.add(0, 6, 0), 66)));
@@ -139,10 +139,10 @@ final class AntipodeFx {
             Light.ring(T.add(0, 0.6, 0), UP, r * 0.2F, r * 3.5F, r * 0.12F, PALE, 1.2F);
             Light.ring(T.add(0, 1.0, 0), UP, r * 0.1F, r * 2.2F, r * 0.08F, MAGENTA, 1.8F);
             Light.burst(T.add(0, 2, 0), 120, 2.6F, MAGENTA, 1.8F, 0.3F);
-            for (int i = 0; i < 48; i++) {
-                double ang = i / 48.0 * Math.PI * 2;
+            for (int i = 0; i < 24; i++) {
+                double ang = i / 24.0 * Math.PI * 2;
                 Vec3 out = new Vec3(Math.cos(ang), 0, Math.sin(ang));
-                Smoke.puff(T.add(out.scale(r * 0.3)).add(0, 1, 0), out.scale(1.4).add(0, 0.2, 0), r * 0.15F, r * 0.6F, 4.0F, 0x2A1626, 0.6F, 0.92F,
+                Smoke.puff(T.add(out.scale(r * 0.3)).add(0, 1, 0), out.scale(1.6).add(0, 0.15, 0), r * 0.1F, r * 0.35F, 2.5F, 0x6A3A5C, 0.35F, 0.92F,
                         0.04F);
             }
         }
@@ -150,11 +150,13 @@ final class AntipodeFx {
         if (t > I && t < c.hold) {
             float k = (t - I) / (float) (c.hold - I);
             float front = r * k;
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 4; i++) {
                 double ang = R.nextDouble() * Math.PI * 2;
                 Vec3 out = new Vec3(Math.cos(ang), 0, Math.sin(ang));
                 Vec3 at = T.add(out.scale(front)).add(0, 1 + R.nextDouble() * 3, 0);
-                Smoke.puff(at, out.scale(0.3).add(0, 0.25, 0), 2.5F, 7.5F, 3.0F, R.nextBoolean() ? 0x3A2238 : 0x1C1018, 0.45F, 0.95F, 0.06F);
+                if (i == 0) {
+                    Smoke.puff(at, out.scale(0.3).add(0, 0.25, 0), 1.5F, 4.5F, 2.0F, 0x7A4A6C, 0.25F, 0.95F, 0.06F);
+                }
                 Light.spark(at, out.scale(0.3).add(0, 0.6 + R.nextDouble(), 0), 1.0F, R.nextBoolean() ? MAGENTA : VIOLET, 0.12F);
             }
             if (t % 6 == 0) {
@@ -184,19 +186,19 @@ final class AntipodeFx {
         if (grow > 0 && fade > 0) {
             Vec3 centre = T.add(0, 170, 0);
             Random rr = new Random(a.seed);
-            int arms = 9;
+            int arms = 13;
             for (int i = 0; i < arms; i++) {
                 double ang = i / (double) arms * Math.PI * 2 + rr.nextDouble() * 0.5;
-                double len = r * (2.2 + rr.nextDouble() * 1.6) * Math.min(1, grow * (1.2 + rr.nextDouble()));
+                double len = r * (3.5 + rr.nextDouble() * 2.5) * Math.min(1, grow * (1.2 + rr.nextDouble()));
                 Vec3 dir = new Vec3(Math.cos(ang), (rr.nextDouble() - 0.5) * 0.15, Math.sin(ang));
                 Vec3 end = centre.add(dir.scale(len));
                 long seed = a.seed + i * 977L + (long) (t / 3);
-                Shapes.bolt(out, centre, end, a.seed + i * 977L, len * 0.18, 3.2F, 0.35F * fade, MAGENTA, Ribbon.Style.GLOW);
-                Shapes.bolt(out, centre, end, a.seed + i * 977L, len * 0.18, 1.0F, 0.95F * fade, PALE, Ribbon.Style.GLOW);
+                Shapes.bolt(out, centre, end, a.seed + i * 977L, len * 0.18, 9.0F, 0.35F * fade, MAGENTA, Ribbon.Style.GLOW);
+                Shapes.bolt(out, centre, end, a.seed + i * 977L, len * 0.18, 2.6F, 0.95F * fade, PALE, Ribbon.Style.GLOW);
                 // a branch
                 Vec3 mid = centre.add(dir.scale(len * 0.55));
                 Vec3 branch = mid.add(Shapes.rotateY(dir, 35 * (rr.nextBoolean() ? 1 : -1)).scale(len * 0.4));
-                Shapes.bolt(out, mid, branch, seed, len * 0.1, 0.7F, 0.7F * fade, PALE, Ribbon.Style.GLOW);
+                Shapes.bolt(out, mid, branch, seed, len * 0.1, 1.8F, 0.7F * fade, PALE, Ribbon.Style.GLOW);
             }
         }
         // lightning between the two lands as they close
