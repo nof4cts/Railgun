@@ -40,6 +40,7 @@ public final class SelfTest {
 
     private static final Step[] ORDER = {
             new Step(0, "dash", 12, 30, new int[]{1, 2, 3, 5, 8}, false),
+            new Step(0, "dash_skyward", 12, 30, new int[]{2, 8, 20}, false),
             new Step(1, "freeze", 7, 40, new int[]{1, 2, 4, 8, 16, 30}, false),
             new Step(1, "freeze_front", 7, 30, new int[]{3, 10, 24}, true),
             new Step(2, "barrage", 4, 40, new int[]{2, 6, 12, 18, 24, 25, 28}, false),
@@ -134,7 +135,18 @@ public final class SelfTest {
         }
         if (now == castAt) {
             int slot = ORDER[index].slot;
-            server.execute(() -> Projection.useKey(player(server), slot));
+            String label = ORDER[index].label;
+            server.execute(() -> {
+                ServerPlayer sp = player(server);
+                if (label.equals("dash_skyward")) {
+                    // turned away from the golems, staring at the sky: the dash must still run along the ground
+                    sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), sp.getYRot() + 180, -45);
+                    sp.setXRot(-45);
+                }
+                double y0 = sp.getY();
+                Projection.useKey(sp, slot);
+                Naoya.LOGGER.info("[selftest] {} y before={} after={} onGround={}", label, y0, sp.getY(), sp.onGround());
+            });
         }
     }
 

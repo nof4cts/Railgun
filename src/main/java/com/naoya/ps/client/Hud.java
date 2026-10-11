@@ -38,8 +38,8 @@ public final class Hud {
         int ce = JjkNet.EnergySync.clientValue;
         int barW = 90, bx = w - barW - 4, by = 19;
         g.fill(bx - 1, by - 1, bx + barW + 1, by + 6, 0x90000000);
-        g.fill(bx, by, bx + barW * ce / 500, by + 5, 0xFF000000 | color);
-        String ceText = "CE " + ce + " / 500";
+        g.fill(bx, by, bx + barW * Math.min(ce, 1000) / 1000, by + 5, 0xFF000000 | color);
+        String ceText = "CE " + ce + " / 1000";
         g.drawString(font, ceText, bx - font.width(ceText) - 4, by - 1, 0xFFE0E0E0, true);
         // acceleration: five frames of film, lit one by one
         int fy = by + 10;

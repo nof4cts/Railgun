@@ -55,8 +55,8 @@ public final class JjkHud {
             int bx = w - barW - 4;
             int by = 19;
             g.fill(bx - 1, by - 1, bx + barW + 1, by + 6, -1879048192);
-            g.fill(bx, by, bx + barW * ce / 500, by + 5, 0xFF000000 | s.color);
-            String ceText = "CE " + ce + " / 500";
+            g.fill(bx, by, bx + barW * Math.min(ce, 1000) / 1000, by + 5, 0xFF000000 | s.color);
+            String ceText = "CE " + ce + " / 1000";
             g.drawString(mc.font, ceText, bx - mc.font.width(ceText) - 4, by - 1, -2039576, true);
          }
 

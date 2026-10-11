@@ -220,6 +220,13 @@ public final class Projection {
         return fallback;
     }
 
+    /** The floor under {@code at} (looking up to 1.5 blocks above it and 24 below), so a dash lands on its feet. */
+    private static Vec3 ground(ServerPlayer p, Vec3 at) {
+        Vec3 top = at.add(0, 1.5, 0);
+        BlockHitResult hit = p.level().clip(new ClipContext(top, top.subtract(0, 25.5, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, p));
+        return hit.getType() == HitResult.Type.BLOCK ? new Vec3(at.x, hit.getLocation().y, at.z) : at;
+    }
+
     private static void teleport(ServerPlayer p, Vec3 to, Vec3 face) {
         Vec3 d = face.subtract(to);
         float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
@@ -310,16 +317,19 @@ public final class Projection {
         if (t != null) {
             Vec3 d = t.position().subtract(from).multiply(1, 0, 1);
             d = d.lengthSqr() < 1.0E-4 ? flatLook(p) : d.normalize();
-            to = safe(p, t.position().subtract(d.scale(t.getBbWidth() * 0.5 + 0.9)), from);
+            to = safe(p, ground(p, t.position().subtract(d.scale(t.getBbWidth() * 0.5 + 0.9))), from);
         } else {
-            Vec3 end = ray(p, eye, new Vec3(look.x, Math.max(-0.4, Math.min(0.4, look.y)), look.z).normalize(), range);
-            to = safe(p, end.subtract(0, p.getEyeHeight(), 0), from);
+            // a flat run along the ground, wherever he is looking: never up into the air
+            Vec3 flat = flatLook(p);
+            Vec3 start = from.add(0, 0.6, 0);
+            Vec3 end = ray(p, start, flat, range);
+            to = safe(p, ground(p, end), from);
         }
         for (LivingEntity e : along(p, from.add(0, 1, 0), to.add(0, 1, 0), 1.3)) {
             hit(p, e, e == t ? 6 : 4, to.subtract(from).normalize().scale(0.6).add(0, 0.25, 0));
         }
         teleport(p, to, t != null ? t.getEyePosition() : to.add(look.scale(5)).add(0, p.getEyeHeight(), 0));
-        p.setDeltaMovement(to.subtract(from).normalize().scale(0.35));
+        p.setDeltaMovement(to.subtract(from).multiply(1, 0, 1).normalize().scale(0.35));
         p.hurtMarked = true;
         fx(p, Fx.DASH, from, to, stacks(p), t == null ? -1 : t.getId(), 24);
         play(p.serverLevel(), from, Sounds.DASH.get(), 1.0F, 1.0F + 0.05F * stacks(p));
