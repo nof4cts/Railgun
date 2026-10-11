@@ -42,11 +42,9 @@ public final class Choreo {
     static final int[][] KICK = {{Impact.WHITEOUT, 1}, {Impact.INVERT, 1}};
     static final int[][] HEAVY = {{Impact.WHITEOUT, 1}, {Impact.INK, 1}, {Impact.INVERT, 1}, {Impact.LINES, 1}};
     static final int[][] BEAM = {{Impact.WHITEOUT, 1}, {Impact.HALFTONE, 1}, {Impact.INVERT, 1}, {Impact.LINES, 2}};
-    static final int[][] SURGE = {{Impact.WHITEOUT, 1}, {Impact.INVERT, 1}, {Impact.HALFTONE, 2}, {Impact.LINES, 1}, {Impact.INK, 1}, {Impact.INVERT, 1}};
-    static final int[][] SUMMIT = {{Impact.WHITEOUT, 1}, {Impact.INK, 1}, {Impact.INVERT, 1}, {Impact.HALFTONE, 1}, {Impact.LINES, 2}, {Impact.NEGATIVE, 1},
-            {Impact.INVERT, 1}, {Impact.WHITEOUT, 1}, {Impact.HALFTONE, 2}};
-    static final int[][] BOOM = {{Impact.WHITEOUT, 2}, {Impact.INVERT, 1}, {Impact.INK, 1}, {Impact.LINES, 2}, {Impact.NEGATIVE, 1}, {Impact.HALFTONE, 1},
-            {Impact.WHITEOUT, 1}};
+    static final int[][] SURGE = {{Impact.WHITEOUT, 1}, {Impact.INVERT, 1}, {Impact.HALFTONE, 1}, {Impact.LINES, 1}};
+    static final int[][] SUMMIT = {{Impact.WHITEOUT, 1}, {Impact.INK, 1}, {Impact.INVERT, 1}, {Impact.LINES, 1}, {Impact.HALFTONE, 1}};
+    static final int[][] BOOM = {{Impact.WHITEOUT, 1}, {Impact.INVERT, 1}, {Impact.LINES, 1}, {Impact.HALFTONE, 1}};
 
     private Choreo() {}
 
@@ -673,8 +671,8 @@ public final class Choreo {
                     float rad = sphereRadius(c, t, zenith);
                     if (rad > 0.05F) {
                         Vec3 s = spherePos(c, t);
-                        Light.flare(s, rad * 2.6F, BLUE, 0.05F);
-                        Light.flare(s, rad * 1.3F, SILVER, 0.05F);
+                        Light.flare(s, rad * 1.5F, BLUE, 0.05F);
+                        Light.flare(s, rad * 0.75F, SILVER, 0.05F);
                         if (t < Beats.SPHERE_THROW) {
                             for (int i = 0; i < 4; i++) {
                                 Vec3 from = s.add(new Vec3(r.nextGaussian(), r.nextGaussian() * 0.6, r.nextGaussian()).normalize().scale(20 + r.nextDouble() * 10));

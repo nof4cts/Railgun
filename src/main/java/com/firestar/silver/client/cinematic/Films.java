@@ -47,7 +47,7 @@ public final class Films {
         switch (c.move) {
             case WAVE -> {
                 // the gathering: hands at his side, the light between them
-                s.add(Shot.cut(0, 16, (k, t) -> at(rel(c, F, l(k, 1.4, 1.2), 1.0, l(k, 1.0, 0.8)), rel(c, F, 0.35, 0.95, 0.0), l(k, 40, 34), 0)));
+                s.add(Shot.cut(0, 16, (k, t) -> at(rel(c, F, l(k, 2.2, 1.9), 1.1, l(k, 2.0, 1.7)), rel(c, F, 0.3, 1.0, 0.0), l(k, 48, 44), 0)));
                 s.add(Shot.cut(16, Beats.WAVE_FIRE, (k, t) -> at(rel(c, F, l(k, -2.0, -1.4), l(k, 0.6, 0.9), l(k, 3.6, 3.0)), E.subtract(0, 0.3, 0), l(k, 54, 46), 0)));
                 // the release: behind his shoulder, down the length of the beam
                 s.add(Shot.cut(Beats.WAVE_FIRE, 50, (k, t) -> at(rel(c, F, l(k, -1.4, -1.8), 2.0, l(k, -2.6, -3.4)), P, l(k, 62, 74), 0)));
@@ -97,7 +97,7 @@ public final class Films {
             }
             case FINAL -> {
                 // still eyes in a rising storm
-                s.add(Shot.cut(0, 26, (k, t) -> at(rel(c, F, 0.12, 1.64, l(k, 1.1, 0.85)), E, l(k, 30, 26), 0)));
+                s.add(Shot.cut(0, 26, (k, t) -> at(rel(c, F, 0.25, 1.6, l(k, 2.2, 1.8)), E.subtract(0, 0.2, 0), l(k, 42, 38), 0)));
                 s.add(Shot.cut(26, 50, (k, t) -> at(orbit(c, F, l(k, 4.6, 3.8), l(k, -40, 120), l(k, 0.6, 1.4)), F.add(0, 1.3, 0), 58, 0)));
                 // the charge, hands drawn back: crane up and away
                 s.add(Shot.cut(50, Beats.FINAL_FIRE, (k, t) -> at(rel(c, F, l(k, 3.0, 5.0), l(k, 1.0, 5.0), l(k, 3.0, 6.0)), F.add(0, 1.4, 0), 64, 0)));
@@ -112,18 +112,18 @@ public final class Films {
             }
             case AWAKEN_OMEN -> {
                 // a fist closing, his eyes, his breath
-                s.add(Shot.cut(0, 22, (k, t) -> at(rel(c, F, l(k, 0.9, 0.75), 0.95, l(k, 0.75, 0.6)), rel(c, F, 0.35, 0.85, 0.15), 30, 0)));
-                s.add(Shot.cut(22, 46, (k, t) -> at(rel(c, F, 0.1, 1.62, l(k, 1.0, 0.8)), E, l(k, 32, 28), 0)));
+                s.add(Shot.cut(0, 22, (k, t) -> at(rel(c, F, l(k, 1.9, 1.6), 1.0, l(k, 1.7, 1.4)), rel(c, F, 0.3, 0.9, 0.1), 44, 0)));
+                s.add(Shot.cut(22, 46, (k, t) -> at(rel(c, F, 0.2, 1.6, l(k, 2.1, 1.7)), E.subtract(0, 0.2, 0), l(k, 42, 38), 0)));
                 s.add(Shot.cut(46, Beats.OMEN_SURGE, (k, t) -> at(orbit(c, F, l(k, 3.2, 2.6), l(k, 20, 160), 1.2), F.add(0, 1.2, 0), 52, 0)));
                 // the surge: low hero angle
                 s.add(Shot.cut(Beats.OMEN_SURGE, c.move.length, (k, t) -> at(rel(c, F, l(k, 1.2, 1.6), l(k, 0.3, 0.6), l(k, 3.4, 4.4)), F.add(0, 1.7, 0), l(k, 58, 52), 0)));
             }
             case AWAKEN_ZENITH -> {
-                s.add(Shot.cut(0, 24, (k, t) -> at(rel(c, F, 0.05, 1.63, l(k, 0.9, 0.7)), E, l(k, 28, 24), 0)));
+                s.add(Shot.cut(0, 24, (k, t) -> at(rel(c, F, 0.15, 1.6, l(k, 2.1, 1.7)), E.subtract(0, 0.2, 0), l(k, 40, 36), 0)));
                 s.add(Shot.cut(24, 56, (k, t) -> at(rel(c, F, l(k, -1.6, -1.2), 1.2, l(k, 3.0, 2.4)), E, 46, 0)));
                 // the light gathering: crane up as it rises from the ground
                 s.add(Shot.cut(56, 90, (k, t) -> at(rel(c, F, 2.0, l(k, 0.4, 5.0), l(k, 5.0, 7.5)), F.add(0, l(k, 0.8, 1.6), 0), 62, 0)));
-                s.add(Shot.cut(90, Beats.ZENITH_SURGE, (k, t) -> at(rel(c, F, 0.1, 1.62, l(k, 0.8, 0.6)), E, 26, 0)));
+                s.add(Shot.cut(90, Beats.ZENITH_SURGE, (k, t) -> at(rel(c, F, 0.1, 1.6, l(k, 1.8, 1.5)), E.subtract(0, 0.15, 0), 36, 0)));
                 // the summit: wide, then the calm close-up
                 s.add(Shot.cut(Beats.ZENITH_SURGE, 124, (k, t) -> at(rel(c, F, l(k, 0, 1.5), l(k, 2.0, 1.2), l(k, 7.5, 5.5)), F.add(0, 1.3, 0), 62, 0)));
                 s.add(Shot.cut(124, c.move.length, (k, t) -> at(rel(c, F, 0.35, 1.6, l(k, 1.5, 1.2)), E, 34, 0)));

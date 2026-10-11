@@ -56,6 +56,7 @@ public final class Techniques {
         final int seed;
         final int form;
         Vec3 sphereEnd;
+        Vec3 liftFrom;
 
         Cast(Move move, ServerPlayer player, long start, Vec3 origin, Vec3 dir, Vec3 point, Vec3 exit, LivingEntity target, int seed) {
             this.move = move;
@@ -464,18 +465,28 @@ public final class Techniques {
                     teleport(c, safe(p, t.position().subtract(across.scale(t.getBbWidth() * 0.5 + 0.9)), p.position()), t.getBoundingBox().getCenter());
                 }
                 if (age == Beats.METEOR_LAUNCH) {
-                    hit(c, t, 4.0F, new Vec3(0, 1.45, 0), 0, false);
+                    hit(c, t, 4.0F, null, 0, false);
+                    c.liftFrom = t.position();
                 }
-                if (age >= Beats.METEOR_UP && age < Beats.METEOR_SLAM) {
-                    // in the air with it: hold beside it as it hangs
-                    Vec3 tc = t.position();
-                    if (age < Beats.METEOR_SPIKE) {
-                        t.setDeltaMovement(0, 0.02, 0);
-                        t.hurtMarked = true;
-                        teleport(c, tc.add(c.flat.scale(-1.1)).add(0, 0.2, 0), t.getBoundingBox().getCenter());
+                // the target is carried, not thrown: up on the launch, held for the hits, driven down by the spike
+                if (c.liftFrom != null && age > Beats.METEOR_LAUNCH && age <= Beats.METEOR_SLAM) {
+                    double h;
+                    if (age <= Beats.METEOR_UP) {
+                        double k = (age - Beats.METEOR_LAUNCH) / (double) (Beats.METEOR_UP - Beats.METEOR_LAUNCH);
+                        h = 5.0 * (1 - (1 - k) * (1 - k));
+                    } else if (age < Beats.METEOR_SPIKE) {
+                        h = 5.0 + 0.15 * Math.sin(age * 0.9);
                     } else {
-                        teleport(c, tc.add(0, t.getBbHeight() + 0.6, 0).add(c.flat.scale(-0.3)), t.getBoundingBox().getCenter());
+                        double k = (age - Beats.METEOR_SPIKE) / (double) (Beats.METEOR_SLAM - Beats.METEOR_SPIKE);
+                        h = 5.0 * (1 - k * k);
                     }
+                    Vec3 to = c.liftFrom.add(0, h, 0);
+                    if (c.level.noCollision(t, t.getBoundingBox().move(to.subtract(t.position())))) {
+                        t.teleportTo(to.x, to.y, to.z);
+                    }
+                    t.setDeltaMovement(Vec3.ZERO);
+                    t.fallDistance = 0;
+                    t.hurtMarked = true;
                 }
                 for (int h : Beats.METEOR_HITS) {
                     if (age == h) {
@@ -483,7 +494,7 @@ public final class Techniques {
                     }
                 }
                 if (age == Beats.METEOR_SPIKE) {
-                    hit(c, t, 5.0F, new Vec3(0, -3.0, 0), 0, false);
+                    hit(c, t, 5.0F, null, 0, false);
                 }
                 if (age == Beats.METEOR_SLAM) {
                     Vec3 g = ground(p, t.position());
