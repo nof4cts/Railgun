@@ -206,7 +206,7 @@ void main() {
         if (sky) {
             float up = clamp(rd.y, 0.0, 1.0);
             vec3 skyCol = mix(vec3(0.55, 0.12, 0.22), vec3(0.18, 0.02, 0.08), pow(up, 0.6));
-            col = mix(col, skyCol, Crimson * 0.85);
+            col = mix(col, skyCol, Crimson * 0.72);
         } else {
             col *= mix(vec3(1.0), vec3(1.0, 0.68, 0.78), Crimson * 0.55);
         }
@@ -221,9 +221,13 @@ void main() {
             float lr = length(l);
             float reach = Mirror.w * 7.0 * Cracks.x;
             float m = smoothstep(reach, reach * 0.6, lr);
-            float e = voronoiEdge(l * 0.022, Cracks.w);
-            float e2 = voronoiEdge(l * 0.07 + 3.0, Cracks.w + 5.0);
-            float crack = exp(-sqr(e / 0.025)) + 0.5 * exp(-sqr(e2 / 0.03)) * smoothstep(reach * 0.8, reach * 0.3, lr);
+            // warp the plane so the cracks run in jagged, uneven lines, and let only some of the edges split
+            vec2 w = l * 0.022 + (vec2(f2(l * 0.01 + Cracks.w, 4), f2(l * 0.01 + Cracks.w + 7.0, 4)) - 0.5) * 2.2;
+            float e = voronoiEdge(w, Cracks.w);
+            float e2 = voronoiEdge(w * 3.1 + 3.0, Cracks.w + 5.0);
+            float keep = smoothstep(0.35, 0.6, f2(l * 0.015 + Cracks.w * 3.0, 3) + 0.35 * exp(-lr / (Mirror.w * 3.0)));
+            float width = 0.012 + 0.03 * f2(l * 0.03, 3);
+            float crack = exp(-sqr(e / width)) * keep + 0.45 * exp(-sqr(e2 / 0.025)) * keep * smoothstep(reach * 0.8, reach * 0.3, lr);
             float centre = exp(-lr / (Mirror.w * 1.2));
             vec3 g = vec3(1.0, 0.35, 0.7) * crack * 1.6 + vec3(1.0, 0.85, 0.95) * pow(crack, 4.0) * 1.5 + vec3(0.8, 0.1, 0.4) * centre * 0.8;
             col += g * m * Cracks.y;
@@ -276,8 +280,8 @@ void main() {
             vec3 L = axis - P;
             float d = length(L);
             float lit = max(0.0, dot(n, L / max(d, 1e-3))) * 0.8 + 0.2;
-            float fall = (r * r * 30.0) / (d * d + r * r * 3.0);
-            col += col * vec3(1.6, 1.15, 0.6) * fall * lit * I + vec3(1.0, 0.7, 0.3) * fall * 0.06 * I;
+            float fall = min(1.6, (r * r * 5.0) / (d * d + r * r * 2.0));
+            col += col * vec3(1.3, 0.95, 0.5) * fall * lit * I + vec3(1.0, 0.7, 0.3) * fall * 0.03 * I;
             // the ground it stands on runs molten
             float dh = length(P.xz - Beam.xz);
             if (BeamP.w > 0.0 && abs(P.y - Beam.y) < r * 2.5) {
@@ -299,14 +303,14 @@ void main() {
         float sheath = exp(-sqr(c.x / (r * 1.05))) * (0.55 + 0.45 * stream) * (0.8 + 0.2 * spiral);
         float halo = exp(-c.x / (r * 3.0));
         float scatter = exp(-c.x / (r * 16.0));
-        vec3 beam = vec3(1.0, 0.98, 0.92) * core * 4.0 + vec3(1.0, 0.78, 0.38) * sheath * 1.6 + vec3(1.0, 0.62, 0.25) * halo * 0.45
-                + vec3(1.0, 0.7, 0.4) * scatter * 0.12;
+        vec3 beam = vec3(1.0, 0.98, 0.92) * core * 3.0 + vec3(1.0, 0.78, 0.38) * sheath * 1.2 + vec3(1.0, 0.62, 0.25) * halo * 0.25
+                + vec3(1.0, 0.7, 0.4) * scatter * 0.05;
         // where it meets the ground: a sphere of white fire
         vec3 g = vec3(Beam.x, Beam.y, Beam.z);
         float tg = clamp(dot(g, rd), 0.0, tScene);
         float dg = length(rd * tg - g);
         float ground = step(BeamP.y, Beam.y + 1.0);
-        beam += (vec3(1.0, 0.95, 0.85) * exp(-sqr(dg / (r * 1.3))) * 3.0 + vec3(1.0, 0.6, 0.2) * exp(-dg / (r * 4.0)) * 0.6) * ground;
+        beam += (vec3(1.0, 0.95, 0.85) * exp(-sqr(dg / (r * 1.3))) * 2.0 + vec3(1.0, 0.6, 0.2) * exp(-dg / (r * 2.5)) * 0.35) * ground;
         col += beam * inside * I;
     }
 

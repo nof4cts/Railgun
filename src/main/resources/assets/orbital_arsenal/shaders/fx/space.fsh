@@ -200,8 +200,9 @@ vec3 earth(vec3 p, vec3 n, vec3 rd, float dist) {
     float haze = pow(1.0 - max(dot(n, -rd), 0.0), 2.5);
     col = mix(col, scatter * (0.05 + day), haze * 0.75);
     if (Mark.w > 0.0) {
-        float m = dot(n, Mark.xyz);
-        col += vec3(1.0, 0.82, 0.5) * Mark.w * (exp(-(1.0 - m) * 40000.0) * 10.0 + exp(-(1.0 - m) * 3000.0) * 1.2 + exp(-(1.0 - m) * 300.0) * 0.15);
+        // the point of fire, a few kilometres across, with a glow round it a few tens
+        float km = acos(clamp(dot(n, Mark.xyz), -1.0, 1.0)) * 6371.0;
+        col += vec3(1.0, 0.82, 0.5) * Mark.w * (exp(-km / 1.5) * 8.0 + exp(-km / 12.0) * 1.0 + exp(-km / 90.0) * 0.12);
     }
     return col;
 }
@@ -332,10 +333,10 @@ vec4 helios(vec3 ro, vec3 rd, out vec3 glow) {
         float fres = pow(1.0 - max(dot(n, -rd), 0.0), 2.0);
         vec3 inner = stars(refract(rd, n, 0.7)) * 0.6;
         float rings = 0.5 + 0.5 * sin(length(cross(n, A)) * 60.0 - Time * 8.0 * Charge);
-        col = mix(vec3(0.06, 0.08, 0.14) + inner, vec3(1.0, 0.95, 0.82) * (3.0 + 2.0 * rings), Charge) + vec3(0.6, 0.7, 1.0) * fres * 0.7;
+        col = mix(vec3(0.06, 0.08, 0.14) + inner, vec3(1.0, 0.95, 0.82) * (1.6 + 0.9 * rings), Charge) + vec3(0.6, 0.7, 1.0) * fres * 0.7;
     }
     vec2 lc = raySeg(ro, rd, vec3(0.0), vec3(0.0));
-    glow += vec3(1.0, 0.9, 0.6) * exp(-lc.x * 2.0) * Charge * Charge * 1.6;
+    glow += vec3(1.0, 0.9, 0.6) * exp(-lc.x * 7.0) * Charge * Charge * 0.9;
     if (Lance > 0.0) {
         vec2 s = raySeg(ro, rd, vec3(0.0), A * Lance * 4000.0);
         float w = 0.16 * (0.9 + 0.1 * sin(Time * 40.0));

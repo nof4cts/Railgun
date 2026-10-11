@@ -321,7 +321,7 @@ final class HeliosFx {
                 fx.aberration(0.25F * ScreenFx.window(t, 230, 262, 266, 270));
             }
             if (t > 262 && t < 278) {
-                fx.flash(HOT, ScreenFx.hit(t, 268, 3.0F) * 1.3F);
+                fx.flash(HOT, ScreenFx.hit(t, 268, 3.0F) * 0.8F);
                 fx.shake(0.8F * ScreenFx.hit(t, 270, 10.0F));
                 fx.punch(0.6F * ScreenFx.hit(t, 270, 5.0F));
             }
