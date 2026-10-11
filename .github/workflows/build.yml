@@ -1,0 +1,77 @@
+name: Build Worldbreaker jar
+on:
+  push:
+    branches: [worldbreaker]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Build
+        id: build
+        continue-on-error: true
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build-log.txt
+          exit ${PIPESTATUS[0]}
+      - name: Boot a dedicated server with the mod (no client classes may load)
+        id: server
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          mkdir -p run && echo "eula=true" > run/eula.txt
+          (timeout 300 ./gradlew runServer --no-daemon > server-log.txt 2>&1 &) ; for i in $(seq 1 280); do sleep 1; if grep -q 'Done (' server-log.txt 2>/dev/null; then echo "SERVER STARTED"; break; fi; if grep -qE 'Exception|Error: ' server-log.txt 2>/dev/null && grep -q 'Crash\|crash' server-log.txt; then break; fi; done
+          grep -E "Done \(|Exception|crash|worldbreaker" server-log.txt | head -40 || true
+          pkill -f runServer || true; pkill -f 'net.minecraftforge' || true; sleep 5
+          rm -rf run/world
+      - name: Call the march in the real game (software GL) and photograph it
+        id: selftest
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 40
+        env:
+          SI_SELFTEST: 'true'
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          MESA_GL_VERSION_OVERRIDE: '4.5'
+          MESA_GLSL_VERSION_OVERRIDE: '450'
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb mesa-utils libgl1-mesa-dri > /dev/null
+          mkdir -p run
+          printf 'onboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nrenderDistance:12\nsimulationDistance:10\nmaxFps:60\nguiScale:2\nsoundCategory_master:0.0\nfov:0.0\n' > run/options.txt
+          timeout 2100 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon 2>&1 | tee selftest-log.txt | grep --line-buffered -E "selftest|SI|ERROR|Exception" || true
+      - name: Publish jar and log to the worldbreaker-build branch
+        if: always()
+        run: |
+          mkdir -p /tmp/out
+          cp build-log.txt /tmp/out/ || true
+          cp selftest-log.txt /tmp/out/ 2>/dev/null || true
+          cp server-log.txt /tmp/out/ 2>/dev/null || true
+          cp run/logs/latest.log /tmp/out/game-latest.log 2>/dev/null || true
+          mkdir -p /tmp/out/shots && cp run/screenshots/selftest/*.png /tmp/out/shots/ 2>/dev/null || true
+          cp build/libs/*.jar /tmp/out/ 2>/dev/null || true
+          rm -f /tmp/out/*-sources.jar
+          echo "${{ steps.build.outcome }} ${{ github.sha }}" > /tmp/out/STATUS
+          cd /tmp/out
+          git init -q -b worldbreaker-build
+          git config user.name "wb-ci"
+          git config user.email "wb-ci@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Build of ${{ github.sha }}: ${{ steps.build.outcome }}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" worldbreaker-build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: worldbreaker-jar
+          path: build/libs/*.jar
+          if-no-files-found: ignore
+      - name: Fail if the build failed
+        if: steps.build.outcome != 'success'
+        run: exit 1

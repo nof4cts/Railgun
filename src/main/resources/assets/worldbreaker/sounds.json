@@ -1,0 +1,95 @@
+{
+ "footfall": {
+  "subtitle": "subtitles.worldbreaker.footfall",
+  "sounds": [
+   {
+    "name": "worldbreaker:footfall_1",
+    "stream": false
+   },
+   {
+    "name": "worldbreaker:footfall_2",
+    "stream": false
+   },
+   {
+    "name": "worldbreaker:footfall_3",
+    "stream": false
+   }
+  ]
+ },
+ "crumble": {
+  "subtitle": "subtitles.worldbreaker.crumble",
+  "sounds": [
+   {
+    "name": "worldbreaker:crumble_1",
+    "stream": false
+   },
+   {
+    "name": "worldbreaker:crumble_2",
+    "stream": false
+   }
+  ]
+ },
+ "rumble": {
+  "subtitle": "subtitles.worldbreaker.rumble",
+  "sounds": [
+   {
+    "name": "worldbreaker:rumble",
+    "stream": false
+   }
+  ]
+ },
+ "horn": {
+  "subtitle": "subtitles.worldbreaker.horn",
+  "sounds": [
+   {
+    "name": "worldbreaker:horn",
+    "stream": false
+   }
+  ]
+ },
+ "steam": {
+  "subtitle": "subtitles.worldbreaker.steam",
+  "sounds": [
+   {
+    "name": "worldbreaker:steam",
+    "stream": false
+   }
+  ]
+ },
+ "heartbeat": {
+  "subtitle": "subtitles.worldbreaker.heartbeat",
+  "sounds": [
+   {
+    "name": "worldbreaker:heartbeat",
+    "stream": false
+   }
+  ]
+ },
+ "impact": {
+  "subtitle": "subtitles.worldbreaker.impact",
+  "sounds": [
+   {
+    "name": "worldbreaker:impact",
+    "stream": false
+   }
+  ]
+ },
+ "rise": {
+  "subtitle": "subtitles.worldbreaker.rise",
+  "sounds": [
+   {
+    "name": "worldbreaker:rise",
+    "stream": false
+   }
+  ]
+ },
+ "wind": {
+  "subtitle": "subtitles.worldbreaker.wind",
+  "sounds": [
+   {
+    "name": "worldbreaker:wind",
+    "stream": false
+   }
+  ]
+ }
+}
