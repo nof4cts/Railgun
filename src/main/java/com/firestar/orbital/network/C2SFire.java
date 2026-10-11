@@ -1,7 +1,6 @@
 package com.firestar.orbital.network;
 
 import com.firestar.orbital.common.Cannon;
-import com.firestar.orbital.common.Remote;
 import com.firestar.orbital.config.OConfig;
 import com.firestar.orbital.registry.ModSounds;
 import com.firestar.orbital.server.Strikes;
@@ -13,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 
-/** A cannon's key was pressed with the Stellar Remote in hand. */
+/** A cannon's key was pressed. */
 public record C2SFire(int cannon) {
     public static void encode(C2SFire m, FriendlyByteBuf buf) {
         buf.writeVarInt(m.cannon);
@@ -26,7 +25,7 @@ public record C2SFire(int cannon) {
     public static void handle(C2SFire m, Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer p = ctx.get().getSender();
         ctx.get().enqueueWork(() -> {
-            if (p == null || !Remote.holding(p)) {
+            if (p == null) {
                 return;
             }
             if (OConfig.SERVER.opsOnly.get() && !p.hasPermissions(2)) {

@@ -1,18 +1,16 @@
 package com.firestar.orbital.client;
 
 import com.firestar.orbital.common.Cannon;
-import com.firestar.orbital.common.Remote;
 import com.firestar.orbital.network.C2SFire;
 import com.firestar.orbital.network.Net;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import org.lwjgl.glfw.GLFW;
 
-/** One key per cannon; they only fire while the Stellar Remote is in hand. Rebind them in Controls. */
+/** One key per cannon, fired at the crosshair from anywhere, remote in hand or not. Rebind them in Controls. */
 public final class Keys {
     private Keys() {}
 
@@ -41,11 +39,6 @@ public final class Keys {
     }
 
     private static void fire(Minecraft mc, Cannon c) {
-        if (!Remote.holding(mc.player)) {
-            mc.player.displayClientMessage(Component.literal("Hold the Stellar Remote to call " + c.code + " " + c.title + ".")
-                    .withStyle(st -> st.withColor(0x9AA3B0)), true);
-            return;
-        }
         Net.toServer(new C2SFire(c.ordinal()));
     }
 }
