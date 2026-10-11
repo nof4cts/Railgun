@@ -674,9 +674,10 @@ public final class Choreo {
                         Light.flare(s, rad * 1.5F, BLUE, 0.05F);
                         Light.flare(s, rad * 0.75F, SILVER, 0.05F);
                         if (t < Beats.SPHERE_THROW) {
-                            for (int i = 0; i < 4; i++) {
-                                Vec3 from = s.add(new Vec3(r.nextGaussian(), r.nextGaussian() * 0.6, r.nextGaussian()).normalize().scale(20 + r.nextDouble() * 10));
-                                Light.stream(from, s, 0.7F, r.nextInt(3) == 0 ? WHITE : CYAN, 0.07F);
+                            if (r.nextFloat() < 0.6F) {
+                                // light drawn in from the land around, never from straight overhead
+                                Vec3 d = new Vec3(r.nextGaussian(), -0.2 - r.nextDouble() * 0.8, r.nextGaussian()).normalize();
+                                Light.stream(s.add(d.scale(10 + r.nextDouble() * 6)), s, 0.6F, r.nextInt(3) == 0 ? WHITE : CYAN, 0.045F);
                             }
                         }
                     }
