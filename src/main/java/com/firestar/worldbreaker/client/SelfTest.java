@@ -38,9 +38,10 @@ public final class SelfTest {
     private static long calledAt = -1;
     private static boolean done;
     private static final List<int[]> SHOTS = new ArrayList<>();
-    private static final int[] FILM_BEATS = {12, 30, 52, 68, 80, 96, 108, 116, 124, 138, 150, 160, 168, 180, 196, 214, 228, 244, 258, 268, 278, 286, 296};
+    private static final int[] FILM_BEATS = {12, 30, 52, 68, 80, 96, 108, 116, 124, 138, 150, 160, 168, 180, 196, 204, 214, 228, 244, 258, 268, 278, 286, 296};
     /** After the film: {tick, x, dy, z, yaw, pitch} vantage points (relative to the caller's start). */
     private static final double[][] VANTAGE = {
+            {312, 20, 6, -78, 8, -20},
             {330, 45, 22, 10, 125, 18},
             {380, 0, 3, 40, 180, 8},
             {440, -60, 70, 0, -90, 42},
@@ -94,7 +95,13 @@ public final class SelfTest {
             server.execute(() -> {
                 ServerPlayer p = player(server);
                 p.connection.teleport(0.5, p.getY(), 0.5, 0.0F, 0.0F);
-                Marches.begin(p, new Vec3(0, 0, 1));
+                p.setYRot(0);
+                p.setXRot(0);
+                // blow the horn, as a player would
+                p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                        new net.minecraft.world.item.ItemStack(com.firestar.worldbreaker.registry.ModItems.HERALDS_HORN.get()));
+                p.getMainHandItem().use(p.serverLevel(), p, net.minecraft.world.InteractionHand.MAIN_HAND);
+                WorldbreakerMod.LOGGER.info("[selftest] horn blown; marches={}", Marches.count());
             });
             calledAt = mc.level.getGameTime() + 2;
             for (int b : FILM_BEATS) {

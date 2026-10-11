@@ -21,6 +21,7 @@ public final class WorldbreakerMod {
     public WorldbreakerMod() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModSounds.register(bus);
+        com.firestar.worldbreaker.registry.ModItems.register(bus);
         bus.addListener(this::commonSetup);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, WConfig.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, WConfig.SERVER_SPEC);

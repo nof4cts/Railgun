@@ -63,11 +63,15 @@ public final class Marches {
             this.start = start;
             this.giants = March.formation(count, seed);
             this.life = life;
-            this.ground = new double[count];
-            this.swept = new double[count];
+            this.ground = new double[giants.length];
+            this.swept = new double[giants.length];
             java.util.Arrays.fill(ground, origin.y);
             this.packet = new S2CMarch(id, p.getId(), origin, dir, start, seed, count, life);
         }
+    }
+
+    public static int count() {
+        return ACTIVE.size();
     }
 
     /** A player asks for the march. */

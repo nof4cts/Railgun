@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": ["GCG", "CHC", "GCG"],
+  "key": {
+    "G": { "item": "minecraft:gold_block" },
+    "C": { "item": "minecraft:copper_block" },
+    "H": { "item": "minecraft:goat_horn" }
+  },
+  "result": { "item": "worldbreaker:heralds_horn" }
+}

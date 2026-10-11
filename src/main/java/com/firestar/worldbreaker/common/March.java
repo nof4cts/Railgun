@@ -30,12 +30,16 @@ public final class March {
     /** Ticks they take to sink back into dust at the end. */
     public static final int SINK = 80;
 
-    /** One giant's place in the formation. */
-    public record Giant(int index, double lateral, double back, double scale, int phase, double sway) {}
+    /** One giant's place in the formation. The sovereign is the crowned leader who walks behind the ranks. */
+    public record Giant(int index, double lateral, double back, double scale, int phase, double sway, boolean sovereign) {}
 
+    /** How far behind the front rank the sovereign walks, and how much taller it stands. */
+    public static final double SOVEREIGN_BACK = 52, SOVEREIGN_SCALE = 1.6;
+
+    /** {@code count} giants in two staggered ranks, then the sovereign behind them (so count + 1 in all). */
     public static Giant[] formation(int count, long seed) {
         java.util.Random r = new java.util.Random(seed);
-        Giant[] out = new Giant[count];
+        Giant[] out = new Giant[count + 1];
         int front = (count + 1) / 2;
         for (int i = 0; i < count; i++) {
             boolean rear = i >= front;
@@ -53,8 +57,9 @@ public final class March {
                 scale = 1.12;
             }
             int phase = r.nextInt(HALF);
-            out[i] = new Giant(i, lateral, back, scale, phase, (r.nextDouble() - 0.5) * 0.08);
+            out[i] = new Giant(i, lateral, back, scale, phase, (r.nextDouble() - 0.5) * 0.08, false);
         }
+        out[count] = new Giant(count, 0, SOVEREIGN_BACK, SOVEREIGN_SCALE, r.nextInt(HALF), 0, true);
         return out;
     }
 

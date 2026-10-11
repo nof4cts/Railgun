@@ -70,10 +70,20 @@ public final class Films {
             CUES.add(new Cue(t5 + L, t5 + L + March.HALF >= 172 ? STOMP : STEP, footAt(a, gc, t5), 0.8F));
         }
         // 6. the whole line from the air, the flattened land behind it
-        s.add(Shot.cut(172, 208, (k, t) -> {
+        s.add(Shot.cut(172, 192, (k, t) -> {
             Vec3 mid = line(a, t - L);
             return pose(mid.add(S.scale(95)).add(0, 72, 0).add(D.scale(-30 + 40 * k)), mid.add(0, 14, 0).add(D.scale(-12)), 54, 0);
         }));
+        // 6b. behind the ranks walks the sovereign: crowned, cloaked, its staff burning, taller than them all
+        March.Giant sov = sovereign(a);
+        if (sov != null) {
+            double HS = March.HEIGHT * sov.scale();
+            s.add(Shot.cut(192, 208, (k, t) -> {
+                Vec3 c = at(a, sov, t - L);
+                Vec3 hd = March.heading(D, sov);
+                return pose(c.add(hd.scale(44 - 6 * k)).add(March.side(hd).scale(-16)).add(0, 4, 0), c.add(0, HS * (0.78 + 0.08 * k), 0), 58, -2);
+            }));
+        }
         // 7. a head going by: the eyes, the steam, the jaw working
         s.add(Shot.cut(208, 238, (k, t) -> {
             Vec3 c = at(a, gr, t - L);
@@ -92,7 +102,7 @@ public final class Films {
                 at(a, gc, t - L).add(0, H * (0.35 + 0.4 * k), 0), 62 + 8 * k, -3 * k)));
         CUES.add(new Cue(Math.max(t9, 274), FINALE, foot9, 1.4F));
 
-        String[][] lines = {{"4", "...Do you feel it? The ground is shaking."}, {"74", "They're coming."}, {"176", "Everything in their path..."},
+        String[][] lines = {{"4", "...Do you feel it? The ground is shaking."}, {"74", "They're coming."}, {"176", "Everything in their path..."}, {"194", "And the one who leads them."},
                 {"240", "Nothing will be left standing."}, {"276", "Walk."}};
         Film.Card card = new Film.Card("WORLDBREAKER", "終焉の行進", "The Endless March", 0xFF8A2A, 240, 58);
         film = new Film(partial -> (float) (Marching.time(a, partial) + L), s, March.FILM, card, lines, March.BLEND_IN, March.BLEND_OUT);
@@ -112,6 +122,15 @@ public final class Films {
             }
         }
         return best;
+    }
+
+    static March.Giant sovereign(Marching.Active a) {
+        for (March.Giant g : a.giants) {
+            if (g.sovereign()) {
+                return g;
+            }
+        }
+        return null;
     }
 
     private static March.Giant neighbour(Marching.Active a, March.Giant c, int side) {

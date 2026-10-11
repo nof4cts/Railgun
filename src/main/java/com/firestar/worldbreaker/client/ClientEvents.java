@@ -21,7 +21,6 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
@@ -51,9 +50,7 @@ public final class ClientEvents {
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
-            if (event.phase == TickEvent.Phase.START) {
-                Keys.handle();
-            } else {
+            if (event.phase == TickEvent.Phase.END) {
                 Marching.tick();
                 Films.tick();
                 Director.tick();
@@ -194,11 +191,6 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void onReload(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) PostFx::reload);
-        }
-
-        @SubscribeEvent
-        public static void onKeys(RegisterKeyMappingsEvent event) {
-            Keys.register(event);
         }
     }
 }
