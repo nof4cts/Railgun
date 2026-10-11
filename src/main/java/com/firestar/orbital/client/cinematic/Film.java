@@ -52,7 +52,7 @@ public final class Film {
         return s.path().pose(easeInOut(k), t);
     }
 
-    static float smooth(float x) {
+    public static float smooth(float x) {
         x = Mth.clamp(x, 0.0F, 1.0F);
         return x * x * (3.0F - 2.0F * x);
     }

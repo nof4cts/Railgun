@@ -1,6 +1,7 @@
 {
- "item.orbital_arsenal.uplink": "Orbital Uplink",
- "itemGroup.orbital_arsenal": "Orbital Arsenal",
+ "key.categories.orbital_arsenal": "Orbital Arsenal (with the Stellar Remote)",
+ "key.orbital_arsenal.helios": "OA-01 Helios (hold the Stellar Remote)",
+ "key.orbital_arsenal.antipode": "OA-02 Antipode (hold the Stellar Remote)",
  "subtitles.orbital_arsenal.select": "Uplink channel changes",
  "subtitles.orbital_arsenal.arm": "Uplink armed",
  "subtitles.orbital_arsenal.countdown": "Strike countdown",

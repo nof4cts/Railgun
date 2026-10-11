@@ -77,8 +77,6 @@ public final class SelfTest {
                 level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
                 level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
                 p.getInventory().clearContent();
-                p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
-                        new net.minecraft.world.item.ItemStack(com.firestar.orbital.registry.ModItems.UPLINK.get()));
                 BlockPos o = BlockPos.containing(0.5, p.getY(), 0.5);
                 town(level, o.offset(HX, 0, 40), 26);
                 hill(level, o.offset(AX, 0, 55), 20, 14);

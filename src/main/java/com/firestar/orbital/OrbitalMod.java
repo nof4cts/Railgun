@@ -21,7 +21,6 @@ public final class OrbitalMod {
     public OrbitalMod() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModSounds.register(bus);
-        com.firestar.orbital.registry.ModItems.register(bus);
         bus.addListener(this::commonSetup);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, OConfig.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, OConfig.SERVER_SPEC);

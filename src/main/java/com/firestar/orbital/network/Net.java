@@ -17,6 +17,8 @@ public final class Net {
 
     public static void register() {
         int id = 0;
+        CHANNEL.messageBuilder(C2SFire.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(C2SFire::encode).decoder(C2SFire::decode).consumerNetworkThread(C2SFire::handle).add();
         CHANNEL.messageBuilder(S2CStrike.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(S2CStrike::encode).decoder(S2CStrike::decode).consumerNetworkThread(S2CStrike::handle).add();
         CHANNEL.messageBuilder(S2CBeam.class, id++, NetworkDirection.PLAY_TO_CLIENT)
