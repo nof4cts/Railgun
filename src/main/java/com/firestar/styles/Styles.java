@@ -74,6 +74,20 @@ public final class Styles {
                     Fighters.setForm(p, Fighters.NONE);
                 }
             }
+            case SWORDS -> {
+                // the three blades go back in their sheaths: out of the hotbar and inventory
+                Item[] blades = {ModItems.WADO.get(), ModItems.KITETSU.get(), ModItems.ENMA.get()};
+                net.minecraft.world.entity.player.Inventory inv = p.getInventory();
+                for (int i = 0; i < inv.getContainerSize(); i++) {
+                    ItemStack st = inv.getItem(i);
+                    for (Item blade : blades) {
+                        if (st.is(blade)) {
+                            inv.setItem(i, ItemStack.EMPTY);
+                        }
+                    }
+                }
+                p.containerMenu.broadcastChanges();
+            }
             default -> {
             }
         }

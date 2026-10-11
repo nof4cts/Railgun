@@ -71,17 +71,22 @@ public final class StyleScreen extends Screen {
             if (!s.kind.isEmpty()) {
                 g.drawString(font, s.kind.toUpperCase(), x + w / 2 - font.width(s.kind.toUpperCase()) / 2, ty + 11, 0xFF9AA3B0, false);
             }
+            // keys wrap onto as many lines as they need, never cut off; the description fills the space above them
+            java.util.List<FormattedCharSequence> keyLines = new java.util.ArrayList<>();
+            for (String k : s.keys) {
+                keyLines.addAll(font.split(Component.literal(k), w - 12));
+            }
+            int ky = y + h - 8 - keyLines.size() * 10;
             int dy = ty + 26;
             for (FormattedCharSequence line : font.split(Component.literal(s.description), w - 12)) {
-                if (dy > y + h - 12 - s.keys.length * 10) {
+                if (dy > ky - 16) {
                     break;
                 }
                 g.drawString(font, line, x + 6, dy, 0xFFCCCCD4, false);
                 dy += 10;
             }
-            int ky = y + h - 8 - s.keys.length * 10;
-            for (String k : s.keys) {
-                g.drawString(font, font.plainSubstrByWidth(k, w - 12), x + 6, ky, 0xFF000000 | col, false);
+            for (FormattedCharSequence k : keyLines) {
+                g.drawString(font, k, x + 6, ky, 0xFF000000 | col, false);
                 ky += 10;
             }
             String num = "[" + (i + 1) + "]";
