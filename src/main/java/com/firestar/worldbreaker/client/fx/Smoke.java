@@ -44,9 +44,14 @@ public final class Smoke {
      */
     public static void puff(Vec3 pos, Vec3 vel, float size0, float size1, float life, int rgb, float alpha, float drag, float rise) {
         if (PUFFS.size() >= WConfig.CLIENT.smoke.get()) {
-            // keep the newest: drop the oldest
-            PUFFS.remove(0);
+            // full: replace a random cloud rather than shifting the whole list
+            PUFFS.set(R.nextInt(PUFFS.size()), make(pos, vel, size0, size1, life, rgb, alpha, drag, rise));
+            return;
         }
+        PUFFS.add(make(pos, vel, size0, size1, life, rgb, alpha, drag, rise));
+    }
+
+    private static Puff make(Vec3 pos, Vec3 vel, float size0, float size1, float life, int rgb, float alpha, float drag, float rise) {
         Puff p = new Puff();
         p.pos = pos;
         p.vel = vel;
@@ -60,7 +65,7 @@ public final class Smoke {
         p.spin = R.nextFloat() * 6.28F;
         p.lobes = new float[]{R.nextFloat() - 0.5F, R.nextFloat() - 0.5F, R.nextFloat() - 0.5F, R.nextFloat() - 0.5F, 0.7F + R.nextFloat() * 0.5F,
                 0.6F + R.nextFloat() * 0.5F};
-        PUFFS.add(p);
+        return p;
     }
 
     public static void clear() {
@@ -130,19 +135,24 @@ public final class Smoke {
             if (dist < size * 1.2) {
                 a *= (float) Mth.clamp((dist - size * 0.3) / (size * 0.9), 0, 1);
             }
+            // too small on screen to matter
+            if (size / Math.max(1.0, dist) < 0.012) {
+                continue;
+            }
+            int lobes = dist < 60 ? 3 : dist < 160 ? 2 : 1;
             int rgb = shade(p.rgb, brightness);
             Vec3 view0 = c.normalize();
             Vec3 upHint = Math.abs(view0.y) > 0.95 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
             Vec3 right = view0.cross(upHint).normalize();
             Vec3 up = right.cross(view0).normalize();
-            for (int l = 0; l < 3; l++) {
+            for (int l = 0; l < lobes; l++) {
                 float ox = l == 0 ? 0 : p.lobes[(l - 1) * 2] * size * 0.7F;
                 float oy = l == 0 ? 0 : p.lobes[(l - 1) * 2 + 1] * size * 0.5F;
                 float ls = size * (l == 0 ? 1.0F : p.lobes[3 + l]);
                 Vec3 lc = c.add(right.scale(ox)).add(up.scale(oy));
-                blob(bb, m, lc, right, up, ls, rgb, a * (l == 0 ? 0.75F : 0.5F), p.spin + l);
+                blob(bb, m, lc, right, up, ls, rgb, a * (l == 0 ? (lobes == 1 ? 0.9F : 0.75F) : 0.5F), p.spin + l, dist < 80 ? 12 : 8);
             }
-            if (++drawn > 4000) {
+            if (++drawn > 2500) {
                 break;
             }
         }
@@ -159,8 +169,7 @@ public final class Smoke {
     }
 
     /** A soft disc: opaque-ish core, irregular edge (the radius wobbles round the rim), alpha to nothing outside. */
-    private static void blob(BufferBuilder bb, Matrix4f m, Vec3 c, Vec3 right, Vec3 up, float size, int rgb, float a, float spin) {
-        int n = 14;
+    private static void blob(BufferBuilder bb, Matrix4f m, Vec3 c, Vec3 right, Vec3 up, float size, int rgb, float a, float spin, int n) {
         float r = (rgb >> 16 & 255) / 255.0F, g = (rgb >> 8 & 255) / 255.0F, b = (rgb & 255) / 255.0F;
         Vec3 prevIn = null, prevOut = null;
         Vec3 firstIn = null, firstOut = null;

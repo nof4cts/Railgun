@@ -223,7 +223,7 @@ public final class Marches {
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
         if (destroy && WConfig.SERVER.destroyBlocks.get()) {
             int flung = 0;
-            int maxFling = WConfig.SERVER.debris.get();
+            int maxFling = level.getNearestPlayer(foot.x, foot.y, foot.z, 96, false) != null ? WConfig.SERVER.debris.get() : 0;
             int ri = (int) Math.ceil(r);
             for (int dx = -ri; dx <= ri; dx++) {
                 for (int dz = -ri; dz <= ri; dz++) {

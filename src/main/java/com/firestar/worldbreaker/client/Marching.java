@@ -148,7 +148,7 @@ public final class Marching {
                 double d = c.distanceTo(cam);
                 nearest = Math.min(nearest, d);
                 Vec3 heading = March.heading(a.dir, g);
-                if (d < 600) {
+                if (d < 400) {
                     emit(a, g, t, c, heading, h, presence, d);
                 }
                 if (March.footfall(t, g) && presence > 0.8) {
@@ -198,7 +198,7 @@ public final class Marching {
     /** What a walking giant gives off every tick: steam off its shoulders and back, embers from its seams, dust at its shins. */
     private static void emit(Active a, March.Giant g, int t, Vec3 c, Vec3 heading, double h, double presence, double dist) {
         Vec3 side = March.side(heading);
-        float detail = dist < 150 ? 1.0F : dist < 300 ? 0.5F : 0.25F;
+        float detail = dist < 120 ? 0.7F : dist < 240 ? 0.3F : 0.1F;
         double sink = (1 - presence) * h * 1.45;
         if (presence > 0.05) {
             // steam: hot stone in cold air
@@ -244,7 +244,7 @@ public final class Marching {
         if (dist > 700) {
             return;
         }
-        float detail = dist < 150 ? 1.0F : dist < 320 ? 0.55F : 0.25F;
+        float detail = dist < 120 ? 0.75F : dist < 260 ? 0.35F : 0.15F;
         // dust thrown out in a ring along the ground, then a slower column rising
         int n = (int) (16 * detail);
         for (int i = 0; i < n; i++) {
@@ -288,9 +288,12 @@ public final class Marching {
                 Vec3 e = GiantRenderer.eyes(centre(a, g, partial), heading, h).subtract(0, (1 - presence) * h * 1.45, 0);
                 Vec3 side = March.side(heading);
                 float flick = 0.85F + 0.15F * (float) Math.sin(t * 0.7 + g.index());
+                boolean near = e.distanceToSqr(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()) < 250 * 250;
                 for (int s = -1; s <= 1; s += 2) {
                     Light.flare(e.add(side.scale(s * h * 0.055)), (float) (h * 0.05) * flick, EMBER, 0.05F);
-                    Light.flare(e.add(side.scale(s * h * 0.055)), (float) (h * 0.018), HOT, 0.05F);
+                    if (near) {
+                        Light.flare(e.add(side.scale(s * h * 0.055)), (float) (h * 0.018), HOT, 0.05F);
+                    }
                 }
             }
         }
@@ -306,14 +309,15 @@ public final class Marching {
         Vec3 cam = mc.gameRenderer.getMainCamera().getPosition();
         for (Shock s : SHOCKS) {
             float age = now - s.time;
-            if (age < 0 || age > 70 || s.at.distanceToSqr(cam) > 300 * 300) {
+            if (age < 0 || age > 50 || s.at.distanceToSqr(cam) > 160 * 160) {
                 continue;
             }
             Random r = new Random(s.seed);
             float grow = Mth.clamp(age / 5.0F, 0, 1);
             float cool = 1 - Mth.clamp((age - 8) / 60.0F, 0, 1);
             double reach = 12 * s.power;
-            for (int i = 0; i < 9; i++) {
+            int cracks = s.at.distanceToSqr(cam) < 60 * 60 ? 8 : 4;
+            for (int i = 0; i < cracks; i++) {
                 double ang = r.nextDouble() * Math.PI * 2;
                 double len = reach * (0.5 + r.nextDouble() * 0.8) * grow;
                 Vec3 a = s.at.add(Math.cos(ang) * 2, 0.15, Math.sin(ang) * 2);

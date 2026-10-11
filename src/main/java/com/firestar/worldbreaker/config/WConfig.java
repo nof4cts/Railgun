@@ -43,7 +43,7 @@ public final class WConfig {
             grain = b.comment("Film grain during cinematics.").defineInRange("grain", 1.0, 0.0, 2.0);
             b.pop();
             b.push("world");
-            smoke = b.comment("Most steam and dust clouds alive at once (lower it on a slow computer).").defineInRange("smoke", 1600, 100, 6000);
+            smoke = b.comment("Most steam and dust clouds alive at once (lower it on a slow computer).").defineInRange("smoke", 900, 100, 6000);
             atmosphere = b.comment("Rust-red sky, haze and tremors while a march is on.").define("atmosphere", true);
             b.pop();
         }
@@ -67,8 +67,8 @@ public final class WConfig {
             cooldown = b.comment("Ticks before the same player can call another march.").defineInRange("cooldown", 2400, 0, 72000);
             opsOnly = b.comment("Only operators can call the march.").define("opsOnly", false);
             destroyBlocks = b.comment("The giants flatten the terrain they walk through.").define("destroyBlocks", true);
-            blocksPerTick = b.comment("Most blocks destroyed per tick across all giants (lower it if the server lags).").defineInRange("blocksPerTick", 6000, 0, 100000);
-            debris = b.comment("Real flying blocks thrown up per footfall.").defineInRange("debris", 3, 0, 20);
+            blocksPerTick = b.comment("Most blocks destroyed per tick across all giants (lower it if the server lags).").defineInRange("blocksPerTick", 2500, 0, 100000);
+            debris = b.comment("Real flying blocks thrown up per footfall.").defineInRange("debris", 1, 0, 20);
             damage = b.comment("Multiplier on crushing and shockwave damage.").defineInRange("damage", 1.0, 0.0, 10.0);
             callerSafe = b.comment("The player who called the march is never hurt by it.").define("callerSafe", true);
             b.pop();
