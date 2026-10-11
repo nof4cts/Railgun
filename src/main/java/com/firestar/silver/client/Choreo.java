@@ -683,8 +683,6 @@ public final class Choreo {
                         }
                     }
                 }
-                case FINAL -> {
-                }
                 default -> {
                 }
             }

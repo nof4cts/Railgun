@@ -46,7 +46,7 @@ public final class SelfTest {
     private static final List<int[]> SHOTS = new ArrayList<>();
 
     /** One step: a move (or null for an instinct test where the golem swings at him), where to stand, what to shoot. */
-    private record Step(Move move, String label, double dist, float pitch, int wait, int[] beats) {}
+    private record Step(Move move, String label, double dist, float pitch, int hold, int[] beats) {}
 
     private static final Step[] ORDER = {
             new Step(Move.AWAKEN_OMEN, "awaken_omen", 6.0, 4.0F, 0, new int[]{4, 14, 30, 46, 58, 64, 66, 70, 80, 100}),
@@ -72,8 +72,8 @@ public final class SelfTest {
     private SelfTest() {}
 
     private static int waitFor(Step s) {
-        if (s.wait > 0) {
-            return s.wait;
+        if (s.hold > 0) {
+            return s.hold;
         }
         return s.move == null ? 40 : s.move.length + 24;
     }
