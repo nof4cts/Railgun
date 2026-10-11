@@ -95,7 +95,7 @@ public final class Marches {
         Vec3 dir = new Vec3(look.x, 0, look.z);
         dir = dir.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 1) : dir.normalize();
         long now = p.serverLevel().getGameTime();
-        Active a = new Active(nextId++, p, p.position(), dir, now + 1, new Random().nextLong(), WConfig.SERVER.giants.get(), WConfig.SERVER.life.get());
+        Active a = new Active(nextId++, p, p.position(), dir, now + 1 + March.LEAD, new Random().nextLong(), WConfig.SERVER.giants.get(), WConfig.SERVER.life.get());
         ACTIVE.add(a);
         READY.put(p.getUUID(), now + WConfig.SERVER.cooldown.get());
         Net.toLevel(a.level, a.packet);

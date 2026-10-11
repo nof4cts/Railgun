@@ -120,8 +120,8 @@ public final class ClientEvents {
             float k = Marching.atmosphere((float) event.getPartialTick());
             if (k > 0.01F && event.getMode() == net.minecraft.client.renderer.FogRenderer.FogMode.FOG_TERRAIN) {
                 float far = event.getFarPlaneDistance();
-                event.setFarPlaneDistance(Mth.lerp(k * 0.55F, far, Math.max(96, far * 0.55F)));
-                event.setNearPlaneDistance(Mth.lerp(k, event.getNearPlaneDistance(), 0));
+                event.setFarPlaneDistance(Mth.lerp(k * 0.45F, far, Math.max(160, far * 0.7F)));
+                event.setNearPlaneDistance(Mth.lerp(k * 0.6F, event.getNearPlaneDistance(), 8));
                 event.setCanceled(true);
             }
         }

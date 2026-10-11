@@ -15,8 +15,10 @@ public final class March {
     /** Ticks of the caller's cinematic. */
     public static final int FILM = 300;
     public static final int BLEND_IN = 8, BLEND_OUT = 14;
+    /** The film opens this many ticks before the giants begin to rise. */
+    public static final int LEAD = 40;
     /** How far ahead the ranks rise. */
-    public static final double START_DIST = 112;
+    public static final double START_DIST = 95;
     /** Base walking speed, blocks per tick. */
     public static final double SPEED = 0.45;
     /** Ticks for one foot to land after the other. */

@@ -42,6 +42,7 @@ public final class Films {
         Vec3 P = a.origin;
         Vec3 D = a.dir;
         Vec3 S = March.side(D);
+        int L = March.LEAD;
         March.Giant gc = centreGiant(a), gl = neighbour(a, gc, -1), gr = neighbour(a, gc, 1);
         double H = March.HEIGHT * gc.scale();
         List<Shot> s = new ArrayList<>();
@@ -50,31 +51,32 @@ public final class Films {
         s.add(Shot.cut(0, 36, (k, t) -> pose(P.subtract(D.scale(2.2)).add(S.scale(0.9)).add(0, 1.45, 0), P.add(D.scale(60)).add(0, 9 + 3 * k, 0),
                 50 - 6 * k, 0)));
         // 2. the dust wall: down at the dirt, a telephoto on the horizon as it boils up
-        s.add(Shot.cut(36, 70, (k, t) -> pose(P.add(D.scale(6)).add(S.scale(-1)).add(0, 0.35, 0), P.add(D.scale(100)).add(0, 16 + 6 * k, 0),
-                27 - 5 * k, 0)));
+        s.add(Shot.cut(36, 70, (k, t) -> pose(P.add(D.scale(4)).add(S.scale(-1)).add(0, 2.2, 0), P.add(D.scale(95)).add(0, 14 + 8 * k, 0),
+                30 - 6 * k, 0)));
         // 3. eyes through the haze
-        s.add(Shot.cut(70, 102, (k, t) -> pose(P.add(0, 1.8, 0), at(a, gc, t).add(0, H * (0.82 + 0.06 * k), 0), 12 - 3 * k, 0)));
+        s.add(Shot.cut(70, 102, (k, t) -> pose(P.add(0, 1.8, 0), at(a, gc, t - L).add(0, H * (0.84 + 0.04 * k), 0), 15 - 4 * k, 0)));
         // 4. a foot coming down, from the ground beside it
-        int t4 = nextFall(gl, 114);
+        int t4 = nextFall(gl, 114 - L);
         Vec3 foot4 = footAt(a, gl, t4);
+        t4 += L;
         Vec3 heading = March.heading(D, gl);
         s.add(Shot.cut(102, 134, (k, t) -> pose(foot4.add(March.side(heading).scale(16 - 3 * k)).add(heading.scale(10)).add(0, 0.7, 0),
                 foot4.add(0, 4 + 10 * k, 0), 44, -4)));
         CUES.add(new Cue(t4, STOMP, foot4, 1.0F));
         // 5. it steps over the lens: worm's-eye from right in its path, looking up at it
-        Vec3 path5 = at(a, gc, 182);
-        s.add(Shot.cut(134, 172, (k, t) -> pose(path5.add(S.scale(3)).add(0, 0.6, 0), at(a, gc, t).add(0, H * 0.9, 0), 78, 8 * k - 4)));
-        for (int t5 = nextFall(gc, 134); t5 < 172; t5 += March.HALF) {
-            CUES.add(new Cue(t5, t5 + March.HALF >= 172 ? STOMP : STEP, footAt(a, gc, t5), 0.8F));
+        Vec3 path5 = at(a, gc, 182 - L);
+        s.add(Shot.cut(134, 172, (k, t) -> pose(path5.add(S.scale(3)).add(0, 0.6, 0), at(a, gc, t - L).add(0, H * 0.9, 0), 78, 8 * k - 4)));
+        for (int t5 = nextFall(gc, 134 - L); t5 + L < 172; t5 += March.HALF) {
+            CUES.add(new Cue(t5 + L, t5 + L + March.HALF >= 172 ? STOMP : STEP, footAt(a, gc, t5), 0.8F));
         }
         // 6. the whole line from the air, the flattened land behind it
         s.add(Shot.cut(172, 208, (k, t) -> {
-            Vec3 mid = line(a, t);
+            Vec3 mid = line(a, t - L);
             return pose(mid.add(S.scale(95)).add(0, 72, 0).add(D.scale(-30 + 40 * k)), mid.add(0, 14, 0).add(D.scale(-12)), 54, 0);
         }));
         // 7. a head going by: the eyes, the steam, the jaw working
         s.add(Shot.cut(208, 238, (k, t) -> {
-            Vec3 c = at(a, gr, t);
+            Vec3 c = at(a, gr, t - L);
             Vec3 hd = March.heading(D, gr);
             Vec3 e = GiantRenderer.eyes(c, hd, March.HEIGHT * gr.scale());
             return pose(e.add(hd.scale(15 - 4 * k)).add(March.side(hd).scale(-11)).add(0, -3, 0), e.subtract(0, 1, 0), 42, 3);
@@ -83,15 +85,16 @@ public final class Films {
         s.add(Shot.cut(238, 272, (k, t) -> pose(P.subtract(D.scale(6.5 - 1.5 * k)).add(S.scale(1.6)).add(0, 1.0, 0), P.add(D.scale(2)).add(0, 3.5 + 3 * k, 0),
                 62, 0)));
         // 9. a foot lands beside him: crane up into the sky as the dust rolls out
-        int t9 = nextFall(gc, 268);
+        int t9 = nextFall(gc, 268 - L);
         Vec3 foot9 = footAt(a, gc, t9);
+        t9 += L;
         s.add(Shot.cut(272, March.FILM, (k, t) -> pose(P.add(0, 6 + 70 * k * k, 0).subtract(D.scale(5)).add(S.scale(4)), P.add(D.scale(4)), 58 + 12 * k, 0)));
         CUES.add(new Cue(Math.max(t9, 274), FINALE, foot9, 1.4F));
 
         String[][] lines = {{"4", "...Do you feel it? The ground is shaking."}, {"74", "They're coming."}, {"176", "Everything in their path..."},
                 {"240", "Nothing will be left standing."}, {"276", "Walk."}};
         Film.Card card = new Film.Card("WORLDBREAKER", "終焉の行進", "The Endless March", 0xFF8A2A, 240, 58);
-        film = new Film(partial -> (float) Marching.time(a, partial), s, March.FILM, card, lines, March.BLEND_IN, March.BLEND_OUT);
+        film = new Film(partial -> (float) (Marching.time(a, partial) + L), s, March.FILM, card, lines, March.BLEND_IN, March.BLEND_OUT);
         return film;
     }
 

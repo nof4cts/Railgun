@@ -35,7 +35,7 @@ import net.minecraft.world.phys.Vec3;
 public final class Marching {
     public static final List<Active> ACTIVE = new ArrayList<>();
     static final int EMBER = 0xFF7A1A, MOLTEN = 0xFFB040, HOT = 0xFFE2A0, RUST = 0x2A0C02;
-    static final int STEAM = 0xE6E2DC, ASH = 0x8A7A6A, DUST = 0x9A8064, DARK = 0x4A3E34;
+    static final int STEAM = 0xC9C2BA, ASH = 0x8A7A6A, DUST = 0x9A8064, DARK = 0x4A3E34;
 
     private Marching() {}
 
@@ -80,13 +80,13 @@ public final class Marching {
         Active a = new Active(m);
         ACTIVE.add(a);
         boolean mine = mc.player != null && m.caller() == mc.player.getId();
-        if (mine && time(a, 0) < 10) {
+        if (mine && time(a, 0) + March.LEAD < 10) {
             if (WConfig.CLIENT.cutscenes.get()) {
                 Director.play(Films.march(a));
             }
             PlayerAnims.play(mc.player, "call");
         }
-        if (time(a, 0) < 20) {
+        if (time(a, 0) + March.LEAD < 20) {
             ui(ModSounds.HORN.get(), 1.0F, 0.9F);
         }
     }
@@ -209,7 +209,7 @@ public final class Marching {
                 double sx = (R.nextBoolean() ? 1 : -1) * h * (0.12 + R.nextDouble() * 0.12);
                 Vec3 from = c.add(side.scale(sx)).add(heading.scale(-h * 0.04)).add(0, h * (0.7 + R.nextDouble() * 0.2) - sink, 0);
                 Vec3 vel = new Vec3((R.nextDouble() - 0.5) * 1.5, 2.5 + R.nextDouble() * 2.5, (R.nextDouble() - 0.5) * 1.5).add(heading.scale(-1.5));
-                Smoke.puff(from, vel, (float) (h * 0.05), (float) (h * 0.2), 3.5F + R.nextFloat() * 2, STEAM, 0.42F, 0.6F, 0.6F);
+                Smoke.puff(from, vel, (float) (h * 0.05), (float) (h * 0.17), 3.5F + R.nextFloat() * 2, STEAM, 0.26F, 0.6F, 0.6F);
             }
             if (R.nextFloat() < 0.25F * detail) {
                 Vec3 mouth = GiantRenderer.eyes(c, heading, h).subtract(0, h * 0.06 + sink, 0);
@@ -262,7 +262,9 @@ public final class Marching {
         // the molten foot: a flash, a shock ring racing out, sparks and rocks of light
         Light.flare(foot.add(0, 1.5, 0), (float) (h * 0.22), EMBER, 0.6F);
         Light.flare(foot.add(0, 1.0, 0), (float) (h * 0.08), HOT, 0.3F);
-        Light.ring(foot.add(0, 0.3, 0), new Vec3(0, 1, 0), (float) (h * 0.06), (float) (h * 0.7), (float) (h * 0.025), MOLTEN, 0.8F);
+        if (detail > 0.5F) {
+            Light.ring(foot.add(0, 0.3, 0), new Vec3(0, 1, 0), (float) (h * 0.05), (float) (h * 0.4), (float) (h * 0.015), MOLTEN, 0.6F);
+        }
         Light.spray(foot.add(0, 1, 0), new Vec3(0, 1, 0), 1.2F, (int) (24 * detail), 22.0F, EMBER, 1.3F, 0.16F);
     }
 
