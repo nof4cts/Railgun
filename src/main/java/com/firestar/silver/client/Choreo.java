@@ -3,6 +3,7 @@ package com.firestar.silver.client;
 import static com.firestar.silver.client.fx.ScreenFx.hit;
 import static com.firestar.silver.client.fx.ScreenFx.window;
 
+import com.firestar.silver.client.fx.Aura;
 import com.firestar.silver.client.fx.Impact;
 import com.firestar.silver.client.fx.Light;
 import com.firestar.silver.client.fx.Ribbon;
@@ -95,6 +96,39 @@ public final class Choreo {
         out.add(new Ribbon(spine, null, w, al, rgb, Ribbon.Style.GLOW));
     }
 
+    /**
+     * The anime impact star: spikes of light thrown out from the point of contact in every direction, a ring blown open
+     * round them, all of it gone in a few frames. Drawn for {@code life} ticks after {@code at}.
+     */
+    static void star(List<Ribbon> out, Vec3 p, float t, float at, float size, int rgb, long seed) {
+        float life = 4.0F + size;
+        float k = (t - at) / life;
+        if (k < 0 || k > 1) {
+            return;
+        }
+        Random r = new Random(seed);
+        float fade = (1 - k) * (1 - k);
+        int spikes = 9 + (int) (size * 3);
+        for (int i = 0; i < spikes; i++) {
+            Vec3 d = new Vec3(r.nextGaussian(), r.nextGaussian() * 0.8, r.nextGaussian()).normalize();
+            double len = size * (0.6 + r.nextDouble() * 0.7);
+            double in = len * (0.15 + 0.7 * Math.sqrt(k));
+            double outer = len * (0.45 + 0.75 * Math.sqrt(k));
+            float w = (float) (0.06 + 0.07 * size) * (1 - k);
+            Shapes.streak(out, p.add(d.scale(in)), p.add(d.scale(outer)), w * 2.4F, 0.55F * fade, rgb, Ribbon.Style.GLOW);
+            Shapes.streak(out, p.add(d.scale(in)), p.add(d.scale(outer)), w, fade, WHITE, Ribbon.Style.GLOW);
+        }
+        Vec3 n = new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian()).normalize();
+        Shapes.ring(out, p, n, size * (0.3 + 1.1 * Math.sqrt(k)), (float) (0.05 + 0.08 * size) * (1 - k), 0.8F * fade, WHITE, Ribbon.Style.GLOW);
+        Shapes.ring(out, p, n.cross(UP).lengthSqr() < 1.0E-4 ? new Vec3(1, 0, 0) : n.cross(UP).normalize(), size * (0.2 + 0.8 * k),
+                (float) (0.04 + 0.05 * size) * (1 - k), 0.6F * fade, rgb, Ribbon.Style.GLOW);
+    }
+
+    /** A crack of energy along a line: a jagged filament that re-forms every frame. */
+    static void filament(List<Ribbon> out, Vec3 a, Vec3 b, long seed, float width, float alpha, int rgb) {
+        Shapes.bolt(out, a, b, seed, Math.max(0.15, a.distanceTo(b) * 0.06), width, alpha, rgb, Ribbon.Style.GLOW);
+    }
+
     /** A spiral of light wound round the axis a-b. */
     static void spiral(List<Ribbon> out, Vec3 a, Vec3 b, double radius, double turns, double phase, float width, float alpha, int rgb) {
         Vec3 d = b.subtract(a);
@@ -146,6 +180,15 @@ public final class Choreo {
             return null;
         }
         return new Vec3[]{from.add(end.subtract(from).normalize().scale(travelled)), end.subtract(from).normalize(), end};
+    }
+
+    /** Where volley blast {@code i} lands and when: {x, y, z, tick}. */
+    static double[] blastImpact(ClientCast c, int i) {
+        int fire = Beats.VOLLEY_FIRST + i * Beats.VOLLEY_GAP;
+        Vec3 d = Beats.blastDir(c.hasTarget() ? c.point.subtract(c.eye).normalize() : c.dir, c.seed, i);
+        Vec3 from = c.eye.add(d.scale(0.8)).subtract(0, 0.25, 0).add(c.right.scale(i % 2 == 0 ? 0.35 : -0.35));
+        Vec3 end = reach(c, c.eye.add(d.scale(0.8)), d, Beats.BLAST_RANGE);
+        return new double[]{end.x, end.y, end.z, fire + end.distanceTo(from) / Beats.BLAST_SPEED};
     }
 
     static Vec3 spherePos(ClientCast c, float t) {
@@ -414,16 +457,36 @@ public final class Choreo {
                 float a = window(t, at - 1.5F, at, at + 1, at + 5);
                 Vec3 from = c.casterFeet(partial).add(0, (c.seed & 3) == 2 || c.move == Move.HEAVY ? 0.7 : 1.3, 0).add(c.right.scale(0.4));
                 Vec3 to = c.hasTarget() ? tp : from.add(c.dir.scale(2.8));
-                Shapes.crescent(out, from.lerp(to, 0.5), c.right, UP, from.distanceTo(to) * 0.6, -70, 70, c.move == Move.HEAVY ? 0.5F : 0.25F,
+                boolean heavy = c.move == Move.HEAVY;
+                Shapes.crescent(out, from.lerp(to, 0.5), c.right, UP, from.distanceTo(to) * 0.6, -70, 70, heavy ? 0.5F : 0.25F,
                         Mth.clamp((t - at + 1.5F) / 1.5F, 0, 1), a, zenith ? CYAN : SILVER, Ribbon.Style.GLOW);
+                if (heavy) {
+                    // the kick's arc: a second, wider sweep trailing the first, and a gust along the ground
+                    float a2 = window(t, at - 0.5F, at + 1, at + 2, at + 7);
+                    Vec3 tilt = UP.add(c.right.scale(0.5)).normalize();
+                    Shapes.crescent(out, from.lerp(to, 0.55), c.right, tilt, from.distanceTo(to) * 0.85, -85, 85, 0.3F,
+                            Mth.clamp((t - at + 0.5F) / 1.5F, 0, 1), a2 * 0.8F, BLUE, Ribbon.Style.GLOW);
+                    float g = window(t, at, at + 1, at + 3, at + 9);
+                    Vec3 gf = c.casterFeet(partial).add(0, 0.15, 0);
+                    Shapes.crescent(out, gf.add(c.fwd.scale(1.2)), c.right, c.fwd, 1.6 + (t - at) * 0.35, -60, 60, 0.18F, 1.0F, g * 0.6F,
+                            SILVER, Ribbon.Style.GLOW);
+                }
+                star(out, tp, t, at, heavy ? 2.4F : zenith ? 1.5F : 1.1F, zenith ? CYAN : BLUE, c.seed * 13L + at);
             }
             case VOLLEY -> {
                 for (int i = 0; i < Beats.VOLLEY_SHOTS; i++) {
                     Vec3[] b = blast(c, i, t);
                     if (b != null) {
-                        Shapes.streak(out, b[0].subtract(b[1].scale(1.8)), b[0], 0.55F, 0.9F, BLUE, Ribbon.Style.GLOW);
-                        Shapes.streak(out, b[0].subtract(b[1].scale(1.2)), b[0], 0.2F, 1.0F, WHITE, Ribbon.Style.GLOW);
+                        // a comet: a hard white head in a blue shell, a tail that thins behind it
+                        Shapes.streak(out, b[0].subtract(b[1].scale(2.6)), b[0].add(b[1].scale(0.2)), 0.7F, 0.7F, BLUE, Ribbon.Style.GLOW);
+                        Shapes.streak(out, b[0].subtract(b[1].scale(1.4)), b[0].add(b[1].scale(0.15)), 0.3F, 1.0F, CYAN, Ribbon.Style.GLOW);
+                        Shapes.streak(out, b[0].subtract(b[1].scale(0.7)), b[0].add(b[1].scale(0.1)), 0.14F, 1.0F, WHITE, Ribbon.Style.GLOW);
+                        Vec3 n = b[1];
+                        Shapes.ring(out, b[0], n, 0.28 + 0.05 * Math.sin(time * 30 + i), 0.07F, 0.9F, WHITE, Ribbon.Style.GLOW);
+                        spiral(out, b[0].subtract(b[1].scale(1.6)), b[0], 0.22, 1.5, -time * 20 + i, 0.05F, 0.6F, VIOLET);
                     }
+                    double[] im = blastImpact(c, i);
+                    star(out, new Vec3(im[0], im[1], im[2]), t, (float) im[3], 1.0F, i % 2 == 0 ? BLUE : VIOLET, c.seed * 17L + i);
                 }
             }
             case WAVE, FINAL -> {
@@ -451,6 +514,29 @@ public final class Choreo {
                     for (int i = 0; i < 3; i++) {
                         spiral(out, h, b, 1.1 * scale, b.distanceTo(h) / 6.0, -time * 9 + i * 2.09, 0.14F * scale, 0.55F * on, i == 0 ? SILVER : CYAN);
                     }
+                    // live current crawling along it, re-forming every frame
+                    long fr = (long) (time * 24);
+                    Vec3 bu = d.cross(Math.abs(d.y) > 0.9 ? new Vec3(1, 0, 0) : UP).normalize();
+                    Vec3 bv = d.cross(bu);
+                    for (int i = 0; i < (fin ? 5 : 3); i++) {
+                        Random fr2 = new Random(fr * 7 + i);
+                        double ang = fr2.nextDouble() * Math.PI * 2;
+                        double rad = (0.5 + fr2.nextDouble() * 0.6) * scale;
+                        Vec3 off = bu.scale(Math.cos(ang) * rad).add(bv.scale(Math.sin(ang) * rad));
+                        double k0 = fr2.nextDouble() * 0.6;
+                        double len0 = b.distanceTo(h);
+                        filament(out, h.add(d.scale(len0 * k0)).add(off), h.add(d.scale(len0 * Math.min(1.0, k0 + 0.25 + fr2.nextDouble() * 0.3))).add(off.scale(0.6)),
+                                fr * 13 + i, 0.06F * scale, 0.8F * on, i % 2 == 0 ? WHITE : VIOLET);
+                    }
+                    // the head: a swollen ball of light where it bites, and the hit thrown off it
+                    float pulse = 1.0F + 0.12F * (float) Math.sin(time * 35);
+                    for (int i = 0; i < 4; i++) {
+                        Vec3 n = new Vec3(Math.sin(time * 4 + i * 1.7), Math.cos(time * 3.1 + i), Math.sin(time * 2.2 + i * 2.9)).normalize();
+                        Shapes.ring(out, b, n, 1.5 * scale * pulse, 0.18F * scale, 0.6F * on, i % 2 == 0 ? WHITE : CYAN, Ribbon.Style.GLOW);
+                    }
+                    star(out, b, t, (float) Math.floor(t / 3) * 3, 2.0F * scale, fin ? VIOLET : CYAN, c.seed * 23L + (long) Math.floor(t / 3));
+                    // muzzle: the palms blazing
+                    Shapes.ring(out, h, d, 0.9 * scale * pulse, 0.2F * scale, 0.7F * on, WHITE, Ribbon.Style.GLOW);
                     // rings riding down the beam
                     double len = b.distanceTo(h);
                     for (int i = 0; i < 6; i++) {
@@ -471,8 +557,34 @@ public final class Choreo {
                     spiral(out, tp.subtract(0, 1.2, 0), tp.add(0, 1.6, 0), 1.3, 3.0, time * 6, 0.22F, 0.7F, SILVER);
                     spiral(out, tp.subtract(0, 1.2, 0), tp.add(0, 1.6, 0), 1.0, 3.0, time * 6 + 3.14, 0.14F, 0.5F, CYAN);
                 }
+                for (int h = Beats.FLURRY_FIRST; h <= Beats.FLURRY_LAST; h += 3) {
+                    Random hr = new Random(c.seed * 41L + h);
+                    Vec3 at = tp.add((hr.nextDouble() - 0.5) * 0.9, (hr.nextDouble() - 0.5) * 1.0, (hr.nextDouble() - 0.5) * 0.9);
+                    star(out, at, t, h, 0.9F, h % 2 == 0 ? CYAN : SILVER, c.seed * 41L + h);
+                }
+                star(out, tp, t, Beats.FLURRY_FINAL, 3.2F, CYAN, c.seed * 43L);
             }
             case METEOR -> {
+                star(out, tp, t, Beats.METEOR_LAUNCH, 1.8F, GOLD, c.seed * 51L);
+                for (int h : Beats.METEOR_HITS) {
+                    star(out, tp.add(c.right.scale(((h / 3) % 2 == 0 ? 0.3 : -0.3))), t, h, 1.1F, h % 2 == 0 ? GOLD : SILVER, c.seed * 53L + h);
+                }
+                star(out, tp, t, Beats.METEOR_SPIKE, 2.6F, GOLD, c.seed * 57L);
+                // the slam: a crater of light on the ground, and a pillar of dust and light
+                float sl = window(t, Beats.METEOR_SLAM, Beats.METEOR_SLAM + 1, Beats.METEOR_SLAM + 4, Beats.METEOR_SLAM + 14);
+                if (sl > 0) {
+                    Vec3 g = c.targetCentre(partial).subtract(0, 0.9, 0);
+                    float k = Mth.clamp((t - Beats.METEOR_SLAM) / 14.0F, 0, 1);
+                    Shapes.ring(out, g.add(0, 0.1, 0), UP, 1.0 + 5.0 * k, 0.5F * (1 - k), sl, GOLD, Ribbon.Style.GLOW);
+                    Shapes.ring(out, g.add(0, 0.12, 0), UP, 0.6 + 3.5 * k, 0.2F * (1 - k), sl, WHITE, Ribbon.Style.GLOW);
+                    for (int i = 0; i < 14; i++) {
+                        double ang = i / 14.0 * Math.PI * 2 + c.seed;
+                        Vec3 dir = new Vec3(Math.cos(ang), 0, Math.sin(ang));
+                        Shapes.streak(out, g.add(dir.scale(0.8 + 3 * k)).add(0, 0.1, 0), g.add(dir.scale(1.6 + 5 * k)).add(0, 0.4 + 1.2 * (i % 3) * (1 - k), 0),
+                                0.22F, sl * 0.8F, i % 2 == 0 ? GOLD : SILVER, Ribbon.Style.GLOW);
+                    }
+                    Shapes.streak(out, g, g.add(0, 7 * (0.4 + k), 0), 1.6F * (1 - k), sl * 0.5F, GOLD, Ribbon.Style.GLOW);
+                }
                 if (t >= Beats.METEOR_SPIKE - 1 && t < Beats.METEOR_SLAM + 4) {
                     float a = window(t, Beats.METEOR_SPIKE - 1, Beats.METEOR_SPIKE, Beats.METEOR_SLAM, Beats.METEOR_SLAM + 4);
                     Shapes.streak(out, tp.add(0, 6, 0), tp, 0.8F, a, GOLD, Ribbon.Style.GLOW);
@@ -491,9 +603,12 @@ public final class Choreo {
                     float flash = hit(t, at, 3);
                     Shapes.streak(out, a, b, 0.2F + 0.5F * flash, hang * (0.5F + 0.5F * flash), i % 2 == 0 ? CYAN : VIOLET, Ribbon.Style.GLOW);
                     Shapes.streak(out, a, b, 0.06F, hang, WHITE, Ribbon.Style.GLOW);
+                    star(out, tp.add(b.subtract(tp).scale(0.15)), t, at, 1.3F, i % 2 == 0 ? CYAN : VIOLET, c.seed * 61L + i);
                 }
+                star(out, tp, t, Beats.RUSH_FINAL, 4.0F, SILVER, c.seed * 67L);
             }
             case SPHERE -> {
+                star(out, spherePos(c, Beats.SPHERE_BOOM - 0.01F), t, Beats.SPHERE_BOOM, 7.0F, CYAN, c.seed * 79L);
                 float rad = sphereRadius(c, t, zenith);
                 if (rad > 0.05F) {
                     Vec3 s = spherePos(c, t);
@@ -504,6 +619,9 @@ public final class Choreo {
                         Shapes.ring(out, s, n, rad * (0.92 + 0.08 * Math.sin(time * 5 + i)), 0.14F * rad, 0.55F, i % 3 == 0 ? WHITE : i % 3 == 1 ? CYAN : BLUE,
                                 Ribbon.Style.GLOW);
                     }
+                    // the core: a hot white heart turning inside the shell
+                    Shapes.ring(out, s, UP, rad * 0.35, 0.3F * rad, 0.7F, WHITE, Ribbon.Style.GLOW);
+                    Shapes.ring(out, s, new Vec3(Math.sin(time), 0, Math.cos(time)), rad * 0.35, 0.3F * rad, 0.7F, WHITE, Ribbon.Style.GLOW);
                     // arms raised: a column of light from his hands to it
                     if (t < Beats.SPHERE_THROW) {
                         Vec3 hand = c.casterFeet(partial).add(0, 2.1, 0);
@@ -512,7 +630,9 @@ public final class Choreo {
                     }
                 }
             }
+            case AWAKEN_OMEN -> star(out, c.casterFeet(partial).add(0, 1.2, 0), t, Beats.OMEN_SURGE, 3.0F, BLUE, c.seed * 71L);
             case AWAKEN_ZENITH -> {
+                star(out, c.casterFeet(partial).add(0, 1.2, 0), t, Beats.ZENITH_SURGE, 4.5F, SILVER, c.seed * 73L);
                 // light rising out of the ground round him before the summit
                 float a = window(t, 56, 70, Beats.ZENITH_SURGE, Beats.ZENITH_SURGE + 2);
                 for (int i = 0; i < 14; i++) {
@@ -542,41 +662,16 @@ public final class Choreo {
             }
             boolean zenith = power > 0.7F;
             Vec3 feet = p.getPosition(partial);
-            float hgt = 2.2F + 0.8F * power;
-            for (int i = 0; i < tongues; i++) {
-                float phase = i * 1.7F + p.getId();
-                float flick = zenith ? 0.75F + 0.25F * (float) Math.sin(time * 9 + phase) : Mth.clamp(0.4F + 0.9F * (float) Math.sin(time * 6 + phase * 2.3F), 0, 1);
-                if (flick < 0.05F) {
-                    continue;
-                }
-                float h = hgt * (0.7F + 0.3F * (float) Math.sin(time * 4 + phase));
-                int n = 9;
-                Vec3[] spine = new Vec3[n];
-                float[] w = new float[n];
-                float[] al = new float[n];
-                double base = i * Math.PI * 2 / tongues + time * 0.5;
-                for (int k = 0; k < n; k++) {
-                    float u = k / (n - 1.0F);
-                    double ang = base + 0.5 * u * Math.sin(time * 2.5 + phase);
-                    double rr = (0.62 - 0.45 * u) + 0.07 * Math.sin(time * 11 + phase + u * 6);
-                    spine[k] = feet.add(Math.cos(ang) * rr, u * h, Math.sin(ang) * rr);
-                    w[k] = (0.42F * (1 - u) + 0.05F) * (0.7F + 0.5F * power);
-                    al[k] = power * flick * 0.45F * (float) Math.sin(Math.PI * Math.pow(u, 0.65));
-                }
-                out.add(new Ribbon(spine, null, w, al, BLUE, Ribbon.Style.GLOW));
-                float[] w2 = w.clone();
-                float[] al2 = al.clone();
-                for (int k = 0; k < n; k++) {
-                    w2[k] *= 0.4F;
-                    al2[k] *= 1.3F;
-                }
-                out.add(new Ribbon(spine, null, w2, al2, SILVER, Ribbon.Style.GLOW));
-                if (zenith && i % 3 == 0) {
-                    Vec3 tip = spine[n - 1];
-                    Shapes.streak(out, spine[n - 3], tip.add(0, 0.5, 0), 0.16F, al[n - 3] * 1.5F, VIOLET, Ribbon.Style.GLOW);
-                }
+            boolean selfView = p == mc.player && mc.options.getCameraType().isFirstPerson() && !com.firestar.silver.client.cinematic.Director.active();
+            if (!selfView) {
+                Vec3 cam = mc.gameRenderer.getMainCamera().getPosition();
+                Vec3 away = feet.subtract(cam).multiply(1, 0, 1);
+                away = away.lengthSqr() < 1.0E-4 ? p.getViewVector(partial).multiply(1, 0, 1) : away;
+                away = away.lengthSqr() < 1.0E-6 ? new Vec3(0, 0, 1) : away.normalize();
+                Aura.draw(out, feet, away, power, time, p.getId(), Math.max(3, tongues / 2), zenith ? Aura.ZENITH : Aura.OMEN);
+            } else {
+                Shapes.ring(out, feet.add(0, 0.06, 0), UP, 1.0 + 0.08 * Math.sin(time * 6), 0.14F, 0.3F * power, BLUE, Ribbon.Style.GLOW);
             }
-            Shapes.ring(out, feet.add(0, 0.06, 0), UP, 1.0 + 0.08 * Math.sin(time * 6), 0.14F, 0.35F * power, BLUE, Ribbon.Style.GLOW);
             if (zenith) {
                 long frame = (long) (time * 14);
                 Random r = new Random(frame * 977L + p.getId());

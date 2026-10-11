@@ -57,6 +57,7 @@ public final class ClientEvents {
             } else {
                 ClientState.tick();
                 Casts.tick();
+                PlayerAnims.tickStances();
                 Director.tick();
                 Afterimages.tick();
                 Choreo.ambientTick();

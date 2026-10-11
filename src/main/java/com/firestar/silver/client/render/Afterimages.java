@@ -77,7 +77,7 @@ public final class Afterimages {
             // the silver glow round an awakened body, breathing with the aura
             if (power > 0.02F) {
                 float breathe = 0.8F + 0.2F * (float) Math.sin(System.nanoTime() / 1.0E9 * 5.0);
-                float a = 0.22F * power * breathe;
+                float a = 0.13F * power * breathe;
                 MultiBufferSource glow = type -> new Tint(base.getBuffer(RenderType.lightning()), 0.72F, 0.88F, 1.0F, a);
                 pose.pushPose();
                 pose.translate(0, -0.03, 0);

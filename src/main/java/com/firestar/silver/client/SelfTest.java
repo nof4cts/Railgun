@@ -50,6 +50,7 @@ public final class SelfTest {
 
     private static final Step[] ORDER = {
             new Step(Move.AWAKEN_OMEN, "awaken_omen", 6.0, 4.0F, 0, new int[]{4, 14, 30, 46, 58, 64, 66, 70, 80, 100}),
+            new Step(null, "stance_omen", 6.0, 4.0F, 34, new int[]{14, 22, 30}),
             new Step(Move.STRIKE, "strike_a", 2.6, 4.0F, 10, new int[]{1, 3, 5}),
             new Step(Move.STRIKE, "strike_b", 2.6, 4.0F, 10, new int[]{3, 5}),
             new Step(Move.STRIKE, "strike_c", 2.6, 4.0F, 0, new int[]{3, 5}),
@@ -61,6 +62,7 @@ public final class SelfTest {
             new Step(Move.METEOR, "meteor", 4.0, 4.0F, 0, new int[]{6, 9, 14, 18, 24, 30, 34, 36, 42, 43, 50}),
             new Step(null, "instinct_omen", 2.4, 4.0F, 40, new int[]{1, 2, 3, 7, 8, 13, 14, 19, 25}),
             new Step(Move.AWAKEN_ZENITH, "awaken_zenith", 6.0, 4.0F, 0, new int[]{6, 20, 40, 60, 80, 94, 96, 98, 104, 120, 140}),
+            new Step(null, "stance_zenith", 6.0, 4.0F, 34, new int[]{14, 22, 30}),
             new Step(Move.STRIKE, "strike_zenith", 2.6, 4.0F, 0, new int[]{2, 4}),
             new Step(Move.RUSH, "rush", 6.0, 4.0F, 0, new int[]{8, 12, 13, 18, 24, 30, 39, 44, 48, 49, 52, 60}),
             new Step(Move.SPHERE, "sphere", 10.0, -10.0F, 0, new int[]{10, 30, 50, 70, 88, 92, 98, 104, 106, 107, 110, 120, 140}),
@@ -135,7 +137,7 @@ public final class SelfTest {
                     reset(p, s.pitch, s.dist);
                 }
                 // the instinct only answers real blows: survival for those, creative for the rest
-                p.setGameMode(s.move == null ? GameType.SURVIVAL : GameType.CREATIVE);
+                p.setGameMode(s.label.startsWith("instinct") ? GameType.SURVIVAL : GameType.CREATIVE);
                 p.setHealth(p.getMaxHealth());
                 p.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 4, false, false));
             });
@@ -144,9 +146,13 @@ public final class SelfTest {
             for (int b : s.beats) {
                 SHOTS.add(new int[]{b, 0});
             }
+            mc.options.setCameraType(s.label.startsWith("stance") ? CameraType.THIRD_PERSON_FRONT : CameraType.THIRD_PERSON_BACK);
             SilverMod.LOGGER.info("[selftest] {}", s.label);
         }
         Step s = ORDER[index];
+        if (s.move == null && !s.label.startsWith("instinct")) {
+            return;
+        }
         if (s.move == null) {
             // the golem swings at him every six ticks; the instinct decides what lands
             long dt = now - castAt;
