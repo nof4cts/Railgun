@@ -1,0 +1,62 @@
+{
+ "shutter": {
+  "subtitle": "subtitles.naoya.shutter",
+  "sounds": [
+   "naoya:shutter"
+  ]
+ },
+ "dash": {
+  "subtitle": "subtitles.naoya.dash",
+  "sounds": [
+   "naoya:dash"
+  ]
+ },
+ "boom": {
+  "subtitle": "subtitles.naoya.boom",
+  "sounds": [
+   "naoya:boom"
+  ]
+ },
+ "freeze": {
+  "subtitle": "subtitles.naoya.freeze",
+  "sounds": [
+   "naoya:freeze"
+  ]
+ },
+ "shatter": {
+  "subtitle": "subtitles.naoya.shatter",
+  "sounds": [
+   "naoya:shatter"
+  ]
+ },
+ "hit": {
+  "subtitle": "subtitles.naoya.hit",
+  "sounds": [
+   "naoya:hit"
+  ]
+ },
+ "heavy": {
+  "subtitle": "subtitles.naoya.heavy",
+  "sounds": [
+   "naoya:heavy"
+  ]
+ },
+ "film": {
+  "subtitle": "subtitles.naoya.film",
+  "sounds": [
+   "naoya:film"
+  ]
+ },
+ "ult_hit": {
+  "subtitle": "subtitles.naoya.ult_hit",
+  "sounds": [
+   "naoya:ult_hit"
+  ]
+ },
+ "blink": {
+  "subtitle": "subtitles.naoya.blink",
+  "sounds": [
+   "naoya:blink"
+  ]
+ }
+}
