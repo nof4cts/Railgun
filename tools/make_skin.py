@@ -24,6 +24,8 @@ B = {
     'abdomen': (340, 0, 96, 72, 48), 'chest': (630, 0, 128, 88, 64), 'neck': (560, 180, 36, 28, 36), 'head': (0, 300, 60, 68, 64),
     'hair': (260, 300, 64, 24, 68), 'ear': (740, 300, 8, 20, 16), 'jaw': (540, 300, 52, 20, 44), 'upper': (0, 480, 40, 128, 40),
     'deltoid': (170, 480, 48, 40, 48), 'fore': (370, 480, 36, 120, 36), 'hand': (520, 480, 40, 44, 32), 'finger': (680, 480, 9, 36, 12),
+    # the king's broader torso
+    'khips': (0, 652, 152, 48, 60), 'kabdomen': (0, 760, 128, 64, 48), 'kchest': (0, 872, 176, 88, 64),
 }
 
 
@@ -235,6 +237,43 @@ for k, (x, y, w, h) in faces('hair').items():
 # the back hangs longer: full
 x, y, w, h = faces('hair')['back']
 img[y:y + h, x:x + w, 3] = 255
+
+# ---- the king's torso: the same lines, broader
+for name in ('kchest',):
+    x, y, w, h = faces(name)['front']
+    im, d = canvas(w, h)
+    d.arc((6, 30, w // 2 + 2, 82), 200, 340, fill=255, width=3)
+    d.arc((w // 2 - 2, 30, w - 6, 82), 200, 340, fill=255, width=3)
+    shade(x, y, w, h, soft(arr(im), 2.0), 0.35)
+x, y, w, h = faces('kabdomen')['front']
+im, d = canvas(w, h)
+d.line((w // 2, 0, w // 2, h - 16), fill=170, width=2)
+d.line((w // 2 - 26, 22, w // 2 + 26, 22), fill=90, width=2)
+shade(x, y, w, h, soft(arr(im), 2.0), 0.28)
+
+# ---- bone: ivory, worn, cracked, darker in its grooves (one field that every bony part samples)
+bx, by, bw, bh = 520, 652, 504, 372
+g1 = blotch(bh, bw, 18, 501)
+g2 = blotch(bh, bw, 4, 502)
+col = np.array([226, 214, 186.0])[None, None, :] * (0.82 + 0.16 * g1[..., None]) * (0.95 + 0.06 * g2[..., None])
+cr = Image.new('L', (bw, bh), 0)
+dc = ImageDraw.Draw(cr)
+r2 = np.random.default_rng(503)
+for k in range(140):
+    x0, y0 = r2.random() * bw, r2.random() * bh
+    pts = [(x0, y0)]
+    for j in range(5):
+        x0 += (r2.random() - 0.5) * 14
+        y0 += (r2.random() - 0.5) * 14
+        pts.append((x0, y0))
+    dc.line(pts, fill=255, width=1)
+crack = arr(cr)
+col *= (1 - 0.45 * crack[..., None])
+# grain: faint lines along the length
+yy, xx = np.mgrid[0:bh, 0:bw]
+col *= (0.96 + 0.04 * np.sin(xx * 0.9 + g1 * 6))[..., None]
+img[by:by + bh, bx:bx + bw, :3] = col
+img[by:by + bh, bx:bx + bw, 3] = 255
 
 os.makedirs(os.path.join(OUT, 'entity'), exist_ok=True)
 Image.fromarray(img.clip(0, 255).astype(np.uint8), 'RGBA').save(os.path.join(OUT, 'entity', 'giant.png'), optimize=True)
