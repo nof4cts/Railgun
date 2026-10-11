@@ -104,7 +104,7 @@ public final class SelfTest {
                 level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
                 StandUsers.grant(p, true);
                 p.getInventory().clearContent();
-                scenery(level, BlockPos.containing(p.position()));
+                scenery(level, BlockPos.containing(0.5, p.getY(), 0.5));
                 mc.execute(() -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
                 MihMod.LOGGER.info("[selftest] Stand granted, scenery built");
             });
