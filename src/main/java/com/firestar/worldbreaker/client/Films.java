@@ -51,7 +51,7 @@ public final class Films {
         s.add(Shot.cut(0, 36, (k, t) -> pose(P.subtract(D.scale(2.2)).add(S.scale(0.9)).add(0, 1.45, 0), P.add(D.scale(60)).add(0, 9 + 3 * k, 0),
                 50 - 6 * k, 0)));
         // 2. the dust wall: down at the dirt, a telephoto on the horizon as it boils up
-        s.add(Shot.cut(36, 70, (k, t) -> pose(P.add(D.scale(4)).add(S.scale(-1)).add(0, 2.2, 0), P.add(D.scale(95)).add(0, 14 + 8 * k, 0),
+        s.add(Shot.cut(36, 70, (k, t) -> pose(P.subtract(D.scale(3)).add(S.scale(-2)).add(0, 5.5 - 2 * k, 0), P.add(D.scale(95)).add(0, 12 + 10 * k, 0),
                 30 - 6 * k, 0)));
         // 3. eyes through the haze
         s.add(Shot.cut(70, 102, (k, t) -> pose(P.add(0, 1.8, 0), at(a, gc, t - L).add(0, H * (0.84 + 0.04 * k), 0), 15 - 4 * k, 0)));
@@ -88,7 +88,8 @@ public final class Films {
         int t9 = nextFall(gc, 268 - L);
         Vec3 foot9 = footAt(a, gc, t9);
         t9 += L;
-        s.add(Shot.cut(272, March.FILM, (k, t) -> pose(P.add(0, 6 + 70 * k * k, 0).subtract(D.scale(5)).add(S.scale(4)), P.add(D.scale(4)), 58 + 12 * k, 0)));
+        s.add(Shot.cut(272, March.FILM, (k, t) -> pose(P.subtract(D.scale(34 + 6 * k)).add(S.scale(10)).add(0, 3 + 34 * k * k, 0),
+                at(a, gc, t - L).add(0, H * (0.35 + 0.4 * k), 0), 62 + 8 * k, -3 * k)));
         CUES.add(new Cue(Math.max(t9, 274), FINALE, foot9, 1.4F));
 
         String[][] lines = {{"4", "...Do you feel it? The ground is shaking."}, {"74", "They're coming."}, {"176", "Everything in their path..."},

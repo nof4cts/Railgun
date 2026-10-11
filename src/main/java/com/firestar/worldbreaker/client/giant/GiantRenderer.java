@@ -71,14 +71,18 @@ public final class GiantRenderer {
 
                 pose.pushPose();
                 // rising out of the ground at the start, sinking back into it at the end
-                pose.translate(rel.x, rel.y - (1 - presence) * h * 1.02, rel.z);
+                pose.translate(rel.x, rel.y - (1 - presence) * h * 1.45, rel.z);
                 pose.mulPose(Axis.YP.rotationDegrees(180.0F - yaw));
                 if (presence < 1) {
                     pose.mulPose(Axis.XP.rotationDegrees((1 - presence) * 14));
                 }
                 pose.scale(-s, -s, s);
                 pose.translate(0, -128 * GiantModel.U / 16.0F, 0);
-                model.root.render(pose, buffers.getBuffer(solid), light, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+                // each giant its own stone: some ashier, some warmer, some near black
+                java.util.Random tint = new java.util.Random(a.seed * 977 + g.index());
+                float v = 0.78F + tint.nextFloat() * 0.34F;
+                float warm = (tint.nextFloat() - 0.5F) * 0.12F;
+                model.root.render(pose, buffers.getBuffer(solid), light, OverlayTexture.NO_OVERLAY, v * (1 + warm), v, v * (1 - warm), 1);
                 float pulse = 0.82F + 0.18F * Mth.sin(time * 2.1F + g.index() * 1.3F);
                 model.root.render(pose, buffers.getBuffer(glow), 0xF000F0, OverlayTexture.NO_OVERLAY, pulse, pulse, pulse, 1);
                 pose.popPose();

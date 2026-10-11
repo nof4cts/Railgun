@@ -199,7 +199,7 @@ public final class Marching {
     private static void emit(Active a, March.Giant g, int t, Vec3 c, Vec3 heading, double h, double presence, double dist) {
         Vec3 side = March.side(heading);
         float detail = dist < 150 ? 1.0F : dist < 300 ? 0.5F : 0.25F;
-        double sink = (1 - presence) * h * 1.02;
+        double sink = (1 - presence) * h * 1.45;
         if (presence > 0.05) {
             // steam: hot stone in cold air
             for (int i = 0; i < 2; i++) {
@@ -285,7 +285,7 @@ public final class Marching {
             for (March.Giant g : a.giants) {
                 double h = March.HEIGHT * g.scale();
                 Vec3 heading = March.heading(a.dir, g);
-                Vec3 e = GiantRenderer.eyes(centre(a, g, partial), heading, h).subtract(0, (1 - presence) * h * 1.02, 0);
+                Vec3 e = GiantRenderer.eyes(centre(a, g, partial), heading, h).subtract(0, (1 - presence) * h * 1.45, 0);
                 Vec3 side = March.side(heading);
                 float flick = 0.85F + 0.15F * (float) Math.sin(t * 0.7 + g.index());
                 for (int s = -1; s <= 1; s += 2) {
