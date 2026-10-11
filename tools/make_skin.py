@@ -274,6 +274,16 @@ yy, xx = np.mgrid[0:bh, 0:bw]
 col *= (0.96 + 0.04 * np.sin(xx * 0.9 + g1 * 6))[..., None]
 img[by:by + bh, bx:bx + bw, :3] = col
 img[by:by + bh, bx:bx + bw, 3] = 255
+# the king's jaw (bone box at offset 200,210, 15 x 6 x 13 units): a row of big square teeth across its front
+jx, jy, jw, jh = bx + 200 + 52, by + 210 + 52, 60, 24
+jaw = Image.fromarray(img[jy:jy + jh, jx:jx + jw, :3].clip(0, 255).astype(np.uint8))
+d = ImageDraw.Draw(jaw)
+d.rectangle((2, 0, jw - 3, 10), fill=(40, 12, 16))
+for k in range(9):
+    tx = 3 + k * 6.3
+    d.rectangle((int(tx), 0, int(tx + 4.6), 9 - (k % 2)), fill=(240, 232, 210))
+d.line((1, 11, jw - 2, 11), fill=(120, 100, 80), width=1)
+img[jy:jy + jh, jx:jx + jw, :3] = np.asarray(jaw, dtype=np.float64)
 
 os.makedirs(os.path.join(OUT, 'entity'), exist_ok=True)
 Image.fromarray(img.clip(0, 255).astype(np.uint8), 'RGBA').save(os.path.join(OUT, 'entity', 'giant.png'), optimize=True)
