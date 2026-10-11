@@ -195,13 +195,13 @@ public final class Marching {
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(s, pitch, volume));
     }
 
-    /** What a walking giant gives off every tick: steam off its shoulders and back, embers from its seams, dust at its shins. */
+    /** What a walking giant gives off every tick: steam off its shoulders and back, its breath, dust at its shins. */
     private static void emit(Active a, March.Giant g, int t, Vec3 c, Vec3 heading, double h, double presence, double dist) {
         Vec3 side = March.side(heading);
         float detail = dist < 120 ? 0.7F : dist < 240 ? 0.3F : 0.1F;
         double sink = (1 - presence) * h * 1.45;
         if (presence > 0.05) {
-            // steam: hot stone in cold air
+            // steam: body heat pouring off them into the cold air
             for (int i = 0; i < 2; i++) {
                 if (R.nextFloat() > detail) {
                     continue;
@@ -214,12 +214,6 @@ public final class Marching {
             if (R.nextFloat() < 0.25F * detail) {
                 Vec3 mouth = GiantRenderer.eyes(c, heading, h).subtract(0, h * 0.06 + sink, 0);
                 Smoke.puff(mouth, heading.scale(3).add(0, 1.2, 0), (float) (h * 0.03), (float) (h * 0.12), 2.5F, STEAM, 0.35F, 0.8F, 0.8F);
-            }
-            // embers coming off the seams
-            if (R.nextFloat() < 0.8F * detail) {
-                Vec3 at = c.add(side.scale((R.nextDouble() - 0.5) * h * 0.35)).add(0, R.nextDouble() * h * 0.9 - sink, 0);
-                Light.mote(at, new Vec3((R.nextDouble() - 0.5) * 2, 2 + R.nextDouble() * 3, (R.nextDouble() - 0.5) * 2), 1.6F,
-                        R.nextBoolean() ? EMBER : MOLTEN, 0.12F);
             }
         }
         if (presence < 1 && t < March.RISE + 4 && R.nextFloat() < detail) {
@@ -270,33 +264,8 @@ public final class Marching {
 
     // ------------------------------------------------------------------------------------------------ per frame
 
-    /** Light that lives on: the eyes burning in every head. */
+    /** Per-frame effects (none at present: the giants carry no light of their own). */
     public static void frame(float partial) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.isPaused()) {
-            return;
-        }
-        for (Active a : ACTIVE) {
-            double t = time(a, partial);
-            if (t < 0) {
-                continue;
-            }
-            double presence = March.presence(t, a.life);
-            for (March.Giant g : a.giants) {
-                double h = March.HEIGHT * g.scale();
-                Vec3 heading = March.heading(a.dir, g);
-                Vec3 e = GiantRenderer.eyes(centre(a, g, partial), heading, h).subtract(0, (1 - presence) * h * 1.45, 0);
-                Vec3 side = March.side(heading);
-                float flick = 0.85F + 0.15F * (float) Math.sin(t * 0.7 + g.index());
-                boolean near = e.distanceToSqr(Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()) < 250 * 250;
-                for (int s = -1; s <= 1; s += 2) {
-                    Light.flare(e.add(side.scale(s * h * 0.055)), (float) (h * 0.05) * flick, EMBER, 0.05F);
-                    if (near) {
-                        Light.flare(e.add(side.scale(s * h * 0.055)), (float) (h * 0.018), HOT, 0.05F);
-                    }
-                }
-            }
-        }
     }
 
     /** Strokes on the ground: molten cracks racing out from each footfall and cooling. */
