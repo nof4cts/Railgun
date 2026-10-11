@@ -1,0 +1,109 @@
+{
+ "summon": {
+  "subtitle": "sound.madeinheaven.summon",
+  "sounds": [
+   "madeinheaven:summon"
+  ]
+ },
+ "punch": {
+  "subtitle": "sound.madeinheaven.punch",
+  "sounds": [
+   "madeinheaven:punch_1",
+   "madeinheaven:punch_2",
+   "madeinheaven:punch_3"
+  ]
+ },
+ "jab": {
+  "subtitle": "sound.madeinheaven.jab",
+  "sounds": [
+   "madeinheaven:jab_1",
+   "madeinheaven:jab_2",
+   "madeinheaven:jab_3",
+   "madeinheaven:jab_4"
+  ]
+ },
+ "finisher": {
+  "subtitle": "sound.madeinheaven.finisher",
+  "sounds": [
+   "madeinheaven:finisher"
+  ]
+ },
+ "knife_throw": {
+  "subtitle": "sound.madeinheaven.knife_throw",
+  "sounds": [
+   "madeinheaven:knife_throw"
+  ]
+ },
+ "knife_hit": {
+  "subtitle": "sound.madeinheaven.knife_hit",
+  "sounds": [
+   "madeinheaven:knife_hit"
+  ]
+ },
+ "slice": {
+  "subtitle": "sound.madeinheaven.slice",
+  "sounds": [
+   "madeinheaven:slice"
+  ]
+ },
+ "vanish": {
+  "subtitle": "sound.madeinheaven.vanish",
+  "sounds": [
+   "madeinheaven:vanish"
+  ]
+ },
+ "tick": {
+  "subtitle": "sound.madeinheaven.tick",
+  "sounds": [
+   "madeinheaven:tick"
+  ]
+ },
+ "tock": {
+  "subtitle": "sound.madeinheaven.tock",
+  "sounds": [
+   "madeinheaven:tock"
+  ]
+ },
+ "double_accel": {
+  "subtitle": "sound.madeinheaven.double_accel",
+  "sounds": [
+   "madeinheaven:double_accel"
+  ]
+ },
+ "judgement": {
+  "subtitle": "sound.madeinheaven.judgement",
+  "sounds": [
+   "madeinheaven:judgement"
+  ]
+ },
+ "time_accel": {
+  "subtitle": "sound.madeinheaven.time_accel",
+  "sounds": [
+   "madeinheaven:time_accel"
+  ]
+ },
+ "reset_rise": {
+  "subtitle": "sound.madeinheaven.reset_rise",
+  "sounds": [
+   "madeinheaven:reset_rise"
+  ]
+ },
+ "singularity": {
+  "subtitle": "sound.madeinheaven.singularity",
+  "sounds": [
+   "madeinheaven:singularity"
+  ]
+ },
+ "new_universe": {
+  "subtitle": "sound.madeinheaven.new_universe",
+  "sounds": [
+   "madeinheaven:new_universe"
+  ]
+ },
+ "menacing": {
+  "subtitle": "sound.madeinheaven.menacing",
+  "sounds": [
+   "madeinheaven:menacing"
+  ]
+ }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [" S ", "GCG", " B "],
+  "key": {
+    "S": { "item": "minecraft:nether_star" },
+    "G": { "item": "minecraft:gold_ingot" },
+    "C": { "item": "minecraft:clock" },
+    "B": { "item": "minecraft:bone" }
+  },
+  "result": { "item": "madeinheaven:stand_disc" }
+}
