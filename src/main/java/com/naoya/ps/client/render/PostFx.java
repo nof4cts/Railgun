@@ -162,7 +162,7 @@ public final class PostFx {
         GL30.glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_NEAREST);
 
         // bloom: down
-        float bloomCfg = Prefs.bloom.floatValue();
+        float bloomCfg = (float) Prefs.bloom;
         down.use();
         down.set("Src", 0);
         down.set("Threshold", 0.78F);
@@ -200,14 +200,14 @@ public final class PostFx {
         c.set("Bloom", 1);
         c.set("ScreenSize", (float) w, (float) h);
         c.set("Time", time);
-        float flashCfg = Prefs.flash.floatValue();
+        float flashCfg = (float) Prefs.flash;
         c.set("Flash", FX.flashR, FX.flashG, FX.flashB, FX.flash * flashCfg);
         c.set("Punch", Math.min(FX.punch, 1.2F));
-        c.set("Aberration", FX.aberration * Prefs.aberration.floatValue());
+        c.set("Aberration", FX.aberration * (float) Prefs.aberration);
         c.set("Desaturate", FX.desaturate);
         c.set("Contrast", FX.contrast);
         c.set("Vignette", FX.vignetteR, FX.vignetteG, FX.vignetteB, FX.vignette);
-        c.set("Grain", FX.grain * Prefs.grain.floatValue());
+        c.set("Grain", FX.grain * (float) Prefs.grain);
         c.set("Haki", FX.haki);
         c.set("BloomStrength", (0.35F + FX.bloom) * bloomCfg);
         c.set("Accent", FX.accentR, FX.accentG, FX.accentB);

@@ -36,7 +36,7 @@ public final class SelfTest {
     private static boolean done;
     private static final List<int[]> SHOTS = new ArrayList<>();
 
-    private record Step(int slot, String label, double dist, int wait, int[] beats, boolean front) {}
+    private record Step(int slot, String label, double dist, int hold, int[] beats, boolean front) {}
 
     private static final Step[] ORDER = {
             new Step(0, "dash", 12, 30, new int[]{1, 2, 3, 5, 8}, false),
@@ -94,7 +94,7 @@ public final class SelfTest {
             return;
         }
         long now = mc.level.getGameTime();
-        if (index < 0 || (index < ORDER.length && now > castAt + ORDER[index].wait)) {
+        if (index < 0 || (index < ORDER.length && now > castAt + ORDER[index].hold)) {
             index++;
             if (index >= ORDER.length) {
                 done = true;
