@@ -81,9 +81,9 @@ public final class Films {
             Vec3 e = GiantRenderer.eyes(c, hd, March.HEIGHT * gr.scale());
             return pose(e.add(hd.scale(15 - 4 * k)).add(March.side(hd).scale(-11)).add(0, -3, 0), e.subtract(0, 1, 0), 42, 3);
         }));
-        // 8. the caller, unmoved, as they arrive at his back
-        s.add(Shot.cut(238, 272, (k, t) -> pose(P.subtract(D.scale(6.5 - 1.5 * k)).add(S.scale(1.6)).add(0, 1.0, 0), P.add(D.scale(2)).add(0, 3.5 + 3 * k, 0),
-                62, 0)));
+        // 8. the caller, small and unmoved, the giant towering right at his back
+        s.add(Shot.cut(238, 272, (k, t) -> pose(P.subtract(D.scale(30 - 4 * k)).add(S.scale(7)).add(0, 1.6, 0), P.add(D.scale(4)).add(0, 9 + 14 * k, 0),
+                64, 0)));
         // 9. a foot lands beside him: crane up into the sky as the dust rolls out
         int t9 = nextFall(gc, 268 - L);
         Vec3 foot9 = footAt(a, gc, t9);
