@@ -42,7 +42,7 @@ public final class SelfTest {
     /** After the film: {tick, x, dy, z, yaw, pitch} vantage points (relative to the caller's start). */
     private static final double[][] VANTAGE = {
             {312, 20, 6, -78, 8, -20},
-            {350, -75, 40, 10, -90, 12},
+            {372, 10, 72, -42, 0, 30},
             {330, 45, 22, 10, 125, 18},
             {380, 0, 3, 40, 180, 8},
             {440, -60, 70, 0, -90, 42},
