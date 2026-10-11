@@ -191,23 +191,25 @@ public final class StandPose {
                     k(Beats.SLICE_VANISH, with(SLICE_P, ALPHA, 0.0F), SNAP),
                     k(Beats.SLICE_HIT - 1, with(SLICE_P, ALPHA, 0.0F), LINEAR),
                     k(Beats.SLICE_HIT, SLICE_P, SNAP), k(40, SLICE_P, LINEAR), k(58, IDLE, IN_OUT));
-            case INFINITE_SPEED -> play(t, k(0, IDLE, LINEAR), k(Beats.INF_VANISH - 2, CHOP_UP, IN_OUT),
-                    k(Beats.INF_VANISH, with(CHOP_UP, ALPHA, 0.0F), SNAP), k(Beats.INF_HIT - 2, with(CHOP_UP, ALPHA, 1.0F), SNAP),
-                    k(Beats.INF_HIT, CHOP_DOWN, OUT_EXPO), k(32, CHOP_DOWN, LINEAR), k(48, IDLE, IN_OUT));
+            case INFINITE_SPEED -> play(t, k(0, IDLE, LINEAR), k(4, with(REAR, CLOCK, 30, SCALE, 1.05F), OUT_BACK),
+                    k(Beats.INF_ON, with(REAR, CLOCK, 60, SCALE, 1.15F, GLOW, 1), OUT_EXPO), k(14, with(IDLE, CLOCK, 30, GLOW, 0.8F, DIAL, 1), IN_OUT));
+            case LIGHTSPEED_RUSH -> play(t, k(0, IDLE, LINEAR), k(Beats.RUSH_GO - 1, with(CHARGE, OFF_F, 0.6F), OUT),
+                    k(Beats.RUSH_GO + 1, with(CHARGE, OFF_F, 1.4F, SCALE, 1.08F), OUT_EXPO), k(12, CHARGE, LINEAR), k(20, IDLE, IN_OUT));
+            case KNIFE_STORM -> play(t, k(0, IDLE, LINEAR), k(8, with(SPREAD, OFF_U, 0.7F, OFF_F, -1.1F, SCALE, 1.1F, CLOCK, 20), IN_OUT),
+                    k(Beats.STORM_AIM, with(THROW_BACK, CLOCK, 30, GLOW, 1), IN_OUT), k(Beats.STORM_FIRE, with(THROW, CLOCK, 40, GLOW, 1, OFF_F, 1.0F), OUT_EXPO),
+                    k(38, THROW, LINEAR), k(46, IDLE, IN_OUT));
             case JUDGEMENT -> {
-                if (t < Beats.JUDGE_ARRIVE + 1) {
-                    yield play(t, k(0, IDLE, LINEAR), k(12, REAR, OUT_BACK), k(Beats.JUDGE_LUNGE, REAR, LINEAR),
-                            k(Beats.JUDGE_ARRIVE, CHARGE, OUT_EXPO), k(Beats.JUDGE_ARRIVE + 1, CHARGE, LINEAR));
+                if (t < Beats.JUDGE_DASHES[0]) {
+                    yield play(t, k(0, IDLE, LINEAR), k(12, REAR, OUT_BACK), k(Beats.JUDGE_DASHES[0], REAR, LINEAR));
                 }
                 if (t < Beats.JUDGE_FINAL - 6) {
-                    // the lightspeed flurry: alternate fists snapping in from every angle, every few ticks
-                    int i = (int) ((t - Beats.JUDGE_ARRIVE) / 4.0F);
-                    float local = ((t - Beats.JUDGE_ARRIVE) % 4.0F) / 4.0F;
-                    float[] a = (i & 1) == 0 ? JAB_R : JAB_L;
-                    float[] b = (i & 1) == 0 ? JAB_L : JAB_R;
-                    float[] base = with(lerp(a, b, OUT_EXPO.apply(local)), BARRAGE, 0.6F, GLOW, 1, DIAL, 1, CLOCK, 14, OFF_F, 1.3F,
-                            YAW, (i % 3 - 1) * 14.0F, ROLL, (i % 2 == 0 ? 6 : -6));
-                    yield base;
+                    // each dash a slash: the Stand rides with him, an arm sweeping through as he passes
+                    int i = (int) ((t - Beats.JUDGE_DASHES[0]) / 3.0F);
+                    float local = ((t - Beats.JUDGE_DASHES[0]) % 3.0F) / 3.0F;
+                    float[] a = (i & 1) == 0 ? with(SLICE_P, RA_YAW, 40, TORSO_YAW, 30) : mirror(with(SLICE_P, RA_YAW, 40, TORSO_YAW, 30));
+                    float[] b = (i & 1) == 0 ? SLICE_P : mirror(SLICE_P);
+                    yield with(lerp(a, b, OUT_EXPO.apply(local)), GLOW, 1, DIAL, 1, CLOCK, 40, OFF_F, 0.4F, OFF_R, 0.0F, OFF_U, 0.3F,
+                            BODY_PITCH, 12, FL_HIP, 60, FL_KNEE, 20, FR_HIP, -25, FR_KNEE, 60);
                 }
                 yield play(t, k(Beats.JUDGE_FINAL - 6, with(WINDUP, SCALE, 1.15F, CLOCK, 20), OUT),
                         k(Beats.JUDGE_FINAL, with(FINISH, SCALE, 1.2F, CLOCK, 20, OFF_F, 1.9F), OUT_EXPO),

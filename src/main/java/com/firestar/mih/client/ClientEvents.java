@@ -80,6 +80,10 @@ public final class ClientEvents {
             SkyFx.render(event);
             StandRenderer.render(event);
             RibbonRenderer.render(event);
+            if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+                Choreo.frame(event.getPartialTick());
+                com.firestar.mih.client.fx.Light.render(Galaxy.view(event), event.getCamera().getPosition());
+            }
             Menacing.render(event);
             Galaxy.render(event);
             PostFx.render(event);
@@ -209,6 +213,7 @@ public final class ClientEvents {
             Director.stop();
             Casts.clear();
             ClientState.clear();
+            com.firestar.mih.client.fx.Light.clear();
         }
     }
 

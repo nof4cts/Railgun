@@ -28,11 +28,11 @@ public final class KnifeRenderer extends EntityRenderer<KnifeEntity> {
         ps.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partial, e.yRotO, e.getYRot())));
         ps.mulPose(Axis.XP.rotationDegrees(-Mth.lerp(partial, e.xRotO, e.getXRot())));
         Mesh mesh = new Mesh(buffers.getBuffer(RenderType.entityTranslucent(StandRenderer.WHITE)), 0xF000F0);
-        // blade along +z, the grip behind
-        mesh.box(ps, -0.012F, -0.05F, 0.0F, 0.012F, 0.05F, 0.34F, 0xD8DDE6, 0.0F);
-        mesh.box(ps, -0.008F, -0.03F, 0.34F, 0.008F, 0.03F, 0.42F, 0xEEF2F8, 0.0F);
-        mesh.box(ps, -0.03F, -0.07F, -0.03F, 0.03F, 0.07F, 0.0F, 0x8A7A55, 0.0F);
-        mesh.box(ps, -0.022F, -0.03F, -0.22F, 0.022F, 0.03F, -0.03F, 0x2A1E18, 0.0F);
+        // a slim leaf of steel along +z, a gold guard, a dark grip: all smooth
+        mesh.ellipsoid(ps, 0, 0, 0.2F, 0.01F, 0.045F, 0.21F, 0xDCE2EA, 0.0F);
+        mesh.ellipsoid(ps, 0, 0.012F, 0.2F, 0.004F, 0.02F, 0.2F, 0xFFFFFF, 0.0F);
+        mesh.ellipsoid(ps, 0, 0, -0.01F, 0.03F, 0.075F, 0.02F, 0xE8BE48, 0.0F);
+        mesh.limb(ps, 0, 0, -0.03F, 0, 0, -0.22F, 0.022F, 0.02F, 0x2A1E18, 0.0F);
         Matrix4f m = ps.last().pose();
         Vector3f tip = m.transformPosition(0, 0, 0.4F, new Vector3f());
         ps.popPose();

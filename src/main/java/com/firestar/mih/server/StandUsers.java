@@ -91,7 +91,7 @@ public final class StandUsers {
         return new S2CState(p.getId(), has(p), s.summoned && has(p), s.daUntil,
                 run == null ? -1L : run.start, run == null ? 0 : run.length,
                 run == null ? 0 : run.center.x, run == null ? 0 : run.center.y, run == null ? 0 : run.center.z,
-                run == null ? 0 : run.radius, s.auUntil, s.limb);
+                run == null ? 0 : run.radius, s.auUntil, s.limb, InfiniteSpeed.until(p));
     }
 
     public static void sync(ServerPlayer p) {

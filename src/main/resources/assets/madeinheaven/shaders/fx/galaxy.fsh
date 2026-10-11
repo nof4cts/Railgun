@@ -107,6 +107,42 @@ vec3 disc(vec2 xz) {
     return col;
 }
 
+
+/** A whole distant galaxy: a tilted spiral disc somewhere out in space, with its own glowing core. */
+vec3 farGalaxy(vec3 o, vec3 d, vec3 centre, vec3 n, float radius, float twist, vec3 armCol, vec3 knotCol, float seed) {
+    vec3 col = vec3(0.0);
+    centre *= 1.0 - 0.75 * Collapse;
+    n = normalize(n);
+    float denom = dot(d, n);
+    if (abs(denom) > 1e-4) {
+        float t = dot(centre - o, n) / denom;
+        if (t > 0.0) {
+            vec3 p = o + d * t - centre;
+            vec3 u = normalize(cross(n, abs(n.y) > 0.9 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0)));
+            vec3 v = cross(n, u);
+            vec2 q = vec2(dot(p, u), dot(p, v)) / radius;
+            float r = length(q);
+            if (r < 1.4) {
+                float spin = Spin * (0.6 + 0.3 * seed) + seed * 6.0;
+                float th = atan(q.y, q.x);
+                float a = th - spin + log(r + 0.03) * twist;
+                float arm = pow(0.5 + 0.5 * cos(2.0 * a), 3.0);
+                float cloud = fbm(q * 6.0 + seed * 13.0);
+                float fall = exp(-r * 2.6) * smoothstep(1.3, 0.2, r);
+                col += armCol * fall * (0.2 + 1.5 * arm * (0.5 + cloud));
+                col += knotCol * smoothstep(0.75, 0.95, cloud * arm * 1.6) * fall * 1.2;
+                col += vec3(1.0, 0.86, 0.65) * exp(-r * 10.0) * 1.4;
+                float edge = 1.0 / max(0.3, abs(denom) * 1.5);
+                col *= min(edge, 2.0) * 0.8;
+            }
+        }
+    }
+    float tc = max(dot(centre - o, d), 0.0);
+    float dmin = length(o + d * tc - centre);
+    col += vec3(1.0, 0.9, 0.75) * (exp(-dmin / (radius * 0.04)) * 0.6 + exp(-dmin / (radius * 0.25)) * 0.08);
+    return col;
+}
+
 void main() {
     vec2 ndc = uv * 2.0 - 1.0;
     vec3 d = normalize(CamFwd + CamRight * ndc.x * TanHalf.x + CamUp * ndc.y * TanHalf.y);
@@ -114,6 +150,15 @@ void main() {
     vec3 col = vec3(0.004, 0.003, 0.012);
     col += nebula(d) * (1.0 - Collapse * 0.7);
     col += stars(d) * (1.0 - Collapse * 0.5);
+
+    // other galaxies, scattered through the dark: the universe is full of them
+    col += farGalaxy(CamPos, d, vec3(-320.0, 120.0, -420.0), vec3(0.3, 1.0, 0.2), 150.0, 3.2, vec3(0.45, 0.6, 1.0), vec3(1.0, 0.4, 0.7), 0.1);
+    col += farGalaxy(CamPos, d, vec3(450.0, -60.0, -260.0), vec3(-0.6, 0.4, 0.7), 115.0, 4.0, vec3(1.0, 0.55, 0.75), vec3(1.0, 0.85, 0.4), 0.37);
+    col += farGalaxy(CamPos, d, vec3(160.0, 260.0, 520.0), vec3(0.1, 0.6, -0.8), 95.0, 2.6, vec3(0.4, 0.9, 1.0), vec3(0.7, 0.4, 1.0), 0.61);
+    col += farGalaxy(CamPos, d, vec3(-520.0, -180.0, 300.0), vec3(0.8, 0.5, 0.3), 170.0, 3.6, vec3(1.0, 0.8, 0.5), vec3(1.0, 0.5, 0.4), 0.83);
+    col += farGalaxy(CamPos, d, vec3(80.0, -320.0, -540.0), vec3(0.0, 1.0, 0.3), 80.0, 4.4, vec3(0.5, 1.0, 0.85), vec3(0.9, 0.95, 1.0), 0.29);
+    col += farGalaxy(CamPos, d, vec3(600.0, 220.0, 180.0), vec3(-0.2, 0.9, -0.4), 130.0, 3.0, vec3(0.7, 0.5, 1.0), vec3(1.0, 0.45, 0.8), 0.52);
+    col += farGalaxy(CamPos, d, vec3(-150.0, 380.0, 200.0), vec3(0.5, 0.2, 0.8), 60.0, 3.8, vec3(0.55, 0.7, 1.0), vec3(1.0, 0.6, 0.5), 0.94);
 
     // the disc, where the ray crosses the galaxy's plane
     if (abs(d.y) > 1e-4) {

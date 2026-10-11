@@ -70,9 +70,9 @@ public final class Hud implements IGuiOverlay {
             g.fill(x - 2, y - 2, x + 124, y + 11, (int) (alpha * 0.35F) << 24);
             g.drawString(font, key, x, y, alpha << 24 | 0xFFE9A8, true);
             String name = m.title;
-            boolean activeAccel = m == Move.TIME_ACCEL && ClientState.accelerating(info, now);
+            boolean activeAccel = (m == Move.TIME_ACCEL && ClientState.accelerating(info, now)) || (m == Move.INFINITE_SPEED && info.infUntil > now);
             if (activeAccel) {
-                name = "Cancel Acceleration";
+                name = m == Move.TIME_ACCEL ? "Cancel Acceleration" : "Release Infinite Speed";
             }
             g.drawString(font, name, x + 14, y, alpha << 24 | (ready || activeAccel ? (m.color & 0xFFFFFF) : 0x888888), true);
             if (!ready && !activeAccel) {

@@ -240,4 +240,120 @@ d = 2.5
 t = t_(d)
 rum = lp(noise(d), 120) * (0.6 + 0.4 * np.sin(2 * np.pi * 6 * t)) * 2.0
 save('menacing', reverb(rum * env(d, 0.4, 2.0, 2.0) + np.sin(2 * np.pi * 41 * t) * env(d, 0.5, 2.0, 2.2) * 0.5, 1.5, 0.3, 1500))
+
+# ================================================================== round two: richer, heavier, bass on speed
+def sub(d, f0, f1, decay, drive=1.8):
+    """An 808: a sine that falls in pitch, driven warm."""
+    t = t_(d)
+    f = f1 + (f0 - f1) * np.exp(-t * 6.0)
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * decay)
+    return np.tanh(y * drive) / np.tanh(drive)
+
+
+def shimmer(d, f0, f1, n=6, amp=0.3):
+    """Detuned crystal partials gliding together: the sound of a Stand's light."""
+    t = t_(d)
+    y = np.zeros_like(t)
+    for k in range(n):
+        det = 1 + (k - n / 2) * 0.004
+        f = (f0 + (f1 - f0) * (t / d)) * det * (1 + k * 0.5)
+        y += np.sin(2 * np.pi * np.cumsum(f) / SR + k) / (1 + k * 0.6)
+    return y * amp
+
+
+def reverse(x):
+    return x[::-1].copy()
+
+
+# the bass under every speed move
+for i, (f0, f1, d) in enumerate([(78, 31, 1.6), (90, 36, 1.3), (66, 28, 1.9)], 1):
+    hitc = crack(0.02) * 0.6
+    save(f'bass_{i}', mixl(sub(d, f0, f1, 2.4, 2.2) * 1.3, hitc, lp(noise(0.25), 300) * env(0.25, 0.002, 0.25, 9) * 0.6), peak=0.98)
+
+# a dash of light: air torn by something brighter than sound, a glassy tail
+for i, p_ in enumerate([1.0, 1.18, 0.88], 1):
+    d = 0.7
+    zip_ = sweep_bp(noise(0.32), 1500 * p_, 11000, 3) * env(0.32, 0.01, 0.3, 5)
+    glass = shimmer(0.6, 2400 * p_, 5200 * p_, 5, 0.25) * env(0.6, 0.005, 0.55, 5)
+    save(f'dash_{i}', reverb(mixl(crack(0.015) * 0.8, zip_, at(glass, 0.03), sub(0.45, 120, 50, 7) * 0.5), 0.8, 0.25, 7000))
+
+# the Stand appears: a breath in, crystal rising, a bass bloom and a clock chime
+d = 2.0
+t = t_(d)
+inhale = sweep_bp(noise(0.8), 300, 4000, 2) * env(0.8, 0.7, 0.1, 3)
+save('stand_summon', reverb(mixl(inhale * 0.7, at(shimmer(1.3, 600, 2400, 7, 0.35) * env(1.3, 0.05, 1.2, 2.2), 0.6),
+                                 at(sub(1.3, 85, 38, 2.6, 2.0), 0.62), at(bell(1.4, 1318.5, 1.6, 0.4), 0.66), at(crack(0.02), 0.62)), 2.0, 0.35, 6000))
+save('stand_dismiss', reverb(mixl(reverse(shimmer(0.7, 900, 2800, 6, 0.3) * env(0.7, 0.02, 0.68, 3)),
+                                  at(sweep_bp(noise(0.4), 4000, 400, 2) * env(0.4, 0.01, 0.39, 4) * 0.6, 0.55)), 1.2, 0.3))
+
+# fists: a hard transient, a body, a sub
+for i, p_ in enumerate([1.0, 1.12, 0.9], 1):
+    save(f'fist_{i}', reverb(mixl(crack(0.03) * 1.3, thump(0.3, 210 * p_, 70 * p_, 12), sub(0.35, 95, 45, 9) * 0.7,
+                                   whoosh(0.1, 900 * p_, 4000, 2) * 0.4), 0.5, 0.12))
+# the barrage's bed: a storm of fists for 2.4 s
+d = 2.4
+bed = np.zeros(int(SR * d))
+k = 0.0
+while k < d - 0.12:
+    j = mixl(crack(0.02) * 0.9, thump(0.12, 240 * rng.uniform(0.85, 1.25), 90, 22) * 0.8)
+    pos = int(k * SR)
+    bed[pos:pos + len(j)] += j[: max(0, len(bed) - pos)] * rng.uniform(0.6, 1.0)
+    k += rng.uniform(0.035, 0.06)
+air = sweep_bp(noise(d), 800, 2600, 1.5) * 0.25
+save('barrage_rush', reverb(mixl(bed, air) * env(d, 0.05, 2.3, 1.2), 0.8, 0.2))
+
+# knives: a blade hung in still time, a volley loosed
+save('knife_hang', reverb(mixl(ring(1.2, [3700, 5480, 8020], [3.0, 4.0, 5.5], [0.5, 0.32, 0.2]), crack(0.01) * 0.4,
+                               shimmer(0.9, 3000, 3600, 4, 0.12) * env(0.9, 0.02, 0.85, 3)), 1.2, 0.3, 8000), peak=0.7)
+d = 1.0
+vol = np.zeros(int(SR * d))
+for i in range(12):
+    w = whoosh(0.22, 2500, 9000, 3) * 0.7
+    pos = int(i * 0.045 * SR)
+    vol[pos:pos + len(w)] += w[: max(0, len(vol) - pos)]
+save('knife_volley', reverb(mixl(vol, sub(0.9, 90, 40, 3.5) * 0.8), 0.9, 0.2))
+save('knife_flesh', reverb(mixl(crack(0.02), thump(0.18, 300, 120, 22) * 0.8, bp(noise(0.12), 900, 3000) * env(0.12, 0.002, 0.12, 10) * 0.5), 0.4, 0.1))
+
+# Heaven's Judgement: each dash a cut, the last blow everything at once
+for i, p_ in enumerate([1.0, 1.1, 0.92, 1.2], 1):
+    cut = mixl(crack(0.02) * 1.0, sweep_bp(noise(0.3), 1800 * p_, 10000, 4) * env(0.3, 0.004, 0.28, 6),
+               ring(0.9, [3100 * p_, 4700 * p_, 7020 * p_], [3.5, 4.5, 6.0], [0.4, 0.25, 0.15]), sub(0.4, 110, 48, 8) * 0.6)
+    save(f'judge_cut_{i}', reverb(cut, 0.9, 0.25, 7000))
+
+# infinite speed: the world pulled out of time (a reversed swell into a bass drop) and snapped back
+d = 2.4
+t = t_(d)
+swell = reverse(mixl(hp(noise(0.3), 3000) * env(0.3, 0.005, 0.29, 3) * 0.6, ring(0.3, [880, 1320, 1980], [6, 7, 8], [0.4, 0.3, 0.2])))
+drone = (np.sin(2 * np.pi * 55 * t) + 0.5 * np.sin(2 * np.pi * 82.5 * t * (1 - 0.1 * t / d))) * env(d, 0.3, 2.0, 1.4) * 0.5
+save('infinite_start', reverb(mixl(swell, at(sub(1.6, 80, 30, 2.0, 2.4) * 1.3, 0.28), at(crack(0.03), 0.28), at(drone, 0.3)), 2.0, 0.35, 5000))
+d = 3.0
+save('detonate', reverb(mixl(crack(0.1) * 1.5, sub(d, 70, 25, 1.5, 2.6) * 1.4, lp(noise(d), 3500) * env(d, 0.003, d, 2.6),
+                            hp(noise(1.5), 5000) * env(1.5, 0.01, 1.4, 3) * 0.3, at(shimmer(1.2, 3000, 1200, 6, 0.25) * env(1.2, 0.02, 1.1, 3), 0.05)),
+                       2.6, 0.4, 4000))
+
+# lightspeed rush: a pressure wave you can feel
+d = 1.6
+save('rush', reverb(mixl(crack(0.03) * 1.1, sweep_bp(noise(0.9), 500, 9000, 1.6) * env(0.9, 0.04, 0.85, 4), sub(1.4, 85, 33, 2.4, 2.3) * 1.2,
+                         at(shimmer(0.7, 2000, 4500, 5, 0.2) * env(0.7, 0.01, 0.65, 4), 0.05)), 1.4, 0.3, 6000))
+
+# a crisp hit of light
+for i, p_ in enumerate([1.0, 1.25], 1):
+    save(f'light_hit_{i}', reverb(mixl(crack(0.02) * 1.0, ring(0.5, [2600 * p_, 3900 * p_, 5800 * p_], [8, 10, 13], [0.5, 0.3, 0.2]),
+                                       thump(0.2, 200 * p_, 90, 18) * 0.6), 0.6, 0.2, 8000))
+
+# the universe: reality cracking, the galaxy's hum, the plunge into the core
+save('crack', reverb(mixl(crack(0.06) * 1.6, *[at(ring(0.9, [rng.uniform(2000, 9000) for _ in range(4)], [6, 8, 10, 12], [0.3, 0.2, 0.15, 0.1]),
+                                                 rng.uniform(0, 0.25)) for _ in range(9)], sub(1.2, 60, 28, 2.5) * 0.9), 1.8, 0.4, 7000))
+d = 7.0
+t = t_(d)
+hum = np.zeros_like(t)
+for f, a in ((41.2, 1.0), (61.7, 0.6), (82.4, 0.45), (123.5, 0.25)):
+    hum += a * np.sin(2 * np.pi * f * t + 0.3 * np.sin(2 * np.pi * 0.11 * t))
+choir = shimmer(d, 440, 660, 6, 0.12)
+save('galaxy', reverb((np.tanh(hum * 0.6) * 0.7 + choir + bp(noise(d), 200, 1200) * 0.12) * env(d, 1.5, 5.0, 0.6), 3.5, 0.5, 4000))
+d = 2.2
+save('plunge', reverb(mixl(sweep_bp(noise(d), 150, 9000, 1.4) * np.minimum(1, t_(d) / d) ** 2 * 1.2, shimmer(d, 300, 3200, 6, 0.25) * np.minimum(1, t_(d) / d) ** 2), 1.5, 0.3))
+
+# double acceleration and time acceleration get their bass too
+save('accel_bass', mixl(sub(2.0, 72, 28, 1.6, 2.6) * 1.3, crack(0.04), at(shimmer(1.0, 1800, 600, 6, 0.25) * env(1.0, 0.01, 0.9, 3), 0.02)), peak=0.98)
 print('sounds written:', len(os.listdir(OUT)))

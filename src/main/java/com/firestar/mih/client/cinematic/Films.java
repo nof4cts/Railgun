@@ -65,33 +65,35 @@ public final class Films {
                     return at(rel(c, U, -2.0, l(k, 0.8, 1.1), l(k, 1.8, 2.4)), U.add(0, 1.4, 0), 46, 0);
                 }));
             }
-            case INFINITE_SPEED -> {
-                s.add(Shot.cut(0, Beats.INF_VANISH, (k, t) -> at(rel(c, F, 0.7, 0.55, l(k, 3.3, 2.8)), E.add(0, 0.6, 0), l(k, 58, 50), 0)));
-                s.add(Shot.cut(Beats.INF_VANISH, Beats.INF_HIT, (k, t) -> at(facing(c, P, 2.6, 0.3), P.add(0, 0.3, 0), 46, 5)));
-                s.add(Shot.cut(Beats.INF_HIT, 32, (k, t) -> at(rel(c, M, l(k, -5.0, -5.8), l(k, 1.0, 1.6), 0.4), M.subtract(0, 0.3, 0), l(k, 54, 60), 0)));
-                s.add(Shot.cut(32, c.move.length, (k, t) -> {
-                    Vec3 U = c.casterFeet(0);
-                    return at(rel(c, U, 1.6, 1.8, l(k, 2.6, 3.2)), U.add(0, 1.3, 0), 50, 0);
-                }));
-            }
             case JUDGEMENT -> {
+                Vec3 T = c.exit;
                 // low and wide: the Stand rears against the sky
                 s.add(Shot.cut(0, Beats.JUDGE_LUNGE, (k, t) -> at(rel(c, F, l(k, 2.8, 2.4), 0.35, l(k, -3.0, -2.6)), F.add(0, 2.4, 0).add(c.fwd.scale(-0.4)), 64, 0)));
-                // riding beside the charge
-                s.add(Shot.cut(Beats.JUDGE_LUNGE, Beats.JUDGE_ARRIVE + 2, (k, t) -> {
-                    Vec3 m = F.lerp(X, Math.min(1.0, k * 1.3));
-                    return at(rel(c, m, 3.6, 1.2, -0.8), rel(c, m, 0, 1.1, 2.0), 80, -6);
+                // high and wide round the target as the web of light is drawn
+                s.add(Shot.cut(Beats.JUDGE_LUNGE, 34, (k, t) -> at(orbit(c, T, l(k, 8.5, 7.5), l(k, 120, 200), l(k, 4.5, 3.5)), T.add(0, 1.0, 0), l(k, 68, 62), 0)));
+                // low and close among the lines
+                s.add(Shot.cut(34, 46, (k, t) -> at(orbit(c, T, l(k, 4.6, 4.2), l(k, 250, 300), 0.6), T.add(0, 1.3, 0), 58, -5)));
+                // him, already past, his back to it; the target framed in the web behind him
+                s.add(Shot.cut(46, Beats.JUDGE_FINAL, (k, t) -> {
+                    Vec3 U = c.casterFeet(0);
+                    Vec3 away = U.subtract(T).multiply(1, 0, 1);
+                    away = away.lengthSqr() < 1e-4 ? c.fwd : away.normalize();
+                    return at(U.add(away.scale(l(k, 2.6, 2.2))).add(0, 1.5, 0), T.add(0, 1.0, 0), l(k, 50, 44), 0);
                 }));
-                // round and round the target as the blows land from everywhere
-                s.add(Shot.cut(Beats.JUDGE_ARRIVE + 2, Beats.JUDGE_FINAL - 5, (k, t) -> at(orbit(c, P.subtract(0, 0.4, 0), 4.2, l(k, 40, 330), l(k, 1.0, 2.2)), P, 62, 0)));
-                // the wind-up, close behind his shoulder
-                s.add(Shot.sweep(Beats.JUDGE_FINAL - 5, Beats.JUDGE_FINAL, 3, (k, t) -> at(rel(c, X, -0.8, 1.9, l(k, -1.8, -1.4)), P, l(k, 46, 38), 0)));
-                // the blow: wide, side on, the target sent flying
-                s.add(Shot.cut(Beats.JUDGE_FINAL, 80, (k, t) -> at(rel(c, P, l(k, 7.0, 9.0), l(k, 1.5, 3.0), l(k, -1.0, 1.5)), c.targetCentre(0), l(k, 62, 70), 0)));
+                // the cut lands: wide, side on, the target sent flying
+                s.add(Shot.cut(Beats.JUDGE_FINAL, 80, (k, t) -> at(rel(c, T, l(k, 8.0, 10.0), l(k, 2.0, 3.2), l(k, -1.0, 1.5)), c.targetCentre(0), l(k, 62, 70), 0)));
                 s.add(Shot.cut(80, c.move.length, (k, t) -> {
                     Vec3 U = c.casterFeet(0);
                     return at(rel(c, U, 2.4, 1.5, l(k, -1.6, -2.2)), U.add(0, 1.5, 0), 48, 0);
                 }));
+            }
+            case KNIFE_STORM -> {
+                // round him as the knives appear, one by one, hanging in still time
+                s.add(Shot.cut(0, Beats.STORM_AIM, (k, t) -> at(orbit(c, F, l(k, 5.0, 4.2), l(k, 150, 230), l(k, 1.4, 2.2)), F.add(0, 1.9, 0), 60, 0)));
+                // over his shoulder through the halo of blades, the target small beyond
+                s.add(Shot.cut(Beats.STORM_AIM, Beats.STORM_FIRE + 2, (k, t) -> at(rel(c, F, l(k, -1.2, -0.9), 2.4, l(k, -3.0, -2.5)), P, l(k, 50, 42), 0)));
+                // from beside the target as the volley arrives
+                s.add(Shot.cut(Beats.STORM_FIRE + 2, c.move.length, (k, t) -> at(facing(c, P, l(k, 4.5, 5.5), 0.8).add(c.right.scale(2.5)), P.lerp(F.add(0, 1.6, 0), 0.25), 64, 0)));
             }
             case DOUBLE_ACCEL -> {
                 // all the way round him as the clocks wind up

@@ -18,10 +18,16 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 
 /** One of Pucci's knives, thrown faster than the eye: no gravity, a straight line, a small stun on what it hits. */
 public final class KnifeEntity extends Projectile {
     private int life;
+    private boolean held;
+    private boolean shownHit;
+    /** Damage per knife (Knife Storm throws lighter ones). */
+    public float damage = 4.5F;
 
     public KnifeEntity(EntityType<? extends KnifeEntity> type, Level level) {
         super(type, level);
@@ -41,6 +47,32 @@ public final class KnifeEntity extends Projectile {
         return k;
     }
 
+    /** A knife hanging still in the air, pointed at {@code aim}, until {@link #launch}. */
+    public static KnifeEntity held(Level level, Entity owner, Vec3 at, Vec3 aim) {
+        KnifeEntity k = thrown(level, owner, at, Vec3.ZERO);
+        k.held = true;
+        k.face(aim);
+        return k;
+    }
+
+    public void face(Vec3 aim) {
+        Vec3 d = aim.subtract(position());
+        double flat = Math.sqrt(d.x * d.x + d.z * d.z);
+        setYRot((float) Math.toDegrees(Math.atan2(d.x, d.z)));
+        setXRot((float) Math.toDegrees(Math.atan2(d.y, flat)));
+    }
+
+    public void launch(Vec3 velocity) {
+        held = false;
+        life = 0;
+        setDeltaMovement(velocity);
+        hasImpulse = true;
+    }
+
+    public boolean isHeld() {
+        return held;
+    }
+
     @Override
     protected void defineSynchedData() {
     }
@@ -48,11 +80,23 @@ public final class KnifeEntity extends Projectile {
     @Override
     public void tick() {
         super.tick();
+        if (held || getDeltaMovement().lengthSqr() < 1.0E-6) {
+            if (++life > 120) {
+                discard();
+            }
+            return;
+        }
         if (++life > 50) {
             discard();
             return;
         }
         HitResult hit = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+        if (hit.getType() != HitResult.Type.MISS && level().isClientSide && !shownHit) {
+            shownHit = true;
+            Vec3 at = hit.getLocation();
+            Vec3 dir = getDeltaMovement().normalize();
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.firestar.mih.client.Choreo.knifeHit(at, dir, hit.getType() == HitResult.Type.ENTITY));
+        }
         if (hit.getType() != HitResult.Type.MISS && !level().isClientSide) {
             onHit(hit);
             if (isRemoved()) {
@@ -70,20 +114,14 @@ public final class KnifeEntity extends Projectile {
         Entity owner = getOwner();
         if (target instanceof LivingEntity living) {
             living.invulnerableTime = 0;
-            living.hurt(damageSources().thrown(this, owner), 4.5F * ZConfig.SERVER.damage.get().floatValue());
+            living.hurt(damageSources().thrown(this, owner), damage * ZConfig.SERVER.damage.get().floatValue());
             living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 12, 2, false, false));
         }
-        level().playSound(null, getX(), getY(), getZ(), ModSounds.KNIFE_HIT.get(), SoundSource.PLAYERS, 0.9F, 1.0F + random.nextFloat() * 0.2F);
         discard();
     }
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        Vec3 p = result.getLocation();
-        level().playSound(null, p.x, p.y, p.z, ModSounds.KNIFE_HIT.get(), SoundSource.PLAYERS, 0.6F, 1.4F);
-        if (level() instanceof ServerLevel sl) {
-            sl.sendParticles(ParticleTypes.CRIT, p.x, p.y, p.z, 6, 0.05, 0.05, 0.05, 0.25);
-        }
         discard();
     }
 

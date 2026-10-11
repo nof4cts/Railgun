@@ -14,7 +14,9 @@ public enum Move {
     SPEED_SLICE("speed_slice", "Speed Slice", "光速の斬首", "MADE IN HEAVEN", 'Y', 240, true, 58, 0xFF5050),
     JUDGEMENT("judgement", "Heaven's Judgement", "天国の裁き", "MADE IN HEAVEN", 'G', 320, true, 100, 0xFFD86B),
     DOUBLE_ACCEL("double_accel", "Double Acceleration", "二重加速", "MADE IN HEAVEN", 'Z', 700, true, 50, 0x7CFFD4),
-    INFINITE_SPEED("infinite_speed", "Infinite Speed", "無限の速さ", "MADE IN HEAVEN", 'X', 280, true, 48, 0xBFF6FF),
+    INFINITE_SPEED("infinite_speed", "Infinite Speed", "無限の速さ", "MADE IN HEAVEN", 'X', 500, false, 14, 0xBFF6FF),
+    LIGHTSPEED_RUSH("lightspeed_rush", "Lightspeed Rush", "光速突進", "", 'C', 140, false, 20, 0xFFFFFF),
+    KNIFE_STORM("knife_storm", "Knife Storm", "ナイフの嵐", "MADE IN HEAVEN", 'V', 280, true, 46, 0xDDE8FF),
     TIME_ACCEL("time_accel", "Time Acceleration", "時は加速する", "MADE IN HEAVEN", 'H', 2400, true, 92, 0xFFE9A8),
     UNIVERSE_RESET("universe_reset", "Universe Reset", "一巡", "MADE IN HEAVEN", ' ', 0, true, 300, 0xFFFFFF);
 
@@ -47,15 +49,15 @@ public enum Move {
     }
 
     /** The moves shown on the HUD, in YBA's order. */
-    public static final Move[] KIT = {BARRAGE, FINISHER, KNIVES, SPEED_SLICE, JUDGEMENT, DOUBLE_ACCEL, INFINITE_SPEED, TIME_ACCEL};
+    public static final Move[] KIT = {BARRAGE, FINISHER, KNIVES, SPEED_SLICE, JUDGEMENT, DOUBLE_ACCEL, INFINITE_SPEED, LIGHTSPEED_RUSH, KNIFE_STORM,
+            TIME_ACCEL};
 
     /** Ticks during which the user is held in place for the cinematic. */
     public int anchorUntil() {
         return switch (this) {
             case SPEED_SLICE -> Beats.SLICE_VANISH;
-            case INFINITE_SPEED -> Beats.INF_VANISH;
             case JUDGEMENT -> Beats.JUDGE_LUNGE;
-            case DOUBLE_ACCEL, TIME_ACCEL, UNIVERSE_RESET -> length;
+            case DOUBLE_ACCEL, TIME_ACCEL, UNIVERSE_RESET, KNIFE_STORM -> length;
             default -> 0;
         };
     }

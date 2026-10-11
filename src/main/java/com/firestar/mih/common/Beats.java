@@ -22,15 +22,33 @@ public final class Beats {
     public static final int SLICE_HIT = 25;
     public static final double SLICE_RANGE = 22.0;
 
-    public static final int INF_VANISH = 13;
-    public static final int INF_HIT = 17;
-    public static final double INF_RANGE = 26.0;
+    /** Infinite Speed: the world crawls for this long; every blow landed in it detonates at the end. */
+    public static final int INF_ON = 6;
+    public static final int INF_DURATION = 90;
+    public static final double INF_RADIUS = 24.0;
 
+    public static final int RUSH_GO = 4;
+    public static final int RUSH_STEPS = 3;
+    public static final double RUSH_RANGE = 15.0;
+
+    public static final int STORM_SPAWN = 5;
+    public static final int STORM_KNIVES = 12;
+    public static final int STORM_AIM = 22;
+    public static final int STORM_FIRE = 28;
+
+    /** Heaven's Judgement: a windup, then eight dashes of light through the target, then the cut lands everywhere at once. */
     public static final int JUDGE_LUNGE = 16;
-    public static final int JUDGE_ARRIVE = 19;
-    public static final int[] JUDGE_HITS = {22, 26, 30, 34, 38, 42, 46};
-    public static final int JUDGE_FINAL = 60;
+    public static final int[] JUDGE_DASHES = {18, 21, 24, 27, 30, 33, 36, 39};
+    public static final int JUDGE_FINAL = 58;
     public static final double JUDGE_RANGE = 16.0;
+    public static final double JUDGE_RADIUS = 3.4;
+
+    /** Where dash {@code i} ends: on a circle round the target, each one across from the last so it passes through. */
+    public static net.minecraft.world.phys.Vec3 judgeDash(net.minecraft.world.phys.Vec3 targetFeet, int seed, int i) {
+        double th0 = (seed & 1023) / 1023.0 * Math.PI * 2.0;
+        double th = th0 + i * Math.toRadians(180 + 47);
+        return targetFeet.add(Math.cos(th) * JUDGE_RADIUS, 0, Math.sin(th) * JUDGE_RADIUS);
+    }
 
     public static final int DA_BURST = 28;
     public static final int DA_DURATION = 240;
@@ -50,7 +68,7 @@ public final class Beats {
             case SPEED_SLICE -> 3;
             case JUDGEMENT -> 2;
             case DOUBLE_ACCEL -> 6;
-            case INFINITE_SPEED -> 2;
+            case KNIFE_STORM -> 2;
             case TIME_ACCEL -> 14;
             case UNIVERSE_RESET -> 8;
             default -> -1;
@@ -62,7 +80,7 @@ public final class Beats {
             case SPEED_SLICE -> 15;
             case JUDGEMENT -> 14;
             case DOUBLE_ACCEL -> 22;
-            case INFINITE_SPEED -> 11;
+            case KNIFE_STORM -> 16;
             case TIME_ACCEL -> 36;
             case UNIVERSE_RESET -> 26;
             default -> 0;

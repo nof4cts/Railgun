@@ -167,6 +167,47 @@ public final class StandRenderer {
         return new Vec3[]{new Vec3(c.x, c.y, c.z), new Vec3(f.x, f.y, f.z)};
     }
 
+    /** Both fists in world space (right, left), the same way {@link #draw} poses them: for light trails. */
+    public static Vec3[] fists(Placement pl) {
+        float[] P = pl.pose;
+        Vec3[] out = new Vec3[2];
+        boolean barrage = P[BARRAGE] > 0.01F;
+        float bt = pl.time * 2.9F;
+        for (int side = -1; side <= 1; side += 2) {
+            boolean left = side > 0;
+            PoseStack ps = new PoseStack();
+            ps.translate(pl.pos.x, pl.pos.y, pl.pos.z);
+            ps.mulPose(Axis.YP.rotationDegrees(-pl.yaw));
+            ps.mulPose(Axis.ZP.rotationDegrees(P[ROLL]));
+            float s = 0.86F * P[SCALE];
+            ps.scale(s, s, s);
+            ps.translate(0, 1.1, -0.1);
+            ps.mulPose(Axis.XP.rotationDegrees(P[BODY_PITCH]));
+            ps.translate(0, 0.28, 0.16);
+            ps.mulPose(Axis.YP.rotationDegrees(P[TORSO_YAW]));
+            ps.mulPose(Axis.XP.rotationDegrees(P[TORSO_PITCH]));
+            ps.mulPose(Axis.ZP.rotationDegrees(P[TORSO_ROLL]));
+            float pitch = left ? P[LA_PITCH] : P[RA_PITCH];
+            float yaw = left ? P[LA_YAW] : P[RA_YAW];
+            float roll = left ? P[LA_ROLL] : P[RA_ROLL];
+            float elbow = left ? P[L_ELBOW] : P[R_ELBOW];
+            if (barrage) {
+                float ph = bt + (left ? (float) Math.PI : 0.0F);
+                pitch += (float) Math.sin(ph) * 18.0F * P[BARRAGE];
+                elbow = Mth.lerp(P[BARRAGE], elbow, 35.0F + 35.0F * (float) Math.sin(ph + 1.2F));
+            }
+            ps.translate(side * 0.31F, 0.62F, 0.0F);
+            ps.mulPose(Axis.YP.rotationDegrees(left ? -yaw : yaw));
+            ps.mulPose(Axis.ZP.rotationDegrees(left ? roll : -roll));
+            ps.mulPose(Axis.XP.rotationDegrees(pitch));
+            ps.translate(0, -0.34F, 0);
+            ps.mulPose(Axis.XP.rotationDegrees(-elbow));
+            Vector3f f = ps.last().pose().transformPosition(0, -0.44F, 0, new Vector3f());
+            out[left ? 1 : 0] = new Vec3(f.x, f.y, f.z);
+        }
+        return out;
+    }
+
     public static void draw(PoseStack ps, MultiBufferSource.BufferSource buffers, Vec3 cam, Placement pl) {
         if (pl.alpha <= 0.01F) {
             return;
@@ -194,22 +235,22 @@ public final class StandRenderer {
         Vector3f cableA = new Vector3f(), cableB = new Vector3f(), cableC = new Vector3f(), cableD = new Vector3f();
         Vector3f handR = new Vector3f(), handL = new Vector3f(), bitR = new Vector3f(), bitL = new Vector3f();
 
-        // ---------------------------------------------------------------- the horse
+        // ---------------------------------------------------------------- the horse, sculpted smooth
+        float R = 0.14F;
         ps.pushPose();
         ps.translate(0, 1.1, -0.1);
         ps.mulPose(Axis.XP.rotationDegrees(P[BODY_PITCH]));
-        mesh.box(ps, -0.30F, -0.30F, -0.55F, 0.30F, 0.28F, 0.40F, HORSE, 0.10F);
-        mesh.box(ps, -0.27F, -0.32F, 0.30F, 0.27F, 0.24F, 0.64F, HORSE, 0.10F);
-        // the cut where its hindquarters should be: a dark seam and a gold cap
-        mesh.box(ps, -0.27F, -0.26F, -0.60F, 0.27F, 0.24F, -0.55F, IVORY_SHADE, 0.0F);
-        mesh.box(ps, -0.12F, -0.06F, -0.63F, 0.12F, 0.16F, -0.59F, GOLD, 0.0F);
+        mesh.ellipsoid(ps, 0, 0, -0.08F, 0.30F, 0.29F, 0.52F, HORSE, R);
+        mesh.ellipsoid(ps, 0, -0.02F, 0.40F, 0.27F, 0.30F, 0.27F, HORSE, R);
+        // the cut where its hindquarters should be, sealed in gold
+        mesh.ellipsoid(ps, 0, 0, -0.57F, 0.24F, 0.23F, 0.05F, IVORY_SHADE, 0.0F);
+        mesh.ellipsoid(ps, 0, 0.04F, -0.61F, 0.10F, 0.10F, 0.03F, GOLD, 0.25F);
         // belly band and collar
-        mesh.box(ps, -0.31F, -0.31F, -0.05F, 0.31F, 0.29F, 0.05F, COLLAR, 0.0F);
-        mesh.box(ps, -0.24F, 0.12F, 0.52F, 0.24F, 0.30F, 0.70F, COLLAR, 0.0F);
-        // horse shoulder clocks
+        mesh.ellipsoid(ps, 0, 0, 0.0F, 0.305F, 0.295F, 0.045F, COLLAR, 0.0F);
+        mesh.ellipsoid(ps, 0, 0.2F, 0.58F, 0.21F, 0.1F, 0.13F, COLLAR, 0.0F);
         for (int side = -1; side <= 1; side += 2) {
             ps.pushPose();
-            ps.translate(side * 0.305F, 0.0F, 0.42F);
+            ps.translate(side * 0.29F, 0.0F, 0.42F);
             ps.mulPose(Axis.YP.rotationDegrees(side * 90.0F));
             mesh.clock(ps, 0.12F, hour, minute, 0.6F);
             ps.popPose();
@@ -224,31 +265,29 @@ public final class StandRenderer {
         ps.pushPose();
         ps.translate(0, 0.18, 0.52);
         ps.mulPose(Axis.XP.rotationDegrees(35 + P[NECK]));
-        mesh.box(ps, -0.14F, 0.0F, -0.16F, 0.14F, 0.64F, 0.14F, HORSE, 0.08F);
-        for (int i = 0; i < 5; i++) {
-            float y = 0.1F + i * 0.12F;
-            mesh.box(ps, -0.035F, y, -0.26F + i * 0.004F, 0.035F, y + 0.08F, -0.15F, BLACK, 0.0F);
+        mesh.limb(ps, 0, -0.02F, 0, 0, 0.62F, 0, 0.14F, 0.11F, HORSE, R);
+        for (int i = 0; i < 6; i++) {
+            float y = 0.08F + i * 0.1F;
+            mesh.limb(ps, 0, y, -0.1F, 0, y + 0.07F, -0.25F + i * 0.01F, 0.035F, 0.008F, BLACK, 0.0F);
         }
         ps.pushPose();
         ps.translate(0, 0.6, 0);
         ps.mulPose(Axis.XP.rotationDegrees(52 + P[HEAD_H]));
-        mesh.box(ps, -0.13F, -0.05F, -0.06F, 0.13F, 0.22F, 0.42F, HORSE, 0.08F);
-        mesh.box(ps, -0.10F, -0.10F, 0.40F, 0.10F, 0.12F, 0.60F, HORSE, 0.0F);
-        mesh.box(ps, -0.105F, -0.11F, 0.56F, 0.105F, -0.04F, 0.61F, IVORY_SHADE, 0.0F);
-        // blank eyes, blinkers, ears, the bit
+        mesh.ellipsoid(ps, 0, 0.08F, 0.17F, 0.13F, 0.14F, 0.27F, HORSE, R);
+        mesh.ellipsoid(ps, 0, 0.0F, 0.48F, 0.10F, 0.10F, 0.13F, HORSE, 0.0F);
+        mesh.ellipsoid(ps, 0, -0.04F, 0.58F, 0.085F, 0.05F, 0.04F, IVORY_SHADE, 0.0F);
         for (int side = -1; side <= 1; side += 2) {
-            mesh.box(ps, side * 0.13F - 0.012F, 0.06F, 0.16F, side * 0.13F + 0.012F, 0.13F, 0.24F, BLACK, 0.0F);
-            mesh.box(ps, side * 0.155F - 0.01F, 0.02F, 0.08F, side * 0.155F + 0.01F, 0.19F, 0.30F, BLACK, 0.0F);
-            mesh.box(ps, side * 0.08F - 0.03F, 0.22F, -0.04F, side * 0.08F + 0.03F, 0.34F, 0.04F, HORSE, 0.0F);
-            mesh.box(ps, side * 0.105F - 0.012F, -0.02F, 0.48F, side * 0.105F + 0.012F, 0.04F, 0.54F, GOLD, 0.0F);
+            mesh.ellipsoid(ps, side * 0.122F, 0.1F, 0.2F, 0.014F, 0.035F, 0.045F, BLACK, 0.0F);
+            mesh.ellipsoid(ps, side * 0.152F, 0.1F, 0.18F, 0.012F, 0.085F, 0.12F, BLACK, 0.0F);
+            mesh.limb(ps, side * 0.07F, 0.18F, 0.0F, side * 0.09F, 0.36F, -0.03F, 0.04F, 0.012F, HORSE, 0.0F);
+            mesh.ellipsoid(ps, side * 0.104F, 0.01F, 0.51F, 0.025F, 0.025F, 0.025F, GOLD, 0.0F);
         }
         ps.last().pose().transformPosition(-0.11F, 0.01F, 0.51F, bitR);
         ps.last().pose().transformPosition(0.11F, 0.01F, 0.51F, bitL);
-        // the clock on its brow
         ps.pushPose();
-        ps.translate(0, 0.225, 0.18);
-        ps.mulPose(Axis.XP.rotationDegrees(-90));
-        mesh.clock(ps, 0.11F, hour * 1.3F, minute * 1.3F, 0.7F);
+        ps.translate(0, 0.215, 0.2);
+        ps.mulPose(Axis.XP.rotationDegrees(-80));
+        mesh.clock(ps, 0.1F, hour * 1.3F, minute * 1.3F, 0.7F);
         ps.popPose();
         ps.popPose();
         ps.popPose();
@@ -261,12 +300,12 @@ public final class StandRenderer {
             ps.pushPose();
             ps.translate(side * 0.17F, -0.2F, 0.44F);
             ps.mulPose(Axis.XP.rotationDegrees(-hip));
-            mesh.box(ps, -0.085F, -0.45F, -0.09F, 0.085F, 0.05F, 0.09F, HORSE, 0.08F);
+            mesh.limb(ps, 0, 0.05F, 0, 0, -0.42F, 0, 0.095F, 0.07F, HORSE, R);
             ps.pushPose();
             ps.translate(0, -0.42, 0);
             ps.mulPose(Axis.XP.rotationDegrees(knee));
-            mesh.box(ps, -0.065F, -0.42F, -0.065F, 0.065F, 0.02F, 0.065F, HORSE, 0.06F);
-            mesh.box(ps, -0.075F, -0.50F, -0.08F, 0.075F, -0.40F, 0.10F, GOLD, 0.1F);
+            mesh.limb(ps, 0, 0.0F, 0, 0, -0.4F, 0, 0.065F, 0.05F, HORSE, R);
+            mesh.ellipsoid(ps, 0, -0.45F, 0.012F, 0.075F, 0.055F, 0.088F, GOLD, 0.2F);
             ps.popPose();
             ps.popPose();
         }
@@ -277,33 +316,30 @@ public final class StandRenderer {
         ps.mulPose(Axis.YP.rotationDegrees(P[TORSO_YAW]));
         ps.mulPose(Axis.XP.rotationDegrees(P[TORSO_PITCH]));
         ps.mulPose(Axis.ZP.rotationDegrees(P[TORSO_ROLL]));
-        mesh.box(ps, -0.18F, -0.02F, -0.12F, 0.18F, 0.32F, 0.12F, IVORY, 0.12F);
-        mesh.box(ps, -0.245F, 0.30F, -0.14F, 0.245F, 0.70F, 0.14F, IVORY, 0.12F);
-        // chest plate lines
-        mesh.box(ps, -0.20F, 0.44F, 0.14F, 0.20F, 0.47F, 0.155F, GOLD, 0.0F);
-        mesh.box(ps, -0.015F, 0.30F, 0.14F, 0.015F, 0.66F, 0.155F, IVORY_SHADE, 0.0F);
-        mesh.box(ps, -0.19F, 0.10F, 0.12F, 0.19F, 0.13F, 0.13F, IVORY_SHADE, 0.0F);
-        // shoulder clocks, facing out
+        mesh.ellipsoid(ps, 0, 0.14F, 0, 0.165F, 0.2F, 0.12F, IVORY, R);
+        mesh.ellipsoid(ps, 0, 0.5F, 0, 0.245F, 0.23F, 0.15F, IVORY, R);
+        mesh.ellipsoid(ps, 0, 0.44F, 0.125F, 0.19F, 0.014F, 0.03F, GOLD, 0.0F);
+        mesh.ellipsoid(ps, 0, 0.28F, 0.1F, 0.15F, 0.01F, 0.03F, IVORY_SHADE, 0.0F);
         for (int side = -1; side <= 1; side += 2) {
+            mesh.ellipsoid(ps, side * 0.27F, 0.62F, 0, 0.1F, 0.095F, 0.1F, IVORY, R);
             ps.pushPose();
-            ps.translate(side * 0.29F, 0.62F, 0.0F);
+            ps.translate(side * 0.365F, 0.62F, 0.0F);
             ps.mulPose(Axis.YP.rotationDegrees(side * 90.0F));
-            mesh.clock(ps, 0.13F, hour, minute, 0.7F);
+            mesh.clock(ps, 0.11F, hour, minute, 0.7F);
             ps.popPose();
         }
-        // the cable leaves from between the shoulder blades
         ps.last().pose().transformPosition(0, 0.55F, -0.15F, cableA);
         ps.last().pose().transformPosition(0, 1.45F, -0.55F, cableB);
-        // neck and the ruff of feathers
-        mesh.box(ps, -0.06F, 0.70F, -0.06F, 0.06F, 0.80F, 0.06F, IVORY_SHADE, 0.0F);
-        for (int i = 0; i < 9; i++) {
-            float a = -80.0F + i * 20.0F;
+        mesh.limb(ps, 0, 0.68F, 0, 0, 0.82F, 0, 0.06F, 0.055F, IVORY_SHADE, 0.0F);
+        // the ruff of feathers, each a soft tapering plume
+        for (int i = 0; i < 11; i++) {
+            float a = -90.0F + i * 18.0F;
             ps.pushPose();
             ps.translate(0, 0.74F, -0.04F);
             ps.mulPose(Axis.YP.rotationDegrees(180 + a));
             ps.mulPose(Axis.XP.rotationDegrees(-55 - Math.abs(a) * 0.15F));
-            mesh.box(ps, -0.025F, 0.0F, -0.006F, 0.025F, 0.26F, 0.006F, PINK, 0.0F);
-            mesh.box(ps, -0.02F, 0.26F, -0.005F, 0.02F, 0.32F, 0.005F, PINK_TIP, 0.0F);
+            mesh.ellipsoid(ps, 0, 0.15F, 0, 0.032F, 0.16F, 0.008F, PINK, 0.0F);
+            mesh.ellipsoid(ps, 0, 0.3F, 0, 0.018F, 0.04F, 0.006F, PINK_TIP, 0.0F);
             ps.popPose();
         }
 
@@ -312,9 +348,8 @@ public final class StandRenderer {
         ps.translate(0, 0.78F, 0);
         ps.mulPose(Axis.YP.rotationDegrees(P[HEAD_YAW]));
         ps.mulPose(Axis.XP.rotationDegrees(P[HEAD_PITCH]));
-        mesh.box(ps, -0.14F, 0.0F, -0.15F, 0.14F, 0.44F, 0.15F, IVORY, 0.1F);
-        mesh.box(ps, -0.115F, 0.07F, 0.15F, 0.115F, 0.35F, 0.165F, FACE, 0.0F);
-        // dial: a 240-degree arc of ticks, the needle, a glowing hub
+        mesh.ellipsoid(ps, 0, 0.22F, 0, 0.14F, 0.23F, 0.15F, IVORY, R);
+        mesh.ellipsoid(ps, 0, 0.205F, 0.12F, 0.118F, 0.145F, 0.045F, FACE, 0.0F);
         ps.pushPose();
         ps.translate(0, 0.205F, 0.168F);
         for (int i = 0; i <= 12; i++) {
@@ -322,31 +357,30 @@ public final class StandRenderer {
             ps.pushPose();
             ps.mulPose(Axis.ZP.rotationDegrees(-a));
             boolean major = i % 3 == 0;
-            mesh.box(ps, -0.006F, 0.075F, 0.0F, 0.006F, major ? 0.105F : 0.095F, 0.004F, i >= 10 ? RED : 0xF4F4F4, 0.0F);
+            mesh.box(ps, -0.005F, 0.078F, 0.0F, 0.005F, major ? 0.105F : 0.095F, 0.003F, i >= 10 ? RED : 0xF4F4F4, 0.0F);
             mesh.glowBox(ps, -0.012F, 0.07F, 0.0F, 0.012F, major ? 0.11F : 0.1F, 0.008F, i >= 10 ? RED : MINT, 0.9F);
             ps.popPose();
         }
         float needle = -120.0F + 240.0F * Mth.clamp(P[DIAL], 0.0F, 1.0F) + (float) Math.sin(pl.time * 2.3F) * 4.0F * P[DIAL];
         ps.pushPose();
         ps.mulPose(Axis.ZP.rotationDegrees(-needle));
-        mesh.box(ps, -0.006F, -0.012F, 0.006F, 0.006F, 0.095F, 0.012F, RED, 0.0F);
+        mesh.limb(ps, 0, -0.01F, 0.008F, 0, 0.095F, 0.008F, 0.008F, 0.003F, RED, 0.0F);
         mesh.glowBox(ps, -0.012F, -0.01F, 0.006F, 0.012F, 0.1F, 0.016F, RED, 0.8F);
         ps.popPose();
-        mesh.disc(ps, 0, 0, 0.014F, 0.02F, 10, GOLD);
+        mesh.disc(ps, 0, 0, 0.014F, 0.02F, 12, GOLD);
         mesh.glowDisc(ps, 0, 0, 0.02F, 0.14F, MINT, 0.35F);
         ps.popPose();
-        // yellow ears, the vine wound round the crown
         for (int side = -1; side <= 1; side += 2) {
-            mesh.box(ps, side * 0.14F - 0.02F, 0.24F, -0.03F, side * 0.14F + 0.035F * side + 0.0F * side, 0.36F, 0.04F, YELLOW, 0.0F);
+            mesh.ellipsoid(ps, side * 0.15F, 0.3F, 0.0F, 0.03F, 0.065F, 0.035F, YELLOW, 0.0F);
         }
-        for (int i = 0; i < 14; i++) {
-            double a = i * 0.9;
-            float y = 0.30F + i * 0.016F;
-            float rr = 0.155F - i * 0.003F;
-            float x = (float) Math.cos(a) * rr, z = (float) Math.sin(a) * rr;
-            mesh.box(ps, x - 0.025F, y, z - 0.025F, x + 0.025F, y + 0.035F, z + 0.025F, VINE, 0.0F);
+        // the vine wound round the crown, bead by bead
+        for (int i = 0; i < 22; i++) {
+            double a = i * 0.62;
+            float y = 0.3F + i * 0.011F;
+            float rr = 0.15F - i * 0.0035F;
+            mesh.ellipsoid(ps, (float) Math.cos(a) * rr, y, (float) Math.sin(a) * rr, 0.024F, 0.02F, 0.024F, VINE, 0.0F);
         }
-        mesh.box(ps, -0.03F, 0.44F, -0.03F, 0.03F, 0.52F, 0.03F, VINE, 0.0F);
+        mesh.limb(ps, 0, 0.42F, 0, 0.02F, 0.54F, -0.02F, 0.03F, 0.01F, VINE, 0.0F);
         ps.popPose();
 
         // arms
@@ -413,24 +447,23 @@ public final class StandRenderer {
         ps.mulPose(Axis.YP.rotationDegrees(left ? -yaw : yaw));
         ps.mulPose(Axis.ZP.rotationDegrees(left ? roll : -roll));
         ps.mulPose(Axis.XP.rotationDegrees(pitch));
-        mesh.box(ps, -0.075F, -0.36F, -0.075F, 0.075F, 0.05F, 0.075F, IVORY, 0.1F);
-        mesh.box(ps, -0.08F, -0.36F, -0.08F, 0.08F, -0.30F, 0.08F, JOINT, 0.0F);
+        mesh.limb(ps, 0, 0.03F, 0, 0, -0.34F, 0, 0.078F, 0.066F, IVORY, 0.14F);
+        mesh.ellipsoid(ps, 0, -0.34F, 0, 0.072F, 0.072F, 0.072F, JOINT, 0.0F);
         ps.translate(0, -0.34F, 0);
         ps.mulPose(Axis.XP.rotationDegrees(-elbow));
-        mesh.box(ps, -0.07F, -0.35F, -0.07F, 0.07F, 0.0F, 0.07F, IVORY, 0.1F);
+        mesh.limb(ps, 0, 0.0F, 0, 0, -0.34F, 0, 0.068F, 0.058F, IVORY, 0.14F);
         // the fur on the forearms
-        mesh.box(ps, -0.082F, -0.12F, -0.082F, 0.082F, -0.02F, 0.082F, FUR, 0.0F);
+        mesh.ellipsoid(ps, 0, -0.08F, 0, 0.082F, 0.055F, 0.082F, FUR, 0.0F);
         ps.pushPose();
-        ps.translate(side * 0.072F, -0.2F, 0.0F);
+        ps.translate(side * 0.068F, -0.2F, 0.0F);
         ps.mulPose(Axis.YP.rotationDegrees(side * 90.0F));
-        mesh.clock(ps, 0.065F, hour * 2.0F, minute * 2.0F, 0.5F);
+        mesh.clock(ps, 0.06F, hour * 2.0F, minute * 2.0F, 0.5F);
         ps.popPose();
-        mesh.box(ps, -0.088F, -0.52F, -0.085F, 0.088F, -0.34F, 0.095F, IVORY, 0.14F);
-        mesh.box(ps, -0.09F, -0.40F, 0.08F, 0.09F, -0.36F, 0.10F, JOINT, 0.0F);
+        mesh.ellipsoid(ps, 0, -0.43F, 0.006F, 0.088F, 0.095F, 0.092F, IVORY, 0.2F);
         ps.pushPose();
-        ps.translate(side * 0.09F, -0.43F, 0.0F);
+        ps.translate(side * 0.088F, -0.43F, 0.0F);
         ps.mulPose(Axis.YP.rotationDegrees(side * 90.0F));
-        mesh.clock(ps, 0.05F, hour * 3.0F, minute * 3.0F, 0.5F);
+        mesh.clock(ps, 0.045F, hour * 3.0F, minute * 3.0F, 0.5F);
         ps.popPose();
         Vector3f fist = ps.last().pose().transformPosition(0, -0.44F, 0, new Vector3f());
         ps.popPose();

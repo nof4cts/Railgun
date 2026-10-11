@@ -63,6 +63,8 @@ public final class Techniques {
         final Vec3 exit;
         final LivingEntity target;
         final boolean da;
+        final int seed;
+        final List<KnifeEntity> knives = new ArrayList<>();
 
         Cast(Move move, ServerPlayer player, long start, Vec3 origin, Vec3 dir, Vec3 point, Vec3 exit, LivingEntity target) {
             this.move = move;
@@ -80,6 +82,7 @@ public final class Techniques {
             this.exit = exit;
             this.target = target;
             this.da = StandUsers.doubleAccel(player);
+            this.seed = player.getRandom().nextInt();
         }
 
         int age() {
@@ -93,7 +96,7 @@ public final class Techniques {
 
     public static boolean inCinematic(Entity e) {
         for (Cast c : ACTIVE) {
-            if (c.player == e && c.move.cinematic && c.age() <= Math.max(c.move.anchorUntil(), Math.min(c.move.length, c.move.anchorUntil() + 14))) {
+            if (c.player == e && c.move.cinematic && c.age() <= c.move.length) {
                 return true;
             }
         }
@@ -146,13 +149,16 @@ public final class Techniques {
             StandUsers.sync(p);
             if (st.summoned) {
                 broadcast(p, new Cast(Move.SUMMON, p, now, p.getEyePosition(), p.getLookAngle(), p.getEyePosition(), p.position(), null));
-                level.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.SUMMON.get(), SoundSource.PLAYERS, 0.9F, 1.0F);
             }
             return;
         }
         if (m == Move.TIME_ACCEL && TimeAccel.of(p) != null) {
             TimeAccel.cancel(p);
             p.displayClientMessage(Component.literal("Time slows back to its course.").withStyle(ChatFormatting.GRAY), true);
+            return;
+        }
+        if (m == Move.INFINITE_SPEED && InfiniteSpeed.active(p)) {
+            InfiniteSpeed.release(p);
             return;
         }
         if (!st.summoned) {
@@ -184,17 +190,40 @@ public final class Techniques {
         Vec3 exit = p.position();
         switch (m) {
             case PUNCH, BARRAGE, FINISHER -> {
-                target = aim(p, 4.5, 40.0);
+                boolean blink = m == Move.PUNCH && InfiniteSpeed.active(p);
+                target = blink ? aim(p, 12.0, 25.0) : aim(p, 4.5, 40.0);
                 if (target != null) {
                     point = target.getBoundingBox().getCenter();
+                    if (blink && target.distanceTo(p) > 3.0) {
+                        // infinite speed: every punch is a blink of light to the target first
+                        Vec3 tf = target.position().subtract(p.position());
+                        Vec3 across = new Vec3(tf.x, 0, tf.z).lengthSqr() < 1.0E-4 ? flat : new Vec3(tf.x, 0, tf.z).normalize();
+                        exit = safe(p, target.position().subtract(across.scale(target.getBbWidth() * 0.5 + 1.3)), p.position());
+                    }
                 }
+            }
+            case LIGHTSPEED_RUSH -> {
+                Vec3 waist = p.position().add(0, 0.9, 0);
+                BlockHitResult wall = p.level().clip(new ClipContext(waist, waist.add(flat.scale(Beats.RUSH_RANGE)), ClipContext.Block.COLLIDER,
+                        ClipContext.Fluid.NONE, p));
+                double dist = wall.getType() == HitResult.Type.BLOCK ? Math.max(0.0, wall.getLocation().distanceTo(waist) - 0.7) : Beats.RUSH_RANGE;
+                exit = safe(p, ground(p, p.position().add(flat.scale(dist))), p.position().add(flat.scale(dist)));
+                point = exit.add(0, 1.0, 0);
+                for (LivingEntity e : along(p, p.position(), exit, 1.8)) {
+                    target = e;
+                    break;
+                }
+            }
+            case KNIFE_STORM -> {
+                target = aim(p, 40.0, 16.0);
+                point = target != null ? target.getBoundingBox().getCenter() : ray(p, eye, look, 30.0);
             }
             case KNIVES -> {
                 target = aim(p, 40.0, 14.0);
                 point = target != null ? target.getBoundingBox().getCenter() : ray(p, eye, look, 40.0);
             }
-            case SPEED_SLICE, INFINITE_SPEED -> {
-                double range = m == Move.SPEED_SLICE ? Beats.SLICE_RANGE : Beats.INF_RANGE;
+            case SPEED_SLICE -> {
+                double range = Beats.SLICE_RANGE;
                 target = aim(p, range, 28.0);
                 if (target != null) {
                     point = target.getBoundingBox().getCenter();
@@ -210,12 +239,11 @@ public final class Techniques {
                 target = aim(p, Beats.JUDGE_RANGE, 30.0);
                 if (target != null) {
                     point = target.getBoundingBox().getCenter();
-                    Vec3 tf = target.position().subtract(p.position());
-                    Vec3 across = new Vec3(tf.x, 0, tf.z).lengthSqr() < 1.0E-4 ? flat : new Vec3(tf.x, 0, tf.z).normalize();
-                    exit = safe(p, target.position().subtract(across.scale(target.getBbWidth() * 0.5 + 1.25)), p.position());
+                    exit = target.position();
                 } else {
                     point = ray(p, eye, look, 9.0);
-                    exit = safe(p, ground(p, point.subtract(flat.scale(1.3))), p.position());
+                    exit = ground(p, point);
+                    point = exit.add(0, 1.0, 0);
                 }
             }
             default -> {
@@ -233,7 +261,7 @@ public final class Techniques {
     }
 
     private static void broadcast(ServerPlayer p, Cast c) {
-        Net.toTrackingAndSelf(p, new S2CCast(c.move, p.getId(), c.origin, c.dir, c.point, c.exit, c.start, p.getRandom().nextInt(),
+        Net.toTrackingAndSelf(p, new S2CCast(c.move, p.getId(), c.origin, c.dir, c.point, c.exit, c.start, c.seed,
                 c.target == null ? -1 : c.target.getId()));
     }
 
@@ -292,6 +320,24 @@ public final class Techniques {
             }
         }
         return best;
+    }
+
+    /** Every living thing within {@code radius} of the line from a to b (feet to feet, checked at the waist). */
+    static List<LivingEntity> along(ServerPlayer p, Vec3 a, Vec3 b, double radius) {
+        Vec3 wa = a.add(0, 0.9, 0), wb = b.add(0, 0.9, 0);
+        List<LivingEntity> out = new ArrayList<>();
+        AABB box = new AABB(wa, wb).inflate(radius + 1.0);
+        Vec3 d = wb.subtract(wa);
+        double len2 = Math.max(1.0E-6, d.lengthSqr());
+        for (LivingEntity e : p.level().getEntitiesOfClass(LivingEntity.class, box, e -> e != p && e.isAlive() && !e.isSpectator() && !(e instanceof ArmorStand))) {
+            Vec3 c = e.getBoundingBox().getCenter();
+            double k = Mth.clamp(c.subtract(wa).dot(d) / len2, 0.0, 1.0);
+            if (c.distanceTo(wa.add(d.scale(k))) <= radius + e.getBbWidth() * 0.5) {
+                out.add(e);
+            }
+        }
+        out.sort((x, y) -> Double.compare(x.distanceToSqr(a), y.distanceToSqr(a)));
+        return out;
     }
 
     /** Everything in front of him within reach: what the Stand's fists find. */
@@ -383,14 +429,12 @@ public final class Techniques {
         ServerPlayer p = c.player;
         switch (c.move) {
             case PUNCH -> {
+                if (age == 1 && c.exit.distanceToSqr(c.anchor) > 1.0) {
+                    teleport(c, c.exit, c.point);
+                }
                 if (age == Beats.PUNCH_HIT) {
-                    boolean any = false;
                     for (LivingEntity e : front(p, 4.0, 1.4)) {
                         hit(c, e, 4.0F, p.getLookAngle().scale(0.35).add(0, 0.12, 0), 0, false);
-                        any = true;
-                    }
-                    if (any) {
-                        sound(c, p.getEyePosition().add(p.getLookAngle().scale(2.5)), ModSounds.PUNCH.get(), 0.9F, 1.0F + p.getRandom().nextFloat() * 0.2F);
                     }
                 }
             }
@@ -407,7 +451,6 @@ public final class Techniques {
                         hit(c, e, c.da ? 0.6F : 0.9F, p.getLookAngle().scale(0.06), 0, false);
                     }
                     if (!hits.isEmpty() && age % 2 == 0) {
-                        sound(c, hits.get(0).getEyePosition(), ModSounds.JAB.get(), 0.75F, 0.9F + p.getRandom().nextFloat() * 0.3F);
                     }
                 }
             }
@@ -418,7 +461,6 @@ public final class Techniques {
                     for (LivingEntity e : hits) {
                         hit(c, e, 8.0F, look.multiply(1, 0, 1).normalize().scale(2.1).add(0, 0.55, 0), 0, false);
                     }
-                    sound(c, p.getEyePosition().add(look.scale(2.5)), ModSounds.FINISHER.get(), 1.0F, hits.isEmpty() ? 1.3F : 1.0F);
                 }
             }
             case KNIVES -> {
@@ -433,84 +475,107 @@ public final class Techniques {
                         Vec3 d = rotateY(base, i * 6.5).add(0, i == 0 ? 0 : 0.03, 0).normalize();
                         c.level.addFreshEntity(KnifeEntity.thrown(c.level, p, hand.add(right.scale(i * 0.18)), d.scale(Beats.KNIFE_SPEED)));
                     }
-                    sound(c, hand, ModSounds.KNIFE_THROW.get(), 1.0F, 1.0F);
                 }
             }
             case SPEED_SLICE -> {
                 if (age == 2) {
-                    sound(c, p.getEyePosition(), ModSounds.TOCK.get(), 1.0F, 0.6F);
                 }
                 if (age == Beats.SLICE_VANISH) {
-                    sound(c, p.getEyePosition(), ModSounds.VANISH.get(), 1.0F, 1.1F);
                     teleport(c, c.exit, c.target != null ? c.target.getEyePosition() : c.exit.add(c.flat.scale(-3)));
                 }
                 if (age == Beats.SLICE_HIT) {
-                    sound(c, c.point, ModSounds.SLICE.get(), 1.2F, 1.0F);
                     if (c.target != null && c.target.isAlive()) {
                         hit(c, c.target, 10.0F, new Vec3(0, 0.15, 0), 20, true);
                         BLEEDS.add(new Bleed(c.target, p, c.level.getGameTime() + 60, dmg(0.7F)));
-                        Vec3 neck = c.target.getEyePosition().subtract(0, 0.15, 0);
-                        c.level.sendParticles(new DustParticleOptions(new Vector3f(0.75F, 0.02F, 0.04F), 1.6F), neck.x, neck.y, neck.z, 36, 0.3, 0.1, 0.3, 0.2);
-                    }
-                }
-            }
-            case INFINITE_SPEED -> {
-                if (age == Beats.INF_VANISH) {
-                    sound(c, p.getEyePosition(), ModSounds.VANISH.get(), 1.0F, 0.85F);
-                    teleport(c, c.exit, c.target != null ? c.target.getEyePosition() : c.exit.add(c.flat.scale(-3)));
-                }
-                if (age == Beats.INF_HIT) {
-                    sound(c, c.point, ModSounds.FINISHER.get(), 1.1F, 0.85F);
-                    if (c.target != null && c.target.isAlive()) {
-                        Vec3 away = c.target.position().subtract(p.position()).multiply(1, 0, 1);
-                        away = away.lengthSqr() < 1.0E-4 ? c.flat : away.normalize();
-                        hit(c, c.target, 12.0F, away.scale(0.6).add(0, -0.4, 0), 34, false);
-                        c.target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 1, false, false));
                     }
                 }
             }
             case JUDGEMENT -> {
-                if (age == 4) {
-                    sound(c, p.getEyePosition(), ModSounds.TOCK.get(), 1.0F, 0.5F);
-                }
-                if (age >= Beats.JUDGE_LUNGE && age <= Beats.JUDGE_ARRIVE) {
-                    float k = (age - Beats.JUDGE_LUNGE) / (float) (Beats.JUDGE_ARRIVE - Beats.JUDGE_LUNGE);
-                    Vec3 at = c.anchor.lerp(c.exit, k);
-                    Vec3 face = c.target != null ? c.target.getEyePosition() : c.point;
-                    teleport(c, at, face);
-                    if (age == Beats.JUDGE_LUNGE) {
-                        sound(c, at, ModSounds.VANISH.get(), 1.0F, 0.75F);
+                // eight dashes of light, each straight through him from a new side
+                for (int i = 0; i < Beats.JUDGE_DASHES.length; i++) {
+                    if (age == Beats.JUDGE_DASHES[i]) {
+                        Vec3 from = i == 0 ? c.anchor : Beats.judgeDash(c.exit, c.seed, i - 1);
+                        Vec3 to = Beats.judgeDash(c.exit, c.seed, i);
+                        teleport(c, safe(p, to, to.add(0, 1.0, 0)), c.exit.add(0, 1.2, 0));
+                        for (LivingEntity e : along(p, from, to, 1.6)) {
+                            hit(c, e, 3.0F, Vec3.ZERO, 14, false);
+                        }
                     }
                 }
-                if (age > Beats.JUDGE_ARRIVE && age < Beats.JUDGE_FINAL + 2) {
+                if (age > Beats.JUDGE_DASHES[0] && age < Beats.JUDGE_FINAL + 2) {
                     p.setDeltaMovement(Vec3.ZERO);
                     p.fallDistance = 0.0F;
-                }
-                for (int h : Beats.JUDGE_HITS) {
-                    if (age == h) {
-                        Vec3 where = c.target != null && c.target.isAlive() ? c.target.getBoundingBox().getCenter() : c.point;
-                        for (LivingEntity e : c.level.getEntitiesOfClass(LivingEntity.class, new AABB(where, where).inflate(2.2),
-                                e -> e != p && e.isAlive() && !(e instanceof ArmorStand))) {
-                            hit(c, e, 3.5F, Vec3.ZERO, 8, false);
-                        }
-                        sound(c, where, ModSounds.PUNCH.get(), 1.0F, 0.85F + h * 0.006F);
-                    }
                 }
                 if (age == Beats.JUDGE_FINAL) {
                     Vec3 where = c.target != null && c.target.isAlive() ? c.target.getBoundingBox().getCenter() : c.point;
                     Vec3 away = where.subtract(p.position()).multiply(1, 0, 1);
                     away = away.lengthSqr() < 1.0E-4 ? c.flat : away.normalize();
-                    for (LivingEntity e : c.level.getEntitiesOfClass(LivingEntity.class, new AABB(where, where).inflate(2.6),
+                    for (LivingEntity e : c.level.getEntitiesOfClass(LivingEntity.class, new AABB(where, where).inflate(2.8),
                             e -> e != p && e.isAlive() && !(e instanceof ArmorStand))) {
-                        hit(c, e, 8.0F, away.scale(2.6).add(0, 0.95, 0), 0, true);
+                        hit(c, e, 9.0F, away.scale(1.6).add(0, 1.1, 0), 0, true);
                     }
-                    sound(c, where, ModSounds.JUDGEMENT.get(), 1.4F, 1.0F);
-                    c.level.sendParticles(ParticleTypes.EXPLOSION, where.x, where.y, where.z, 3, 0.4, 0.4, 0.4, 0.0);
+                }
+            }
+            case INFINITE_SPEED -> {
+                if (age == Beats.INF_ON) {
+                    InfiniteSpeed.begin(p);
+                }
+            }
+            case LIGHTSPEED_RUSH -> {
+                int step = age - Beats.RUSH_GO + 1;
+                if (step >= 1 && step <= Beats.RUSH_STEPS) {
+                    Vec3 at = c.anchor.lerp(c.exit, step / (double) Beats.RUSH_STEPS);
+                    teleport(c, at, at.add(c.flat.scale(5)).add(0, 1.6, 0));
+                }
+                if (age == Beats.RUSH_GO + Beats.RUSH_STEPS - 1) {
+                    Vec3 side = new Vec3(-c.flat.z, 0, c.flat.x);
+                    for (LivingEntity e : along(p, c.anchor, c.exit, 1.8)) {
+                        double s2 = e.position().subtract(c.anchor).dot(side) >= 0 ? 1 : -1;
+                        hit(c, e, 5.0F, side.scale(0.9 * s2).add(c.flat.scale(0.3)).add(0, 0.45, 0), 10, false);
+                    }
+                }
+            }
+            case KNIFE_STORM -> {
+                Vec3 right = new Vec3(-c.flat.z, 0, c.flat.x);
+                Vec3 centre = c.anchor.add(0, 1.9, 0).subtract(c.flat.scale(0.4));
+                int n = Beats.STORM_KNIVES;
+                int i = age - Beats.STORM_SPAWN;
+                if (i >= 0 && i < n) {
+                    // the knives appear one by one in a halo behind him, held in still time
+                    double a = Math.PI * (0.08 + 0.84 * i / (n - 1.0));
+                    double row = i % 2 == 0 ? 0.0 : 0.55;
+                    Vec3 at = centre.add(right.scale(Math.cos(a) * (2.0 + row))).add(0, Math.sin(a) * (1.3 + row), 0).subtract(c.flat.scale(row * 0.3));
+                    KnifeEntity k = KnifeEntity.held(c.level, p, at, c.target != null ? c.target.getBoundingBox().getCenter() : c.point);
+                    k.damage = 2.6F;
+                    c.level.addFreshEntity(k);
+                    c.knives.add(k);
+                }
+                if (age == Beats.STORM_AIM) {
+                    Vec3 aim = c.target != null && c.target.isAlive() ? c.target.getBoundingBox().getCenter() : c.point;
+                    for (KnifeEntity k : c.knives) {
+                        k.face(aim);
+                    }
+                }
+                if (age >= Beats.STORM_FIRE && age < Beats.STORM_FIRE + 4) {
+                    Vec3 aim = c.target != null && c.target.isAlive() ? c.target.getBoundingBox().getCenter() : c.point;
+                    int from = (age - Beats.STORM_FIRE) * 3;
+                    for (int j = from; j < Math.min(c.knives.size(), from + 3); j++) {
+                        KnifeEntity k = c.knives.get(j);
+                        if (!k.isRemoved()) {
+                            k.launch(aim.subtract(k.position()).normalize().scale(Beats.KNIFE_SPEED * 1.15));
+                        }
+                    }
+                }
+                if (age == c.move.length) {
+                    for (KnifeEntity k : c.knives) {
+                        if (!k.isRemoved() && k.isHeld()) {
+                            k.discard();
+                        }
+                    }
                 }
             }
             case DOUBLE_ACCEL -> {
                 if (age == 1) {
-                    sound(c, p.getEyePosition(), ModSounds.DOUBLE_ACCEL.get(), 1.1F, 1.0F);
                 }
                 if (age == Beats.DA_BURST) {
                     StandUsers.state(p).daUntil = c.level.getGameTime() + Beats.DA_DURATION;
@@ -520,8 +585,6 @@ public final class Techniques {
             }
             case TIME_ACCEL -> {
                 if (age == 1) {
-                    sound(c, p.getEyePosition(), ModSounds.TIME_ACCEL.get(), 1.4F, 1.0F);
-                    sound(c, p.getEyePosition(), ModSounds.MENACING.get(), 1.0F, 1.0F);
                 }
                 if (age == Beats.TA_START) {
                     TimeAccel.start(p);
@@ -552,10 +615,6 @@ public final class Techniques {
             if (now % 10 == 0) {
                 b.victim.invulnerableTime = 0;
                 b.victim.hurt(b.source.damageSources().playerAttack(b.source), b.perHit);
-                if (b.victim.level() instanceof ServerLevel sl) {
-                    Vec3 n = b.victim.getEyePosition().subtract(0, 0.2, 0);
-                    sl.sendParticles(new DustParticleOptions(new Vector3f(0.65F, 0.0F, 0.03F), 1.0F), n.x, n.y, n.z, 6, 0.15, 0.05, 0.15, 0.02);
-                }
             }
         }
     }

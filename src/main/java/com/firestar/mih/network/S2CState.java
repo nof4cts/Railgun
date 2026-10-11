@@ -21,9 +21,10 @@ public final class S2CState {
     public final float radius;
     public final long auUntil;
     public final byte limb;
+    public final long infUntil;
 
     public S2CState(int entityId, boolean has, boolean summoned, long daUntil, long taStart, int taLength, double cx, double cy, double cz,
-                    float radius, long auUntil, byte limb) {
+                    float radius, long auUntil, byte limb, long infUntil) {
         this.entityId = entityId;
         this.has = has;
         this.summoned = summoned;
@@ -36,6 +37,7 @@ public final class S2CState {
         this.radius = radius;
         this.auUntil = auUntil;
         this.limb = limb;
+        this.infUntil = infUntil;
     }
 
     public static void encode(S2CState m, FriendlyByteBuf buf) {
@@ -51,11 +53,12 @@ public final class S2CState {
         buf.writeFloat(m.radius);
         buf.writeLong(m.auUntil);
         buf.writeByte(m.limb);
+        buf.writeLong(m.infUntil);
     }
 
     public static S2CState decode(FriendlyByteBuf buf) {
         return new S2CState(buf.readVarInt(), buf.readBoolean(), buf.readBoolean(), buf.readLong(), buf.readLong(), buf.readVarInt(),
-                buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readFloat(), buf.readLong(), buf.readByte());
+                buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readFloat(), buf.readLong(), buf.readByte(), buf.readLong());
     }
 
     public static void handle(S2CState m, Supplier<NetworkEvent.Context> ctx) {

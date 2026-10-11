@@ -71,12 +71,19 @@ anim('knives', 18, [(0, R(), None), (5, pose('throw'), 'easeOutCubic'), (8, pose
                     (18, R(), 'easeInOutSine')])
 anim('speed_slice', 58, [(0, R(), None), (8, pose('face'), 'easeOutCubic'), (17, pose('face'), None), (19, pose('dash'), 'easeOutExpo'),
                          (24, pose('slash'), 'easeOutExpo'), (40, pose('slash'), None), (58, R(), 'easeInOutSine')])
-anim('infinite_speed', 48, [(0, R(), None), (9, pose('crouch'), 'easeOutCubic'), (13, pose('dash'), 'easeOutExpo'), (15, pose('chop_up'), 'easeOutExpo'),
-                            (17, pose('chop'), 'easeOutExpo'), (32, pose('chop'), None), (48, R(), 'easeInOutSine')])
-jk = [(0, R(), None), (12, pose('crouch'), 'easeOutCubic'), (16, pose('crouch'), None), (18, pose('dash'), 'easeOutExpo')]
-for i, t in enumerate(range(22, 54, 4)):
-    jk.append((t, pose('jab_r' if i % 2 == 0 else 'jab_l'), 'easeOutExpo'))
-jk += [(56, pose('windback'), 'easeOutCubic'), (60, pose('thrust'), 'easeOutExpo'), (78, pose('thrust'), None), (100, R(), 'easeInOutSine')]
+POSE['slash_l'] = {'left_arm': [-80, 70, 0], 'right_arm': [-20, 0, 40], 'torso': [10, 40, 0], 'head': [4, -30, 0],
+                   'right_leg': [-30, 0, 0], 'left_leg': [26, 0, 0]}
+POSE['run'] = {'right_arm': [55, 0, 15], 'left_arm': [55, 0, -15], 'torso': [40, 0, 0], 'head': [-34, 0, 0],
+               'right_leg': [-55, 0, 0], 'left_leg': [40, 0, 0]}
+anim('infinite_speed', 14, [(0, R(), None), (4, pose('cross'), 'easeOutCubic'), (6, pose('burst'), 'easeOutExpo'), (14, R(), 'easeInOutSine')])
+anim('lightspeed_rush', 20, [(0, R(), None), (3, pose('crouch'), 'easeOutCubic'), (5, pose('run'), 'easeOutExpo'), (8, pose('slash'), 'easeOutExpo'),
+                             (14, pose('slash'), None), (20, R(), 'easeInOutSine')])
+anim('knife_storm', 46, [(0, R(), None), (8, pose('heaven'), 'easeOutCubic'), (20, pose('heaven'), None), (24, pose('throw'), 'easeOutCubic'),
+                         (28, pose('release'), 'easeOutExpo'), (38, pose('release'), None), (46, R(), 'easeInOutSine')])
+jk = [(0, R(), None), (12, pose('crouch'), 'easeOutCubic'), (16, pose('crouch'), None)]
+for i, t in enumerate(range(18, 42, 3)):
+    jk.append((t, pose('slash' if i % 2 == 0 else 'slash_l'), 'easeOutExpo'))
+jk += [(46, pose('slash'), None), (52, pose('windback'), 'easeOutCubic'), (58, pose('thrust'), 'easeOutExpo'), (78, pose('thrust'), None), (100, R(), 'easeInOutSine')]
 anim('judgement', 100, jk)
 anim('double_accel', 50, [(0, R(), None), (10, pose('cross'), 'easeOutCubic'), (26, pose('cross'), None), (29, pose('burst'), 'easeOutExpo'),
                           (40, pose('burst'), None), (50, R(), 'easeInOutSine')])

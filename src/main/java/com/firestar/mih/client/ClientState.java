@@ -25,6 +25,7 @@ public final class ClientState {
         public float radius;
         public long auUntil;
         public byte limb;
+        public long infUntil;
         /** 0 hidden … 1 fully out, eased per tick. */
         public float shown, shownO;
     }
@@ -32,6 +33,7 @@ public final class ClientState {
     public static void accept(S2CState m) {
         Info i = INFO.computeIfAbsent(m.entityId, k -> new Info());
         boolean au = i.auUntil != m.auUntil;
+        boolean dismissed = i.summoned && !m.summoned;
         i.has = m.has;
         i.summoned = m.summoned;
         i.daUntil = m.daUntil;
@@ -41,7 +43,11 @@ public final class ClientState {
         i.radius = m.radius;
         i.auUntil = m.auUntil;
         i.limb = m.limb;
+        i.infUntil = m.infUntil;
         Minecraft mc = Minecraft.getInstance();
+        if (dismissed && mc.level != null && mc.level.getEntity(m.entityId) != null) {
+            Choreo.dismiss(mc.level.getEntity(m.entityId));
+        }
         if (au && mc.level != null && mc.level.getEntity(m.entityId) instanceof Player p) {
             p.refreshDisplayName();
         }

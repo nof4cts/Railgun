@@ -30,6 +30,8 @@ public final class Keys {
         MOVES.put(Move.JUDGEMENT, key("judgement", GLFW.GLFW_KEY_G));
         MOVES.put(Move.DOUBLE_ACCEL, key("double_accel", GLFW.GLFW_KEY_Z));
         MOVES.put(Move.INFINITE_SPEED, key("infinite_speed", GLFW.GLFW_KEY_X));
+        MOVES.put(Move.LIGHTSPEED_RUSH, key("lightspeed_rush", GLFW.GLFW_KEY_C));
+        MOVES.put(Move.KNIFE_STORM, key("knife_storm", GLFW.GLFW_KEY_V));
         MOVES.put(Move.TIME_ACCEL, key("time_accel", GLFW.GLFW_KEY_H));
     }
 
@@ -89,7 +91,8 @@ public final class Keys {
                 }
             }
             if (out) {
-                for (KeyMapping v : new KeyMapping[]{mc.options.keyInventory, mc.options.keyChat, mc.options.keyDrop, mc.options.keySwapOffhand}) {
+                for (KeyMapping v : new KeyMapping[]{mc.options.keyInventory, mc.options.keyChat, mc.options.keyDrop, mc.options.keySwapOffhand,
+                        mc.options.keySaveHotbarActivator, mc.options.keyLoadHotbarActivator}) {
                     if (shares(k, v)) {
                         while (v.consumeClick()) {
                             // swallowed: this key is a Stand move while the Stand is out

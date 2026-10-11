@@ -28,6 +28,25 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> NEW_UNIVERSE = reg("new_universe");
     public static final RegistryObject<SoundEvent> MENACING = reg("menacing");
 
+    public static final RegistryObject<SoundEvent> BASS = reg("bass");
+    public static final RegistryObject<SoundEvent> DASH = reg("dash");
+    public static final RegistryObject<SoundEvent> STAND_SUMMON = reg("stand_summon");
+    public static final RegistryObject<SoundEvent> STAND_DISMISS = reg("stand_dismiss");
+    public static final RegistryObject<SoundEvent> FIST = reg("fist");
+    public static final RegistryObject<SoundEvent> BARRAGE_RUSH = reg("barrage_rush");
+    public static final RegistryObject<SoundEvent> KNIFE_HANG = reg("knife_hang");
+    public static final RegistryObject<SoundEvent> KNIFE_VOLLEY = reg("knife_volley");
+    public static final RegistryObject<SoundEvent> KNIFE_FLESH = reg("knife_flesh");
+    public static final RegistryObject<SoundEvent> JUDGE_CUT = reg("judge_cut");
+    public static final RegistryObject<SoundEvent> INFINITE_START = reg("infinite_start");
+    public static final RegistryObject<SoundEvent> DETONATE = reg("detonate");
+    public static final RegistryObject<SoundEvent> RUSH = reg("rush");
+    public static final RegistryObject<SoundEvent> LIGHT_HIT = reg("light_hit");
+    public static final RegistryObject<SoundEvent> CRACK = reg("crack");
+    public static final RegistryObject<SoundEvent> GALAXY = reg("galaxy");
+    public static final RegistryObject<SoundEvent> PLUNGE = reg("plunge");
+    public static final RegistryObject<SoundEvent> ACCEL_BASS = reg("accel_bass");
+
     private ModSounds() {}
 
     private static RegistryObject<SoundEvent> reg(String name) {

@@ -25,6 +25,8 @@ public final class Net {
                 .encoder(S2CCooldowns::encode).decoder(S2CCooldowns::decode).consumerMainThread(S2CCooldowns::handle).add();
         CHANNEL.messageBuilder(S2CState.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(S2CState::encode).decoder(S2CState::decode).consumerMainThread(S2CState::handle).add();
+        CHANNEL.messageBuilder(S2CFx.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(S2CFx::encode).decoder(S2CFx::decode).consumerMainThread(S2CFx::handle).add();
     }
 
     public static void toServer(Object msg) {

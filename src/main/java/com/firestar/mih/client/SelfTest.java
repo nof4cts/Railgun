@@ -45,9 +45,10 @@ public final class SelfTest {
     private static final List<int[]> SHOTS = new ArrayList<>();
     private static final List<int[]> ACCEL_SHOTS = new ArrayList<>();
     private static final List<int[]> RESET_SHOTS = new ArrayList<>();
+    private static final List<int[]> INF_SHOTS = new ArrayList<>();
 
     private static final Move[] ORDER = {Move.SUMMON, Move.PUNCH, Move.BARRAGE, Move.FINISHER, Move.KNIVES, Move.SPEED_SLICE,
-            Move.INFINITE_SPEED, Move.JUDGEMENT, Move.DOUBLE_ACCEL, Move.TIME_ACCEL};
+            Move.INFINITE_SPEED, Move.LIGHTSPEED_RUSH, Move.KNIFE_STORM, Move.JUDGEMENT, Move.DOUBLE_ACCEL, Move.TIME_ACCEL};
 
     private SelfTest() {}
 
@@ -63,8 +64,10 @@ public final class SelfTest {
             case FINISHER -> new int[]{7, 10, 11, 13};
             case KNIVES -> new int[]{6, 8, 10, 13};
             case SPEED_SLICE -> new int[]{4, 13, 19, 23, 25, 26, 28, 33, 45};
-            case INFINITE_SPEED -> new int[]{6, 12, 15, 17, 18, 20, 30, 40};
-            case JUDGEMENT -> new int[]{8, 14, 17, 23, 30, 38, 47, 55, 60, 61, 63, 68, 85};
+            case INFINITE_SPEED -> new int[]{4, 6, 7, 9, 14};
+            case LIGHTSPEED_RUSH -> new int[]{3, 4, 5, 6, 7, 9, 14};
+            case KNIFE_STORM -> new int[]{8, 14, 20, 26, 28, 29, 31, 34, 40};
+            case JUDGEMENT -> new int[]{8, 14, 18, 19, 22, 25, 28, 31, 34, 37, 40, 46, 52, 58, 59, 61, 66, 85};
             case DOUBLE_ACCEL -> new int[]{8, 18, 24, 28, 29, 31, 38, 48};
             case TIME_ACCEL -> new int[]{8, 20, 30, 42, 50, 51, 53, 60, 72, 84};
             default -> new int[0];
@@ -72,6 +75,9 @@ public final class SelfTest {
     }
 
     private static int waitFor(Move m) {
+        if (m == Move.INFINITE_SPEED) {
+            return 90;
+        }
         return m == Move.TIME_ACCEL ? Beats.TA_START + accelLength() + Move.UNIVERSE_RESET.length + 60 : m.length + 26;
     }
 
@@ -132,6 +138,12 @@ public final class SelfTest {
             for (int b : beats(m)) {
                 SHOTS.add(new int[]{b, 0});
             }
+            if (m == Move.INFINITE_SPEED) {
+                INF_SHOTS.clear();
+                for (int b : new int[]{16, 21, 23, 33, 35, 45, 57, 58, 59, 61, 64, 70}) {
+                    INF_SHOTS.add(new int[]{b, 0});
+                }
+            }
             if (m == Move.TIME_ACCEL) {
                 ACCEL_SHOTS.clear();
                 for (int k = 10; k < accelLength(); k += Math.max(10, accelLength() / 8)) {
@@ -151,6 +163,15 @@ public final class SelfTest {
                 p.connection.teleport(p.getX(), p.getY(), p.getZ(), -90.0F, -38.0F);
             });
             mc.options.setCameraType(CameraType.FIRST_PERSON);
+        }
+        // infinite speed: blink-punch twice through the crawling world, then let time snap back
+        if (index >= 0 && index < ORDER.length && ORDER[index] == Move.INFINITE_SPEED) {
+            for (long at : new long[]{castAt + 20, castAt + 32, castAt + 56}) {
+                if (now == at) {
+                    Move next = at == castAt + 56 ? Move.INFINITE_SPEED : Move.PUNCH;
+                    server.execute(() -> Techniques.request(server.getPlayerList().getPlayers().get(0), next));
+                }
+            }
         }
         if (now == castAt) {
             Move m = ORDER[index];
@@ -236,6 +257,9 @@ public final class SelfTest {
         if (c != null && c.move == m) {
             float t = c.time(mc.getFrameTime());
             shoot(SHOTS, t, String.format("%02d_%s", index, m.key));
+        }
+        if (m == Move.INFINITE_SPEED) {
+            shoot(INF_SHOTS, now - castAt, String.format("%02d_infinite_state", index));
         }
         if (m == Move.TIME_ACCEL) {
             shoot(ACCEL_SHOTS, now - castAt, "11_accel");

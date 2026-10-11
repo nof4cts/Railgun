@@ -26,6 +26,7 @@ public final class ServerEvents {
             Techniques.tick(event.getServer());
             TimeAccel.tick(event.getServer());
             UniverseReset.tick(event.getServer());
+            InfiniteSpeed.tick(event.getServer());
         }
     }
 
@@ -45,9 +46,12 @@ public final class ServerEvents {
         }
     }
 
-    /** Without an arm you can't guard as well: everything hits harder. */
+    /** Without an arm you can't guard as well: everything hits harder. Blows in Infinite Speed are remembered. */
     @SubscribeEvent
     public static void onHurt(LivingHurtEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer src && InfiniteSpeed.active(src)) {
+            InfiniteSpeed.mark(src, event.getEntity(), event.getAmount());
+        }
         if (event.getEntity() instanceof Player p && StandUsers.limb(p) == StandUsers.LIMB_ARM) {
             event.setAmount(event.getAmount() * 1.25F);
         }
@@ -118,6 +122,7 @@ public final class ServerEvents {
     @SubscribeEvent
     public static void onStopping(ServerStoppingEvent event) {
         TimeAccel.clearAll();
+        InfiniteSpeed.clearAll();
         UniverseReset.clearAll();
         Techniques.clearAll();
         StandUsers.clearAll();
