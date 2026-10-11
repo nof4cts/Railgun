@@ -61,7 +61,7 @@ public final class ZConfig {
             cooldowns = b.comment("Multiplier on every cooldown (0 = no cooldowns).").defineInRange("cooldowns", 1.0, 0.0, 10.0);
             invulnerableInCinematic = b.comment("The fighter can't be hurt while a cinematic move is playing.").define("invulnerableInCinematic", true);
             omenDodge = b.comment("Chance the Omen form slips an attack on its own.").defineInRange("omenDodge", 0.35, 0.0, 1.0);
-            zenithDodge = b.comment("Chance the Zenith form slips an attack on its own.").defineInRange("zenithDodge", 0.7, 0.0, 1.0);
+            zenithDodge = b.comment("Unused: the Zenith form now slips every attack, from every direction, and counters it.").defineInRange("zenithDodge", 0.7, 0.0, 1.0);
             counters = b.comment("In Zenith, a slipped attack from close by is answered with a counter.").define("counters", true);
             b.pop();
         }

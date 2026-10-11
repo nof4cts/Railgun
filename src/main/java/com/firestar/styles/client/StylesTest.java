@@ -39,6 +39,11 @@ public final class StylesTest {
     private static boolean requested, done;
     private static int ticks;
     private static int t0 = -1;
+    private static float ZENITH_HP;
+
+    private static final class Attackers {
+        static final java.util.List<net.minecraft.world.entity.LivingEntity> ATTACKERS = new java.util.ArrayList<>();
+    }
 
     private StylesTest() {}
 
@@ -171,14 +176,59 @@ public final class StylesTest {
         if (t == 426) {
             shot("08_instinct_fly_back");
         }
-        if (t == 440) {
+        if (t == 436) {
+            server.execute(() -> {
+                ServerPlayer p = player(server);
+                p.getAbilities().flying = false;
+                p.onUpdateAbilities();
+                golems(p, 30);
+                p.connection.teleport(0.5, -60, 0.5, 0, 4);
+                com.firestar.silver.server.Fighters.setForm(p, com.firestar.silver.server.Fighters.ZENITH);
+                ZENITH_HP = p.getHealth();
+                Attackers.ATTACKERS.clear();
+            });
+        }
+        if (t >= 446 && t < 462 && t % 2 == 0) {
+            int k = (t - 446) / 2;
+            server.execute(() -> {
+                ServerPlayer p = player(server);
+                // eight attackers round him, one after another, from every side; the last shoots from twenty blocks
+                double a = Math.toRadians(k * 45);
+                double r = k == 7 ? 20 : 2.2;
+                net.minecraft.world.entity.monster.Zombie z = EntityType.ZOMBIE.create(p.serverLevel());
+                if (z != null) {
+                    z.moveTo(p.getX() + Math.sin(a) * r, p.getY(), p.getZ() + Math.cos(a) * r, 0, 0);
+                    z.setNoAi(true);
+                    p.serverLevel().addFreshEntity(z);
+                    Attackers.ATTACKERS.add(z);
+                    if (k == 7) {
+                        net.minecraft.world.entity.projectile.Arrow arrow = new net.minecraft.world.entity.projectile.Arrow(p.serverLevel(), z);
+                        p.hurt(p.damageSources().arrow(arrow, z), 6.0F);
+                    } else {
+                        p.hurt(p.damageSources().mobAttack(z), 6.0F);
+                    }
+                }
+            });
+        }
+        if (t == 466) {
+            server.execute(() -> {
+                ServerPlayer p = player(server);
+                long countered = Attackers.ATTACKERS.stream().filter(z -> z.getHealth() < z.getMaxHealth()).count();
+                StylesMod.LOGGER.info("[selftest] zenith 360: health before={} after={} attackers countered={}/{}", ZENITH_HP, p.getHealth(),
+                        countered, Attackers.ATTACKERS.size());
+            });
+        }
+        if (t == 470) {
+            shot("09a_zenith_counters");
+        }
+        if (t == 500) {
             server.execute(() -> {
                 ServerPlayer p = player(server);
                 Styles.choose(p, Style.NONE);
                 StylesMod.LOGGER.info("[selftest] after leaving Instinct: mayfly={} flying={}", p.getAbilities().mayfly, p.getAbilities().flying);
             });
         }
-        if (t == 470) {
+        if (t == 530) {
             shot("09_none");
             done = true;
             StylesMod.LOGGER.info("[selftest] finished; stopping");
