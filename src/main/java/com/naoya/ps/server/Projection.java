@@ -223,7 +223,8 @@ public final class Projection {
     private static void teleport(ServerPlayer p, Vec3 to, Vec3 face) {
         Vec3 d = face.subtract(to);
         float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
-        float pitch = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+        // face the target but keep the view level: never snap to stare at the sky or the floor
+        float pitch = (float) Math.max(-18, Math.min(18, -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)))));
         p.connection.teleport(to.x, to.y, to.z, yaw, pitch);
         p.fallDistance = 0;
     }

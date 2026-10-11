@@ -306,7 +306,7 @@ public final class NFx {
         // fill: behind the flattened body
         Vec3 back = o.add(n.scale(0.12));
         out.add(new Ribbon(new Vec3[]{back.subtract(u2.scale(h)), back.add(u2.scale(h))}, new Vec3[]{r2, r2},
-                new float[]{(float) (w * 2), (float) (w * 2)}, new float[]{0.42F * a, 0.42F * a}, PAPER, Ribbon.Style.TINT));
+                new float[]{(float) (w * 2), (float) (w * 2)}, new float[]{0.3F * a, 0.3F * a}, PAPER, Ribbon.Style.TINT));
         // black edge and white inner line
         edge(out, o, r2, u2, w, h, 0.11F, INK, a, Ribbon.Style.INK);
         edge(out, o, r2, u2, w - 0.1, h - 0.1, 0.05F, WHITE, a, Ribbon.Style.INK);

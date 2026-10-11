@@ -45,8 +45,8 @@ public final class SelfTest {
             new Step(2, "barrage", 4, 40, new int[]{2, 6, 12, 18, 24, 25, 28}, false),
             new Step(3, "step", 6, 24, new int[]{1, 3, 8}, false),
             new Step(4, "boom", 10, 34, new int[]{1, 2, 4, 8, 14}, false),
-            new Step(5, "trap", 4, 30, new int[]{2, 5, 10, 20}, true),
-            new Step(6, "shatter", 4, 30, new int[]{1, 2, 3, 6, 12}, true),
+            new Step(5, "trap", 4, 30, new int[]{2, 5, 10, 20}, false),
+            new Step(6, "shatter", 4, 30, new int[]{1, 2, 3, 6, 12}, false),
             new Step(7, "ult", 9, Projection.ULT_LENGTH + 30, new int[]{4, 12, 20, 30, 40, 46, 47, 51, 56, 58, 60, 61, 63, 66, 72, 84, 98}, false),
     };
 

@@ -58,9 +58,14 @@ public final class Ghosts {
                 if (!(e instanceof LivingEntity) || g.pos.distanceTo(e.position()) < 0.6) {
                     continue;
                 }
+                double camDist = g.pos.add(0, 1, 0).distanceTo(cam);
+                if (camDist < 2.5) {
+                    continue;
+                }
+                float near = (float) Math.min(1.0, (camDist - 2.5) / 4.0);
                 float k = (now - g.start) / 1.0E9F / g.life;
                 // held at full strength, then cut out quickly: a frame, not a fade
-                float a = g.alpha * (k < 0.7F ? 1.0F : (1 - k) / 0.3F);
+                float a = near * g.alpha * (k < 0.7F ? 1.0F : (1 - k) / 0.3F);
                 if (a <= 0.02F) {
                     continue;
                 }
@@ -73,7 +78,7 @@ public final class Ghosts {
                 le.yHeadRot = le.yHeadRotO = g.yaw;
                 pose.pushPose();
                 pose.translate(g.pos.x - cam.x, g.pos.y - cam.y, g.pos.z - cam.z);
-                MultiBufferSource fill = type -> new Tint(buffers.getBuffer(FxTypes.TINT), 0.93F, 0.91F, 0.85F, a * 0.55F, false);
+                MultiBufferSource fill = type -> new Tint(buffers.getBuffer(FxTypes.TINT), 0.93F, 0.91F, 0.85F, a * 0.38F, false);
                 r.render(e, g.yaw, partial, pose, fill, 0xF000F0);
                 MultiBufferSource rim = type -> new Tint(buffers.getBuffer(RenderType.lightning()), 0.75F, 0.85F, 1.0F, a * 0.25F, true);
                 pose.scale(1.03F, 1.02F, 1.03F);
