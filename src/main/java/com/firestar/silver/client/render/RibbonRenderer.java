@@ -39,6 +39,13 @@ public final class RibbonRenderer {
             }
         }
         buffers.endBatch(RenderType.debugQuads());
+        VertexConsumer tint = buffers.getBuffer(FxTypes.TINT);
+        for (Ribbon r : RIBBONS) {
+            if (r.style == Ribbon.Style.TINT) {
+                emit(tint, m, r, cam, false);
+            }
+        }
+        buffers.endBatch(FxTypes.TINT);
         VertexConsumer glow = buffers.getBuffer(RenderType.lightning());
         for (Ribbon r : RIBBONS) {
             if (r.style == Ribbon.Style.GLOW) {

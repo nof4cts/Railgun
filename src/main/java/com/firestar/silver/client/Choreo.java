@@ -115,6 +115,7 @@ public final class Choreo {
             double in = len * (0.15 + 0.7 * Math.sqrt(k));
             double outer = len * (0.45 + 0.75 * Math.sqrt(k));
             float w = (float) (0.06 + 0.07 * size) * (1 - k);
+            Shapes.streak(out, p.add(d.scale(in)), p.add(d.scale(outer)), w * 2.8F, 0.35F * fade, rgb, Ribbon.Style.TINT);
             Shapes.streak(out, p.add(d.scale(in)), p.add(d.scale(outer)), w * 2.4F, 0.55F * fade, rgb, Ribbon.Style.GLOW);
             Shapes.streak(out, p.add(d.scale(in)), p.add(d.scale(outer)), w, fade, WHITE, Ribbon.Style.GLOW);
         }
@@ -478,11 +479,12 @@ public final class Choreo {
                     Vec3[] b = blast(c, i, t);
                     if (b != null) {
                         // a comet: a hard white head in a blue shell, a tail that thins behind it
-                        Shapes.streak(out, b[0].subtract(b[1].scale(2.6)), b[0].add(b[1].scale(0.2)), 0.7F, 0.7F, BLUE, Ribbon.Style.GLOW);
+                        Shapes.streak(out, b[0].subtract(b[1].scale(3.0)), b[0].add(b[1].scale(0.3)), 1.1F, 0.45F, 0x3D6FD8, Ribbon.Style.TINT);
+                        Shapes.streak(out, b[0].subtract(b[1].scale(2.8)), b[0].add(b[1].scale(0.25)), 1.0F, 0.8F, BLUE, Ribbon.Style.GLOW);
                         Shapes.streak(out, b[0].subtract(b[1].scale(1.4)), b[0].add(b[1].scale(0.15)), 0.3F, 1.0F, CYAN, Ribbon.Style.GLOW);
                         Shapes.streak(out, b[0].subtract(b[1].scale(0.7)), b[0].add(b[1].scale(0.1)), 0.14F, 1.0F, WHITE, Ribbon.Style.GLOW);
                         Vec3 n = b[1];
-                        Shapes.ring(out, b[0], n, 0.28 + 0.05 * Math.sin(time * 30 + i), 0.07F, 0.9F, WHITE, Ribbon.Style.GLOW);
+                        Shapes.ring(out, b[0], n, 0.42 + 0.06 * Math.sin(time * 30 + i), 0.1F, 0.95F, WHITE, Ribbon.Style.GLOW);
                         spiral(out, b[0].subtract(b[1].scale(1.6)), b[0], 0.22, 1.5, -time * 20 + i, 0.05F, 0.6F, VIOLET);
                     }
                     double[] im = blastImpact(c, i);

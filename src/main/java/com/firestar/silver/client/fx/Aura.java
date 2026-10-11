@@ -14,10 +14,10 @@ public final class Aura {
     private Aura() {}
 
     /** Shape and colours of one awakening. */
-    public record Style(float height, float width, int fill, int tongue, int core, int outline, int wisp, float flicker) {}
+    public record Style(float height, float width, int fill, int tongue, int core, int outline, int wisp, int shade, float flicker) {}
 
-    public static final Style OMEN = new Style(2.75F, 1.05F, 0x4F7FE0, 0x7FB4FF, 0xD6E8FF, 0xA9CCFF, 0xB49CFF, 1.0F);
-    public static final Style ZENITH = new Style(3.3F, 1.25F, 0x6E9CF0, 0xA8D4FF, 0xFFFFFF, 0xF2F8FF, 0xC9B8FF, 0.0F);
+    public static final Style OMEN = new Style(2.75F, 1.05F, 0x4F7FE0, 0x7FB4FF, 0xD6E8FF, 0xA9CCFF, 0xB49CFF, 0x3D5FC4, 1.0F);
+    public static final Style ZENITH = new Style(3.3F, 1.25F, 0x6E9CF0, 0xA8D4FF, 0xFFFFFF, 0xF2F8FF, 0xC9B8FF, 0x5A7FD8, 0.0F);
 
     /** Half-width of the silhouette at fraction u of its height: broad at the shoulders, a point at the top. */
     static double profile(double u) {
@@ -69,6 +69,11 @@ public final class Aura {
                 al[k] = a * 0.11F * (float) (Math.sin(Math.PI * Math.pow(u, 0.6)) * 0.8 + 0.2 * (1 - u));
             }
             out.add(new Ribbon(spine, null, w, al, s.fill, Ribbon.Style.GLOW));
+            float[] ta = al.clone();
+            for (int k = 0; k < n; k++) {
+                ta[k] *= 1.5F;
+            }
+            out.add(new Ribbon(spine, null, w, ta, s.tongue, Ribbon.Style.TINT));
         }
 
         // tongues licking up both edges, born low, rising and thinning as they go
@@ -91,6 +96,11 @@ public final class Aura {
                     w[k] = (float) ((0.26 + 0.1 * (1 - u0)) * (1 - 0.85 * v) * (0.7 + 0.3 * power));
                     al[k] = a * life * 0.5F * (float) Math.sin(Math.PI * Math.pow(v, 0.55));
                 }
+                float[] tal2 = al.clone();
+                for (int k = 0; k < n; k++) {
+                    tal2[k] *= 0.35F;
+                }
+                out.add(new Ribbon(spine, null, w, tal2, s.tongue, Ribbon.Style.TINT));
                 out.add(new Ribbon(spine, null, w, al, s.tongue, Ribbon.Style.GLOW));
                 float[] w2 = w.clone();
                 float[] al2 = al.clone();
@@ -119,6 +129,14 @@ public final class Aura {
             ew[k] = (float) (0.075 * (1 - 0.5 * u));
             ea[k] = a * 0.85F * (float) Mth.clamp(u * 6, 0, 1);
         }
+        // a deeper blue band under the bright edge: the cel shadow that keeps it legible on a bright sky
+        float[] tw = ew.clone();
+        float[] tal = ea.clone();
+        for (int k = 0; k < n; k++) {
+            tw[k] *= 2.4F;
+            tal[k] *= 0.45F;
+        }
+        out.add(new Ribbon(edge, null, tw, tal, s.shade, Ribbon.Style.TINT));
         out.add(new Ribbon(edge, null, ew, ea, s.outline, Ribbon.Style.GLOW));
         float[] ew2 = ew.clone();
         float[] ea2 = ea.clone();

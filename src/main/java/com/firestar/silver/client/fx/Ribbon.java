@@ -8,7 +8,7 @@ import net.minecraft.world.phys.Vec3;
  * like a real flying slash).
  */
 public final class Ribbon {
-    public enum Style { GLOW, INK }
+    public enum Style { GLOW, INK, TINT }
 
     public final Vec3[] spine;
     public final Vec3[] sides;
