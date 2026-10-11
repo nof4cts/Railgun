@@ -310,7 +310,7 @@ void main() {
         float tg = clamp(dot(g, rd), 0.0, tScene);
         float dg = length(rd * tg - g);
         float ground = step(BeamP.y, Beam.y + 1.0);
-        beam += (vec3(1.0, 0.95, 0.85) * exp(-sqr(dg / (r * 1.3))) * 2.0 + vec3(1.0, 0.6, 0.2) * exp(-dg / (r * 2.5)) * 0.35) * ground;
+        beam += (vec3(1.0, 0.95, 0.85) * exp(-sqr(dg / (r * 0.9))) * 1.2 + vec3(1.0, 0.6, 0.2) * exp(-dg / (r * 2.0)) * 0.2) * ground;
         col += beam * inside * I;
     }
 

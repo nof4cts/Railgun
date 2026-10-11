@@ -101,7 +101,7 @@ public final class SelfTest {
                 float yaw = (float) ((t - 395) / 100.0 * 70.0 - 35.0);
                 server.execute(() -> {
                     ServerPlayer p = player(server);
-                    p.connection.teleport(HX + 0.5, p.getY(), 0.5, yaw, 22);
+                    p.connection.teleport(HX + 0.5, p.getY(), 0.5, yaw, 6);
                 });
             }
             if (t == 506) {

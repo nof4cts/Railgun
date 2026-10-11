@@ -465,7 +465,7 @@ void main() {
             float te = max(0.0, dot(entry - EyeP, rd));
             float de = length(EyeP + rd * te - entry);
             float pe = max(te * TanHalf * 0.02, 0.0006);
-            col += vec3(1.0, 0.85, 0.6) * exp(-de / pe) * LanceA.w * 1.2 * step(te, tBest + 0.001);
+            col += vec3(1.0, 0.85, 0.6) * exp(-de / pe) * LanceA.w * 0.5 * step(te, tBest + 0.001);
         }
     }
 
