@@ -60,7 +60,9 @@ public final class ClientEvents {
 
         @SubscribeEvent
         public static void onRenderLevel(RenderLevelStageEvent event) {
-            Strikes.render(event);
+            if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+                Strikes.world(event.getPartialTick());
+            }
             RibbonRenderer.render(event);
             if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
                 Minecraft mc = Minecraft.getInstance();
@@ -70,6 +72,9 @@ public final class ClientEvents {
                 Light.render(Views.view(event), event.getCamera().getPosition());
             }
             Space.render(event);
+            if (!Space.showing()) {
+                com.firestar.orbital.client.render.WorldFx.render(event);
+            }
             PostFx.render(event);
         }
 
@@ -175,7 +180,6 @@ public final class ClientEvents {
         public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             Director.stop();
             Strikes.clear();
-            MirrorWorld.clear();
             Light.clear();
             Smoke.clear();
         }
@@ -194,6 +198,7 @@ public final class ClientEvents {
         public static void onReload(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) PostFx::reload);
             event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) Space::reload);
+            event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) com.firestar.orbital.client.render.WorldFx::reload);
         }
     }
 }

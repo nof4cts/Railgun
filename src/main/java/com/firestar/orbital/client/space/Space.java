@@ -39,6 +39,9 @@ public final class Space {
         public boolean helios;
         public Vec3 localEye = new Vec3(0, 0, 8), axis = new Vec3(0, -1, 0);
         public float unfold, charge, lance;
+        /** The lance in Earth radii, from the array down to the ground. */
+        public Vec3 lanceFrom = Vec3.ZERO, lanceTo = Vec3.ZERO;
+        public float lanceGlow;
 
         public View look(Vec3 eye, Vec3 at, Vec3 upHint) {
             this.eye = eye;
@@ -127,6 +130,8 @@ public final class Space {
             program.set("Unfold", v.unfold);
             program.set("Charge", v.charge);
             program.set("Lance", v.lance);
+            program.set("LanceA", (float) v.lanceFrom.x, (float) v.lanceFrom.y, (float) v.lanceFrom.z, v.lanceGlow);
+            program.set("LanceB", (float) v.lanceTo.x, (float) v.lanceTo.y, (float) v.lanceTo.z, 0);
             GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
             // nothing of the world drawn after this should show through
             RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);

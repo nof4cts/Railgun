@@ -38,8 +38,8 @@ public final class SelfTest {
     private static String phase = "";
     private static boolean done;
     private static final List<int[]> SHOTS = new ArrayList<>();
-    private static final int[] HELIOS_BEATS = {12, 44, 70, 92, 112, 126, 140, 146, 156, 161, 163, 170, 180, 196, 230, 280, 330, 350};
-    private static final int[] ANTIPODE_BEATS = {12, 30, 46, 62, 78, 96, 110, 118, 130, 142, 158, 166, 169, 171, 178, 190, 204, 216, 260, 300};
+    private static final int[] HELIOS_BEATS = {20, 56, 88, 120, 160, 196, 232, 258, 276, 300, 312, 326, 333, 336, 344, 362, 384, 420, 470, 512};
+    private static final int[] ANTIPODE_BEATS = {20, 60, 90, 120, 160, 200, 240, 276, 300, 316, 334, 352, 365, 368, 372, 392, 410, 430, 480, 520};
     private static final int HX = 0, AX = 160;
 
     private SelfTest() {}
@@ -96,28 +96,28 @@ public final class SelfTest {
             OrbitalMod.LOGGER.info("[selftest] {} t={} fps={} smoke={}", phase, t, mc.getFps(), com.firestar.orbital.client.fx.Smoke.count());
         }
         if (phase.equals("helios")) {
-            if (t >= 205 && t <= 320 && t % 4 == 0) {
+            if (t >= 395 && t <= 495 && t % 4 == 0) {
                 // steer the lance: sweep the gaze across the town
-                float yaw = (float) ((t - 205) / 115.0 * 70.0 - 35.0);
+                float yaw = (float) ((t - 395) / 100.0 * 70.0 - 35.0);
                 server.execute(() -> {
                     ServerPlayer p = player(server);
                     p.connection.teleport(HX + 0.5, p.getY(), 0.5, yaw, 22);
                 });
             }
-            if (t == 326) {
+            if (t == 506) {
                 vantage(server, mc, HX + 40, 45, -10, 60, 40);
             }
-            if (t > 360) {
+            if (t > 545) {
                 begin(server, mc, "antipode", AX, com.firestar.orbital.common.Cannon.ANTIPODE, ANTIPODE_BEATS);
             }
         } else if (phase.equals("antipode")) {
-            if (t == 250) {
+            if (t == 474) {
                 vantage(server, mc, AX + 50, 40, 10, 50, 30);
             }
-            if (t == 294) {
+            if (t == 514) {
                 vantage(server, mc, AX, 70, 10, 0, 60);
             }
-            if (t > 320) {
+            if (t > 540) {
                 done = true;
                 OrbitalMod.LOGGER.info("[selftest] finished; strikes still active: {}; smoke {}; stopping", Strikes.ACTIVE.size(),
                         com.firestar.orbital.client.fx.Smoke.count());

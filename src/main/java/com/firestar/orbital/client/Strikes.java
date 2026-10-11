@@ -16,7 +16,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
 
 /**
  * Every strike this client knows of, on the shared timeline: the caller's film, and for everyone near enough the world
@@ -143,13 +142,18 @@ public final class Strikes {
         }
     }
 
-    public static void render(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES || Space.showing()) {
+    /** Fill the world shader's state for this frame. */
+    public static void world(float partial) {
+        com.firestar.orbital.client.render.WorldFx.begin();
+        if (Space.showing()) {
             return;
         }
         for (Active a : ACTIVE) {
-            if (a.cannon == Cannon.ANTIPODE) {
-                MirrorWorld.render(event, a, time(a, event.getPartialTick()));
+            float t = time(a, partial);
+            if (a.cannon == Cannon.HELIOS) {
+                HeliosFx.world(com.firestar.orbital.client.render.WorldFx.STATE, a, t, partial);
+            } else {
+                AntipodeFx.world(com.firestar.orbital.client.render.WorldFx.STATE, a, t, partial);
             }
         }
     }

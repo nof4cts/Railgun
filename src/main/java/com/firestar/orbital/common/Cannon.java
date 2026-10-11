@@ -9,13 +9,13 @@ public enum Cannon {
      * OA-01 Helios: a ring of orbital mirrors unfolds round a focusing lens and pours the sun down a single white-gold
      * lance; for a few seconds after it lands, the lance follows the caller's crosshair and cuts a molten trench.
      */
-    HELIOS("Helios", "OA-01", 0xFFD27A, 205, 160, 160 + 160, 160 + 160 + 26),
+    HELIOS("Helios", "OA-01", 0xFFD27A, 392, 332, 332 + 170, 332 + 170 + 30),
     /**
      * OA-02 Antipode: the sky over the mark cracks, a breach opens beside the Earth and a mirror Earth slides out of it;
      * where the two touch, the other world's land comes down upside down onto the mark and the ground there is
      * exchanged for its own, every hill a pit and every pit a hill.
      */
-    ANTIPODE("Antipode", "OA-02", 0xD0306A, 225, 168, 168 + 100, 168 + 150);
+    ANTIPODE("Antipode", "OA-02", 0xD0306A, 440, 364, 364 + 100, 364 + 150);
 
     public final String title, code;
     public final int color;
