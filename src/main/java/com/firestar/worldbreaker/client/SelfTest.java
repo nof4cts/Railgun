@@ -109,6 +109,9 @@ public final class SelfTest {
             return;
         }
         long t = mc.level.getGameTime() - calledAt;
+        if (t % 40 == 0) {
+            WorldbreakerMod.LOGGER.info("[selftest] t={} fps={} smoke={}", t, mc.getFps(), com.firestar.worldbreaker.client.fx.Smoke.count());
+        }
         for (double[] v : VANTAGE) {
             if (t == (long) v[0] - 6) {
                 mc.options.setCameraType(CameraType.FIRST_PERSON);
