@@ -33,6 +33,22 @@ public final class Light {
     private static final Map<String, Trail> TRAILS = new HashMap<>();
     private static final Random R = new Random();
     private static long last = System.nanoTime();
+    /** The camera's forward this frame: segments are clipped a little in front of the lens, never smeared across it. */
+    private static Vec3 forward = new Vec3(0, 0, 1);
+    private static final double NEAR = 0.8;
+
+    private static Vec3[] clip(Vec3 a, Vec3 b) {
+        double da = a.dot(forward), db = b.dot(forward);
+        if (da < NEAR && db < NEAR) {
+            return null;
+        }
+        if (da < NEAR) {
+            a = b.add(a.subtract(b).scale((db - NEAR) / (db - da)));
+        } else if (db < NEAR) {
+            b = a.add(b.subtract(a).scale((da - NEAR) / (da - db)));
+        }
+        return new Vec3[]{a, b};
+    }
 
     private Light() {}
 
@@ -194,6 +210,8 @@ public final class Light {
             return;
         }
         Matrix4f m = view.last().pose();
+        org.joml.Vector3f look = Minecraft.getInstance().gameRenderer.getMainCamera().getLookVector();
+        forward = new Vec3(look.x, look.y, look.z);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
@@ -237,6 +255,12 @@ public final class Light {
 
     /** A soft line: bright along its spine, fading to nothing at both edges and both ends. */
     private static void streak(BufferBuilder bb, Matrix4f m, Vec3 a, Vec3 b, float width, int rgb, float alpha) {
+        Vec3[] cl = clip(a, b);
+        if (cl == null) {
+            return;
+        }
+        a = cl[0];
+        b = cl[1];
         Vec3 d = b.subtract(a);
         if (d.lengthSqr() < 1.0E-8) {
             return;
@@ -258,7 +282,7 @@ public final class Light {
 
     /** A round soft glow facing the camera: a bright core and a long falloff. */
     private static void glow(BufferBuilder bb, Matrix4f m, Vec3 c, float size, int rgb, float a) {
-        if (a <= 0.003F) {
+        if (a <= 0.003F || c.dot(forward) < NEAR + size * 0.5) {
             return;
         }
         Vec3 view = c.normalize();
@@ -315,8 +339,12 @@ public final class Light {
             int rgb = pass == 0 ? t.rgb : 0xFFFFFF;
             float wscale = pass == 0 ? 1.0F : 0.32F;
             for (int i = 0; i < n - 1; i++) {
-                Vec3 a = new Vec3(p[i][0], p[i][1], p[i][2]).subtract(cam);
-                Vec3 b = new Vec3(p[i + 1][0], p[i + 1][1], p[i + 1][2]).subtract(cam);
+                Vec3[] cl = clip(new Vec3(p[i][0], p[i][1], p[i][2]).subtract(cam), new Vec3(p[i + 1][0], p[i + 1][1], p[i + 1][2]).subtract(cam));
+                if (cl == null) {
+                    continue;
+                }
+                Vec3 a = cl[0];
+                Vec3 b = cl[1];
                 Vec3 d = b.subtract(a);
                 if (d.lengthSqr() < 1.0E-8) {
                     continue;

@@ -33,7 +33,7 @@ import org.joml.Vector3f;
 public final class StandRenderer {
     public static final ResourceLocation WHITE = MihMod.id("textures/misc/white.png");
 
-    static final int IVORY = 0xF1EEE6, IVORY_SHADE = 0xD8D2C4, JOINT = 0xC9C2B3, BLACK = 0x141418, GOLD = 0xE8BE48,
+    static final int IVORY = 0xF1EEE6, IVORY_SHADE = 0xD8D2C4, JOINT = 0xB4AA97, BLACK = 0x141418, GOLD = 0xE8BE48,
             FACE = 0x0B0B10, MINT = 0x7CFFD4, RED = 0xFF3B3B, PINK = 0xFF9DCC, PINK_TIP = 0xFFE6F2, VINE = 0x4FBF63,
             YELLOW = 0xF3D34A, COLLAR = 0x2B2B35, HORSE = 0xF6F4EE, REIN = 0x3A2C25, FUR = 0xE6E0D2;
 
@@ -216,6 +216,7 @@ public final class StandRenderer {
         Mesh mesh = new Mesh(buffers.getBuffer(RenderType.entityTranslucent(WHITE)), 0xF000F0);
         mesh.alpha = Mth.clamp(pl.alpha, 0.0F, 1.0F);
         mesh.glow = P[GLOW];
+        mesh.ink = 0.016F;
         // the clocks: an angle that runs at whatever speed the pose asks, smoothly across speed changes
         float[] spin = SPIN.computeIfAbsent(pl.id, k -> new float[]{System.nanoTime(), 0});
         long nowNs = System.nanoTime();
@@ -348,7 +349,7 @@ public final class StandRenderer {
         ps.translate(0, 0.78F, 0);
         ps.mulPose(Axis.YP.rotationDegrees(P[HEAD_YAW]));
         ps.mulPose(Axis.XP.rotationDegrees(P[HEAD_PITCH]));
-        mesh.ellipsoid(ps, 0, 0.22F, 0, 0.14F, 0.23F, 0.15F, IVORY, R);
+        mesh.ellipsoid(ps, 0, 0.23F, 0, 0.125F, 0.25F, 0.14F, IVORY, R);
         mesh.ellipsoid(ps, 0, 0.205F, 0.12F, 0.118F, 0.145F, 0.045F, FACE, 0.0F);
         ps.pushPose();
         ps.translate(0, 0.205F, 0.168F);
@@ -405,6 +406,8 @@ public final class StandRenderer {
             float keep = mesh.alpha;
             int frame = (int) (pl.time * 1.5F);
             java.util.Random r = new java.util.Random(frame * 7919L + pl.id);
+            float keepInk = mesh.ink;
+            mesh.ink = 0.0F;
             for (int i = 0; i < 10; i++) {
                 int side = r.nextBoolean() ? 1 : -1;
                 mesh.alpha = keep * P[BARRAGE] * (0.18F + r.nextFloat() * 0.25F);
@@ -415,6 +418,7 @@ public final class StandRenderer {
                 ps.popPose();
             }
             mesh.alpha = keep;
+            mesh.ink = keepInk;
         }
         ps.popPose();
         ps.popPose();
@@ -433,6 +437,10 @@ public final class StandRenderer {
             mesh.tube(id, sag(bitL, handL), 0.012F * s, REIN);
         }
         buffers.endBatch(RenderType.entityTranslucent(WHITE));
+        if (mesh.hasInk()) {
+            mesh.flushInk(buffers.getBuffer(RenderType.entityCutout(WHITE)));
+            buffers.endBatch(RenderType.entityCutout(WHITE));
+        }
         if (mesh.hasGlow()) {
             mesh.flushGlow(id, buffers.getBuffer(RenderType.lightning()));
             buffers.endBatch(RenderType.lightning());

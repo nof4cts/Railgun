@@ -19,6 +19,10 @@ public final class Mesh {
     public float alpha = 1.0F;
     /** Multiplies every glow alpha. */
     public float glow = 1.0F;
+    /** Thickness of the anime ink outline (inverted hull) round every smooth form; 0 for none. */
+    public float ink = 0.0F;
+    private float[] o = new float[8192];
+    private int on;
     private float[] g = new float[4096];
     private int gn;
 
@@ -231,9 +235,33 @@ public final class Mesh {
                         float[] u = UNIT[k];
                         float nx = u[0] / rx, ny = u[1] / ry, nz = u[2] / rz;
                         float l = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
-                        // a touch of top light baked in, like a cel-shaded highlight
-                        float lit = 0.86F + 0.14F * u[1];
+                        // two-tone cel shading baked in: lit from above and in front, a soft core shadow below
+                        float key = 0.55F * u[1] + 0.35F * u[2] + 0.1F * u[0];
+                        float lit = key > -0.05F ? 1.0F : 0.74F;
+                        lit *= 0.9F + 0.1F * u[1];
                         v(m, n, cx + u[0] * rx, cy + u[1] * ry, cz + u[2] * rz, cr * lit, cg * lit, cb * lit, a, nx / l, ny / l, nz / l, 0.5F, 0.5F);
+                    }
+                }
+            }
+        }
+        if (ink > 0.0F && alpha > 0.9F && Math.min(rx, Math.min(ry, rz)) > 0.02F) {
+            Vector3f p = new Vector3f(), nn = new Vector3f();
+            for (int i = 0; i < LAT; i++) {
+                for (int j = 0; j < LON; j++) {
+                    int[] idx = {i * (LON + 1) + j + 1, (i + 1) * (LON + 1) + j + 1, (i + 1) * (LON + 1) + j, i * (LON + 1) + j};
+                    for (int k : idx) {
+                        float[] u = UNIT[k];
+                        m.transformPosition(cx + u[0] * (rx + ink), cy + u[1] * (ry + ink), cz + u[2] * (rz + ink), p);
+                        n.transform(u[0], u[1], u[2], nn).normalize();
+                        if (on + 6 > o.length) {
+                            o = Arrays.copyOf(o, o.length * 2);
+                        }
+                        o[on++] = p.x;
+                        o[on++] = p.y;
+                        o[on++] = p.z;
+                        o[on++] = nn.x;
+                        o[on++] = nn.y;
+                        o[on++] = nn.z;
                     }
                 }
             }
@@ -358,6 +386,19 @@ public final class Mesh {
             lightning.vertex(m, g[i], g[i + 1], g[i + 2]).color(g[i + 3] * a, g[i + 4] * a, g[i + 5] * a, a).endVertex();
         }
         gn = 0;
+    }
+
+    /** Writes the ink outline (camera-space, back faces only through a culled entity type). */
+    public void flushInk(VertexConsumer cutout) {
+        for (int i = 0; i < on; i += 6) {
+            cutout.vertex(o[i], o[i + 1], o[i + 2]).color(0.06F, 0.05F, 0.08F, 1.0F).uv(0.5F, 0.5F).overlayCoords(OverlayTexture.NO_OVERLAY)
+                    .uv2(light).normal(o[i + 3], o[i + 4], o[i + 5]).endVertex();
+        }
+        on = 0;
+    }
+
+    public boolean hasInk() {
+        return on > 0;
     }
 
     public boolean hasGlow() {

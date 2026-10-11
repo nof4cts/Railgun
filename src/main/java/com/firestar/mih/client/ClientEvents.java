@@ -9,7 +9,6 @@ import com.firestar.mih.client.fx.ScreenFx;
 import com.firestar.mih.client.render.Afterimages;
 import com.firestar.mih.client.render.Galaxy;
 import com.firestar.mih.client.render.KnifeRenderer;
-import com.firestar.mih.client.render.Menacing;
 import com.firestar.mih.client.render.PostFx;
 import com.firestar.mih.client.render.RibbonRenderer;
 import com.firestar.mih.client.render.SkyFx;
@@ -84,7 +83,6 @@ public final class ClientEvents {
                 Choreo.frame(event.getPartialTick());
                 com.firestar.mih.client.fx.Light.render(Galaxy.view(event), event.getCamera().getPosition());
             }
-            Menacing.render(event);
             Galaxy.render(event);
             PostFx.render(event);
         }
