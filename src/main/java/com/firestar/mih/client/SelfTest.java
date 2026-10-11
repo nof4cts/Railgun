@@ -150,6 +150,7 @@ public final class SelfTest {
                 ServerPlayer p = server.getPlayerList().getPlayers().get(0);
                 p.connection.teleport(p.getX(), p.getY(), p.getZ(), -90.0F, -38.0F);
             });
+            mc.options.setCameraType(CameraType.FIRST_PERSON);
         }
         if (now == castAt) {
             Move m = ORDER[index];

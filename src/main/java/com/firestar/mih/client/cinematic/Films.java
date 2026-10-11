@@ -102,7 +102,7 @@ public final class Films {
                     if (h == null) {
                         return at(rel(c, F, 0.75, 2.45, 0.4), rel(c, F, 0.75, 2.35, -0.95), 30, 0);
                     }
-                    return at(h[0].add(h[1].scale(l(k, 0.75, 0.5))).add(0, 0.05, 0), h[0], l(k, 38, 30), 0);
+                    return at(h[0].add(h[1].scale(l(k, 1.7, 1.25))).add(0, 0.12, 0), h[0].subtract(0, 0.08, 0), l(k, 44, 38), 0);
                 }));
                 s.add(Shot.cut(Beats.DA_BURST + 6, c.move.length, (k, t) -> at(rel(c, F, 0.3, 1.2, l(k, 3.6, 4.4)), E, 56, 0)));
             }

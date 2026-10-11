@@ -103,7 +103,7 @@ vec3 disc(vec2 xz) {
     col += vec3(0.9, 0.95, 1.0) * sp * 2.0;
     col *= 1.0 - dust * 0.75;
     // the bulge
-    col += vec3(1.0, 0.82, 0.55) * exp(-r * 9.0) * 2.4;
+    col += vec3(1.0, 0.82, 0.55) * exp(-r * 9.0) * 1.3;
     return col;
 }
 
@@ -130,7 +130,7 @@ void main() {
     float tc = max(-dot(CamPos, d), 0.0);
     float dmin = length(CamPos + d * tc);
     float sc = Scale * (1.0 - 0.9 * Collapse);
-    float glow = exp(-dmin / (sc * 0.05)) * 1.6 + exp(-dmin / (sc * 0.22)) * 0.45 + exp(-dmin / (sc * 0.7)) * 0.12;
+    float glow = exp(-dmin / (sc * 0.04)) * 0.9 + exp(-dmin / (sc * 0.2)) * 0.22 + exp(-dmin / (sc * 0.7)) * 0.08;
     col += vec3(1.0, 0.88, 0.7) * glow * Core;
 
     // collapse: the light pulled inward in streaks toward the core
@@ -144,5 +144,7 @@ void main() {
         col = mix(col, vec3(1.0, 0.97, 0.92), smoothstep(0.7, 1.0, Collapse) * smoothstep(1.2, 0.0, ang));
     }
 
+    // film-like shoulder: the core stays the brightest thing without burning the frame out
+    col = vec3(1.0) - exp(-col * 1.25);
     fragColor = vec4(col, Fade);
 }

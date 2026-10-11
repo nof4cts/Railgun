@@ -91,7 +91,7 @@ public final class SkyFx {
         float trail = (float) Mth.clamp(rate / Beats.MAX_RATE * 430.0, 2.0, 360.0);
         float theta = level.getTimeOfDay(partial) * 360.0F;
         float night = level.getStarBrightness(partial);
-        PoseStack ps = event.getPoseStack();
+        PoseStack ps = Galaxy.view(event);
         Matrix4f m = ps.last().pose();
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);

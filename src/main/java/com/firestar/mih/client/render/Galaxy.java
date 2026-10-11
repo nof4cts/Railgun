@@ -257,7 +257,8 @@ public final class Galaxy {
         if (!hide) {
             return;
         }
-        PoseStack ps = event.getPoseStack();
+        // the stage's own pose stack is not the camera's at this point: build the view from the camera
+        PoseStack ps = view(event);
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
         float[] sc = new float[1];
         Mesh trails = new Mesh(buffers.getBuffer(RenderType.lightning()), 0xF000F0);
@@ -336,6 +337,14 @@ public final class Galaxy {
         buffers.endBatch(RenderType.lightning());
     }
 
+    /** The camera's rotation as a pose stack (what the level was drawn with). */
+    public static PoseStack view(RenderLevelStageEvent event) {
+        PoseStack ps = new PoseStack();
+        ps.mulPose(Axis.XP.rotationDegrees(event.getCamera().getXRot()));
+        ps.mulPose(Axis.YP.rotationDegrees(event.getCamera().getYRot() + 180.0F));
+        return ps;
+    }
+
     /** A streak of light behind a falling thing: where it was a few ticks ago to where it is. */
     private static void trail(Mesh mesh, Capture cap, Piece p, float t, Vec3 cam, int rgb, float width) {
         float[] tmp = new float[1];
@@ -363,10 +372,6 @@ public final class Galaxy {
         org.joml.Vector3f up = new org.joml.Vector3f(event.getCamera().getUpVector());
         org.joml.Vector3f right = new org.joml.Vector3f(event.getCamera().getLeftVector()).negate();
         Vec3 rel = cam.subtract(cap.core);
-        if (com.firestar.mih.client.SelfTest.ON && ((int) t) % 20 == 0) {
-            MihMod.LOGGER.info("[galaxy] t={} camRel={} fwd={} up={} pose={} proj={} rsView={}", t, rel, fwd, up,
-                    event.getPoseStack().last().pose(), proj, RenderSystem.getModelViewMatrix());
-        }
         float collapse = smooth(Beats.RESET_PLUNGE, Beats.RESET_SINGULARITY, t);
         float spin = (float) (0.012 * (t - HIDE_FROM) + 0.0006 * Math.pow(Math.max(0, t - 120), 2.0));
         float core = 1.0F + 4.0F * collapse * collapse;
@@ -409,8 +414,4 @@ public final class Galaxy {
         RenderSystem.defaultBlendFunc();
     }
 
-    @SuppressWarnings("unused")
-    private static float unusedAxis() {
-        return Axis.YP.rotationDegrees(0).w;
-    }
 }
