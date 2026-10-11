@@ -72,7 +72,8 @@ public final class Beats {
     /** Time acceleration: how many day-ticks pass per game tick, {@code k} seconds 0..1 into the run. */
     public static double accelRate(double k) {
         k = Math.max(0.0, Math.min(1.0, k));
-        return 1.0 + (MAX_RATE - 1.0) * Math.pow(k, 2.1);
+        double ramp = Math.min(1.0, k / 0.04);
+        return 1.0 + 59.0 * ramp + (MAX_RATE - 60.0) * Math.pow(k, 2.1);
     }
 
     public static final double MAX_RATE = 1300.0;

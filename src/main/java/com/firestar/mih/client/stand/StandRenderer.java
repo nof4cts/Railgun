@@ -93,7 +93,8 @@ public final class StandRenderer {
         if (stand && cast.move != Move.PUNCH) {
             shown = Math.max(shown, Mth.clamp(cast.time(partial) / 3.0F, 0.0F, 1.0F));
         }
-        if (shown < 0.01F && !stand) {
+        ClientCast resetting = Casts.reset();
+        if (shown < 0.01F && !stand && (resetting == null || resetting.casterId != p.getId())) {
             return null;
         }
         long now = mc.level.getGameTime();
@@ -109,6 +110,13 @@ public final class StandRenderer {
             if (back > 0) {
                 pose = StandPose.lerp(pose, StandPose.idle(accel, da), back);
             }
+        }
+        // the end of the universe: Made in Heaven rises behind him, whether it was out or not
+        if (resetting != null && resetting.casterId == p.getId() && !stand) {
+            float t = resetting.time(partial);
+            float in = Mth.clamp(t / 10.0F, 0.0F, 1.0F);
+            pose = StandPose.lerp(pose, StandPose.with(StandPose.SPREAD, CLOCK, 80, SCALE, 1.35F), in);
+            shown = Math.max(shown, in);
         }
         Placement pl = new Placement();
         float yaw = stand ? Mth.rotLerp(partial, p.yHeadRotO, p.yHeadRot) : Mth.rotLerp(partial, p.yBodyRotO, p.yBodyRot);
@@ -130,6 +138,33 @@ public final class StandRenderer {
         pl.time = time;
         pl.id = p.getId();
         return pl;
+    }
+
+    /** The centre of the speedometer face and the way it faces, in world space, for the camera to find. */
+    public static Vec3[] head(AbstractClientPlayer p, float partial) {
+        Placement pl = place(p, partial);
+        if (pl == null) {
+            return null;
+        }
+        float[] P = pl.pose;
+        PoseStack ps = new PoseStack();
+        ps.translate(pl.pos.x, pl.pos.y, pl.pos.z);
+        ps.mulPose(Axis.YP.rotationDegrees(-pl.yaw));
+        ps.mulPose(Axis.ZP.rotationDegrees(P[ROLL]));
+        float s = 0.86F * P[SCALE];
+        ps.scale(s, s, s);
+        ps.translate(0, 1.1, -0.1);
+        ps.mulPose(Axis.XP.rotationDegrees(P[BODY_PITCH]));
+        ps.translate(0, 0.28, 0.16);
+        ps.mulPose(Axis.YP.rotationDegrees(P[TORSO_YAW]));
+        ps.mulPose(Axis.XP.rotationDegrees(P[TORSO_PITCH]));
+        ps.mulPose(Axis.ZP.rotationDegrees(P[TORSO_ROLL]));
+        ps.translate(0, 0.78F, 0);
+        ps.mulPose(Axis.YP.rotationDegrees(P[HEAD_YAW]));
+        ps.mulPose(Axis.XP.rotationDegrees(P[HEAD_PITCH]));
+        Vector3f c = ps.last().pose().transformPosition(0, 0.205F, 0.17F, new Vector3f());
+        Vector3f f = ps.last().pose().transformPosition(0, 0.205F, 1.17F, new Vector3f()).sub(c).normalize();
+        return new Vec3[]{new Vec3(c.x, c.y, c.z), new Vec3(f.x, f.y, f.z)};
     }
 
     public static void draw(PoseStack ps, MultiBufferSource.BufferSource buffers, Vec3 cam, Placement pl) {

@@ -84,6 +84,10 @@ public final class ClientState {
         }
         double now = mc.level.getGameTime() + partial;
         double best = 0.0;
+        ClientCast reset = Casts.reset();
+        if (reset != null && reset.time(partial) < Beats.RESET_LIFT) {
+            best = Beats.MAX_RATE;
+        }
         for (Info i : INFO.values()) {
             if (i.taStart >= 0 && i.taLength > 0 && now >= i.taStart && now < i.taStart + i.taLength) {
                 best = Math.max(best, Beats.accelRate((now - i.taStart) / i.taLength));

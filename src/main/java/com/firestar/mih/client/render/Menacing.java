@@ -57,7 +57,7 @@ public final class Menacing {
                 Vec3 right = new Vec3(Math.cos(rad), 0, Math.sin(rad));
                 Vec3 pos = at.add(right.scale(side)).add(0, 0.6 + phase * 2.4, 0);
                 float a = strength * (float) Math.sin(Math.PI * phase);
-                text(ps, buffers, mc.font, cam, pos, a, 0.045F + (k % 3) * 0.008F, k);
+                text(ps, buffers, mc.font, cam, pos, a, 0.085F + (k % 3) * 0.015F, k);
             }
         }
         if (any) {

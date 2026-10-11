@@ -103,7 +103,7 @@ public final class StandPose {
         p[REINS] = 1.0F;
     }
 
-    public static final float[] FRONT = of(OFF_R, 0.0F, OFF_U, 0.1F, OFF_F, 1.05F, REINS, 0, GLOW, 0.45F, DIAL, 0.55F,
+    public static final float[] FRONT = of(OFF_R, 0.45F, OFF_U, 0.1F, OFF_F, 0.95F, REINS, 0, GLOW, 0.45F, DIAL, 0.55F,
             FL_HIP, 30, FL_KNEE, 45, FR_HIP, 6, FR_KNEE, 30);
     public static final float[] JAB_R = with(FRONT, TORSO_YAW, -24, TORSO_PITCH, 12, RA_PITCH, -92, RA_YAW, 14, R_ELBOW, 0,
             LA_PITCH, -55, LA_YAW, 20, L_ELBOW, 95, HEAD_PITCH, 6, DIAL, 0.6F, OFF_F, 1.25F);

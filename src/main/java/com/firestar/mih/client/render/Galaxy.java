@@ -358,10 +358,15 @@ public final class Galaxy {
         if (vao < 0) {
             vao = GL30.glGenVertexArrays();
         }
-        Matrix4f view = new Matrix4f(event.getPoseStack().last().pose());
         Matrix4f proj = new Matrix4f(event.getProjectionMatrix());
-        Matrix4f inv = proj.mul(view).invert();
+        org.joml.Vector3f fwd = new org.joml.Vector3f(event.getCamera().getLookVector());
+        org.joml.Vector3f up = new org.joml.Vector3f(event.getCamera().getUpVector());
+        org.joml.Vector3f right = new org.joml.Vector3f(event.getCamera().getLeftVector()).negate();
         Vec3 rel = cam.subtract(cap.core);
+        if (com.firestar.mih.client.SelfTest.ON && ((int) t) % 20 == 0) {
+            MihMod.LOGGER.info("[galaxy] t={} camRel={} fwd={} up={} pose={} proj={} rsView={}", t, rel, fwd, up,
+                    event.getPoseStack().last().pose(), proj, RenderSystem.getModelViewMatrix());
+        }
         float collapse = smooth(Beats.RESET_PLUNGE, Beats.RESET_SINGULARITY, t);
         float spin = (float) (0.012 * (t - HIDE_FROM) + 0.0006 * Math.pow(Math.max(0, t - 120), 2.0));
         float core = 1.0F + 4.0F * collapse * collapse;
@@ -374,7 +379,10 @@ public final class Galaxy {
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GL30.glBindVertexArray(vao);
         program.use();
-        program.set("InvViewProj", inv);
+        program.set("CamFwd", fwd.x, fwd.y, fwd.z);
+        program.set("CamRight", right.x, right.y, right.z);
+        program.set("CamUp", up.x, up.y, up.z);
+        program.set("TanHalf", 1.0F / proj.m00(), 1.0F / proj.m11());
         program.set("CamPos", (float) rel.x, (float) rel.y, (float) rel.z);
         program.set("Time", (System.nanoTime() - T0) / 1.0E9F % 3600.0F);
         program.set("Spin", spin);

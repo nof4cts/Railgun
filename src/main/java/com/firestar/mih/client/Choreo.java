@@ -450,7 +450,7 @@ public final class Choreo {
                 fx.flash(0xFFE9A8, 1.3F * hit(t, Beats.TA_START, 6));
                 fx.punch(1.1F * hit(t, Beats.TA_START, 5));
                 fx.shake(0.9F * hit(t, Beats.TA_START, 10));
-                fx.bloom(0.7F * window(t, Beats.TA_START, Beats.TA_START + 2, 80, 92));
+                fx.bloom(0.25F * window(t, Beats.TA_START, Beats.TA_START + 2, 80, 92));
             }
             case UNIVERSE_RESET -> reset(c, t, fx);
             default -> {
@@ -505,7 +505,7 @@ public final class Choreo {
         double accel = ClientState.accelProgress(partial);
         if (accel >= 0) {
             float k = (float) accel;
-            fx.bloom(0.15F + 0.35F * k);
+            fx.bloom(0.05F + 0.15F * k);
             fx.vignette(0x2A1A00, 0.12F + 0.25F * k);
             fx.contrast(0.12F * k);
             fx.aberration(0.25F * k * k);

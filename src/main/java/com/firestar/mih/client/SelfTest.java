@@ -124,7 +124,8 @@ public final class SelfTest {
             Move m = ORDER[index];
             server.execute(() -> {
                 ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-                reset(p, m == Move.TIME_ACCEL ? -22.0F : 4.0F);
+                boolean melee = m == Move.PUNCH || m == Move.BARRAGE || m == Move.FINISHER;
+                reset(p, m == Move.TIME_ACCEL ? -22.0F : 4.0F, melee ? 2.6 : 7.5);
             });
             castAt = now + 8;
             SHOTS.clear();
@@ -142,6 +143,13 @@ public final class SelfTest {
                 }
             }
             MihMod.LOGGER.info("[selftest] {}", m);
+        }
+        // while time runs, turn him east and up, into the sun's path
+        if (index >= 0 && index < ORDER.length && ORDER[index] == Move.TIME_ACCEL && now == castAt + Beats.TA_START + 50) {
+            server.execute(() -> {
+                ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+                p.connection.teleport(p.getX(), p.getY(), p.getZ(), -90.0F, -38.0F);
+            });
         }
         if (now == castAt) {
             Move m = ORDER[index];
@@ -196,7 +204,7 @@ public final class SelfTest {
         }
     }
 
-    private static void reset(ServerPlayer p, float pitch) {
+    private static void reset(ServerPlayer p, float pitch, double dist) {
         ServerLevel level = p.serverLevel();
         level.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(80)).forEach(Mob::discard);
         p.teleportTo(level, 0.5, p.getY(), 0.5, 0.0F, pitch);
@@ -204,7 +212,7 @@ public final class SelfTest {
         for (int i = -1; i <= 1; i++) {
             IronGolem g = EntityType.IRON_GOLEM.create(level);
             if (g != null) {
-                g.moveTo(0.5 + i * 2.6, p.getY(), 7.5 + Math.abs(i) * 0.6, 180.0F, 0.0F);
+                g.moveTo(0.5 + i * 2.6, p.getY(), 0.5 + dist + Math.abs(i) * 0.6, 180.0F, 0.0F);
                 g.setNoAi(true);
                 g.setPersistenceRequired();
                 level.addFreshEntity(g);

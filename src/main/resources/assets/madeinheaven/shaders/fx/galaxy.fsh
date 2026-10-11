@@ -4,7 +4,10 @@
 // pixel from the camera), its bulge glowing through everything, nebulae and three layers of stars behind it. As the
 // universe collapses, the galaxy winds tighter and the core burns until it is all there is.
 
-uniform mat4 InvViewProj;   // clip -> camera-relative world direction
+uniform vec3 CamFwd;        // the camera's basis in world space
+uniform vec3 CamRight;
+uniform vec3 CamUp;
+uniform vec2 TanHalf;       // tan of half the field of view, horizontally and vertically
 uniform vec3 CamPos;        // camera position relative to the galaxy's centre, in blocks
 uniform float Time;
 uniform float Spin;         // how far the galaxy has turned (radians)
@@ -41,10 +44,28 @@ vec3 stars(vec3 d) {
     return col;
 }
 
+float vnoise3(vec3 p) {
+    vec3 i = floor(p);
+    vec3 f = fract(p);
+    vec3 u = f * f * (3.0 - 2.0 * f);
+    float a = mix(mix(hash13(i), hash13(i + vec3(1, 0, 0)), u.x), mix(hash13(i + vec3(0, 1, 0)), hash13(i + vec3(1, 1, 0)), u.x), u.y);
+    float b = mix(mix(hash13(i + vec3(0, 0, 1)), hash13(i + vec3(1, 0, 1)), u.x), mix(hash13(i + vec3(0, 1, 1)), hash13(i + vec3(1, 1, 1)), u.x), u.y);
+    return mix(a, b, u.z);
+}
+
+float fbm3(vec3 p) {
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 5; i++) {
+        v += a * vnoise3(p);
+        p = p * 2.07 + vec3(17.1, 9.2, 4.7);
+        a *= 0.5;
+    }
+    return v;
+}
+
 vec3 nebula(vec3 d) {
-    vec2 q = vec2(atan(d.z, d.x) * 1.6, d.y * 2.4);
-    float n = fbm(q * 1.4 + vec2(Time * 0.004, 0.0));
-    float m = fbm(q * 3.1 - vec2(0.0, Time * 0.006) + 7.0);
+    float n = fbm3(d * 2.2 + vec3(Time * 0.004, 0.0, 0.0));
+    float m = fbm3(d * 4.3 - vec3(0.0, Time * 0.006, 0.0) + 7.0);
     vec3 a = vec3(0.16, 0.05, 0.30) * smoothstep(0.35, 0.85, n);
     vec3 b = vec3(0.02, 0.12, 0.28) * smoothstep(0.4, 0.9, m);
     vec3 c = vec3(0.35, 0.06, 0.22) * smoothstep(0.62, 0.95, n * m * 1.6);
@@ -87,9 +108,8 @@ vec3 disc(vec2 xz) {
 }
 
 void main() {
-    vec4 clip = vec4(uv * 2.0 - 1.0, 1.0, 1.0);
-    vec4 w = InvViewProj * clip;
-    vec3 d = normalize(w.xyz / w.w);
+    vec2 ndc = uv * 2.0 - 1.0;
+    vec3 d = normalize(CamFwd + CamRight * ndc.x * TanHalf.x + CamUp * ndc.y * TanHalf.y);
 
     vec3 col = vec3(0.004, 0.003, 0.012);
     col += nebula(d) * (1.0 - Collapse * 0.7);

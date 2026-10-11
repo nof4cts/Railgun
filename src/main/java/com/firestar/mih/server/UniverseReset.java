@@ -101,6 +101,14 @@ public final class UniverseReset {
                     pl.fallDistance = 0.0F;
                 }
             }
+            if (age < Beats.RESET_LIFT) {
+                boolean daylight = s.level.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT);
+                s.level.setDayTime(s.level.getDayTime() + (long) Beats.MAX_RATE);
+                ClientboundSetTimePacket time = new ClientboundSetTimePacket(s.level.getGameTime(), s.level.getDayTime(), daylight);
+                for (ServerPlayer pl : s.level.players()) {
+                    pl.connection.send(time);
+                }
+            }
             if (age == Beats.RESET_SINGULARITY) {
                 s.level.playSound(null, s.center.x, s.center.y, s.center.z, ModSounds.SINGULARITY.get(), SoundSource.PLAYERS, 2.5F, 1.0F);
             }

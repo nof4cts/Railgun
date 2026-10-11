@@ -5,6 +5,9 @@ import com.firestar.mih.client.render.Galaxy;
 import com.firestar.mih.common.Beats;
 import java.util.ArrayList;
 import java.util.List;
+import com.firestar.mih.client.stand.StandRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -57,13 +60,19 @@ public final class Films {
                 // side on: the cut lands, him already behind
                 s.add(Shot.cut(Beats.SLICE_HIT, 38, (k, t) -> at(rel(c, M, l(k, 5.0, 5.6), 1.2, 0), M, l(k, 52, 58), 0)));
                 // low in front of him, the knife flicked clean
-                s.add(Shot.cut(38, c.move.length, (k, t) -> at(rel(c, X, -1.0, l(k, 0.7, 1.0), l(k, -2.4, -2.9)), X.add(0, 1.4, 0), 46, 0)));
+                s.add(Shot.cut(38, c.move.length, (k, t) -> {
+                    Vec3 U = c.casterFeet(0);
+                    return at(rel(c, U, -2.0, l(k, 0.8, 1.1), l(k, 1.8, 2.4)), U.add(0, 1.4, 0), 46, 0);
+                }));
             }
             case INFINITE_SPEED -> {
                 s.add(Shot.cut(0, Beats.INF_VANISH, (k, t) -> at(rel(c, F, 0.7, 0.55, l(k, 3.3, 2.8)), E.add(0, 0.6, 0), l(k, 58, 50), 0)));
                 s.add(Shot.cut(Beats.INF_VANISH, Beats.INF_HIT, (k, t) -> at(facing(c, P, 2.6, 0.3), P.add(0, 0.3, 0), 46, 5)));
                 s.add(Shot.cut(Beats.INF_HIT, 32, (k, t) -> at(rel(c, M, l(k, -5.0, -5.8), l(k, 1.0, 1.6), 0.4), M.subtract(0, 0.3, 0), l(k, 54, 60), 0)));
-                s.add(Shot.cut(32, c.move.length, (k, t) -> at(rel(c, X, 1.2, 1.8, l(k, 2.6, 3.2)), P, 50, 0)));
+                s.add(Shot.cut(32, c.move.length, (k, t) -> {
+                    Vec3 U = c.casterFeet(0);
+                    return at(rel(c, U, 1.6, 1.8, l(k, 2.6, 3.2)), U.add(0, 1.3, 0), 50, 0);
+                }));
             }
             case JUDGEMENT -> {
                 // low and wide: the Stand rears against the sky
@@ -79,13 +88,22 @@ public final class Films {
                 s.add(Shot.sweep(Beats.JUDGE_FINAL - 5, Beats.JUDGE_FINAL, 3, (k, t) -> at(rel(c, X, -0.8, 1.9, l(k, -1.8, -1.4)), P, l(k, 46, 38), 0)));
                 // the blow: wide, side on, the target sent flying
                 s.add(Shot.cut(Beats.JUDGE_FINAL, 80, (k, t) -> at(rel(c, P, l(k, 7.0, 9.0), l(k, 1.5, 3.0), l(k, -1.0, 1.5)), c.targetCentre(0), l(k, 62, 70), 0)));
-                s.add(Shot.cut(80, c.move.length, (k, t) -> at(rel(c, X, 0.8, 1.6, l(k, 2.4, 2.9)), X.add(0, 1.5, 0), 44, 0)));
+                s.add(Shot.cut(80, c.move.length, (k, t) -> {
+                    Vec3 U = c.casterFeet(0);
+                    return at(rel(c, U, 2.4, 1.5, l(k, -1.6, -2.2)), U.add(0, 1.5, 0), 48, 0);
+                }));
             }
             case DOUBLE_ACCEL -> {
                 // all the way round him as the clocks wind up
                 s.add(Shot.cut(0, Beats.DA_BURST - 4, (k, t) -> at(orbit(c, F, l(k, 4.2, 3.2), l(k, -30, 300), l(k, 0.6, 1.6)), F.add(0, 1.4, 0), 58, 0)));
                 // the speedometer face, its needle pinned
-                s.add(Shot.cut(Beats.DA_BURST - 4, Beats.DA_BURST + 6, (k, t) -> at(rel(c, F, 0.75, 2.45, l(k, 0.4, 0.15)), rel(c, F, 0.75, 2.35, -0.95), l(k, 34, 26), 0)));
+                s.add(Shot.cut(Beats.DA_BURST - 4, Beats.DA_BURST + 6, (k, t) -> {
+                    Vec3[] h = c.caster() instanceof AbstractClientPlayer p ? StandRenderer.head(p, Minecraft.getInstance().getFrameTime()) : null;
+                    if (h == null) {
+                        return at(rel(c, F, 0.75, 2.45, 0.4), rel(c, F, 0.75, 2.35, -0.95), 30, 0);
+                    }
+                    return at(h[0].add(h[1].scale(l(k, 0.75, 0.5))).add(0, 0.05, 0), h[0], l(k, 38, 30), 0);
+                }));
                 s.add(Shot.cut(Beats.DA_BURST + 6, c.move.length, (k, t) -> at(rel(c, F, 0.3, 1.2, l(k, 3.6, 4.4)), E, 56, 0)));
             }
             case TIME_ACCEL -> {
@@ -114,7 +132,7 @@ public final class Films {
                 // falling into the core
                 s.add(Shot.sweep(Beats.RESET_PLUNGE, Beats.RESET_SINGULARITY + 4, 8, (k, t) -> {
                     float e = k * k * k;
-                    return at(orbit(c, G, l(e, 62, 3), l(k, 170, 260), l(e, 30, 1.0)), G, l(k, 70, 105), l(k, 0, 25));
+                    return at(orbit(c, G, l(e, 62, 3), l(k, 170, 260), l(e, 30, 1.0)), G, l(k, 70, 105), 0);
                 }));
                 s.add(Shot.cut(Beats.RESET_SINGULARITY + 4, Beats.RESET_NEW, (k, t) -> at(G.add(0, 1, 2), G, 90, 0)));
                 // the new universe: dawn, and him
