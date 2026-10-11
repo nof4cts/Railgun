@@ -199,6 +199,95 @@ public final class Mesh {
         }
     }
 
+
+    // ------------------------------------------------------------------------------------------------ smooth forms
+
+    private static final int LAT = 10, LON = 16;
+    private static final float[][] UNIT = new float[(LAT + 1) * (LON + 1)][];
+
+    static {
+        for (int i = 0; i <= LAT; i++) {
+            double th = Math.PI * i / LAT - Math.PI / 2;
+            for (int j = 0; j <= LON; j++) {
+                double ph = Math.PI * 2 * j / LON;
+                UNIT[i * (LON + 1) + j] = new float[]{(float) (Math.cos(th) * Math.cos(ph)), (float) Math.sin(th), (float) (Math.cos(th) * Math.sin(ph))};
+            }
+        }
+    }
+
+    /**
+     * A smooth ellipsoid with true normals, so the Stand reads as sculpted rather than built from blocks. {@code rim} > 0
+     * also lays a fresnel aura round it: brightest at the silhouette, clear where it faces the camera.
+     */
+    public void ellipsoid(PoseStack ps, float cx, float cy, float cz, float rx, float ry, float rz, int rgb, float rim) {
+        Matrix4f m = ps.last().pose();
+        Matrix3f n = ps.last().normal();
+        float cr = r(rgb), cg = gr(rgb), cb = b(rgb), a = alpha;
+        if (a > 0.004F) {
+            for (int i = 0; i < LAT; i++) {
+                for (int j = 0; j < LON; j++) {
+                    int[] idx = {i * (LON + 1) + j, (i + 1) * (LON + 1) + j, (i + 1) * (LON + 1) + j + 1, i * (LON + 1) + j + 1};
+                    for (int k : idx) {
+                        float[] u = UNIT[k];
+                        float nx = u[0] / rx, ny = u[1] / ry, nz = u[2] / rz;
+                        float l = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
+                        // a touch of top light baked in, like a cel-shaded highlight
+                        float lit = 0.86F + 0.14F * u[1];
+                        v(m, n, cx + u[0] * rx, cy + u[1] * ry, cz + u[2] * rz, cr * lit, cg * lit, cb * lit, a, nx / l, ny / l, nz / l, 0.5F, 0.5F);
+                    }
+                }
+            }
+        }
+        if (rim > 0.0F) {
+            float ga = rim * glow * alpha;
+            if (ga <= 0.003F) {
+                return;
+            }
+            Vector3f p = new Vector3f(), nn = new Vector3f();
+            float s = 1.12F;
+            float gr0 = 0.49F, gg0 = 1.0F, gb0 = 0.83F;
+            for (int i = 0; i < LAT; i++) {
+                for (int j = 0; j < LON; j++) {
+                    int[] idx = {i * (LON + 1) + j, (i + 1) * (LON + 1) + j, (i + 1) * (LON + 1) + j + 1, i * (LON + 1) + j + 1};
+                    for (int k : idx) {
+                        float[] u = UNIT[k];
+                        m.transformPosition(cx + u[0] * rx * s, cy + u[1] * ry * s, cz + u[2] * rz * s, p);
+                        n.transform(u[0] / rx, u[1] / ry, u[2] / rz, nn).normalize();
+                        float facing = Math.abs(nn.dot(new Vector3f(p).normalize()));
+                        float al = ga * (float) Math.pow(1.0F - facing, 2.2);
+                        raw(p.x, p.y, p.z, gr0, gg0, gb0, al);
+                    }
+                }
+            }
+        }
+    }
+
+    /** A smooth limb from a to b (local space) with end radii ra, rb: an ellipsoid stretched along the bone. */
+    public void limb(PoseStack ps, float ax, float ay, float az, float bx, float by, float bz, float ra, float rb, int rgb, float rim) {
+        float dx = bx - ax, dy = by - ay, dz = bz - az;
+        float len = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+        ps.pushPose();
+        ps.translate((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
+        Vector3f dir = new Vector3f(dx, dy, dz).normalize();
+        ps.mulPose(new org.joml.Quaternionf().rotationTo(new Vector3f(0, 1, 0), dir));
+        float r = (ra + rb) / 2;
+        ellipsoid(ps, 0, 0, 0, r, len / 2 + r * 0.6F, r, rgb, rim);
+        ps.popPose();
+    }
+
+    private void raw(float x, float y, float z, float cr, float cg, float cb, float a) {
+        if (gn + 7 > g.length) {
+            g = Arrays.copyOf(g, g.length * 2);
+        }
+        g[gn++] = x;
+        g[gn++] = y;
+        g[gn++] = z;
+        g[gn++] = cr;
+        g[gn++] = cg;
+        g[gn++] = cb;
+        g[gn++] = a;
+    }
+
     // ------------------------------------------------------------------------------------------------ glow layer
 
     private void gv(Matrix4f m, float x, float y, float z, float cr, float cg, float cb, float a) {
