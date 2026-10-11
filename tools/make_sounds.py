@@ -1,5 +1,6 @@
-"""Synthesizes every Worldbreaker sound from scratch (no samples): footfalls a city away, the ground grinding, a horn
-from nowhere, steam, stone giving way. Writes mono 44.1 kHz Ogg Vorbis into assets/worldbreaker/sounds via ffmpeg."""
+"""Synthesizes every Orbital Arsenal sound from scratch (no samples): the uplink's clicks and beeps, the climb to orbit,
+mirrors unfolding, sunlight gathering, the lance firing and roaring, the sky cracking, a breach opening, another world
+approaching, and the touch. Writes mono 44.1 kHz Ogg Vorbis into assets/orbital_arsenal/sounds via ffmpeg."""
 import os, subprocess, sys, tempfile
 import numpy as np
 from scipy import signal
@@ -182,81 +183,111 @@ def brown(d):
     return b / (np.max(np.abs(b)) + 1e-9)
 
 
-def footfall(seed):
-    global rng
-    rng = np.random.default_rng(seed)
-    d = 4.0
-    # the hit: a very low drop of a sine, sat hard, then the body of the earth taking it
-    boom = sub(1.8, 70, 24, 2.2, 2.6) * 1.0
-    body = lp(noise(2.4), 180) * env(2.4, 0.01, 2.0, 3.5) * 0.9
-    knock = thump(0.6, 160, 45, 6) * 0.8
-    # the crunch of everything under the foot, and debris pattering down after
-    crunch = bp(noise(0.8), 300, 2500) * env(0.8, 0.002, 0.6, 5) * 0.45
-    debris = np.zeros(int(SR * d))
-    for k in range(40):
-        t0 = 0.2 + rng.random() * 2.6
-        c = bp(noise(0.05), 800 + rng.random() * 3000, 6000) * env(0.05, 0.001, 0.05, 8) * (0.15 * rng.random())
-        debris = mixl(debris, at(c, t0))
-    y = mixl(boom, body, knock, crunch, debris)
-    return reverb(pad(y, d), 2.8, 0.35, 900)
+def beep(d, f, amp=1.0):
+    t = t_(d)
+    return (np.sin(2 * np.pi * f * t) + 0.25 * np.sin(2 * np.pi * f * 2 * t)) * env(d, 0.004, d, 6) * amp
 
 
-for i in range(3):
-    save(f'footfall_{i + 1}', footfall(100 + i))
+# --- the uplink ---------------------------------------------------------------------------------------------------
+d = 0.35
+save('select', mixl(tick_click(0.05, 2600), at(beep(0.12, 1320, 0.6), 0.04), at(beep(0.14, 1760, 0.5), 0.13)), 0.7)
 
-# the ground grinding: a constant low churn with slow swells, 4 s, seamless-ish
-d = 4.0
-rumble = lp(brown(d), 120) * (0.7 + 0.3 * np.sin(2 * np.pi * t_(d) * 0.4))
-rumble = mixl(rumble, lp(noise(d), 60) * 0.6, bp(noise(d), 200, 600) * 0.05)
-save('rumble', rumble * env(d, 0.6, 3.4, 1.2), 0.8)
+d = 0.9
+arm = mixl(tick_click(0.06, 1800) * 1.2, at(tick_click(0.05, 2400), 0.09), at(beep(0.5, 880, 0.7) * env(0.5, 0.01, 0.5, 3), 0.2),
+           at(lp(noise(0.4), 300) * env(0.4, 0.01, 0.4, 6) * 0.6, 0.2))
+save('arm', reverb(pad(arm, d), 0.6, 0.2, 5000), 0.8)
 
-# the horn: an eerie low chord swelling out of nowhere, detuned brass partials and a choir-like shimmer
-d = 7.0
+# five beeps quickening, then a long tone
+d = 4.2
+cd = np.zeros(int(SR * d))
+times = [0.0, 0.8, 1.45, 1.95, 2.35, 2.65]
+for i, tt in enumerate(times):
+    cd = mixl(cd, at(beep(0.16, 990 if i < 5 else 1480, 0.7), tt))
+cd = mixl(cd, at(beep(1.2, 1480, 0.5) * env(1.2, 0.01, 1.2, 1.5), 2.9))
+save('countdown', reverb(pad(cd, d), 0.9, 0.25, 6000), 0.7)
+
+# the climb to orbit: wind rising to a roar, then cut to the hush of space
+d = 3.2
 t = t_(d)
-horn = np.zeros_like(t)
-for f, a in [(55, 1.0), (82.4, 0.7), (110, 0.6), (130.8, 0.35), (164.8, 0.25)]:
-    for det in (-0.6, 0, 0.7):
-        ph = 2 * np.pi * (f + det) * t + 0.3 * np.sin(2 * np.pi * 0.2 * t)
-        saw = signal.sawtooth(ph)
-        horn += a * saw
-horn = lp(horn, 900) * np.minimum(1, t / 2.2) * np.exp(-np.maximum(0, t - 4.8) * 1.6)
-horn = mixl(horn * 0.5, bp(noise(d), 300, 1200) * 0.05 * np.minimum(1, t / 3))
-save('horn', reverb(horn, 3.5, 0.45, 2500))
+climb = sweep_bp(noise(d), 200, 3200, 1.4) * np.minimum(1, t / 2.2) ** 2 * (t < 2.6) + lp(brown(d), 150) * 0.6 * np.minimum(1, t / 2.0) * (t < 2.6)
+climb = mixl(climb, at(shimmer(0.8, 700, 1400, 6, 0.25) * env(0.8, 0.05, 0.75, 3), 2.55))
+save('ascent', reverb(climb, 1.5, 0.3, 4000), 0.85)
 
-# steam: a broad hiss with sputter
+# --- Helios -------------------------------------------------------------------------------------------------------
+# twelve mirrors unfolding: servos whining, joints locking one after another, a metal groan under it
+d = 2.6
+unf = bp(noise(d), 80, 400) * env(d, 0.4, 2.0, 1.4) * 0.6
+for i in range(12):
+    tt = 0.15 + i * 0.16
+    whine = zap(0.22, 900 + i * 40, 1800 + i * 60, 0.25)
+    unf = mixl(unf, at(whine, tt), at(tick_click(0.05, 2000 + 120 * i) * 0.7, tt + 0.2))
+unf = mixl(unf, ring(d, [92, 141, 233], [1.2, 1.6, 2.2], [0.35, 0.25, 0.15]))
+save('helios_unfold', reverb(unf, 2.2, 0.4, 3500), 0.8)
+
+# sunlight gathering: a choir of partials climbing and thickening to a white hum
+d = 1.8
+t = t_(d)
+ch = shimmer(d, 220, 880, 8, 0.6) * np.minimum(1, t / 1.2) + sum(np.sin(2 * np.pi * f * t * (1 + 0.6 * t / d)) for f in (110, 165, 220)) * 0.15 * t / d
+ch = ch * env(d, 1.2, 0.6, 2)
+save('helios_charge', reverb(ch, 2.4, 0.45, 6000), 0.85)
+
+# the lance fires: a crack, a falling scream, the tail of a thunderclap
+d = 2.4
+fire = mixl(crack(0.06) * 1.4, zap(1.0, 2600, 180, 0.8), hp(noise(0.9), 1200) * env(0.9, 0.002, 0.9, 4) * 0.8, sub(1.6, 140, 38, 2.2, 2.4) * 0.9)
+save('helios_fire', reverb(pad(fire, d), 2.2, 0.4, 5000))
+
+# the lance itself: a roar of burning air, four seconds that loop
+d = 4.0
+save('helios_beam', roar(d, 80, 1600, 0.25), 0.8)
+
+# where it lands: silence broken by a white hiss and a bass you feel
+d = 3.6
+land = mixl(hp(noise(0.6), 2000) * env(0.6, 0.001, 0.6, 3) * 0.7, sub(2.6, 90, 26, 1.6, 3.2), crack(0.12) * 0.9,
+            at(bp(noise(2.4), 200, 2000) * env(2.4, 0.05, 2.3, 2) * 0.6, 0.1))
+save('helios_impact', reverb(pad(land, d), 3.0, 0.45, 2500))
+
+# --- Antipode -----------------------------------------------------------------------------------------------------
+# the sky cracking: glass under stress, ice splitting, a long ring
 d = 3.0
-steam = hp(noise(d), 1800) * env(d, 0.3, 2.6, 1.5) * (0.8 + 0.2 * np.sin(2 * np.pi * 7 * t_(d)))
-save('steam', steam, 0.6)
+ck = np.zeros(int(SR * d))
+for k in range(26):
+    tt = (k / 26) ** 1.6 * 2.2
+    ck = mixl(ck, at(crack(0.05 + rng.random() * 0.05) * (0.3 + 0.7 * k / 26), tt))
+ck = mixl(ck, at(ring(1.8, [1420, 2210, 3170, 4380], [2.0, 2.6, 3.2, 4.0], [0.4, 0.3, 0.2, 0.15]), 2.2))
+save('antipode_crack', reverb(ck, 2.6, 0.45, 7000), 0.8)
 
-# stone giving way: cracks, grinding, a slump
-for i in range(2):
-    rng = np.random.default_rng(300 + i)
-    d = 2.2
-    y = lp(noise(d), 400) * env(d, 0.05, 2.0, 2.5) * 0.6
-    for k in range(18):
-        y = mixl(y, at(crack(0.06) * (0.3 + 0.7 * rng.random()), rng.random() * 1.6))
-    y = mixl(y, at(thump(0.5, 90, 40, 6) * 0.8, 0.3 + rng.random() * 0.4))
-    save(f'crumble_{i + 1}', reverb(y, 1.4, 0.3, 3000))
+# the breach opening: a reversed swell into a deep tearing tone
+d = 3.4
+sw = reverse(reverb(mixl(sub(1.4, 70, 40, 2.0), crack(0.1)), 1.2, 0.6, 3000))[:int(SR * 1.4)] * 0.9
+tear = sweep_bp(noise(2.0), 2000, 120, 2.2) * env(2.0, 0.02, 1.9, 2.0) * 0.8
+br = mixl(sw, at(tear, 1.35), at(shimmer(1.8, 300, 180, 6, 0.4) * env(1.8, 0.1, 1.6, 2), 1.4))
+save('antipode_breach', reverb(br, 3.0, 0.45, 2500), 0.85)
 
-# heartbeat
-d = 1.0
-hb = mixl(thump(0.35, 75, 35, 9), at(thump(0.3, 70, 32, 10) * 0.7, 0.22))
-save('heartbeat', reverb(pad(hb, d), 0.8, 0.2, 1500))
+# another world approaching: sub-bass rising, a dissonant drone thickening, wind
+d = 6.0
+t = t_(d)
+k = t / d
+drone = sum(np.sin(2 * np.pi * f * (1 + 0.04 * k) * t + rng.uniform(0, 6)) for f in (41.2, 43.6, 61.7, 87.3, 92.5)) * 0.25
+ap = (drone + lp(brown(d), 120) * 0.7 + sweep_bp(noise(d), 300, 1400, 1.2) * 0.3) * (0.2 + 0.8 * k ** 1.5) * env(d, 2.5, 3.5, 0.6)
+save('antipode_approach', reverb(ap, 3.0, 0.35, 1800), 0.85)
 
-# the cinematic hit: a sub drop, a crack of thunder, a long tail
-d = 3.0
-imp = mixl(sub(2.0, 110, 30, 2.4, 3.0), crack(0.15) * 0.7, hp(noise(1.2), 400) * env(1.2, 0.002, 1.0, 4) * 0.5)
-save('impact', reverb(pad(imp, d), 2.6, 0.4, 2000))
-
-# the earth tearing open as they rise
+# the touch: an inverted silence, then the heaviest hit, a glassy shatter and a rolling tail
 d = 5.0
-rise = mixl(lp(brown(d), 200) * np.minimum(1, t_(d) / 1.5) * env(d, 0.01, 4.8, 1.2), bp(noise(d), 300, 1400) * 0.2 * env(d, 1.0, 3.5, 2))
-for k in range(30):
-    rise = mixl(rise, at(crack(0.08) * 0.4, 0.5 + rng.random() * 3.8))
-save('rise', reverb(rise, 2.5, 0.35, 1500))
+touch = mixl(reverse(hp(noise(0.5), 3000) * env(0.5, 0.001, 0.5, 6)) * 0.4, at(sub(3.6, 70, 22, 1.2, 3.6), 0.48),
+             at(crack(0.2) * 1.2, 0.48), at(ring(2.4, [880, 1311, 1987, 2903], [1.4, 1.9, 2.6, 3.4], [0.35, 0.3, 0.2, 0.15]), 0.5),
+             at(lp(brown(4.0), 260) * env(4.0, 0.05, 3.9, 1.4) * 0.9, 0.5))
+save('antipode_contact', reverb(touch, 3.5, 0.45, 2500))
 
-# wind at altitude
-d = 3.5
-wind = sweep_bp(noise(d), 250, 900, 1.6) * env(d, 1.0, 2.5, 1.6)
-save('wind', wind, 0.7)
+# the other world's hum after: a low chord that will not resolve, a crackle of settling
+d = 5.0
+t = t_(d)
+hum = sum(np.sin(2 * np.pi * f * t + rng.uniform(0, 6)) for f in (55, 58.3, 82.4, 116.5)) * 0.25 * env(d, 0.8, 4.2, 1.2)
+for k2 in range(16):
+    hum = mixl(hum, at(crack(0.03) * 0.25, rng.random() * 4.5))
+save('antipode_after', reverb(hum, 3.0, 0.4, 2000), 0.7)
+
+# a boom heard from far away: low, late, rolling
+d = 4.0
+boom = mixl(sub(3.0, 60, 24, 1.3, 2.5), lp(brown(3.5), 180) * env(3.5, 0.03, 3.4, 1.6) * 0.8)
+save('boom', reverb(boom, 3.5, 0.5, 1200))
 print('sounds ok')

@@ -1,0 +1,19 @@
+{
+ "item.orbital_arsenal.uplink": "Orbital Uplink",
+ "itemGroup.orbital_arsenal": "Orbital Arsenal",
+ "subtitles.orbital_arsenal.select": "Uplink channel changes",
+ "subtitles.orbital_arsenal.arm": "Uplink armed",
+ "subtitles.orbital_arsenal.countdown": "Strike countdown",
+ "subtitles.orbital_arsenal.ascent": "Rising into orbit",
+ "subtitles.orbital_arsenal.helios_unfold": "Mirrors unfold",
+ "subtitles.orbital_arsenal.helios_charge": "Sunlight gathers",
+ "subtitles.orbital_arsenal.helios_fire": "Helios fires",
+ "subtitles.orbital_arsenal.helios_beam": "The lance roars",
+ "subtitles.orbital_arsenal.helios_impact": "The lance lands",
+ "subtitles.orbital_arsenal.antipode_crack": "The sky cracks",
+ "subtitles.orbital_arsenal.antipode_breach": "A breach opens",
+ "subtitles.orbital_arsenal.antipode_approach": "Another world approaches",
+ "subtitles.orbital_arsenal.antipode_contact": "Two worlds touch",
+ "subtitles.orbital_arsenal.antipode_after": "The other world hums",
+ "subtitles.orbital_arsenal.boom": "A distant boom"
+}

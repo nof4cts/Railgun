@@ -1,0 +1,137 @@
+{
+ "select": {
+  "subtitle": "subtitles.orbital_arsenal.select",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:select",
+    "stream": false
+   }
+  ]
+ },
+ "arm": {
+  "subtitle": "subtitles.orbital_arsenal.arm",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:arm",
+    "stream": false
+   }
+  ]
+ },
+ "countdown": {
+  "subtitle": "subtitles.orbital_arsenal.countdown",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:countdown",
+    "stream": false
+   }
+  ]
+ },
+ "ascent": {
+  "subtitle": "subtitles.orbital_arsenal.ascent",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:ascent",
+    "stream": true
+   }
+  ]
+ },
+ "helios_unfold": {
+  "subtitle": "subtitles.orbital_arsenal.helios_unfold",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:helios_unfold",
+    "stream": false
+   }
+  ]
+ },
+ "helios_charge": {
+  "subtitle": "subtitles.orbital_arsenal.helios_charge",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:helios_charge",
+    "stream": false
+   }
+  ]
+ },
+ "helios_fire": {
+  "subtitle": "subtitles.orbital_arsenal.helios_fire",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:helios_fire",
+    "stream": false
+   }
+  ]
+ },
+ "helios_beam": {
+  "subtitle": "subtitles.orbital_arsenal.helios_beam",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:helios_beam",
+    "stream": true
+   }
+  ]
+ },
+ "helios_impact": {
+  "subtitle": "subtitles.orbital_arsenal.helios_impact",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:helios_impact",
+    "stream": false
+   }
+  ]
+ },
+ "antipode_crack": {
+  "subtitle": "subtitles.orbital_arsenal.antipode_crack",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:antipode_crack",
+    "stream": false
+   }
+  ]
+ },
+ "antipode_breach": {
+  "subtitle": "subtitles.orbital_arsenal.antipode_breach",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:antipode_breach",
+    "stream": false
+   }
+  ]
+ },
+ "antipode_approach": {
+  "subtitle": "subtitles.orbital_arsenal.antipode_approach",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:antipode_approach",
+    "stream": true
+   }
+  ]
+ },
+ "antipode_contact": {
+  "subtitle": "subtitles.orbital_arsenal.antipode_contact",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:antipode_contact",
+    "stream": false
+   }
+  ]
+ },
+ "antipode_after": {
+  "subtitle": "subtitles.orbital_arsenal.antipode_after",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:antipode_after",
+    "stream": false
+   }
+  ]
+ },
+ "boom": {
+  "subtitle": "subtitles.orbital_arsenal.boom",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:boom",
+    "stream": false
+   }
+  ]
+ }
+}

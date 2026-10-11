@@ -46,16 +46,9 @@ minecraft {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-repositories {
-    maven {
-        name = 'KosmX Player Animator'
-        url = 'https://maven.kosmx.dev/'
-    }
-}
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}")
 }
 
 tasks.named('processResources', ProcessResources).configure {

@@ -8,9 +8,10 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="${mod_authors}"
 description='''
-The Endless March: call a line of colossal stone giants with molten seams out of the earth and watch them walk
-through the world. Full cinematic with anime impact frames, real terrain destruction, steam, dust, quakes and
-a rust-red sky.
+Orbital Arsenal: two orbital cannons on one handheld uplink.
+OA-01 Helios: a ring of orbital mirrors focuses the sun into a lance you steer with your crosshair, cutting molten trenches.
+OA-02 Antipode: a breach opens beside the Earth, a mirror Earth comes through, and where the two touch the land is exchanged for the other world's, upside down.
+Full cinematics from the ground to orbit and back, with anime impact frames. Plays alongside The Shooting Star (it does not need it).
 '''
 
 [[dependencies.${mod_id}]]
@@ -25,11 +26,4 @@ a rust-red sky.
     mandatory=true
     versionRange="${minecraft_version_range}"
     ordering="NONE"
-    side="BOTH"
-
-[[dependencies.${mod_id}]]
-    modId="playeranimator"
-    mandatory=true
-    versionRange="*"
-    ordering="AFTER"
     side="BOTH"

@@ -1,7 +1,7 @@
-name: Build Worldbreaker jar
+name: Build Orbital Arsenal jar
 on:
   push:
-    branches: [worldbreaker]
+    branches: [orbital]
   workflow_dispatch:
 permissions:
   contents: write
@@ -29,10 +29,10 @@ jobs:
         run: |
           mkdir -p run && echo "eula=true" > run/eula.txt
           (timeout 300 ./gradlew runServer --no-daemon > server-log.txt 2>&1 &) ; for i in $(seq 1 280); do sleep 1; if grep -q 'Done (' server-log.txt 2>/dev/null; then echo "SERVER STARTED"; break; fi; if grep -qE 'Exception|Error: ' server-log.txt 2>/dev/null && grep -q 'Crash\|crash' server-log.txt; then break; fi; done
-          grep -E "Done \(|Exception|crash|worldbreaker" server-log.txt | head -40 || true
+          grep -E "Done \(|Exception|crash|orbital" server-log.txt | head -40 || true
           pkill -f runServer || true; pkill -f 'net.minecraftforge' || true; sleep 5
           rm -rf run/world
-      - name: Call the march in the real game (software GL) and photograph it
+      - name: Fire both cannons in the real game (software GL) and photograph them
         id: selftest
         if: steps.build.outcome == 'success'
         continue-on-error: true
@@ -47,7 +47,7 @@ jobs:
           mkdir -p run
           printf 'onboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nrenderDistance:12\nsimulationDistance:10\nmaxFps:60\nguiScale:2\nsoundCategory_master:0.0\nfov:0.0\n' > run/options.txt
           timeout 2100 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-daemon 2>&1 | tee selftest-log.txt | grep --line-buffered -E "selftest|SI|ERROR|Exception" || true
-      - name: Publish jar and log to the worldbreaker-build branch
+      - name: Publish jar and log to the orbital-build branch
         if: always()
         run: |
           mkdir -p /tmp/out
@@ -60,16 +60,16 @@ jobs:
           rm -f /tmp/out/*-sources.jar
           echo "${{ steps.build.outcome }} ${{ github.sha }}" > /tmp/out/STATUS
           cd /tmp/out
-          git init -q -b worldbreaker-build
-          git config user.name "wb-ci"
-          git config user.email "wb-ci@users.noreply.github.com"
+          git init -q -b orbital-build
+          git config user.name "oa-ci"
+          git config user.email "oa-ci@users.noreply.github.com"
           git add -A
           git commit -q -m "Build of ${{ github.sha }}: ${{ steps.build.outcome }}"
-          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" worldbreaker-build
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" orbital-build
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: worldbreaker-jar
+          name: orbital-jar
           path: build/libs/*.jar
           if-no-files-found: ignore
       - name: Fail if the build failed
