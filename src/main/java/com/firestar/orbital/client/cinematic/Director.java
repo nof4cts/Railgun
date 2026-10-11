@@ -147,6 +147,11 @@ public final class Director {
         camera.xRotO = pitch;
     }
 
+    private static boolean inside(Minecraft mc, Vec3 p) {
+        net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.containing(p);
+        return !mc.level.getBlockState(b).getCollisionShape(mc.level, b).isEmpty();
+    }
+
     /** Keep the lens out of walls: walk out from the subject and stop just short of the first solid block. */
     private static CameraPose clip(CameraPose pose, Vec3 subject) {
         Minecraft mc = Minecraft.getInstance();
@@ -159,8 +164,13 @@ public final class Director {
         }
         Vec3 dir = pose.pos().subtract(subject);
         if (dir.lengthSqr() < 1.0E-6 || dir.lengthSqr() > 16 * 16) {
-            // a distant subject: whatever stands between is part of the view, not a wall to hide behind
-            return pose;
+            // a distant subject: whatever stands between is part of the view, not a wall to hide behind; but never
+            // leave the lens inside a block: lift it clear
+            Vec3 p = pose.pos();
+            for (int i = 0; i < 24 && inside(mc, p); i++) {
+                p = p.add(0, 1, 0);
+            }
+            return p == pose.pos() ? pose : new CameraPose(p.add(0, 0.6, 0), pose.look(), pose.fov(), pose.roll());
         }
         return new CameraPose(hit.getLocation().subtract(dir.normalize().scale(0.35)), pose.look(), pose.fov(), pose.roll());
     }
