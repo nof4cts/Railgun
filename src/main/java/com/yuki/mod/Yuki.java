@@ -408,7 +408,7 @@ public final class Yuki {
          void tick(int age) {
             this.caster.heal(this.caster.getMaxHealth() / 40.0F + 0.2F);
             if (age % 5 == 0) {
-               for (MobEffectInstance ef : new ArrayList(this.caster.getActiveEffects())) {
+               for (MobEffectInstance ef : new ArrayList<MobEffectInstance>(this.caster.getActiveEffects())) {
                   if (ef.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
                      this.caster.removeEffect(ef.getEffect());
                   }

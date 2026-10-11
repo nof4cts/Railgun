@@ -373,7 +373,7 @@ public final class Kashimo {
    static boolean wickerBasket(ServerLevel l, ServerPlayer p) {
       data(p).putInt("basket", 160);
 
-      for (MobEffectInstance e : new ArrayList(p.getActiveEffects())) {
+      for (MobEffectInstance e : new ArrayList<MobEffectInstance>(p.getActiveEffects())) {
          if (e.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
             p.removeEffect(e.getEffect());
          }
@@ -782,7 +782,7 @@ public final class Kashimo {
          if (b > 0) {
             data(p).putInt("basket", b - 1);
             if (p.tickCount % 5 == 0) {
-               for (MobEffectInstance ef : new ArrayList(p.getActiveEffects())) {
+               for (MobEffectInstance ef : new ArrayList<MobEffectInstance>(p.getActiveEffects())) {
                   if (ef.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
                      p.removeEffect(ef.getEffect());
                   }
