@@ -170,7 +170,7 @@
       "1.500": {
        "vector": [
         0,
-        0.5,
+        0,
         0
        ],
        "easing": "easeInOutSine"
@@ -178,7 +178,7 @@
       "1.800": {
        "vector": [
         0,
-        1,
+        0,
         0
        ],
        "easing": "easeInQuad"
@@ -186,32 +186,32 @@
       "2.000": {
        "vector": [
         0,
-        -9,
-        -2
+        0,
+        0
        ],
        "easing": "easeOutExpo"
       },
       "2.600": {
        "vector": [
         0,
-        -8.5,
-        -2
+        0,
+        0
        ],
        "easing": "easeOutCubic"
       },
       "4.000": {
        "vector": [
         0,
-        -8.5,
-        -2
+        0,
+        0
        ],
        "easing": "easeInOutSine"
       },
       "5.600": {
        "vector": [
         0,
-        -8.5,
-        -2
+        0,
+        0
        ]
       },
       "6.500": {

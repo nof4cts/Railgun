@@ -8,15 +8,15 @@ BONES = ['head', 'torso', 'right_arm', 'left_arm', 'right_leg', 'left_leg']
 POSE = {
     'rest': {},
     'reach': {'right_arm': [-176, 0, -8], 'left_arm': [8, 0, -10], 'torso': [-8, 0, 0], 'head': [-34, 0, 0]},
-    'reach_hold': {'right_arm': [-172, 0, -12], 'left_arm': [10, 0, -14], 'torso': [-10, 0, 0], 'head': [-38, 0, 0], 'pos': [0, 0.5, 0]},
+    'reach_hold': {'right_arm': [-172, 0, -12], 'left_arm': [10, 0, -14], 'torso': [-10, 0, 0], 'head': [-38, 0, 0]},
     'wind': {'right_arm': [-190, 0, -4], 'left_arm': [-20, 0, -30], 'torso': [-16, 0, 0], 'head': [-20, 0, 0], 'right_leg': [-10, 0, 0],
-             'left_leg': [6, 0, 0], 'pos': [0, 1, 0]},
+             'left_leg': [6, 0, 0]},
     'slam': {'right_arm': [-50, 0, -6], 'left_arm': [-30, 0, -40], 'torso': [40, 0, 0], 'head': [8, 0, 0], 'right_leg': [-95, 0, 6],
-             'left_leg': [-5, 0, -4], 'pos': [0, -9, -2]},
+             'left_leg': [-5, 0, -4]},
     'kneel': {'right_arm': [-46, 0, -6], 'left_arm': [-24, 0, -36], 'torso': [34, 0, 0], 'head': [-20, 0, 0], 'right_leg': [-92, 0, 6],
-              'left_leg': [-4, 0, -4], 'pos': [0, -8.5, -2]},
+              'left_leg': [-4, 0, -4]},
     'kneel_look': {'right_arm': [-44, 0, -6], 'left_arm': [-22, 0, -34], 'torso': [26, 0, 0], 'head': [-42, 0, 0], 'right_leg': [-90, 0, 6],
-                   'left_leg': [-4, 0, -4], 'pos': [0, -8.5, -2]},
+                   'left_leg': [-4, 0, -4]},
 }
 
 
