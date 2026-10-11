@@ -20,7 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -85,9 +84,7 @@ public final class Marching {
             if (WConfig.CLIENT.cutscenes.get()) {
                 Director.play(Films.march(a));
             }
-            if (mc.player instanceof AbstractClientPlayer p) {
-                PlayerAnims.play(p, "call");
-            }
+            PlayerAnims.play(mc.player, "call");
         }
         if (time(a, 0) < 20) {
             ui(ModSounds.HORN.get(), 1.0F, 0.9F);
