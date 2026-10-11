@@ -1,0 +1,152 @@
+package com.firestar.mih.client.cinematic;
+
+import com.firestar.mih.client.ClientCast;
+import com.firestar.mih.client.render.Galaxy;
+import com.firestar.mih.common.Beats;
+import java.util.ArrayList;
+import java.util.List;
+import com.firestar.mih.client.stand.StandRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * The shot lists. Every position is built from the cast itself (the user's feet at the cast, his facing, the target,
+ * where he ends up), so the same film plays wherever and however the move is used.
+ */
+public final class Films {
+    private Films() {}
+
+    private static double l(float k, double a, double b) {
+        return a + (b - a) * k;
+    }
+
+    private static CameraPose at(Vec3 pos, Vec3 look, double fov, double roll) {
+        return new CameraPose(pos, look, (float) fov, (float) roll);
+    }
+
+    private static Vec3 rel(ClientCast c, Vec3 base, double r, double u, double f) {
+        return base.add(c.right.scale(r)).add(0, u, 0).add(c.fwd.scale(f));
+    }
+
+    /** Orbit round {@code centre}: angle 0 is in front of him, 90 on his right. */
+    private static Vec3 orbit(ClientCast c, Vec3 centre, double radius, double degrees, double up) {
+        double a = Math.toRadians(degrees);
+        return centre.add(c.fwd.scale(Math.cos(a) * radius)).add(c.right.scale(Math.sin(a) * radius)).add(0, up, 0);
+    }
+
+    /** From the target, looking back the way the user came. */
+    private static Vec3 facing(ClientCast c, Vec3 target, double dist, double up) {
+        Vec3 back = c.feet.subtract(target).multiply(1, 0, 1);
+        back = back.lengthSqr() < 1e-4 ? c.fwd.scale(-1) : back.normalize();
+        return target.add(back.scale(dist)).add(0, up, 0);
+    }
+
+    public static Film of(ClientCast c) {
+        List<Shot> s = new ArrayList<>();
+        Vec3 F = c.feet;
+        Vec3 E = c.local(0, 1.62, 0);
+        Vec3 P = c.point;
+        Vec3 X = c.exit;
+        Vec3 M = P.lerp(X.add(0, 1.0, 0), 0.5);
+        switch (c.move) {
+            case SPEED_SLICE -> {
+                // his eyes, unreadable
+                s.add(Shot.cut(0, 10, (k, t) -> at(rel(c, F, l(k, 0.25, 0.18), 1.64, l(k, 1.1, 0.85)), E, l(k, 30, 26), 0)));
+                // over his shoulder: the Stand rears, the target small and far
+                s.add(Shot.cut(10, Beats.SLICE_VANISH, (k, t) -> at(rel(c, F, l(k, -1.0, -0.8), 2.0, l(k, -2.8, -2.3)), P, l(k, 52, 40), 0)));
+                // the target alone in still time, as a line of white goes past
+                s.add(Shot.cut(Beats.SLICE_VANISH, Beats.SLICE_HIT, (k, t) -> at(facing(c, P, l(k, 2.8, 2.4), 0.25), P.add(0, 0.25, 0), 44, -6)));
+                // side on: the cut lands, him already behind
+                s.add(Shot.cut(Beats.SLICE_HIT, 38, (k, t) -> at(rel(c, M, l(k, 5.0, 5.6), 1.2, 0), M, l(k, 52, 58), 0)));
+                // low in front of him, the knife flicked clean
+                s.add(Shot.cut(38, c.move.length, (k, t) -> {
+                    Vec3 U = c.casterFeet(0);
+                    return at(rel(c, U, -2.0, l(k, 0.8, 1.1), l(k, 1.8, 2.4)), U.add(0, 1.4, 0), 46, 0);
+                }));
+            }
+            case JUDGEMENT -> {
+                Vec3 T = c.exit;
+                // low and wide: the Stand rears against the sky
+                s.add(Shot.cut(0, Beats.JUDGE_LUNGE, (k, t) -> at(rel(c, F, l(k, 2.8, 2.4), 0.35, l(k, -3.0, -2.6)), F.add(0, 2.4, 0).add(c.fwd.scale(-0.4)), 64, 0)));
+                // high and wide round the target as the web of light is drawn
+                s.add(Shot.cut(Beats.JUDGE_LUNGE, 34, (k, t) -> at(orbit(c, T, l(k, 8.5, 7.5), l(k, 120, 200), l(k, 4.5, 3.5)), T.add(0, 1.0, 0), l(k, 68, 62), 0)));
+                // low and close among the lines
+                s.add(Shot.cut(34, 46, (k, t) -> at(orbit(c, T, l(k, 4.6, 4.2), l(k, 250, 300), 0.6), T.add(0, 1.3, 0), 58, -5)));
+                // him, already past, his back to it; the target framed in the web behind him
+                s.add(Shot.cut(46, Beats.JUDGE_FINAL, (k, t) -> {
+                    Vec3 U = c.casterFeet(0);
+                    Vec3 away = U.subtract(T).multiply(1, 0, 1);
+                    away = away.lengthSqr() < 1e-4 ? c.fwd : away.normalize();
+                    return at(U.add(away.scale(l(k, 2.6, 2.2))).add(0, 1.5, 0), T.add(0, 1.0, 0), l(k, 50, 44), 0);
+                }));
+                // the cut lands: wide, side on, the target sent flying
+                s.add(Shot.cut(Beats.JUDGE_FINAL, 80, (k, t) -> at(rel(c, T, l(k, 8.0, 10.0), l(k, 2.0, 3.2), l(k, -1.0, 1.5)), c.targetCentre(0), l(k, 62, 70), 0)));
+                s.add(Shot.cut(80, c.move.length, (k, t) -> {
+                    Vec3 U = c.casterFeet(0);
+                    return at(rel(c, U, 2.4, 1.5, l(k, -1.6, -2.2)), U.add(0, 1.5, 0), 48, 0);
+                }));
+            }
+            case KNIFE_STORM -> {
+                // round him as the knives appear, one by one, hanging in still time
+                s.add(Shot.cut(0, Beats.STORM_AIM, (k, t) -> at(orbit(c, F, l(k, 5.0, 4.2), l(k, 150, 230), l(k, 1.4, 2.2)), F.add(0, 1.9, 0), 60, 0)));
+                // over his shoulder through the halo of blades, the target small beyond
+                s.add(Shot.cut(Beats.STORM_AIM, Beats.STORM_FIRE + 2, (k, t) -> at(rel(c, F, l(k, -1.2, -0.9), 2.4, l(k, -3.0, -2.5)), P, l(k, 50, 42), 0)));
+                // from beside the target as the volley arrives
+                s.add(Shot.cut(Beats.STORM_FIRE + 2, c.move.length, (k, t) -> at(facing(c, P, l(k, 4.5, 5.5), 0.8).add(c.right.scale(2.5)), P.lerp(F.add(0, 1.6, 0), 0.25), 64, 0)));
+            }
+            case DOUBLE_ACCEL -> {
+                // all the way round him as the clocks wind up
+                s.add(Shot.cut(0, Beats.DA_BURST - 4, (k, t) -> at(orbit(c, F, l(k, 4.2, 3.2), l(k, -30, 300), l(k, 0.6, 1.6)), F.add(0, 1.4, 0), 58, 0)));
+                // the speedometer face, its needle pinned
+                s.add(Shot.cut(Beats.DA_BURST - 4, Beats.DA_BURST + 6, (k, t) -> {
+                    Vec3[] h = c.caster() instanceof AbstractClientPlayer p ? StandRenderer.head(p, Minecraft.getInstance().getFrameTime()) : null;
+                    if (h == null) {
+                        return at(rel(c, F, 0.75, 2.45, 0.4), rel(c, F, 0.75, 2.35, -0.95), 30, 0);
+                    }
+                    // from above and to the side of the face, clear of the rearing horse's head
+                    Vec3 side = h[1].cross(new Vec3(0, 1, 0));
+                    side = side.lengthSqr() < 1e-4 ? c.right : side.normalize();
+                    Vec3 eye = h[0].add(h[1].scale(l(k, 1.1, 0.85))).add(side.scale(l(k, 1.0, 0.75))).add(0, 0.45, 0);
+                    return at(eye, h[0].subtract(0, 0.05, 0), l(k, 46, 40), 0);
+                }));
+                s.add(Shot.cut(Beats.DA_BURST + 6, c.move.length, (k, t) -> at(rel(c, F, 0.3, 1.2, l(k, 3.6, 4.4)), E, 56, 0)));
+            }
+            case TIME_ACCEL -> {
+                // up from the ground at him and the sky beyond
+                s.add(Shot.cut(0, 16, (k, t) -> at(rel(c, F, 0.5, 0.25, l(k, 1.6, 1.4)), F.add(0, 8, 0), l(k, 70, 64), 0)));
+                // the Stand rears, wide and frontal
+                s.add(Shot.cut(16, 36, (k, t) -> at(rel(c, F, 0, l(k, 1.2, 1.8), l(k, 6.0, 5.2)), F.add(0, 2.0, 0), 60, 0)));
+                // crane up and back as the sky starts to run
+                s.add(Shot.cut(36, Beats.TA_START, (k, t) -> at(rel(c, F, 0, l(k, 2.0, 9.0), l(k, 7.0, 14.0)), F.add(0, 1.6, 0), 62, 0)));
+                // the sky: the sun beginning to streak
+                s.add(Shot.cut(Beats.TA_START, 74, (k, t) -> at(rel(c, F, 0, 2.5, -4.0), F.add(l(k, 6, 14), 16, 0), l(k, 72, 82), 0)));
+                s.add(Shot.cut(74, c.move.length, (k, t) -> at(rel(c, F, 0.6, 1.5, l(k, 3.0, 3.6)), E, 50, 0)));
+            }
+            case UNIVERSE_RESET -> {
+                Vec3 G = c.point.add(0, Galaxy.LIFT, 0);
+                Vec3 Fr = c.point;
+                // the end of the world: under him, looking up into the burning sky
+                s.add(Shot.cut(0, Beats.RESET_WHITE, (k, t) -> at(rel(c, Fr, 1.0, 0.4, l(k, 2.4, 2.0)), Fr.add(0, l(k, 3.0, 9.0), 0), l(k, 64, 80), 0)));
+                // his face as it cracks
+                s.add(Shot.cut(Beats.RESET_WHITE, Beats.RESET_LIFT, (k, t) -> at(rel(c, Fr, 0.1, 1.62, 1.05), Fr.add(0, 1.62, 0), 30, 0)));
+                s.add(Shot.cut(Beats.RESET_LIFT, Beats.RESET_GALAXY, (k, t) -> at(rel(c, Fr, 0, 3.0, 10.0), Fr.add(0, 2.0, 0), 60, 0)));
+                // the world torn upward into space
+                s.add(Shot.cut(Beats.RESET_GALAXY, 92, (k, t) -> at(rel(c, Fr, l(k, 0, 6), l(k, 7, 20), l(k, 18, 34)), Fr.add(0, l(k, 4, 20), 0), l(k, 66, 74), 0)));
+                // round the galaxy as everything wheels into it
+                s.add(Shot.sweep(92, Beats.RESET_PLUNGE, 10, (k, t) -> at(orbit(c, G, l(k, 50, 62), l(k, 20, 170), l(k, 22, 30)), G, l(k, 74, 70), 0)));
+                // falling into the core
+                s.add(Shot.sweep(Beats.RESET_PLUNGE, Beats.RESET_SINGULARITY + 4, 8, (k, t) -> {
+                    float e = k * k * k;
+                    return at(orbit(c, G, l(e, 62, 3), l(k, 170, 260), l(e, 30, 1.0)), G, l(k, 70, 105), 0);
+                }));
+                s.add(Shot.cut(Beats.RESET_SINGULARITY + 4, Beats.RESET_NEW, (k, t) -> at(G.add(0, 1, 2), G, 90, 0)));
+                // the new universe: dawn, and him
+                s.add(Shot.cut(Beats.RESET_NEW, 252, (k, t) -> at(rel(c, Fr, 0.4, l(k, 0.9, 1.2), l(k, 3.0, 2.5)), Fr.add(0, 1.55, 0), l(k, 48, 40), 0)));
+                s.add(Shot.cut(252, c.move.length, (k, t) -> at(rel(c, Fr, l(k, -1.0, -3.0), l(k, 2.0, 7.0), l(k, 4.0, 11.0)), Fr.add(0, l(k, 1.6, 4.0), 0), 62, 0)));
+            }
+            default -> s.add(Shot.cut(0, c.move.length, (k, t) -> at(rel(c, F, 1.5, 2.0, -3.5), P, 60, 0)));
+        }
+        return new Film(c, s);
+    }
+}

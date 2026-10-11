@@ -1,0 +1,227 @@
+{
+ "summon": {
+  "subtitle": "sound.madeinheaven.summon",
+  "sounds": [
+   "madeinheaven:summon"
+  ]
+ },
+ "punch": {
+  "subtitle": "sound.madeinheaven.punch",
+  "sounds": [
+   "madeinheaven:punch_1",
+   "madeinheaven:punch_2",
+   "madeinheaven:punch_3"
+  ]
+ },
+ "jab": {
+  "subtitle": "sound.madeinheaven.jab",
+  "sounds": [
+   "madeinheaven:jab_1",
+   "madeinheaven:jab_2",
+   "madeinheaven:jab_3",
+   "madeinheaven:jab_4"
+  ]
+ },
+ "finisher": {
+  "subtitle": "sound.madeinheaven.finisher",
+  "sounds": [
+   "madeinheaven:finisher"
+  ]
+ },
+ "knife_throw": {
+  "subtitle": "sound.madeinheaven.knife_throw",
+  "sounds": [
+   "madeinheaven:knife_throw"
+  ]
+ },
+ "knife_hit": {
+  "subtitle": "sound.madeinheaven.knife_hit",
+  "sounds": [
+   "madeinheaven:knife_hit"
+  ]
+ },
+ "slice": {
+  "subtitle": "sound.madeinheaven.slice",
+  "sounds": [
+   "madeinheaven:slice"
+  ]
+ },
+ "vanish": {
+  "subtitle": "sound.madeinheaven.vanish",
+  "sounds": [
+   "madeinheaven:vanish"
+  ]
+ },
+ "tick": {
+  "subtitle": "sound.madeinheaven.tick",
+  "sounds": [
+   "madeinheaven:tick"
+  ]
+ },
+ "tock": {
+  "subtitle": "sound.madeinheaven.tock",
+  "sounds": [
+   "madeinheaven:tock"
+  ]
+ },
+ "double_accel": {
+  "subtitle": "sound.madeinheaven.double_accel",
+  "sounds": [
+   "madeinheaven:double_accel"
+  ]
+ },
+ "judgement": {
+  "subtitle": "sound.madeinheaven.judgement",
+  "sounds": [
+   "madeinheaven:judgement"
+  ]
+ },
+ "time_accel": {
+  "subtitle": "sound.madeinheaven.time_accel",
+  "sounds": [
+   "madeinheaven:time_accel"
+  ]
+ },
+ "reset_rise": {
+  "subtitle": "sound.madeinheaven.reset_rise",
+  "sounds": [
+   "madeinheaven:reset_rise"
+  ]
+ },
+ "singularity": {
+  "subtitle": "sound.madeinheaven.singularity",
+  "sounds": [
+   "madeinheaven:singularity"
+  ]
+ },
+ "new_universe": {
+  "subtitle": "sound.madeinheaven.new_universe",
+  "sounds": [
+   "madeinheaven:new_universe"
+  ]
+ },
+ "menacing": {
+  "subtitle": "sound.madeinheaven.menacing",
+  "sounds": [
+   "madeinheaven:menacing"
+  ]
+ },
+ "bass": {
+  "subtitle": "sound.madeinheaven.bass",
+  "sounds": [
+   "madeinheaven:bass_1",
+   "madeinheaven:bass_2",
+   "madeinheaven:bass_3"
+  ]
+ },
+ "dash": {
+  "subtitle": "sound.madeinheaven.dash",
+  "sounds": [
+   "madeinheaven:dash_1",
+   "madeinheaven:dash_2",
+   "madeinheaven:dash_3"
+  ]
+ },
+ "stand_summon": {
+  "subtitle": "sound.madeinheaven.stand_summon",
+  "sounds": [
+   "madeinheaven:stand_summon"
+  ]
+ },
+ "stand_dismiss": {
+  "subtitle": "sound.madeinheaven.stand_dismiss",
+  "sounds": [
+   "madeinheaven:stand_dismiss"
+  ]
+ },
+ "fist": {
+  "subtitle": "sound.madeinheaven.fist",
+  "sounds": [
+   "madeinheaven:fist_1",
+   "madeinheaven:fist_2",
+   "madeinheaven:fist_3"
+  ]
+ },
+ "barrage_rush": {
+  "subtitle": "sound.madeinheaven.barrage_rush",
+  "sounds": [
+   "madeinheaven:barrage_rush"
+  ]
+ },
+ "knife_hang": {
+  "subtitle": "sound.madeinheaven.knife_hang",
+  "sounds": [
+   "madeinheaven:knife_hang"
+  ]
+ },
+ "knife_volley": {
+  "subtitle": "sound.madeinheaven.knife_volley",
+  "sounds": [
+   "madeinheaven:knife_volley"
+  ]
+ },
+ "knife_flesh": {
+  "subtitle": "sound.madeinheaven.knife_flesh",
+  "sounds": [
+   "madeinheaven:knife_flesh"
+  ]
+ },
+ "judge_cut": {
+  "subtitle": "sound.madeinheaven.judge_cut",
+  "sounds": [
+   "madeinheaven:judge_cut_1",
+   "madeinheaven:judge_cut_2",
+   "madeinheaven:judge_cut_3",
+   "madeinheaven:judge_cut_4"
+  ]
+ },
+ "infinite_start": {
+  "subtitle": "sound.madeinheaven.infinite_start",
+  "sounds": [
+   "madeinheaven:infinite_start"
+  ]
+ },
+ "detonate": {
+  "subtitle": "sound.madeinheaven.detonate",
+  "sounds": [
+   "madeinheaven:detonate"
+  ]
+ },
+ "rush": {
+  "subtitle": "sound.madeinheaven.rush",
+  "sounds": [
+   "madeinheaven:rush"
+  ]
+ },
+ "light_hit": {
+  "subtitle": "sound.madeinheaven.light_hit",
+  "sounds": [
+   "madeinheaven:light_hit_1",
+   "madeinheaven:light_hit_2"
+  ]
+ },
+ "crack": {
+  "subtitle": "sound.madeinheaven.crack",
+  "sounds": [
+   "madeinheaven:crack"
+  ]
+ },
+ "galaxy": {
+  "subtitle": "sound.madeinheaven.galaxy",
+  "sounds": [
+   "madeinheaven:galaxy"
+  ]
+ },
+ "plunge": {
+  "subtitle": "sound.madeinheaven.plunge",
+  "sounds": [
+   "madeinheaven:plunge"
+  ]
+ },
+ "accel_bass": {
+  "subtitle": "sound.madeinheaven.accel_bass",
+  "sounds": [
+   "madeinheaven:accel_bass"
+  ]
+ }
+}

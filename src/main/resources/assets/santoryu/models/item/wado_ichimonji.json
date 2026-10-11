@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": { "layer0": "santoryu:item/wado_ichimonji" },
+  "display": {
+    "thirdperson_righthand": { "rotation": [0, -90, 55], "translation": [0, 5.0, 0.5], "scale": [1.05, 1.05, 0.85] },
+    "thirdperson_lefthand": { "rotation": [0, 90, -55], "translation": [0, 5.0, 0.5], "scale": [1.05, 1.05, 0.85] },
+    "firstperson_righthand": { "rotation": [0, -90, 25], "translation": [1.13, 3.6, 0.8], "scale": [0.8, 0.8, 0.8] },
+    "firstperson_lefthand": { "rotation": [0, 90, -25], "translation": [1.13, 3.6, 0.8], "scale": [0.8, 0.8, 0.8] },
+    "fixed": { "rotation": [0, 180, 0], "scale": [1.1, 1.1, 1.1] }
+  }
+}

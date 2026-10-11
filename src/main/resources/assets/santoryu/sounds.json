@@ -1,0 +1,97 @@
+{
+ "unsheathe": {
+  "subtitle": "sound.santoryu.unsheathe",
+  "sounds": [
+   "santoryu:unsheathe_1",
+   "santoryu:unsheathe_2"
+  ]
+ },
+ "sheathe": {
+  "subtitle": "sound.santoryu.sheathe",
+  "sounds": [
+   "santoryu:sheathe"
+  ]
+ },
+ "slash": {
+  "subtitle": "sound.santoryu.slash",
+  "sounds": [
+   "santoryu:slash_1",
+   "santoryu:slash_2",
+   "santoryu:slash_3"
+  ]
+ },
+ "slash_heavy": {
+  "subtitle": "sound.santoryu.slash_heavy",
+  "sounds": [
+   "santoryu:slash_heavy_1",
+   "santoryu:slash_heavy_2"
+  ]
+ },
+ "dash": {
+  "subtitle": "sound.santoryu.dash",
+  "sounds": [
+   "santoryu:dash"
+  ]
+ },
+ "impact": {
+  "subtitle": "sound.santoryu.impact",
+  "sounds": [
+   "santoryu:impact_1",
+   "santoryu:impact_2"
+  ]
+ },
+ "impact_big": {
+  "subtitle": "sound.santoryu.impact_big",
+  "sounds": [
+   "santoryu:impact_big"
+  ]
+ },
+ "tornado": {
+  "subtitle": "sound.santoryu.tornado",
+  "sounds": [
+   "santoryu:tornado"
+  ]
+ },
+ "haki": {
+  "subtitle": "sound.santoryu.haki",
+  "sounds": [
+   "santoryu:haki"
+  ]
+ },
+ "asura": {
+  "subtitle": "sound.santoryu.asura",
+  "sounds": [
+   "santoryu:asura"
+  ]
+ },
+ "dragon": {
+  "subtitle": "sound.santoryu.dragon",
+  "sounds": [
+   "santoryu:dragon"
+  ]
+ },
+ "cannon": {
+  "subtitle": "sound.santoryu.cannon",
+  "sounds": [
+   "santoryu:cannon"
+  ]
+ },
+ "sting": {
+  "subtitle": "sound.santoryu.sting",
+  "sounds": [
+   "santoryu:sting"
+  ]
+ },
+ "ting": {
+  "subtitle": "sound.santoryu.ting",
+  "sounds": [
+   "santoryu:ting"
+  ]
+ },
+ "heartbeat": {
+  "subtitle": "sound.santoryu.heartbeat",
+  "sounds": [
+   "santoryu:heartbeat"
+  ]
+ }
+}

@@ -1,0 +1,159 @@
+{
+ "aura_hum": {
+  "subtitle": "sound.silverinstinct.aura_hum",
+  "sounds": [
+   "silverinstinct:aura_hum"
+  ]
+ },
+ "awaken_omen": {
+  "subtitle": "sound.silverinstinct.awaken_omen",
+  "sounds": [
+   "silverinstinct:awaken_omen"
+  ]
+ },
+ "awaken_zenith": {
+  "subtitle": "sound.silverinstinct.awaken_zenith",
+  "sounds": [
+   "silverinstinct:awaken_zenith"
+  ]
+ },
+ "bass": {
+  "subtitle": "sound.silverinstinct.bass",
+  "sounds": [
+   "silverinstinct:bass_1",
+   "silverinstinct:bass_2"
+  ]
+ },
+ "blast": {
+  "subtitle": "sound.silverinstinct.blast",
+  "sounds": [
+   "silverinstinct:blast_1",
+   "silverinstinct:blast_2",
+   "silverinstinct:blast_3"
+  ]
+ },
+ "blast_hit": {
+  "subtitle": "sound.silverinstinct.blast_hit",
+  "sounds": [
+   "silverinstinct:blast_hit"
+  ]
+ },
+ "charge": {
+  "subtitle": "sound.silverinstinct.charge",
+  "sounds": [
+   "silverinstinct:charge"
+  ]
+ },
+ "counter": {
+  "subtitle": "sound.silverinstinct.counter",
+  "sounds": [
+   "silverinstinct:counter"
+  ]
+ },
+ "dodge": {
+  "subtitle": "sound.silverinstinct.dodge",
+  "sounds": [
+   "silverinstinct:dodge"
+  ]
+ },
+ "final_boom": {
+  "subtitle": "sound.silverinstinct.final_boom",
+  "sounds": [
+   "silverinstinct:final_boom"
+  ]
+ },
+ "final_charge": {
+  "subtitle": "sound.silverinstinct.final_charge",
+  "sounds": [
+   "silverinstinct:final_charge"
+  ]
+ },
+ "final_fire": {
+  "subtitle": "sound.silverinstinct.final_fire",
+  "sounds": [
+   "silverinstinct:final_fire"
+  ]
+ },
+ "flurry": {
+  "subtitle": "sound.silverinstinct.flurry",
+  "sounds": [
+   "silverinstinct:flurry"
+  ]
+ },
+ "heartbeat": {
+  "subtitle": "sound.silverinstinct.heartbeat",
+  "sounds": [
+   "silverinstinct:heartbeat"
+  ]
+ },
+ "heavy": {
+  "subtitle": "sound.silverinstinct.heavy",
+  "sounds": [
+   "silverinstinct:heavy"
+  ]
+ },
+ "launch": {
+  "subtitle": "sound.silverinstinct.launch",
+  "sounds": [
+   "silverinstinct:launch"
+  ]
+ },
+ "revert": {
+  "subtitle": "sound.silverinstinct.revert",
+  "sounds": [
+   "silverinstinct:revert"
+  ]
+ },
+ "slam": {
+  "subtitle": "sound.silverinstinct.slam",
+  "sounds": [
+   "silverinstinct:slam"
+  ]
+ },
+ "sphere_boom": {
+  "subtitle": "sound.silverinstinct.sphere_boom",
+  "sounds": [
+   "silverinstinct:sphere_boom"
+  ]
+ },
+ "sphere_gather": {
+  "subtitle": "sound.silverinstinct.sphere_gather",
+  "sounds": [
+   "silverinstinct:sphere_gather"
+  ]
+ },
+ "sphere_throw": {
+  "subtitle": "sound.silverinstinct.sphere_throw",
+  "sounds": [
+   "silverinstinct:sphere_throw"
+  ]
+ },
+ "strike": {
+  "subtitle": "sound.silverinstinct.strike",
+  "sounds": [
+   "silverinstinct:strike_1",
+   "silverinstinct:strike_2",
+   "silverinstinct:strike_3"
+  ]
+ },
+ "swing": {
+  "subtitle": "sound.silverinstinct.swing",
+  "sounds": [
+   "silverinstinct:swing_1",
+   "silverinstinct:swing_2",
+   "silverinstinct:swing_3"
+  ]
+ },
+ "vanish": {
+  "subtitle": "sound.silverinstinct.vanish",
+  "sounds": [
+   "silverinstinct:vanish"
+  ]
+ },
+ "wave_fire": {
+  "subtitle": "sound.silverinstinct.wave_fire",
+  "sounds": [
+   "silverinstinct:wave_fire"
+  ]
+ }
+}
