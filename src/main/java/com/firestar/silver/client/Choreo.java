@@ -488,7 +488,7 @@ public final class Choreo {
                         spiral(out, b[0].subtract(b[1].scale(1.6)), b[0], 0.22, 1.5, -time * 20 + i, 0.05F, 0.6F, VIOLET);
                     }
                     double[] im = blastImpact(c, i);
-                    star(out, new Vec3(im[0], im[1], im[2]), t, (float) im[3], 1.0F, i % 2 == 0 ? BLUE : VIOLET, c.seed * 17L + i);
+                    star(out, new Vec3(im[0], im[1], im[2]), t, (float) im[3], 1.6F, i % 2 == 0 ? BLUE : VIOLET, c.seed * 17L + i);
                 }
             }
             case WAVE, FINAL -> {

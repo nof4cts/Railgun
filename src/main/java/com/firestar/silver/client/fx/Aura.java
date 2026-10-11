@@ -40,16 +40,16 @@ public final class Aura {
         Vec3 side = new Vec3(-away.z, 0, away.x);
         Vec3 up = new Vec3(0, 1, 0);
         Vec3 base = feet.add(away.scale(0.42)).subtract(0, 0.05, 0);
-        float grow = Mth.clamp(power * 1.15F, 0, 1);
+        float grow = Mth.clamp(power * 1.8F, 0, 1);
         double H = s.height * (0.55 + 0.45 * grow);
         double W = s.width * (0.7 + 0.3 * grow);
         // Omen sputters: the light drops out and comes back as the instinct does
         float flick = 1.0F;
         if (s.flicker > 0) {
             float n = (float) (0.5 + 0.3 * Math.sin(time * 7.3 + seed) + 0.2 * Math.sin(time * 17.9 + seed * 3));
-            flick = Mth.clamp(0.35F + n, 0.15F, 1.0F);
+            flick = Mth.clamp(0.45F + n, 0.4F, 1.0F);
         }
-        float a = power * flick;
+        float a = Math.min(1.0F, power * 1.6F) * flick;
 
         // the body of the flame: overlapping vertical strokes across the silhouette, faint
         int strips = 7;
