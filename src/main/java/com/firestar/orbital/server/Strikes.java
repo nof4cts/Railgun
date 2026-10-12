@@ -399,11 +399,11 @@ public final class Strikes {
                 for (int y = n + 1; y <= n + h; y++) {
                     l.setBlock(m.set(x, y, z), com.firestar.orbital.registry.ModBlocks.STALK.get().defaultBlockState(), FLAGS);
                 }
-                for (int dx = -2; dx <= 2; dx++) {
-                    for (int dz = -2; dz <= 2; dz++) {
+                for (int cx = -2; cx <= 2; cx++) {
+                    for (int cz = -2; cz <= 2; cz++) {
                         for (int dy = 0; dy <= 1; dy++) {
-                            if (Math.abs(dx) + Math.abs(dz) + dy * 2 <= 3 && r.nextInt(5) != 0) {
-                                m.set(x + dx, n + h + dy, z + dz);
+                            if (Math.abs(cx) + Math.abs(cz) + dy * 2 <= 3 && r.nextInt(5) != 0) {
+                                m.set(x + cx, n + h + dy, z + cz);
                                 if (l.getBlockState(m).isAir()) {
                                     l.setBlock(m, com.firestar.orbital.registry.ModBlocks.CANOPY.get().defaultBlockState(), FLAGS);
                                 }
