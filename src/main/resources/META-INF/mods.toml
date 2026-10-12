@@ -8,7 +8,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="${mod_authors}"
 description='''
-Orbital Arsenal: two more orbital cannons for The Shooting Star's Stellar Remote. Press J (Helios) or K (Antipode) to fire at your crosshair; rebind in Controls.
+Orbital Arsenal: two more orbital cannons for The Shooting Star's Stellar Remote. Use the Orbital Uplink: right-click fires at your crosshair, sneak + right-click switches cannon. Or press J (Helios) or K (Antipode).
 OA-01 Helios: a ring of orbital mirrors focuses the sun into a lance you steer with your crosshair, cutting molten trenches.
 OA-02 Antipode: a breach opens beside the Earth, a mirror Earth comes through, and where the two touch the land is exchanged for the other world's, upside down.
 Full cinematics from the ground to orbit and back, with anime impact frames. Works with or without The Shooting Star installed.

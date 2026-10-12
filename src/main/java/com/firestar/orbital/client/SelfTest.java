@@ -77,6 +77,8 @@ public final class SelfTest {
                 level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
                 level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
                 p.getInventory().clearContent();
+                p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                        new net.minecraft.world.item.ItemStack(com.firestar.orbital.registry.ModItems.UPLINK.get()));
                 BlockPos o = BlockPos.containing(0.5, p.getY(), 0.5);
                 town(level, o.offset(HX, 0, 40), 26);
                 hill(level, o.offset(AX, 0, 55), 20, 14);
@@ -135,7 +137,22 @@ public final class SelfTest {
             int y = p.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, 0);
             p.connection.teleport(x + 0.5, y, 0.5, 0.0F, 18.0F);
             int ty = p.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, c == com.firestar.orbital.common.Cannon.HELIOS ? 40 : 55);
-            com.firestar.orbital.server.Strikes.begin(p, c, new Vec3(x + 0.5, ty, c == com.firestar.orbital.common.Cannon.HELIOS ? 40.5 : 55.5));
+            if (c == com.firestar.orbital.common.Cannon.HELIOS) {
+                // as a player would: aim at the mark and right-click the uplink
+                double tz = 40.5, dy = ty - (p.getEyeY());
+                float pitch = (float) -Math.toDegrees(Math.atan2(dy, tz - 0.5));
+                p.connection.teleport(x + 0.5, p.getY(), 0.5, 0.0F, pitch);
+                p.setXRot(pitch);
+                p.setYRot(0);
+                net.minecraft.world.item.ItemStack up = p.getMainHandItem();
+                up.use(p.serverLevel(), p, net.minecraft.world.InteractionHand.MAIN_HAND);
+                OrbitalMod.LOGGER.info("[selftest] uplink used: strikes={}", com.firestar.orbital.server.Strikes.count());
+                if (com.firestar.orbital.server.Strikes.count() == 0) {
+                    com.firestar.orbital.server.Strikes.begin(p, c, new Vec3(x + 0.5, ty, 40.5));
+                }
+            } else {
+                com.firestar.orbital.server.Strikes.begin(p, c, new Vec3(x + 0.5, ty, 55.5));
+            }
         });
         calledAt = mc.level.getGameTime() + 2;
         phase = name;
