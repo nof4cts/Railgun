@@ -299,10 +299,48 @@ for name, cov in (('thigh', 0.3), ('shin', 0.28), ('upper', 0.3), ('fore', 0.32)
                   ('hips', 0.18), ('neck', 0.3), ('hand', 0.2), ('foot', 0.2), ('kchest', 0.22), ('kabdomen', 0.25), ('khips', 0.18)):
     for face in ('front', 'back', 'left', 'right', 'top'):
         tear(name, face, min(0.55, cov * 1.6 * (0.8 + 0.4 * rs.random())), int(rs.integers(1, 1 << 30)))
-# the head: a torn cheek and a strip off the side of the skull, the face itself left whole
-tear('head', 'left', 0.3, 777)
-tear('head', 'right', 0.25, 778)
-tear('head', 'back', 0.2, 779)
+# the head: the sides and back of the skull torn, and most of the face: cheeks, chin and brow peeled to the muscle,
+# the grin's teeth running on back along the bare cheeks; only the skin round the eyes and the nose is left
+tear('head', 'left', 0.55, 777)
+tear('head', 'right', 0.5, 778)
+tear('head', 'back', 0.45, 779)
+tear('head', 'top', 0.3, 780)
+
+
+def tear_face(name, keep, cov, seed, teeth_row=None):
+    x, y, w, h = faces(name)['front']
+    before = img[y:y + h, x:x + w, :3].copy()
+    tear(name, 'front', cov, seed)
+    # put back what must stay
+    k = keep(np.mgrid[0:h, 0:w])
+    img[y:y + h, x:x + w, :3][k] = before[k]
+    if teeth_row is not None:
+        r0, r1 = teeth_row
+        after = img[y:y + h, x:x + w, :3]
+        torn = np.abs(after - before).sum(-1) > 1
+        band = np.zeros((h, w), bool)
+        band[r0:r1] = True
+        cols = np.arange(w)
+        gaps = (cols % 5) == 4
+        tooth = band & torn & ~gaps[None, :]
+        after[tooth] = np.array([236, 228, 206.0])
+        gum = np.zeros((h, w), bool)
+        gum[r0 - 2:r0] = True
+        after[gum & torn] = np.array([150, 40, 48.0])
+        img[y:y + h, x:x + w, :3] = after
+
+
+def keep_face(g):
+    yy, xx = g
+    eyes = ((xx - 17) / 12.0) ** 2 + ((yy - 30) / 9.0) ** 2 < 1
+    eyes |= ((xx - 43) / 12.0) ** 2 + ((yy - 30) / 9.0) ** 2 < 1
+    nose = (np.abs(xx - 30) < 6) & (yy > 26) & (yy < 49)
+    mouth = (yy >= 56) & (xx >= 7) & (xx <= 52)
+    return eyes | nose | mouth
+
+
+tear_face('head', keep_face, 0.85, 781, teeth_row=(46, 55))
+tear_face('jaw', lambda g: g[0] < 9, 0.8, 782)
 
 # ---- bone: ivory, worn, cracked, darker in its grooves (one field that every bony part samples)
 bx, by, bw, bh = 520, 652, 504, 372
