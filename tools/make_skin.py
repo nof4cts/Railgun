@@ -251,6 +251,59 @@ d.line((w // 2, 0, w // 2, h - 16), fill=170, width=2)
 d.line((w // 2 - 26, 22, w // 2 + 26, 22), fill=90, width=2)
 shade(x, y, w, h, soft(arr(im), 2.0), 0.28)
 
+# ---- torn skin: ragged patches peeled away over raw muscle, the fibres running along the limb
+def muscle(h, w, seed):
+    r = np.random.default_rng(seed)
+    yy, xx = np.mgrid[0:h, 0:w]
+    fib = blotch(h, w, 3, seed + 1)
+    # fibres: thin bands along the length (v), wavering
+    wav = np.sin(xx * 1.7 + blotch(h, w, 10, seed + 2) * 6.0)
+    strands = 0.5 + 0.5 * wav
+    base = np.array([128, 22, 26.0])[None, None, :] * (0.7 + 0.5 * fib[..., None])
+    light = np.array([196, 70, 72.0])[None, None, :]
+    col = base * (1 - 0.45 * strands[..., None]) + light * 0.45 * strands[..., None] * (0.6 + 0.4 * fib[..., None])
+    # pale sheets of tendon here and there
+    ten = np.clip((blotch(h, w, 14, seed + 3) - 0.72) * 6, 0, 1)
+    col = col * (1 - ten[..., None]) + np.array([214, 196, 180.0]) * ten[..., None]
+    return col
+
+
+def tear(name, face, coverage, seed):
+    x, y, w, h = faces(name)[face]
+    if w < 6 or h < 6:
+        return
+    n = blotch(h, w, max(10, int(min(w, h) / 1.6)), seed)
+    n2 = blotch(h, w, 5, seed + 9)
+    field = n * 0.88 + n2 * 0.12
+    thr = np.quantile(field, 1 - coverage)
+    m = field > thr
+    if not m.any():
+        return
+    # the rim: the skin's torn edge, lifted and pale, and a wet dark line inside it
+    mi = Image.fromarray((m * 255).astype(np.uint8)).filter(ImageFilter.ModeFilter(5))
+    m = np.asarray(mi, dtype=np.float64) / 255 > 0.5
+    grow = np.asarray(mi.filter(ImageFilter.MaxFilter(5)), dtype=np.float64) / 255 > 0.5
+    shrink = np.asarray(mi.filter(ImageFilter.MinFilter(3)), dtype=np.float64) / 255 > 0.5
+    rim_out = grow & ~m
+    rim_in = m & ~shrink
+    reg = img[y:y + h, x:x + w, :3]
+    mus = muscle(h, w, seed + 17)
+    reg[m] = mus[m]
+    reg[rim_in] = reg[rim_in] * 0.45 + np.array([60, 6, 10.0]) * 0.55
+    reg[rim_out] = reg[rim_out] * 0.55 + np.array([236, 210, 196.0]) * 0.45
+    img[y:y + h, x:x + w, :3] = reg
+
+
+rs = np.random.default_rng(4242)
+for name, cov in (('thigh', 0.3), ('shin', 0.28), ('upper', 0.3), ('fore', 0.32), ('deltoid', 0.35), ('chest', 0.22), ('abdomen', 0.25),
+                  ('hips', 0.18), ('neck', 0.3), ('hand', 0.2), ('foot', 0.2), ('kchest', 0.22), ('kabdomen', 0.25), ('khips', 0.18)):
+    for face in ('front', 'back', 'left', 'right', 'top'):
+        tear(name, face, min(0.55, cov * 1.6 * (0.8 + 0.4 * rs.random())), int(rs.integers(1, 1 << 30)))
+# the head: a torn cheek and a strip off the side of the skull, the face itself left whole
+tear('head', 'left', 0.3, 777)
+tear('head', 'right', 0.25, 778)
+tear('head', 'back', 0.2, 779)
+
 # ---- bone: ivory, worn, cracked, darker in its grooves (one field that every bony part samples)
 bx, by, bw, bh = 520, 652, 504, 372
 g1 = blotch(bh, bw, 18, 501)
