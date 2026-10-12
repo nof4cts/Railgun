@@ -62,6 +62,9 @@ public final class OConfig {
         public final ForgeConfigSpec.DoubleValue heliosDamage;
         public final ForgeConfigSpec.DoubleValue antipodeRadius;
         public final ForgeConfigSpec.DoubleValue antipodeDamage;
+        public final ForgeConfigSpec.BooleanValue blight;
+        public final ForgeConfigSpec.IntValue blightRate;
+        public final ForgeConfigSpec.IntValue blightMobCap;
 
         Server(ForgeConfigSpec.Builder b) {
             b.push("uplink");
@@ -81,6 +84,10 @@ public final class OConfig {
             b.push("antipode");
             antipodeRadius = b.comment("Radius of the land that is exchanged, in blocks.").defineInRange("radius", 36.0, 6.0, 160.0);
             antipodeDamage = b.comment("Damage to everything in the zone when the worlds touch.").defineInRange("damage", 60.0, 0.0, 10000.0);
+            blight = b.comment("After the exchange, the other world's flesh spreads outward from the rim with no end, and things crawl out of it.",
+                    "Stop a spread in progress with /orbital_arsenal blight stop.").define("blight", true);
+            blightRate = b.comment("How many edge columns try to spread each tick (higher = faster).").defineInRange("blightRate", 60, 1, 5000);
+            blightMobCap = b.comment("Most blight creatures alive near each player (0 = none spawn).").defineInRange("blightMobCap", 10, 0, 100);
             b.pop();
         }
     }

@@ -264,11 +264,6 @@ final class AntipodeFx {
         int I = c.impact;
         Vec3 T = a.target;
         float r = a.radius;
-        if (t < I + 2) {
-            float on = ScreenFx.window(t, 0, 12, I - 2, I + 2);
-            float pulse = 0.7F + 0.3F * Mth.sin(t * 0.4F);
-            Shapes.ring(out, T.add(0, 0.2, 0), UP, r, 0.25F, on * pulse, CRIMSON, Ribbon.Style.GLOW);
-        }
         if (WorldFx.available()) {
             return;
         }

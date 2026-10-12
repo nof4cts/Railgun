@@ -25,6 +25,7 @@ uniform vec4 MirrorP;   // height of the hanging land's base above the centre, o
 uniform vec4 Cracks;    // growth, opacity, height above the centre, seed
 uniform float Crimson;  // how far the sky and light have turned
 uniform float Lightning;
+uniform float CamY;      // the camera's height in the world, so high clouds can count as sky
 
 in vec2 uv;
 out vec4 fragColor;
@@ -93,10 +94,11 @@ float hang(vec2 xz) {
     float r2 = dot(u, u);
     if (r2 > 1.0) return 0.0;
     float fall = 1.0 - r2;
-    float peak = max(0.0, (f2(u * 7.0 + Cracks.w, 5) - 0.4) / 0.6);
-    float ridge = pow(1.0 - abs(2.0 * f2(u * 16.0 + 3.0 + Cracks.w, 5) - 1.0), 6.0);
+    float peak = max(0.0, (f2(u * 4.5 + Cracks.w, 4) - 0.38) / 0.62);
+    float ridge = pow(1.0 - abs(2.0 * f2(u * 9.0 + 3.0 + Cracks.w, 3) - 1.0), 4.0);
     float centre = exp(-r2 * MirrorP.w * MirrorP.w * 1.6);
-    return Mirror.w * 0.9 * min(1.0, pow(peak, 1.6) * fall * 0.55 + ridge * 0.12 * fall + centre * (0.9 + 0.1 * peak));
+    float h = pow(peak, 1.4) * fall * 0.55 + ridge * 0.1 * fall + centre * (0.92 + 0.08 * peak);
+    return Mirror.w * 0.9 * min(1.0, h);
 }
 
 /** March the ray into the hanging land: hit t (or -1) and where. */
@@ -148,8 +150,8 @@ vec3 shadeLand(vec3 p, vec3 rd, bool top, float dist) {
     vec3 n = top ? vec3(0.0, 1.0, 0.0) : normalize(vec3(-hx / (2.0 * e), -1.0, -hz / (2.0 * e)));
     float h = hang(p.xz) / (Mirror.w * 0.9);
     float sea = smoothstep(0.06, 0.01, h);
-    float moss = smoothstep(0.52, 0.62, f2(u * 22.0 + 9.0, 4)) * (1.0 - sea);
-    vec3 rock = mix(vec3(0.12, 0.05, 0.16), vec3(0.28, 0.14, 0.3), f2(u * 60.0, 4));
+    float moss = smoothstep(0.5, 0.66, f2(u * 10.0 + 9.0, 3)) * (1.0 - sea);
+    vec3 rock = mix(vec3(0.14, 0.06, 0.17), vec3(0.3, 0.15, 0.3), f2(u * 18.0, 3));
     vec3 col = mix(rock, vec3(0.04, 0.24, 0.24), moss);
     vec3 seaCol = vec3(0.36, 0.03, 0.08) + vec3(0.25, 0.05, 0.1) * pow(1.0 - abs(dot(n, rd)), 3.0);
     col = mix(col, seaCol, sea);
@@ -159,15 +161,15 @@ vec3 shadeLand(vec3 p, vec3 rd, bool top, float dist) {
     col *= diff * (0.7 + 1.4 * Lightning);
     col += vec3(0.5, 0.08, 0.2) * rim * 0.6;
     // fissures of light
-    float fis = pow(1.0 - abs(2.0 * f2(u * 30.0 + 2.0, 5) - 1.0), 14.0) * (1.0 - sea);
+    float fis = pow(1.0 - abs(2.0 * f2(u * 12.0 + 2.0, 3) - 1.0), 22.0) * (1.0 - sea);
     float pulse = 0.75 + 0.25 * sin(Time * 2.0 + u.x * 20.0);
     col += vec3(1.0, 0.25, 0.65) * fis * 2.2 * pulse;
     if (top) {
         col = vec3(0.05, 0.02, 0.06) + vec3(0.6, 0.1, 0.3) * fis;
     }
     // air between us and it
-    float fog = 1.0 - exp(-dist / 900.0);
-    col = mix(col, vec3(0.4, 0.08, 0.16), fog * 0.7);
+    float fog = 1.0 - exp(-dist / 700.0);
+    col = mix(col, vec3(0.42, 0.1, 0.18), fog * 0.75);
     return col;
 }
 
@@ -181,6 +183,7 @@ void main() {
     bool sky = depth >= 0.99999;
     vec3 P = worldAt(st, depth);
     float tScene = sky ? 1e6 : length(P);
+    bool cloud = !sky && P.y + CamY > 150.0 && tScene > 60.0;
 
     // --- bending the air: heat over the lance, the shock dome
     vec2 off = vec2(0.0);
@@ -203,35 +206,49 @@ void main() {
 
     // --- Antipode: the sky and the light turn
     if (Crimson > 0.0) {
-        if (sky) {
+        if (sky || cloud) {
             float up = clamp(rd.y, 0.0, 1.0);
             vec3 skyCol = mix(vec3(0.55, 0.12, 0.22), vec3(0.18, 0.02, 0.08), pow(up, 0.6));
-            col = mix(col, skyCol, Crimson * 0.72);
+            col = mix(col, cloud ? skyCol * (0.7 + 0.5 * lum(col)) : skyCol, Crimson * 0.72);
         } else {
             col *= mix(vec3(1.0), vec3(1.0, 0.68, 0.78), Crimson * 0.55);
         }
     }
     if (Mirror.w > 0.0 && Cracks.y > 0.0 && rd.y > 0.0) {
-        // the web of cracks across the sky over the mark
+        // the sky splitting over the mark: filaments of light running out from a rift, energy flowing along them
         float h = Mirror.y + Cracks.z;
         float t = h / rd.y;
-        if (t > 0.0 && t < tScene) {
+        if (t > 0.0 && (t < tScene || cloud)) {
             vec3 p = rd * t;
             vec2 l = (p.xz - Mirror.xz);
             float lr = length(l);
             float reach = Mirror.w * 7.0 * Cracks.x;
-            float m = smoothstep(reach, reach * 0.6, lr);
-            // warp the plane so the cracks run in jagged, uneven lines, and let only some of the edges split
-            vec2 w = l * 0.022 + (vec2(f2(l * 0.01 + Cracks.w, 4), f2(l * 0.01 + Cracks.w + 7.0, 4)) - 0.5) * 2.2;
+            float m = smoothstep(reach, reach * 0.55, lr);
+            vec2 w = l * 0.02 + (vec2(f2(l * 0.008 + Cracks.w, 3), f2(l * 0.008 + Cracks.w + 7.0, 3)) - 0.5) * 2.4;
             float e = voronoiEdge(w, Cracks.w);
-            float e2 = voronoiEdge(w * 3.1 + 3.0, Cracks.w + 5.0);
-            float keep = smoothstep(0.35, 0.6, f2(l * 0.015 + Cracks.w * 3.0, 3) + 0.35 * exp(-lr / (Mirror.w * 3.0)));
-            float width = 0.012 + 0.03 * f2(l * 0.03, 3);
-            float crack = exp(-sqr(e / width)) * keep + 0.45 * exp(-sqr(e2 / 0.025)) * keep * smoothstep(reach * 0.8, reach * 0.3, lr);
-            float centre = exp(-lr / (Mirror.w * 1.2));
-            vec3 g = vec3(1.0, 0.35, 0.7) * crack * 1.6 + vec3(1.0, 0.85, 0.95) * pow(crack, 4.0) * 1.5 + vec3(0.8, 0.1, 0.4) * centre * 0.8;
+            float e2 = voronoiEdge(w * 2.6 + 3.0, Cracks.w + 5.0);
+            float keep = smoothstep(0.32, 0.62, f2(l * 0.012 + Cracks.w * 3.0, 3) + 0.4 * exp(-lr / (Mirror.w * 3.0)));
+            float width = 0.03 + 0.03 * f2(l * 0.02, 2);
+            float flow = 0.65 + 0.35 * sin(lr * 0.05 - Time * 3.0 + e * 20.0);
+            float fil = (exp(-e / width) * 0.55 + exp(-sqr(e / (width * 0.3))) * 1.0) * keep * flow;
+            float fine = exp(-e2 / 0.03) * 0.35 * keep * smoothstep(reach * 0.75, reach * 0.25, lr);
+            // the rift: a long tear of light where the sky is open widest
+            float ang = Cracks.w * 1.7;
+            vec2 ax = vec2(cos(ang), sin(ang));
+            vec2 q = vec2(dot(l, ax), dot(l, vec2(-ax.y, ax.x)));
+            float riftLen = Mirror.w * 2.6 * Cracks.x, riftW = Mirror.w * 0.22 * Cracks.x + 0.5;
+            float rift = exp(-sqr(q.y / riftW) - sqr(q.x / max(riftLen, 1.0)));
+            vec3 inner = mix(vec3(1.0, 0.35, 0.65), vec3(0.55, 0.15, 1.0), f2(q * 0.05 + Time * 0.1, 3));
+            vec3 g = vec3(1.0, 0.36, 0.7) * fil * 1.4 + vec3(1.0, 0.9, 0.97) * pow(fil, 3.0) * 0.8 + vec3(0.9, 0.3, 0.8) * fine
+                    + inner * rift * 1.6 + vec3(1.0, 0.95, 1.0) * pow(rift, 6.0) * 1.5;
             col += g * m * Cracks.y;
         }
+    }
+    // the mark on the ground: a soft ring of light cast on the land itself
+    if (Mirror.w > 0.0 && Cracks.y > 0.0 && !sky && abs(P.y - Mirror.y) < Mirror.w * 0.5) {
+        float dh = length(P.xz - Mirror.xz);
+        float ring = exp(-sqr((dh - Mirror.w) / 1.4)) + 0.35 * exp(-sqr((dh - Mirror.w * 0.5) / 0.8));
+        col += vec3(1.0, 0.25, 0.5) * ring * (0.6 + 0.4 * sin(Time * 2.5)) * Cracks.y * 0.9;
     }
     float landT = -1.0;
     if (Mirror.w > 0.0 && MirrorP.y > 0.0) {
@@ -257,11 +274,12 @@ void main() {
             float y = c.z;
             if (y < Mirror.y - 2.0 || y > topY + 2.0) continue;
             // jag the line sideways as it falls
-            vec2 jag = (vec2(f2(vec2(y * 0.08, s), 3), f2(vec2(y * 0.08, s + 4.0), 3)) - 0.5) * Mirror.w * 0.35;
+            vec2 jag = (vec2(f2(vec2(y * 0.05, s), 2), f2(vec2(y * 0.05, s + 4.0), 2)) - 0.5) * Mirror.w * 0.3;
             vec3 c2 = toVertical(rd, bxz + jag, tScene);
             float d = c2.x;
             float flick = h2(vec2(floor(Time * 30.0), s));
-            col += (vec3(1.0, 0.92, 1.0) * exp(-sqr(d / 0.5)) * 2.5 + vec3(0.8, 0.3, 1.0) * exp(-d / 4.0) * 0.5) * Lightning * (0.6 + 0.4 * flick);
+            col += (vec3(1.0, 0.94, 1.0) * exp(-sqr(d / 0.45)) * 2.2 + vec3(0.85, 0.35, 1.0) * exp(-d / 3.0) * 0.55 + vec3(0.6, 0.2, 0.8) * exp(-d / 14.0) * 0.15)
+                    * Lightning * (0.6 + 0.4 * flick);
         }
     }
     if (Mirror.w > 0.0 && MirrorP.z > 0.0) {

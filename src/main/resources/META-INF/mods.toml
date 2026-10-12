@@ -9,6 +9,7 @@ displayName="${mod_name}"
 authors="${mod_authors}"
 description='''
 Orbital Arsenal: two orbital cannons on the Orbital Uplink. Right-click fires at your crosshair, sneak + right-click switches cannon.
+With The Flesh That Hates (by WinVic) installed, Antipode's blight grows that mod's flesh and spawns its creatures; nothing of it is bundled here.
 OA-01 Helios: a ring of orbital mirrors focuses the sun into a lance you steer with your crosshair, cutting molten trenches.
 OA-02 Antipode: a breach opens beside the Earth, a mirror Earth comes through, and where the two touch the land is exchanged for the other world's, upside down.
 Full cinematics from the ground to orbit and back, with anime impact frames. Works with or without The Shooting Star installed.
@@ -30,6 +31,13 @@ Full cinematics from the ground to orbit and back, with anime impact frames. Wor
 
 [[dependencies.${mod_id}]]
     modId="shooting_star_demo"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="the_flesh_that_hates"
     mandatory=false
     versionRange="*"
     ordering="AFTER"

@@ -39,7 +39,7 @@ public final class SelfTest {
     private static boolean done;
     private static final List<int[]> SHOTS = new ArrayList<>();
     private static final int[] HELIOS_BEATS = {20, 56, 88, 120, 160, 196, 232, 258, 276, 300, 312, 326, 333, 336, 344, 362, 384, 420, 470, 512};
-    private static final int[] ANTIPODE_BEATS = {20, 60, 90, 120, 160, 200, 240, 276, 300, 316, 334, 352, 365, 368, 372, 392, 410, 430, 480, 520};
+    private static final int[] ANTIPODE_BEATS = {20, 60, 90, 120, 160, 200, 240, 276, 300, 316, 334, 352, 365, 368, 372, 392, 410, 430, 480, 520, 600, 700, 790};
     private static final int HX = 0, AX = 160;
 
     private SelfTest() {}
@@ -109,7 +109,7 @@ public final class SelfTest {
             if (t == 506) {
                 vantage(server, mc, HX + 40, 45, -10, 60, 40);
             }
-            if (t > 545) {
+            if (t > 975) {
                 begin(server, mc, "antipode", AX, com.firestar.orbital.common.Cannon.ANTIPODE, ANTIPODE_BEATS);
             }
         } else if (phase.equals("antipode")) {
@@ -119,7 +119,14 @@ public final class SelfTest {
             if (t == 514) {
                 vantage(server, mc, AX, 70, 10, 0, 60);
             }
-            if (t > 540) {
+            if (t % 100 == 0 && t > 460) {
+                server.execute(() -> OrbitalMod.LOGGER.info("[selftest] blight front at t={}: {} columns",
+                        mc.level.getGameTime() - calledAt, com.firestar.orbital.server.Blight.get(player(server).serverLevel()).size()));
+            }
+            if (t == 760) {
+                vantage(server, mc, AX, 90, -20, 0, 55);
+            }
+            if (t > 800) {
                 done = true;
                 OrbitalMod.LOGGER.info("[selftest] finished; strikes still active: {}; smoke {}; stopping", Strikes.ACTIVE.size(),
                         com.firestar.orbital.client.fx.Smoke.count());

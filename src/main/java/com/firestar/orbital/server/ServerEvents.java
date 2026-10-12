@@ -1,6 +1,7 @@
 package com.firestar.orbital.server;
 
 import com.firestar.orbital.OrbitalMod;
+import com.firestar.orbital.config.OConfig;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -19,6 +20,15 @@ public final class ServerEvents {
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             Strikes.tick(event.getServer());
+            for (net.minecraft.server.level.ServerLevel level : event.getServer().getAllLevels()) {
+                Blight b = Blight.get(level);
+                if (b.size() > 0) {
+                    b.tick(level, OConfig.SERVER.blocksPerTick.get());
+                    if (level.getGameTime() % 40 == 0) {
+                        Blight.spawn(level);
+                    }
+                }
+            }
         }
     }
 
@@ -64,6 +74,17 @@ public final class ServerEvents {
                 return 1;
             }));
         }
-        event.getDispatcher().register(root.then(fire));
+        var blight = Commands.literal("blight")
+                .then(Commands.literal("stop").executes(ctx -> {
+                    Blight.get(ctx.getSource().getLevel()).clear();
+                    ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("The blight stops spreading (what it took stays)."), true);
+                    return 1;
+                }))
+                .then(Commands.literal("status").executes(ctx -> {
+                    int n = Blight.get(ctx.getSource().getLevel()).size();
+                    ctx.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal("Blight front: " + n + " columns spreading."), false);
+                    return n;
+                }));
+        event.getDispatcher().register(root.then(fire).then(blight));
     }
 }

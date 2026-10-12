@@ -7,9 +7,9 @@ package com.firestar.orbital.common;
 public enum Cannon {
     /**
      * OA-01 Helios: a ring of orbital mirrors unfolds round a focusing lens and pours the sun down a single white-gold
-     * lance; for a few seconds after it lands, the lance follows the caller's crosshair and cuts a molten trench.
+     * lance; for thirty seconds after it lands, the lance follows the caller's crosshair and cuts a molten trench.
      */
-    HELIOS("Helios", "OA-01", 0xFFD27A, 392, 332, 332 + 170, 332 + 170 + 30),
+    HELIOS("Helios", "OA-01", 0xFFD27A, 392, 332, 332 + 600, 332 + 600 + 30),
     /**
      * OA-02 Antipode: the sky over the mark cracks, a breach opens beside the Earth and a mirror Earth slides out of it;
      * where the two touch, the other world's land comes down upside down onto the mark and the ground there is

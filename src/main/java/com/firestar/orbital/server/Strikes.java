@@ -68,6 +68,7 @@ public final class Strikes {
         int done;
         /** The zone's average ground height: the level the other world's relief is mirrored about. */
         double mirror;
+        boolean seeded;
 
         Active(int id, Cannon cannon, ServerPlayer p, Vec3 target, long start, long seed, float radius) {
             this.id = id;
@@ -316,6 +317,10 @@ public final class Strikes {
             int[] col = a.columns[a.done++];
             budget -= exchange(a, col[0], col[1]);
         }
+        if (a.done >= a.columns.length && !a.seeded) {
+            a.seeded = true;
+            Blight.seed(a.level, BlockPos.containing(a.target), a.radius);
+        }
         if (t % 5 == 0 && t < c.hold) {
             hurt(a, a.target, a.radius * (0.2F + 0.8F * k), OConfig.SERVER.antipodeDamage.get().floatValue() * 0.25F, false);
         }
@@ -370,7 +375,11 @@ public final class Strikes {
         for (int y = Math.min(n - 4, s - 3); y <= n; y++) {
             m.set(x, y, z);
             BlockState st;
-            if (y == n) {
+            if (y == n && Blight.flesh()) {
+                st = Blight.top(r);
+            } else if (y < n && Blight.flesh()) {
+                st = y > n - 3 ? Blight.under(r, false) : Blight.deep();
+            } else if (y == n) {
                 st = (d > a.radius - 1.3 ? Blocks.CRYING_OBSIDIAN : sculk ? Blocks.SCULK : warped ? Blocks.WARPED_NYLIUM : Blocks.CRIMSON_NYLIUM)
                         .defaultBlockState();
             } else if (r.nextInt(30) == 0) {

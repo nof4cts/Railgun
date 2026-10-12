@@ -244,9 +244,46 @@ vec3 halo(vec3 ro, vec3 rd, vec3 c, float r, vec3 tint, float tMax) {
 
 // ------------------------------------------------------------------------------------------------ Helios
 
-float hexd(vec2 p) {
-    p = abs(p);
-    return max(dot(p, vec2(0.8660254, 0.5)), p.y);
+/** What a mirror sees: the Earth below it (traced from the array's place in orbit), else the sky and the sun. */
+vec3 envAt(vec3 from, vec3 d) {
+    float t = sphere(from, d, vec3(0.0), 1.0);
+    if (t > 0.0) {
+        vec3 p = from + d * t;
+        vec3 n = normalize(p);
+        vec3 q = rotY(n, Time * 0.002);
+        float h = fbmN(q * 2.4 + 7.1, 6);
+        float cont = smoothstep(0.505, 0.525, h);
+        vec3 surf = mix(vec3(0.02, 0.08, 0.2), vec3(0.25, 0.3, 0.16), cont);
+        float cl = smoothstep(0.5, 0.72, fbmN(q * 4.6 + vec3(Time * 0.0018, 0.0, 0.0), 5));
+        surf = mix(surf, vec3(1.0), cl * 0.9);
+        float diff = max(dot(n, SunDir), 0.0);
+        float rim = pow(1.0 - max(dot(n, -d), 0.0), 3.0);
+        return surf * (diff * 1.2 + 0.02) + vec3(0.3, 0.55, 1.0) * rim * 0.5;
+    }
+    return stars(d) + sun(d) + halo(from, d, vec3(0.0), 1.0, vec3(0.3, 0.55, 1.0), 1e9);
+}
+
+/** Signed distance to the hub: a machined body along the axis, a ring round it, the lens at its nose. */
+float hubSdf(vec3 p, vec3 A, out int part) {
+    float along = dot(p, A);
+    vec3 radial = p - A * along;
+    float r = length(radial);
+    // body: a rounded cylinder from -0.55 to 0.35 along the axis
+    float body = max(r - 0.2, abs(along + 0.1) - 0.45) - 0.03;
+    // a collar where the struts meet
+    float collar = max(r - 0.3, abs(along + 0.05) - 0.06) - 0.02;
+    // a ring round it, out where the struts begin
+    vec2 tq = vec2(r - 0.62, along + 0.05);
+    float ring = length(tq) - 0.045;
+    // the lens at the nose, facing the Earth
+    float lens = length(p - A * 0.42) - 0.17;
+    float d = min(min(body, collar), ring);
+    part = d == ring ? 2 : 1;
+    if (lens < d) {
+        d = lens;
+        part = 3;
+    }
+    return d;
 }
 
 vec4 helios(vec3 ro, vec3 rd, out vec3 glow) {
@@ -254,96 +291,137 @@ vec4 helios(vec3 ro, vec3 rd, out vec3 glow) {
     vec3 A = normalize(ArrayAxis);
     vec3 U = normalize(cross(A, abs(A.y) < 0.9 ? vec3(0, 1, 0) : vec3(1, 0, 0)));
     vec3 V = cross(A, U);
+    vec3 arrayPos = EyeP - LocalEye / 6371.0;
+    vec3 earthshine = vec3(0.12, 0.22, 0.4);
     float best = 1e9;
     vec3 col = vec3(0.0);
-    float rr = mix(0.55, 2.3, Unfold);
-    float pr = 0.66;
+    float rr = mix(0.6, 2.35, Unfold);
+    // petals: long leaves, wide in the middle, pointed at both ends
+    float plen = 1.05, pwid = 0.5;
     for (int i = 0; i < 12; i++) {
         float ang = float(i) * TAU / 12.0;
         vec3 radial = cos(ang) * U + sin(ang) * V;
-        vec3 c = radial * rr - A * (1.0 - Unfold) * 0.6;
+        vec3 c = radial * rr - A * (1.0 - Unfold) * 0.65;
         vec3 tangent = cross(A, radial);
         vec3 toLens = normalize(-c + A * 0.001);
         vec3 openN = normalize(SunDir + toLens);
-        // each mirror opens a moment after the one before it
         float u = smoothstep(float(i) / 16.0, float(i) / 16.0 + 0.3, Unfold);
         vec3 n = normalize(mix(tangent, openN, u));
         float dn = dot(rd, n);
-        if (abs(dn) < 1e-4) continue;
+        if (abs(dn) < 1e-5) continue;
         float t = dot(c - ro, n) / dn;
         if (t <= 0.0 || t >= best) continue;
         vec3 h = ro + rd * t - c;
-        vec3 e1 = normalize(cross(n, radial) + 1e-4);
+        // the petal's own axes: along the radial (in its plane) and across
+        vec3 e1 = normalize(radial - n * dot(radial, n));
         vec3 e2 = cross(n, e1);
-        vec2 l = vec2(dot(h, e1), dot(h, e2));
-        float d = hexd(l);
-        if (d > pr) continue;
+        vec2 l = vec2(dot(h, e1) / plen, dot(h, e2) / pwid);
+        // leaf outline: narrows toward both tips
+        float halfw = sqrt(max(0.0, 1.0 - l.x * l.x)) * (1.0 - 0.18 * l.x * l.x);
+        float edge = abs(l.y) / max(halfw, 1e-4);
+        if (abs(l.x) > 1.0 || edge > 1.0) continue;
         best = t;
         bool front = dn < 0.0;
-        // facets: each a slightly different angle, so the sun glitters across the face
-        vec2 cellId = floor(l * 7.0 + 0.5);
-        vec3 jit = (vec3(hash31(vec3(cellId, float(i))), hash31(vec3(cellId, float(i) + 3.0)), hash31(vec3(cellId, float(i) + 7.0))) - 0.5) * 0.02;
-        vec3 nf = normalize((front ? n : -n) + jit);
-        if (front) {
-            vec3 r = reflect(rd, nf);
-            vec3 env = stars(r) + sun(r);
-            float fres = 0.6 + 0.4 * pow(1.0 - abs(dot(rd, nf)), 3.0);
-            vec3 m = vec3(0.9, 0.76, 0.48) * 0.1 + env * vec3(1.0, 0.9, 0.7) * fres;
-            vec2 g = abs(fract(l * 7.0 + 0.5) - 0.5);
-            m *= 0.82 + 0.18 * smoothstep(0.0, 0.05, min(g.x, g.y));
-            col = m;
-        } else {
-            vec2 g = abs(fract(l * 9.0) - 0.5);
-            col = mix(vec3(0.55, 0.57, 0.62), vec3(0.025, 0.035, 0.07), smoothstep(0.02, 0.06, min(g.x, g.y)));
-            col *= 0.25 + 0.75 * max(dot(-n, SunDir), 0.0);
+        // concave: the surface tips toward the lens away from the centre line, rippled very slightly
+        vec3 nn = front ? n : -n;
+        vec3 bend = (e1 * l.x * plen + e2 * l.y * pwid) * 0.09;
+        vec3 ripple = (vec3(vnoise3(h * 26.0 + float(i)), vnoise3(h * 26.0 + 7.0 + float(i)), vnoise3(h * 26.0 + 13.0)) - 0.5) * 0.012;
+        vec3 ns = normalize(nn - (front ? bend : -bend) + ripple);
+        float rim = smoothstep(0.86, 0.97, edge) + smoothstep(0.9, 0.99, abs(l.x));
+        if (rim > 0.5) {
+            // the frame: a titanium tube round the petal, round in section
+            float k = clamp((edge - 0.86) / 0.11, 0.0, 1.0);
+            vec3 tubeN = normalize(nn * cos(k * 1.4) + e2 * sign(l.y) * sin(k * 1.4));
+            float diff = max(dot(tubeN, SunDir), 0.0);
+            float spec = pow(max(dot(reflect(rd, tubeN), SunDir), 0.0), 60.0);
+            col = vec3(0.62, 0.6, 0.58) * (diff * 0.9 + 0.05) + earthshine * max(dot(tubeN, -A), 0.0) * 0.4 + vec3(1.0, 0.95, 0.9) * spec * 2.0;
+            continue;
         }
-        if (d > pr * 0.92) {
-            float diff = max(dot(front ? n : -n, SunDir), 0.0);
-            float spec = pow(max(dot(reflect(rd, front ? n : -n), SunDir), 0.0), 30.0);
-            col = vec3(0.85, 0.6, 0.22) * (0.12 + diff) + vec3(1.0, 0.9, 0.7) * spec;
+        if (front) {
+            vec3 r = reflect(rd, ns);
+            vec3 env = envAt(arrayPos + ro / 6371.0, r);
+            float fres = 0.75 + 0.25 * pow(1.0 - abs(dot(rd, ns)), 4.0);
+            vec3 m = env * vec3(0.98, 0.95, 0.88) * fres;
+            // seams of the membrane: fine radial lines and a few rings
+            float seam = smoothstep(0.012, 0.0, abs(fract(l.y * halfw * 5.0 + 0.5) - 0.5) * 0.2) * 0.35
+                    + smoothstep(0.02, 0.0, abs(fract((l.x + 1.0) * 3.0) - 0.5) * 0.12) * 0.25;
+            m *= 1.0 - seam;
+            col = m + vec3(0.04, 0.035, 0.03);
+        } else {
+            // the back: carbon panels and silver ribs, lit by the sun and the Earth
+            float rib = smoothstep(0.03, 0.0, abs(l.y)) + smoothstep(0.015, 0.0, abs(fract((l.x + 1.0) * 4.0) - 0.5) * 0.25);
+            vec3 base = mix(vec3(0.03, 0.035, 0.05), vec3(0.6, 0.62, 0.66), clamp(rib, 0.0, 1.0));
+            float diff = max(dot(ns, SunDir), 0.0);
+            col = base * (diff + 0.08) + earthshine * max(dot(ns, -A), 0.0) * 0.5;
         }
     }
-    // the hub ring and the struts
+    // struts, as round tubes, from the hub to each petal
     for (int i = 0; i < 12; i++) {
         float ang = float(i) * TAU / 12.0;
-        vec3 c = (cos(ang) * U + sin(ang) * V) * rr - A * (1.0 - Unfold) * 0.6;
-        vec2 s = raySeg(ro, rd, vec3(0.0), c);
-        if (s.x < 0.022 && s.y < best) {
+        vec3 c = (cos(ang) * U + sin(ang) * V) * rr - A * (1.0 - Unfold) * 0.65;
+        vec3 a0 = (cos(ang) * U + sin(ang) * V) * 0.62;
+        vec2 s = raySeg(ro, rd, a0, c * 0.6);
+        float rad = 0.018;
+        if (s.x < rad && s.y < best) {
             best = s.y;
-            col = vec3(0.4, 0.36, 0.3) * (0.25 + max(dot(normalize(cross(rd, c)), SunDir), 0.0));
-        }
-        float ang2 = float(i + 1) * TAU / 12.0;
-        vec3 a0 = (cos(ang) * U + sin(ang) * V) * 0.55, a1 = (cos(ang2) * U + sin(ang2) * V) * 0.55;
-        vec2 s2 = raySeg(ro, rd, a0, a1);
-        if (s2.x < 0.035 && s2.y < best) {
-            best = s2.y;
-            col = vec3(0.7, 0.55, 0.3) * (0.2 + max(dot(A * -1.0, SunDir), 0.0));
+            vec3 p = ro + rd * s.y;
+            vec3 axis = normalize(c - a0);
+            vec3 onAxis = a0 + axis * dot(p - a0, axis);
+            vec3 tn = normalize(p - onAxis + rd * -0.001);
+            float diff = max(dot(tn, SunDir), 0.0);
+            float spec = pow(max(dot(reflect(rd, tn), SunDir), 0.0), 40.0);
+            col = vec3(0.55, 0.55, 0.55) * (diff + 0.06) + earthshine * max(dot(tn, -A), 0.0) * 0.4 + vec3(1.0) * spec;
         }
         if (Charge > 0.0) {
+            vec2 sl = raySeg(ro, rd, c * 0.6, vec3(0.0));
             float run = fract(Time * 1.6 - float(i) * 0.07);
             vec3 pulse = mix(c, vec3(0.0), run);
             float dp = length(ro + rd * dot(pulse - ro, rd) - pulse);
-            glow += vec3(1.0, 0.85, 0.5) * (exp(-s.x * s.x / 0.003) * 0.7 + exp(-dp * dp / 0.01) * 1.5) * Charge * step(s.y, best + 0.001);
+            glow += vec3(1.0, 0.86, 0.55) * (exp(-sl.x * sl.x / 0.0012) * 0.6 + exp(-dp * dp / 0.006) * 1.2) * Charge * step(sl.y, best + 0.001);
         }
     }
-    float tl = sphere(ro, rd, vec3(0.0), 0.36);
-    if (tl > 0.0 && tl < best) {
-        best = tl;
-        vec3 n = normalize(ro + rd * tl);
-        float fres = pow(1.0 - max(dot(n, -rd), 0.0), 2.0);
-        vec3 inner = stars(refract(rd, n, 0.7)) * 0.6;
-        float rings = 0.5 + 0.5 * sin(length(cross(n, A)) * 60.0 - Time * 8.0 * Charge);
-        col = mix(vec3(0.06, 0.08, 0.14) + inner, vec3(1.0, 0.95, 0.82) * (1.6 + 0.9 * rings), Charge) + vec3(0.6, 0.7, 1.0) * fres * 0.7;
+    // the hub, ray-marched inside its bounding sphere
+    float tb = sphere(ro, rd, vec3(0.0), 0.8);
+    if (tb >= 0.0 && tb < best) {
+        float t = max(tb, 0.0);
+        int part = 0;
+        for (int k = 0; k < 48; k++) {
+            vec3 p = ro + rd * t;
+            float d = hubSdf(p, A, part);
+            if (d < 0.002) {
+                vec2 e = vec2(0.002, 0.0);
+                int pp;
+                vec3 n = normalize(vec3(hubSdf(p + e.xyy, A, pp) - hubSdf(p - e.xyy, A, pp), hubSdf(p + e.yxy, A, pp) - hubSdf(p - e.yxy, A, pp),
+                        hubSdf(p + e.yyx, A, pp) - hubSdf(p - e.yyx, A, pp)));
+                float diff = max(dot(n, SunDir), 0.0);
+                float spec = pow(max(dot(reflect(rd, n), SunDir), 0.0), 50.0);
+                if (part == 3) {
+                    float fres = pow(1.0 - max(dot(n, -rd), 0.0), 2.0);
+                    vec3 inner = stars(refract(rd, n, 0.7)) * 0.5;
+                    float rings = 0.5 + 0.5 * sin(length(cross(p, A)) * 90.0 - Time * 8.0 * Charge);
+                    col = mix(vec3(0.05, 0.07, 0.12) + inner, vec3(1.0, 0.95, 0.82) * (1.4 + 0.8 * rings), Charge) + vec3(0.6, 0.7, 1.0) * fres * 0.6;
+                } else if (part == 2) {
+                    col = vec3(0.85, 0.62, 0.25) * (diff + 0.08) + vec3(1.0, 0.9, 0.7) * spec * 1.5 + earthshine * max(dot(n, -A), 0.0) * 0.3;
+                } else {
+                    float panel = smoothstep(0.004, 0.0, abs(fract(dot(p, A) * 14.0) - 0.5) * 0.07);
+                    col = vec3(0.7, 0.72, 0.75) * (diff + 0.07) * (1.0 - panel * 0.5) + vec3(1.0) * spec + earthshine * max(dot(n, -A), 0.0) * 0.35;
+                }
+                best = t;
+                break;
+            }
+            t += d;
+            if (t > tb + 1.7 || t > best) break;
+        }
     }
-    vec2 lc = raySeg(ro, rd, vec3(0.0), vec3(0.0));
-    glow += vec3(1.0, 0.9, 0.6) * exp(-lc.x * 7.0) * Charge * Charge * 0.9;
+    vec2 lc = raySeg(ro, rd, A * 0.42, A * 0.42);
+    glow += vec3(1.0, 0.9, 0.6) * exp(-lc.x * 9.0) * Charge * Charge * 0.8;
     if (Lance > 0.0) {
-        vec2 s = raySeg(ro, rd, vec3(0.0), A * Lance * 4000.0);
-        float w = 0.16 * (0.9 + 0.1 * sin(Time * 40.0));
+        vec2 s = raySeg(ro, rd, A * 0.45, A * (0.45 + Lance * 4000.0));
+        float w = 0.13 * (0.92 + 0.08 * sin(Time * 40.0));
         float core = exp(-sqr(s.x / w));
         float sheath = exp(-sqr(s.x / (w * 3.0))) * (0.6 + 0.4 * vnoise3(vec3(s.y * 0.5 - Time * 30.0, 0.0, 0.0)));
         float wide = exp(-s.x / 1.4);
-        glow += (vec3(1.0, 0.98, 0.92) * core * 10.0 + vec3(1.0, 0.8, 0.4) * sheath * 2.5 + vec3(1.0, 0.7, 0.3) * wide * 1.0) * step(s.y, best + 0.001);
+        glow += (vec3(1.0, 0.98, 0.92) * core * 9.0 + vec3(1.0, 0.8, 0.4) * sheath * 2.2 + vec3(1.0, 0.7, 0.3) * wide * 0.8) * step(s.y, best + 0.001);
     }
     return vec4(col, best < 1e8 ? 1.0 : 0.0);
 }

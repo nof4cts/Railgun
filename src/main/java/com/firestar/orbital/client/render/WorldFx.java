@@ -147,6 +147,7 @@ public final class WorldFx {
             }
             p.set("Crimson", s.crimson);
             p.set("Lightning", s.lightning);
+            p.set("CamY", (float) cam.y);
             GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
 
             GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, out.fbo);
