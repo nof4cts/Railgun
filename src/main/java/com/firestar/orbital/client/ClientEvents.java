@@ -49,9 +49,7 @@ public final class ClientEvents {
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
-            if (event.phase == TickEvent.Phase.START) {
-                Keys.handle();
-            } else {
+            if (event.phase == TickEvent.Phase.END) {
                 Strikes.tick();
                 Director.tick();
                 SelfTest.tick();
@@ -188,11 +186,6 @@ public final class ClientEvents {
     @Mod.EventBusSubscriber(modid = OrbitalMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static final class ModBus {
         private ModBus() {}
-
-        @SubscribeEvent
-        public static void onKeys(net.minecraftforge.client.event.RegisterKeyMappingsEvent event) {
-            Keys.register(event);
-        }
 
         @SubscribeEvent
         public static void onReload(RegisterClientReloadListenersEvent event) {
