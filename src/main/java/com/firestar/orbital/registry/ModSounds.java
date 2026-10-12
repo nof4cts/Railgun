@@ -26,6 +26,15 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> ANTIPODE_AFTER = reg("antipode_after");
     public static final RegistryObject<SoundEvent> BOOM = reg("boom");
 
+    public static final RegistryObject<SoundEvent> INVERTED_IDLE = reg("inverted_idle");
+    public static final RegistryObject<SoundEvent> SKITTER_IDLE = reg("skitter_idle");
+    public static final RegistryObject<SoundEvent> BLOATER_IDLE = reg("bloater_idle");
+    public static final RegistryObject<SoundEvent> BLOATER_SWELL = reg("bloater_swell");
+    public static final RegistryObject<SoundEvent> BLOATER_BURST = reg("bloater_burst");
+    public static final RegistryObject<SoundEvent> MAW_IDLE = reg("maw_idle");
+    public static final RegistryObject<SoundEvent> BLIGHT_HURT = reg("blight_hurt");
+    public static final RegistryObject<SoundEvent> BLIGHT_DEATH = reg("blight_death");
+
     private ModSounds() {}
 
     private static RegistryObject<SoundEvent> reg(String name) {

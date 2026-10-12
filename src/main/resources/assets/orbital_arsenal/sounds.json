@@ -133,5 +133,69 @@
     "stream": false
    }
   ]
+ },
+ "inverted_idle": {
+  "subtitle": "subtitles.orbital_arsenal.inverted_idle",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:inverted_idle"
+   }
+  ]
+ },
+ "skitter_idle": {
+  "subtitle": "subtitles.orbital_arsenal.skitter_idle",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:skitter_idle"
+   }
+  ]
+ },
+ "bloater_idle": {
+  "subtitle": "subtitles.orbital_arsenal.bloater_idle",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:bloater_idle"
+   }
+  ]
+ },
+ "bloater_swell": {
+  "subtitle": "subtitles.orbital_arsenal.bloater_swell",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:bloater_swell"
+   }
+  ]
+ },
+ "bloater_burst": {
+  "subtitle": "subtitles.orbital_arsenal.bloater_burst",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:bloater_burst"
+   }
+  ]
+ },
+ "maw_idle": {
+  "subtitle": "subtitles.orbital_arsenal.maw_idle",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:maw_idle"
+   }
+  ]
+ },
+ "blight_hurt": {
+  "subtitle": "subtitles.orbital_arsenal.blight_hurt",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:blight_hurt"
+   }
+  ]
+ },
+ "blight_death": {
+  "subtitle": "subtitles.orbital_arsenal.blight_death",
+  "sounds": [
+   {
+    "name": "orbital_arsenal:blight_death"
+   }
+  ]
  }
 }

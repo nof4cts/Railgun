@@ -290,4 +290,50 @@ save('antipode_after', reverb(hum, 3.0, 0.4, 2000), 0.7)
 d = 4.0
 boom = mixl(sub(3.0, 60, 24, 1.3, 2.5), lp(brown(3.5), 180) * env(3.5, 0.03, 3.4, 1.6) * 0.8)
 save('boom', reverb(boom, 3.5, 0.5, 1200))
+
+# --- the blight's creatures ----------------------------------------------------------------------------------------
+def groan(d, f0, f1, rough=0.6):
+    t = t_(d)
+    f = f0 + (f1 - f0) * t / d + 6 * np.sin(2 * np.pi * 5.5 * t)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    voice = sum(np.sin(ph * k) / k for k in range(1, 9))
+    breath = bp(noise(d), 300, 2400) * rough
+    y = (voice * 0.6 + breath * 0.6) * env(d, 0.08, d - 0.08, 2.5)
+    return bp(y, 80, 3200)
+
+
+save('inverted_idle', reverb(mixl(groan(1.4, 95, 70), at(groan(0.5, 140, 90, 0.9) * 0.6, 0.9)), 0.8, 0.25, 3000), 0.7)
+
+d = 0.9
+ch = np.zeros(int(SR * d))
+for k in range(14):
+    ch = mixl(ch, at(tick_click(0.03, 2800 + rng.random() * 2400) * (0.5 + rng.random() * 0.5), k * 0.055 + rng.random() * 0.02))
+save('skitter_idle', reverb(ch, 0.4, 0.2, 7000), 0.6)
+
+d = 1.4
+t = t_(d)
+gurgle = bp(noise(d), 120, 700) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 9 * t + 2 * np.sin(2 * np.pi * 1.3 * t)))) * env(d, 0.1, 1.2, 2)
+save('bloater_idle', reverb(gurgle, 0.7, 0.3, 2500), 0.65)
+
+d = 1.9
+t = t_(d)
+f = 60 + 220 * (t / d) ** 2
+swell = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.6 + bp(noise(d), 200, 1400) * (t / d) * 0.6
+save('bloater_swell', reverb(swell * np.minimum(1, t / 0.2), 0.8, 0.3, 3000), 0.75)
+
+d = 2.6
+burst = mixl(sub(1.6, 120, 35, 3.0, 2.6), hp(noise(0.7), 600) * env(0.7, 0.001, 0.7, 5) * 0.9, at(bp(noise(1.6), 150, 900) * env(1.6, 0.02, 1.5, 3) * 0.6, 0.05))
+for k in range(18):
+    burst = mixl(burst, at(bp(noise(0.06), 300, 2000) * env(0.06, 0.002, 0.06, 6) * 0.4, 0.1 + rng.random() * 1.4))
+save('bloater_burst', reverb(pad(burst, d), 1.6, 0.35, 2500))
+
+save('maw_idle', reverb(mixl(groan(2.2, 52, 40, 0.9), lp(brown(2.2), 160) * 0.5 * env(2.2, 0.2, 2.0, 1.5)), 1.4, 0.35, 1500), 0.85)
+
+d = 0.55
+hurt = mixl(groan(0.45, 220, 140, 1.2), bp(noise(0.25), 800, 3000) * env(0.25, 0.002, 0.25, 6) * 0.5)
+save('blight_hurt', reverb(pad(hurt, d), 0.4, 0.2, 4000), 0.75)
+
+d = 1.6
+death = mixl(groan(1.2, 160, 50, 1.0), at(bp(noise(0.9), 100, 900) * env(0.9, 0.05, 0.8, 3) * 0.7, 0.5))
+save('blight_death', reverb(pad(death, d), 1.0, 0.3, 2500), 0.8)
 print('sounds ok')

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "orbital_arsenal:block/antipode_stalk_top",
+    "side": "orbital_arsenal:block/antipode_stalk"
+  }
+}

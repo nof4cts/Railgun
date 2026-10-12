@@ -25,5 +25,16 @@ public final class ModItems {
         if (e.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES || e.getTabKey() == CreativeModeTabs.COMBAT) {
             e.accept(UPLINK);
         }
+        if (e.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            e.accept(ModEntities.INVERTED_EGG);
+            e.accept(ModEntities.SKITTER_EGG);
+            e.accept(ModEntities.BLOATER_EGG);
+            e.accept(ModEntities.MAW_EGG);
+        }
+        if (e.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
+            for (var b : ModBlocks.BLOCKS.getEntries()) {
+                e.accept(b.get());
+            }
+        }
     }
 }

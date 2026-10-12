@@ -39,7 +39,7 @@ public final class SelfTest {
     private static boolean done;
     private static final List<int[]> SHOTS = new ArrayList<>();
     private static final int[] HELIOS_BEATS = {20, 56, 88, 120, 160, 196, 232, 258, 276, 300, 312, 326, 333, 336, 344, 362, 384, 420, 470, 512};
-    private static final int[] ANTIPODE_BEATS = {20, 60, 90, 120, 160, 200, 240, 276, 300, 316, 334, 352, 365, 368, 372, 392, 410, 430, 480, 520, 600, 700, 790};
+    private static final int[] ANTIPODE_BEATS = {20, 60, 90, 120, 160, 200, 240, 276, 300, 316, 334, 352, 365, 368, 372, 392, 410, 430, 480, 520, 570, 590, 700, 790};
     private static final int HX = 0, AX = 160;
 
     private SelfTest() {}
@@ -122,6 +122,44 @@ public final class SelfTest {
             if (t % 100 == 0 && t > 460) {
                 server.execute(() -> OrbitalMod.LOGGER.info("[selftest] blight front at t={}: {} columns",
                         mc.level.getGameTime() - calledAt, com.firestar.orbital.server.Blight.get(player(server).serverLevel()).size()));
+            }
+            if (t == 556) {
+                // line the creatures up to be photographed
+                mc.options.setCameraType(CameraType.FIRST_PERSON);
+                server.execute(() -> {
+                    ServerPlayer p = player(server);
+                    ServerLevel lv = p.serverLevel();
+                    int gy = lv.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, AX - 60, -40);
+                    p.getAbilities().flying = true;
+                    p.onUpdateAbilities();
+                    p.connection.teleport(AX - 60 + 0.5, gy + 1.0, -40.5, 0.0F, 8.0F);
+                    net.minecraft.world.entity.EntityType<?>[] types = {com.firestar.orbital.registry.ModEntities.INVERTED.get(),
+                            com.firestar.orbital.registry.ModEntities.SKITTER.get(), com.firestar.orbital.registry.ModEntities.BLOATER.get(),
+                            com.firestar.orbital.registry.ModEntities.MAW.get()};
+                    double[] xs = {-4.6, -1.4, 1.6, 5.2};
+                    for (int i = 0; i < 4; i++) {
+                        net.minecraft.world.entity.Entity e = types[i].create(lv);
+                        if (e instanceof net.minecraft.world.entity.Mob m) {
+                            m.moveTo(AX - 60 + 0.5 + xs[i], gy, -40.5 + 8, 180, 0);
+                            m.setYHeadRot(180);
+                            m.setYBodyRot(180);
+                            m.setNoAi(true);
+                            m.setPersistenceRequired();
+                            lv.addFreshEntity(m);
+                        }
+                    }
+                });
+            }
+            if (t == 600) {
+                server.execute(() -> {
+                    ServerPlayer p = player(server);
+                    p.serverLevel().getEntitiesOfClass(com.firestar.orbital.entity.BlightMob.class, p.getBoundingBox().inflate(40)).forEach(e -> e.discard());
+                });
+            }
+            if (t == 700) {
+                server.execute(() -> OrbitalMod.LOGGER.info("[selftest] blight creatures alive: {}",
+                        player(server).serverLevel().getEntitiesOfClass(com.firestar.orbital.entity.BlightMob.class,
+                                player(server).getBoundingBox().inflate(120)).size()));
             }
             if (t == 760) {
                 vantage(server, mc, AX, 90, -20, 0, 55);

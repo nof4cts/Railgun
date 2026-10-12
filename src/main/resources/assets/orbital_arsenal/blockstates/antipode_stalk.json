@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "orbital_arsenal:block/antipode_stalk"
+    },
+    "axis=z": {
+      "model": "orbital_arsenal:block/antipode_stalk",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "orbital_arsenal:block/antipode_stalk",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

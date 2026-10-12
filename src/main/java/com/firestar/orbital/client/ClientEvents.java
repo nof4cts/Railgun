@@ -188,6 +188,26 @@ public final class ClientEvents {
         private ModBus() {}
 
         @SubscribeEvent
+        public static void onLayers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(com.firestar.orbital.client.mob.InvertedModel.LAYER, com.firestar.orbital.client.mob.InvertedModel::layer);
+            event.registerLayerDefinition(com.firestar.orbital.client.mob.SkitterModel.LAYER, com.firestar.orbital.client.mob.SkitterModel::layer);
+            event.registerLayerDefinition(com.firestar.orbital.client.mob.BloaterModel.LAYER, com.firestar.orbital.client.mob.BloaterModel::layer);
+            event.registerLayerDefinition(com.firestar.orbital.client.mob.MawModel.LAYER, com.firestar.orbital.client.mob.MawModel::layer);
+        }
+
+        @SubscribeEvent
+        public static void onRenderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(com.firestar.orbital.registry.ModEntities.INVERTED.get(), ctx -> new com.firestar.orbital.client.mob.BlightRenderer<>(ctx,
+                    new com.firestar.orbital.client.mob.InvertedModel(ctx.bakeLayer(com.firestar.orbital.client.mob.InvertedModel.LAYER)), "inverted", 0.5F, 1.0F));
+            event.registerEntityRenderer(com.firestar.orbital.registry.ModEntities.SKITTER.get(), ctx -> new com.firestar.orbital.client.mob.BlightRenderer<>(ctx,
+                    new com.firestar.orbital.client.mob.SkitterModel(ctx.bakeLayer(com.firestar.orbital.client.mob.SkitterModel.LAYER)), "skitter", 0.8F, 1.0F));
+            event.registerEntityRenderer(com.firestar.orbital.registry.ModEntities.BLOATER.get(), ctx -> new com.firestar.orbital.client.mob.BlightRenderer<>(ctx,
+                    new com.firestar.orbital.client.mob.BloaterModel(ctx.bakeLayer(com.firestar.orbital.client.mob.BloaterModel.LAYER)), "bloater", 0.8F, 1.0F));
+            event.registerEntityRenderer(com.firestar.orbital.registry.ModEntities.MAW.get(), ctx -> new com.firestar.orbital.client.mob.BlightRenderer<>(ctx,
+                    new com.firestar.orbital.client.mob.MawModel(ctx.bakeLayer(com.firestar.orbital.client.mob.MawModel.LAYER)), "maw", 1.2F, 1.0F));
+        }
+
+        @SubscribeEvent
         public static void onReload(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) PostFx::reload);
             event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener) Space::reload);

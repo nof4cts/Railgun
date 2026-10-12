@@ -25,18 +25,18 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.registries.ForgeRegistries;
+import com.firestar.orbital.registry.ModBlocks;
+import com.firestar.orbital.registry.ModEntities;
 
 /**
  * What Antipode leaves behind: the other world's flesh, alive in our ground. From the rim of the exchanged land a front
  * creeps outward with no end, column by column, turning soil, stone, trees and water to flesh, and things crawl out of it
  * near anyone who walks on it. The front is saved with the world, so it carries on after a restart.
  *
- * <p>With The Flesh That Hates installed it grows that mod's flesh blocks and spawns its creatures (with their own models
- * and animations); without it, the other world's alien soil and our own monsters.
+ * <p>The ground it grows is the other world's own (see {@link ModBlocks}) and so are the things in it (see {@link ModEntities}).
  */
 public final class Blight extends SavedData {
     private static final String NAME = "orbital_arsenal_blight";
-    static final String FLESH = "the_flesh_that_hates";
     private static final int FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_SUPPRESS_DROPS;
     private static final Random R = new Random();
 
@@ -82,61 +82,27 @@ public final class Blight extends SavedData {
 
     // ------------------------------------------------------------------------------------------------ the palette
 
-    static boolean flesh() {
-        return net.minecraftforge.fml.ModList.get().isLoaded(FLESH);
-    }
-
-    private static BlockState block(String mod, String name, BlockState fallback) {
-        Block b = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(mod, name));
-        return b == null || b == Blocks.AIR ? fallback : b.defaultBlockState();
-    }
-
     static BlockState top(Random r) {
-        if (flesh()) {
-            int k = r.nextInt(100);
-            return k < 70 ? block(FLESH, "flesh_grass", Blocks.CRIMSON_NYLIUM.defaultBlockState())
-                    : k < 88 ? block(FLESH, "flesh_block", Blocks.CRIMSON_NYLIUM.defaultBlockState())
-                    : k < 95 ? block(FLESH, "purulent", Blocks.CRIMSON_NYLIUM.defaultBlockState())
-                    : block(FLESH, "tumor", Blocks.CRIMSON_NYLIUM.defaultBlockState());
-        }
         int k = r.nextInt(100);
-        return (k < 45 ? Blocks.CRIMSON_NYLIUM : k < 80 ? Blocks.WARPED_NYLIUM : Blocks.SCULK).defaultBlockState();
+        return (k < 70 ? ModBlocks.SOD : k < 82 ? ModBlocks.MOSS : k < 92 ? ModBlocks.VEIN : ModBlocks.FLESH).get().defaultBlockState();
     }
 
     static BlockState under(Random r, boolean sand) {
-        if (flesh()) {
-            return sand ? block(FLESH, "flesh_sand", Blocks.NETHERRACK.defaultBlockState())
-                    : r.nextInt(6) == 0 ? block(FLESH, "flesh_block_bone", Blocks.NETHERRACK.defaultBlockState())
-                    : block(FLESH, "flesh_block", Blocks.NETHERRACK.defaultBlockState());
-        }
-        return (r.nextInt(30) == 0 ? Blocks.CRYING_OBSIDIAN : Blocks.BLACKSTONE).defaultBlockState();
+        return (r.nextInt(9) == 0 ? ModBlocks.VEIN : ModBlocks.FLESH).get().defaultBlockState();
     }
 
     static BlockState deep() {
-        return flesh() ? block(FLESH, "flesh_coublestone", Blocks.DEEPSLATE.defaultBlockState()) : Blocks.DEEPSLATE.defaultBlockState();
+        return ModBlocks.ROCK.get().defaultBlockState();
     }
 
     static BlockState growth(Random r) {
-        if (flesh()) {
-            int k = r.nextInt(100);
-            return k < 55 ? block(FLESH, "flesh_small_grass", Blocks.AIR.defaultBlockState())
-                    : k < 85 ? block(FLESH, "flesh_spike_grass", Blocks.AIR.defaultBlockState())
-                    : k < 95 ? block(FLESH, "flesh_spikes", Blocks.AIR.defaultBlockState())
-                    : block(FLESH, "flesh_boil", Blocks.AIR.defaultBlockState());
-        }
-        return (r.nextBoolean() ? Blocks.CRIMSON_ROOTS : Blocks.WARPED_ROOTS).defaultBlockState();
+        return (r.nextInt(4) == 0 ? ModBlocks.BULB : ModBlocks.TENDRILS).get().defaultBlockState();
     }
 
     /** Is this block already the other world's? */
     static boolean infected(BlockState s) {
         ResourceLocation id = ForgeRegistries.BLOCKS.getKey(s.getBlock());
-        if (id == null) {
-            return false;
-        }
-        if (id.getNamespace().equals(FLESH)) {
-            return true;
-        }
-        return s.is(Blocks.CRIMSON_NYLIUM) || s.is(Blocks.WARPED_NYLIUM) || s.is(Blocks.SCULK) || s.is(Blocks.CRYING_OBSIDIAN);
+        return id != null && id.getNamespace().equals(OrbitalMod.MODID);
     }
 
     // ------------------------------------------------------------------------------------------------ spreading
@@ -157,7 +123,7 @@ public final class Blight extends SavedData {
     }
 
     /** Infect one column: its ground, what grows on it, any water lying on it. Returns blocks changed. */
-    static int infect(ServerLevel l, int x, int z, Random r) {
+    public static int infect(ServerLevel l, int x, int z, Random r) {
         int top = l.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1;
         int ground = l.getHeight(Heightmap.Types.OCEAN_FLOOR, x, z) - 1;
         BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
@@ -170,15 +136,11 @@ public final class Blight extends SavedData {
                 continue;
             }
             if (s.is(BlockTags.LOGS)) {
-                l.setBlock(m, block(FLESH, "flesh_tree", Blocks.CRIMSON_STEM.defaultBlockState()), FLAGS);
+                l.setBlock(m, ModBlocks.STALK.get().defaultBlockState(), FLAGS);
             } else if (s.is(BlockTags.LEAVES)) {
-                l.setBlock(m, block(FLESH, "flesh_foliage", Blocks.NETHER_WART_BLOCK.defaultBlockState()), FLAGS);
+                l.setBlock(m, ModBlocks.CANOPY.get().defaultBlockState(), FLAGS);
             } else if (!s.getFluidState().isEmpty()) {
-                if (s.getFluidState().is(Fluids.WATER) && s.getFluidState().isSource() && flesh()) {
-                    l.setBlock(m, block(FLESH, "pus", s), FLAGS);
-                } else {
-                    continue;
-                }
+                continue;
             } else if (s.canBeReplaced()) {
                 l.setBlock(m, Blocks.AIR.defaultBlockState(), FLAGS);
             } else {
@@ -270,22 +232,9 @@ public final class Blight extends SavedData {
 
     // ------------------------------------------------------------------------------------------------ what crawls out
 
-    private static final String[] COMMON = {"flesh_human", "flesh_dog", "plaquecreatureone", "flesh_servant", "flesh_piece"};
-    private static final String[] UNCOMMON = {"plaquecreaturetwo", "flesh_hunter_two", "flesh_boomer", "plaquecontaminator", "flesh_suffer"};
-    private static final String[] RARE = {"bruteplaquecreatureone", "plaquethreelegcreature", "flesh_howler", "flesh_hunter_three"};
-
     private static EntityType<?> pick(Random r) {
-        if (flesh()) {
-            String[] pool = r.nextInt(100) < 65 ? COMMON : r.nextInt(100) < 80 ? UNCOMMON : RARE;
-            for (int tries = 0; tries < 4; tries++) {
-                EntityType<?> t = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(FLESH, pool[r.nextInt(pool.length)]));
-                if (t != null && t != EntityType.PIG) {
-                    return t;
-                }
-            }
-        }
-        int k = r.nextInt(10);
-        return k < 5 ? EntityType.ZOMBIE : k < 8 ? EntityType.HUSK : EntityType.SPIDER;
+        int k = r.nextInt(100);
+        return k < 45 ? ModEntities.INVERTED.get() : k < 75 ? ModEntities.SKITTER.get() : k < 91 ? ModEntities.BLOATER.get() : ModEntities.MAW.get();
     }
 
     /** Now and then, near each player standing on or near blighted ground, something crawls up out of it. */

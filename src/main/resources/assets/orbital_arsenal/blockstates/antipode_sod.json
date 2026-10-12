@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "orbital_arsenal:block/antipode_sod"
+      },
+      {
+        "model": "orbital_arsenal:block/antipode_sod",
+        "y": 90
+      },
+      {
+        "model": "orbital_arsenal:block/antipode_sod",
+        "y": 180
+      },
+      {
+        "model": "orbital_arsenal:block/antipode_sod",
+        "y": 270
+      }
+    ]
+  }
+}

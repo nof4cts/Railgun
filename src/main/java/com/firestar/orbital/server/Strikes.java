@@ -375,13 +375,14 @@ public final class Strikes {
         for (int y = Math.min(n - 4, s - 3); y <= n; y++) {
             m.set(x, y, z);
             BlockState st;
-            if (y == n && Blight.flesh()) {
-                st = Blight.top(r);
-            } else if (y < n && Blight.flesh()) {
-                st = y > n - 3 ? Blight.under(r, false) : Blight.deep();
-            } else if (y == n) {
-                st = (d > a.radius - 1.3 ? Blocks.CRYING_OBSIDIAN : sculk ? Blocks.SCULK : warped ? Blocks.WARPED_NYLIUM : Blocks.CRIMSON_NYLIUM)
-                        .defaultBlockState();
+            if (y == n) {
+                st = d > a.radius - 1.3 ? com.firestar.orbital.registry.ModBlocks.VEIN.get().defaultBlockState()
+                        : sculk ? com.firestar.orbital.registry.ModBlocks.FLESH.get().defaultBlockState()
+                        : warped ? com.firestar.orbital.registry.ModBlocks.MOSS.get().defaultBlockState() : Blight.top(r);
+            } else if (y > n - 3) {
+                st = Blight.under(r, false);
+            } else if (y < n) {
+                st = Blight.deep();
             } else if (r.nextInt(30) == 0) {
                 st = Blocks.CRYING_OBSIDIAN.defaultBlockState();
             } else {
@@ -390,21 +391,29 @@ public final class Strikes {
             l.setBlock(m, st, FLAGS);
             used++;
         }
-        // its flora: glowing fungus, and rare spires of crystal
+        // its flora: tendrils and glowing bulbs, and here and there a stalk-tree with a canopy of flesh
         if (d < a.radius - 2) {
             int roll = r.nextInt(1000);
-            if (roll < 9) {
-                int h = 4 + r.nextInt(9);
+            if (roll < 10) {
+                int h = 5 + r.nextInt(7);
                 for (int y = n + 1; y <= n + h; y++) {
-                    l.setBlock(m.set(x, y, z), Blocks.AMETHYST_BLOCK.defaultBlockState(), FLAGS);
+                    l.setBlock(m.set(x, y, z), com.firestar.orbital.registry.ModBlocks.STALK.get().defaultBlockState(), FLAGS);
                 }
-                l.setBlock(m.set(x, n + h + 1, z), Blocks.AMETHYST_CLUSTER.defaultBlockState(), FLAGS);
-                used += h + 1;
-            } else if (roll < 40) {
-                l.setBlock(m.set(x, n + 1, z), (warped ? Blocks.WARPED_FUNGUS : Blocks.CRIMSON_FUNGUS).defaultBlockState(), FLAGS);
-                used++;
-            } else if (roll < 52) {
-                l.setBlock(m.set(x, n, z), Blocks.SHROOMLIGHT.defaultBlockState(), FLAGS);
+                for (int dx = -2; dx <= 2; dx++) {
+                    for (int dz = -2; dz <= 2; dz++) {
+                        for (int dy = 0; dy <= 1; dy++) {
+                            if (Math.abs(dx) + Math.abs(dz) + dy * 2 <= 3 && r.nextInt(5) != 0) {
+                                m.set(x + dx, n + h + dy, z + dz);
+                                if (l.getBlockState(m).isAir()) {
+                                    l.setBlock(m, com.firestar.orbital.registry.ModBlocks.CANOPY.get().defaultBlockState(), FLAGS);
+                                }
+                            }
+                        }
+                    }
+                }
+                used += h + 12;
+            } else if (roll < 160) {
+                l.setBlock(m.set(x, n + 1, z), Blight.growth(r), FLAGS);
                 used++;
             }
         }

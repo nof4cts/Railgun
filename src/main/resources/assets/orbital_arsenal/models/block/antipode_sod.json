@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "orbital_arsenal:block/antipode_sod_top",
+    "side": "orbital_arsenal:block/antipode_sod_side",
+    "bottom": "orbital_arsenal:block/antipode_flesh"
+  }
+}
