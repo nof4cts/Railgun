@@ -32,7 +32,7 @@ void main() {
     float r = length(p);
     if (kind > 0.83) {
         float n = fbm(p * 2.5 + vec2(seed, -Time * 0.6));
-        float a = smoothstep(1.0, 0.2, r + (n - 0.5) * 0.6) * fade * 0.75;
+        float a = (1.0 - smoothstep(0.2, 1.0, r + (n - 0.5) * 0.6)) * fade * 0.75;
         vec3 c = mix(vec3(0.02, 0.0, 0.025), vec3(0.16, 0.01, 0.09), n * (1.0 - r));
         fragColor = vec4(c, a);
         return;

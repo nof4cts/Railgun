@@ -115,11 +115,11 @@ public final class Canvas {
         RenderSystem.disableCull();
         float t = f.time;
 
-        // the world itself: smoke, the ink under every cut, the rifts, the aura
+        // the world itself: the aura (exactly as Dragon Block Rebirth draws it), smoke, the ink under every cut, the rifts
+        AuraRenderer.draw(view, projection, partial, 1.0F);
         draw(RoseShaders.SMOKE, t, Geometry.dots(f, f.smokes));
         draw(RoseShaders.ARC_INK, t, Geometry.arcs(f, f.inks));
         draw(RoseShaders.RIFT, t, Geometry.rifts(f, f.rifts));
-        AuraRenderer.draw(view, projection, partial);
 
         // the light, into its own buffer, hidden by the world's depth
         if (!f.arcs.isEmpty() || !f.beams.isEmpty() || !f.rings.isEmpty() || !f.dots.isEmpty() || !f.rifts.isEmpty() || aura) {
@@ -129,12 +129,13 @@ public final class Canvas {
             glow.bindWrite(true);
             RenderSystem.depthMask(false);
             RenderSystem.enableDepthTest();
+            // the aura's own bloom, gentle (its glow comes from the light of the shell, not a second shell)
+            AuraRenderer.draw(view, projection, partial, 0.3F);
             draw(RoseShaders.ARC, t, Geometry.arcs(f, f.arcs));
             draw(RoseShaders.BEAM, t, Geometry.beams(f, f.beams));
             draw(RoseShaders.RING, t, Geometry.rings(f, f.rings));
             draw(RoseShaders.FLARE, t, Geometry.dots(f, f.dots));
             draw(RoseShaders.RIFT_GLOW, t, Geometry.rifts(f, f.rifts));
-            AuraRenderer.draw(view, projection, partial);
         }
         // the bending of space
         if (RoseConfig.CLIENT.distortion.get() && (!f.warpArcs.isEmpty() || !f.warpRings.isEmpty() || !f.rifts.isEmpty())) {

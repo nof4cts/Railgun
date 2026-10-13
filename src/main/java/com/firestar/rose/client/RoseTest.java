@@ -136,7 +136,10 @@ public final class RoseTest {
         ServerLevel level = p.serverLevel();
         level.getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(90)).forEach(Mob::discard);
         double y = Math.floor(p.getY());
-        p.connection.teleport(0.5, y, 0.5, 0, 6);
+        // stand a little to the side and face the middle golem, so the camera behind sees both
+        double px = 0.5 - Math.min(3.0, 0.3 * dist + 0.6);
+        float yaw = (float) Math.toDegrees(Math.atan2(-(0.5 - px), dist));
+        p.connection.teleport(px, y, 0.5, yaw, 6);
         for (int i = -1; i <= 1; i++) {
             IronGolem g = EntityType.IRON_GOLEM.create(level);
             if (g != null) {

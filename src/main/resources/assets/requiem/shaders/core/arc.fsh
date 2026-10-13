@@ -1,12 +1,10 @@
 #version 150
 // A cut of light: a crescent whose outer rim is the white-hot edge, thick at the head and tapering to a point at the
-// tail, its body streaming with energy; it dies by burning away from the inside. With Ink = 1 it is the black shadow
-// laid under the light.
+// tail, its body streaming with energy; it dies by burning away from the inside.
 in vec4 vColor;
 in vec2 vUV;
 in float vDepth;
 uniform float Time;
-uniform float Ink;
 out vec4 fragColor;
 float h21(vec2 p) { p = fract(p * vec2(233.34, 851.73)); p += dot(p, p + 23.45); return fract(p.x * p.y); }
 float vn(vec2 p) {
@@ -40,25 +38,19 @@ void main() {
     float streak = fbm(vec2(x * 26.0 - Time * 13.0, y * 6.0 + seed * 1.3));
     float erode = fbm(vec2(x * 5.0 + seed, y * 3.0 - Time * 0.7));
     float alive = blade ? 1.0 : smoothstep(0.0, 0.12, erode + 0.25 * (1.0 - d) - (1.0 - fade) * 1.15 + 0.12);
-    if (Ink > 0.5) {
-        // smoke-black under the light, frayed by the same noise
-        float a = (1.0 - smoothstep(0.55, 1.0, d)) * alive * (0.55 + 0.45 * flow) * min(fade * 1.6, 1.0) * 0.85;
-        vec3 c = mix(vec3(0.015, 0.0, 0.02), vec3(0.13, 0.0, 0.07), flow * (1.0 - d));
-        fragColor = vec4(c, a);
-        return;
-    }
-    float edge = exp(-d * (blade ? 16.0 : 9.0));
-    float inner = 1.0 - smoothstep(0.35, 1.0, d);
-    float h = edge * 1.05 + inner * (0.32 + 0.38 * streak) + 0.12 * flow;
+    float edge = exp(-d * (blade ? 14.0 : 8.0));
+    float inner = 1.0 - smoothstep(0.45, 1.0, d);
+    // the body: hot rose, streaming; brightest toward the edge
+    float h = edge * 0.9 + inner * (0.48 + 0.3 * streak) * (1.0 - 0.35 * d) + 0.1 * flow;
     if (blade) {
-        // crystal facets catching light along the blade
-        float facet = smoothstep(0.92, 1.0, fract(x * 9.0 + y * 2.5 + Time * 0.4));
-        h += facet * 0.35 * inner;
-        h = h * (0.85 + 0.15 * sin(Time * 6.0 + x * 12.0));
+        // crystal facets catching light along the blade, a slow pulse through it
+        float facet = smoothstep(0.9, 1.0, fract(x * 9.0 + y * 2.5 + Time * 0.4));
+        h += facet * 0.3 * inner;
+        h *= 0.9 + 0.1 * sin(Time * 6.0 + x * 12.0);
     }
-    h *= mix(0.75, 1.15, heat);
-    float a = clamp((edge + inner * (0.45 + 0.55 * flow)) * alive * min(fade * 1.4, 1.0), 0.0, 1.0);
-    vec3 col = rose(h) * a;
+    h *= mix(0.8, 1.15, heat);
+    float a = clamp((edge + inner * (0.85 + 0.35 * flow)) * alive * min(fade * 1.4, 1.0), 0.0, 1.0);
+    vec3 col = rose(h) * a * 1.25;
     col += vec3(1.0, 0.92, 0.96) * edge * edge * heat * alive * fade;
     fragColor = vec4(col, a);
 }

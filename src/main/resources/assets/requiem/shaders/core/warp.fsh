@@ -18,7 +18,7 @@ void main() {
     } else {
         // cuts: strongest just inside the edge
         float d = 1.0 - vUV.y;
-        prof = exp(-d * 4.0) * smoothstep(0.0, 0.2, vUV.x) * smoothstep(1.0, 0.8, vUV.x);
+        prof = exp(-d * 4.0) * smoothstep(0.0, 0.2, vUV.x) * (1.0 - smoothstep(0.8, 1.0, vUV.x));
     }
     vec2 off = dir * prof * amount * 0.025;
     fragColor = vec4(max(off.x, 0.0), max(-off.x, 0.0), max(off.y, 0.0), max(-off.y, 0.0)) * 8.0;

@@ -61,14 +61,6 @@
    "values": [
     0.0
    ]
-  },
-  {
-   "name": "Ink",
-   "type": "float",
-   "count": 1,
-   "values": [
-    0.0
-   ]
   }
  ],
  "blend": {

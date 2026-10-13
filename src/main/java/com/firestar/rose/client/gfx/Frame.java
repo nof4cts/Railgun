@@ -72,8 +72,8 @@ public final class Frame {
             return;
         }
         double end = a0 + (a1 - a0) * Math.min(1.0F, reveal);
-        double pad = (a1 - a0) * 0.04;
-        inks.add(new Arc(c, u.normalize(), v.normalize(), r + w * 0.25, a0 - pad, end + pad, w * 1.9, fade, heat, seed, false));
+        // the shadow trails along the inside of the cut: rose light on the edge, black behind it
+        inks.add(new Arc(c, u.normalize(), v.normalize(), r - w * 0.45, a0, end, w * 1.15, fade, heat, seed, false));
         cut(c, u, v, r, a0, a1, w, reveal, fade, heat, seed);
     }
 

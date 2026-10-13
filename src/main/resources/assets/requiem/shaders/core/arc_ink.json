@@ -1,6 +1,6 @@
 {
  "vertex": "requiem:fx",
- "fragment": "requiem:arc",
+ "fragment": "requiem:arc_ink",
  "attributes": [
   "Position",
   "Color",
@@ -60,14 +60,6 @@
    "count": 1,
    "values": [
     0.0
-   ]
-  },
-  {
-   "name": "Ink",
-   "type": "float",
-   "count": 1,
-   "values": [
-    1.0
    ]
   }
  ],

@@ -146,7 +146,7 @@ public final class ScytheLayer extends RenderLayer<AbstractClientPlayer, PlayerM
         double handScale = map(m, invView, f.cam, 0, 0, HEAD - 1).distanceTo(tip);
         double R = 0.95 * handScale;
         Vec3 c = tip.subtract(s.scale(R * 0.82));
-        f.bladeInk(c, s, b, R * 1.02, -12, 12 + 112 * grow, 0.34 * handScale, 0.75F * grow);
+        f.bladeInk(c, s, b, R - 0.2 * handScale, -12, 12 + 112 * grow, 0.16 * handScale, 0.6F * grow);
         f.blade(c, s, b, R, -12, 12 + 112 * grow, 0.30 * handScale, grow, heat);
     }
 

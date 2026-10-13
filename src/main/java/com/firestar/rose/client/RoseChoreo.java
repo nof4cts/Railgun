@@ -987,7 +987,7 @@ public final class RoseChoreo {
             float k = Mth.clamp((t - 86) / 12, 0, 1);
             for (int i = 0; i < 3; i++) {
                 Vec3 n = new Vec3(Math.sin(i * 2.1 + t * 0.1), Math.cos(i * 1.3), Math.sin(i * 3.7)).normalize();
-                f.ring(chest, n, 5.5 * (1 - k) + 0.4, 0.3, suck, 0.9F, s + i * 0.2F, 1);
+                f.ring(chest, n, 5.0 * (1 - k) + 1.1, 0.22, suck * (1 - 0.8F * k), 0.8F, s + i * 0.2F, 1);
             }
         }
         // ignition
@@ -1103,9 +1103,12 @@ public final class RoseChoreo {
                 l.bars(Math.max(cine, 0.8F * still));
                 for (int i = 0; i < RBeats.REQUIEM_CUTS.length; i++) {
                     int h = RBeats.REQUIEM_CUTS[i];
-                    l.shake(0.35F * hit(t, h, 3));
-                    l.chroma(1.0F * hit(t, h, 3));
-                    l.impact(i % 2 == 0 ? CUT : LIGHT, t - h, at(tp), ROSE);
+                    l.shake(0.3F * hit(t, h, 3));
+                    l.chroma(0.7F * hit(t, h, 2));
+                    // a single held frame on every third cut: the rhythm reads, the picture still breathes
+                    if (i % 3 == 0) {
+                        l.impact(LIGHT, t - h, at(tp), ROSE);
+                    }
                 }
                 float gather = window(t, RBeats.REQUIEM_GATHER - 2, RBeats.REQUIEM_GATHER + 4, RBeats.REQUIEM_BURST - 1, RBeats.REQUIEM_BURST);
                 l.desat(0.85F * gather);

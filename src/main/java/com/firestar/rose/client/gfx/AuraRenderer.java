@@ -124,8 +124,11 @@ public final class AuraRenderer {
         return !DRAW.isEmpty();
     }
 
-    /** Draws every aura gathered by {@link #any}, with the state Dragon Block Rebirth uses. */
-    static void draw(PoseStack view, Matrix4f projection, float partial) {
+    /**
+     * Draws every aura gathered by {@link #any}, with the state Dragon Block Rebirth uses. {@code strength} 1 is the
+     * original; the glow buffer takes a weaker copy for the bloom.
+     */
+    static void draw(PoseStack view, Matrix4f projection, float partial, float strength) {
         if (DRAW.isEmpty()) {
             return;
         }
@@ -170,8 +173,8 @@ public final class AuraRenderer {
             sh.safeGetUniform("amp").set(AMP);
             sh.safeGetUniform("fineDetail").set(FINE);
             sh.safeGetUniform("upDir").set(UP_DIR);
-            sh.safeGetUniform("alp1").set(ALP1);
-            sh.safeGetUniform("alp2").set(ALP2);
+            sh.safeGetUniform("alp1").set(ALP1 * strength);
+            sh.safeGetUniform("alp2").set(ALP2 * strength);
             sh.safeGetUniform("power").set(POWER);
             sh.safeGetUniform("divis").set(DIVIS);
             sh.safeGetUniform("bloomColor").set(0.0F, 1.0F, 1.0F);

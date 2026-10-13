@@ -39,8 +39,8 @@ void main() {
     rim *= 0.6 + 0.8 * crackle;
     float glowOut = exp(-(m - 1.0) * 2.4) * step(1.0, m) * 0.35;
     if (Mode > 0.5) {
-        float a = clamp((rim * 1.2 + glowOut) * fade, 0.0, 1.0);
-        float h = 0.45 + rim * 0.6;
+        float a = clamp((rim * 0.75 + glowOut * 0.5) * fade, 0.0, 1.0);
+        float h = 0.3 + rim * 0.45;
         fragColor = vec4(rose(h) * a, a);
         return;
     }

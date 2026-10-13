@@ -177,7 +177,7 @@ public final class RoseClientEvents {
             ps.mulPose(Axis.YP.rotationDegrees(swing));
             ps.mulPose(Axis.ZP.rotationDegrees(24));
             ps.mulPose(Axis.XP.rotationDegrees(70 + lift));
-            ps.mulPose(Axis.ZP.rotationDegrees(180));
+            ps.mulPose(Axis.ZP.rotationDegrees(90));
             ps.scale(0.8F, 0.8F, 0.8F);
             ScytheLayer.drawShaft(ps, e.getMultiBufferSource(), e.getPackedLight(), k);
             Canvas.handBlade(ps.last().pose(), k, RoseChoreo.bladeHeat(p, e.getPartialTick()));
