@@ -16,10 +16,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.13' }
-      - run: pip install -q bpy
       - run: |
-          mkdir -p out
-          python tools/render_slice.py fire_arrow_open.blend ${{ matrix.job }} 20 $PWD/out 2>&1 | grep --line-buffered -E "\[render\]|Error|error" || true
+          sudo apt-get update -qq && sudo apt-get install -y -qq libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libgl1 libegl1 > /dev/null
+          pip install -q bpy
+      - run: |
+          mkdir -p out logs
+          set -o pipefail
+          python tools/render_slice.py fire_arrow_open.blend ${{ matrix.job }} 20 $PWD/out > logs/job${{ matrix.job }}.txt 2>&1 || echo "render exited $?" >> logs/job${{ matrix.job }}.txt
+          grep -E "\[render\]|Error|rror" logs/job${{ matrix.job }}.txt | tail -20
+          tail -5 logs/job${{ matrix.job }}.txt
+          cp logs/job${{ matrix.job }}.txt out/log${{ matrix.job }}.txt
           ls out | wc -l
       - uses: actions/upload-artifact@v4
         with: { name: 'frames-${{ matrix.job }}', path: out/, retention-days: 3 }
@@ -31,11 +37,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { path: frames, pattern: 'frames-*', merge-multiple: true }
       - run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+          set +e
+          sudo apt-get update -qq; sudo apt-get install -y -qq ffmpeg > /dev/null
+          mkdir -p /tmp/out/logs && cp frames/log*.txt /tmp/out/logs/ 2>/dev/null || true
           ls frames | wc -l
           ffmpeg -v error -framerate 30 -i frames/f%05d.png -c:v libx264 -profile:v baseline -level 4.0 -pix_fmt yuv420p -crf 20 -g 30 -bf 0 -movflags +faststart open.mp4
-          mkdir -p /tmp/out/stills && cp open.mp4 /tmp/out/
-          for i in 00030 00120 00260 00400 00560 00720 00880 01000 01100 01180 01260 01380; do [ -f frames/f$i.png ] && ffmpeg -v error -i frames/f$i.png -q:v 4 /tmp/out/stills/f$i.jpg; done
+          mkdir -p /tmp/out/stills && cp open.mp4 /tmp/out/ || true
+          for f in frames/f*0.png; do n=$(basename $f .png); [ $((10#${n#f} % 60)) -eq 0 ] && ffmpeg -v error -i $f -q:v 4 /tmp/out/stills/$n.jpg; done
           ls frames | wc -l > /tmp/out/COUNT
           cd /tmp/out && git init -q -b open-render-out && git config user.name ci && git config user.email ci@users.noreply.github.com
           git add -A && git commit -q -m "render" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" open-render-out
