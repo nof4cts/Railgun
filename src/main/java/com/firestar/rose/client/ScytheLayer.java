@@ -146,10 +146,11 @@ public final class ScytheLayer extends RenderLayer<AbstractClientPlayer, PlayerM
         Vec3 s = map(m, invView, f.cam, 0, 0, HEAD - 1).subtract(tip).normalize();
         Vec3 b = map(m, invView, f.cam, 0, 1, HEAD).subtract(tip).normalize();
         double handScale = map(m, invView, f.cam, 0, 0, HEAD - 1).distanceTo(tip);
-        double R = 0.95 * handScale;
-        Vec3 c = tip.subtract(s.scale(R * 0.82));
-        f.bladeInk(c, s, b, R - 0.2 * handScale, -12, 12 + 112 * grow, 0.12 * handScale, 0.3F * grow);
-        f.blade(c, s, b, R, -12, 12 + 112 * grow, 0.30 * handScale, grow, heat);
+        // a long, nearly straight edge: it leaves the head square to the shaft and only sweeps back gently at the point
+        double R = 1.55 * handScale;
+        Vec3 c = tip.subtract(s.scale(R));
+        f.bladeInk(c, s, b, R - 0.16 * handScale, -4, -4 + 62 * grow, 0.12 * handScale, 0.3F * grow);
+        f.blade(c, s, b, R, -4, -4 + 62 * grow, 0.27 * handScale, grow, heat);
     }
 
     private static Vec3 map(Matrix4f m, Matrix4f invView, Vec3 cam, float x, float y, float z) {

@@ -116,7 +116,7 @@ public final class AuraRenderer {
         Matrix4f shaft = new Matrix4f(hand).translate(0, 0, -0.62F).rotateX((float) Math.toRadians(-90)).scale(0.17F, 0.92F, 0.17F);
         shell(sh, vb, noise, shaft, projection, var, strength, 0.55F);
         // round the blade: its up is the blade's reach
-        Matrix4f blade = new Matrix4f(hand).translate(0, 0.42F, -1.25F).scale(0.11F, 0.42F, 0.62F);
+        Matrix4f blade = new Matrix4f(hand).translate(0, 0.66F, -1.52F).scale(0.11F, 0.62F, 0.4F);
         shell(sh, vb, noise, blade, projection, var, strength, 0.75F);
     }
 
