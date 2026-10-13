@@ -38,23 +38,6 @@ public final class Canvas {
     private static Frame last;
     /** What the renderer did last frame (for the build server's log). */
     public static String debug = "";
-    /** Build-server probes: read back the picture's centre at each stage; {@code probe} switches stages off. */
-    public static boolean probing;
-    public static int probe;
-
-    static void px(String tag) {
-        if (!probing) {
-            return;
-        }
-        RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
-        int prev = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
-        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, main.frameBufferId);
-        java.nio.ByteBuffer b = org.lwjgl.BufferUtils.createByteBuffer(4);
-        GL11.glReadPixels(main.width / 2, main.height * 3 / 4, 1, 1, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, b);
-        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, prev);
-        debug += " " + tag + "=" + (b.get(0) & 255) + "," + (b.get(1) & 255) + "," + (b.get(2) & 255) + "," + (b.get(3) & 255)
-                + "/blend" + (GL11.glIsEnabled(GL11.GL_BLEND) ? 1 : 0) + "/err" + GL11.glGetError();
-    }
 
     /** The last frame's shapes and camera (for placing screen effects on world points). */
     public static Frame lastFrame() {
@@ -104,8 +87,7 @@ public final class Canvas {
      */
     public static void world(PoseStack view, Matrix4f projection, Camera camera, float partial) {
         glowUsed = warpUsed = false;
-        debug = "probe=" + probe + ";";
-        px("w0");
+        debug = "";
         if (!RoseShaders.ready()) {
             com.firestar.rose.client.ScytheLayer.blades(null, view);
             return;
@@ -139,14 +121,10 @@ public final class Canvas {
         float t = f.time;
 
         // the world itself: the aura (exactly as Dragon Block Rebirth draws it), smoke, the ink under every cut, the rifts
-        if (probe != 2) {
-            AuraRenderer.draw(view, projection, partial, 1.0F);
-        }
-        px("w1");
+        AuraRenderer.draw(view, projection, partial, 1.0F);
         draw(RoseShaders.SMOKE, t, Geometry.dots(f, f.smokes));
         draw(RoseShaders.ARC_INK, t, Geometry.arcs(f, f.inks));
         draw(RoseShaders.RIFT, t, Geometry.rifts(f, f.rifts));
-        px("w2");
 
         // the light, into its own buffer, hidden by the world's depth
         if (!f.arcs.isEmpty() || !f.beams.isEmpty() || !f.rings.isEmpty() || !f.dots.isEmpty() || !f.rifts.isEmpty() || aura) {
@@ -157,9 +135,7 @@ public final class Canvas {
             RenderSystem.depthMask(false);
             RenderSystem.enableDepthTest();
             // the aura's own bloom, gentle (its glow comes from the light of the shell, not a second shell)
-            if (probe != 2) {
-                AuraRenderer.draw(view, projection, partial, 0.16F);
-            }
+            AuraRenderer.draw(view, projection, partial, 0.16F);
             draw(RoseShaders.ARC, t, Geometry.arcs(f, f.arcs));
             draw(RoseShaders.BEAM, t, Geometry.beams(f, f.beams));
             draw(RoseShaders.RING, t, Geometry.rings(f, f.rings));
@@ -183,10 +159,6 @@ public final class Canvas {
         RenderSystem.disableBlend();
         mv.popPose();
         RenderSystem.applyModelViewMatrix();
-        px("w3");
-        if (probe == 4) {
-            glowUsed = false;
-        }
     }
 
     static void draw(ShaderInstance sh, BufferBuilder.RenderedBuffer buf) {
@@ -244,8 +216,7 @@ public final class Canvas {
         }
         LOOK.reset();
         com.firestar.rose.client.RoseChoreo.screen(LOOK, partial);
-        boolean grade = !LOOK.idle() || warpUsed || probe == 3;
-        px("l0");
+        boolean grade = !LOOK.idle() || warpUsed;
         debug += " glow=" + glowUsed + " warp=" + warpUsed + " grade=" + grade + ";";
         if (!glowUsed && !grade) {
             return;
@@ -253,7 +224,7 @@ public final class Canvas {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.disableCull();
-        if (glowUsed && probe != 1) {
+        if (glowUsed) {
             bloom();
             ShaderInstance c = RoseShaders.COMPOSITE;
             c.setSampler("Glow", glow);
@@ -261,7 +232,6 @@ public final class Canvas {
             c.safeGetUniform("Strength").set(RoseConfig.CLIENT.bloom.get().floatValue());
             main.bindWrite(true);
             quad(c);
-            px("l1");
         }
         if (grade) {
             GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, main.frameBufferId);
@@ -299,12 +269,6 @@ public final class Canvas {
         RenderSystem.enableCull();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
-        px("l2");
-    }
-
-    /** The end of the frame (build server only). */
-    public static void endProbe() {
-        px("end");
     }
 
     private static void bloom() {

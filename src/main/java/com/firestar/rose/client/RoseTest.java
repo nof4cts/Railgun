@@ -214,25 +214,8 @@ public final class RoseTest {
             }
             t = c.time(mc.getFrameTime());
         }
-        com.firestar.rose.client.gfx.Canvas.probing = true;
-        com.firestar.rose.client.gfx.Canvas.probe = 0;
-        if (s.move == RMove.RELEASE) {
-            for (int[] shot : SHOTS) {
-                if (shot[1] == 0) {
-                    com.firestar.rose.client.gfx.Canvas.probe = switch (shot[0]) {
-                        case 11, 24 -> 1;
-                        case 12, 30 -> 2;
-                        case 14 -> 3;
-                        case 18 -> 4;
-                        default -> 0;
-                    };
-                    break;
-                }
-            }
-        }
         for (int[] shot : SHOTS) {
             if (shot[1] == 0 && t >= shot[0]) {
-                com.firestar.rose.client.gfx.Canvas.endProbe();
                 shot[1] = 1;
                 new File(mc.gameDirectory, "screenshots/styles").mkdirs();
                 Screenshot.grab(mc.gameDirectory, "styles/" + String.format("%s_t%03d.png", prefix, shot[0]), mc.getMainRenderTarget(), m -> {});
