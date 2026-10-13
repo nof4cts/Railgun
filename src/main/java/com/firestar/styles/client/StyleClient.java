@@ -72,6 +72,6 @@ public final class StyleClient {
 
     static boolean cinematic() {
         return com.firestar.mih.client.cinematic.Director.active() || com.firestar.silver.client.cinematic.Director.active()
-                || com.firestar.santoryu.client.cinematic.Director.active();
+                || com.firestar.santoryu.client.cinematic.Director.active() || com.firestar.rose.client.cam.Lens.active();
     }
 }

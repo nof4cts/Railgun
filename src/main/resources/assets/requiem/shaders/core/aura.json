@@ -1,0 +1,193 @@
+{
+  "vertex": "requiem:aura",
+  "fragment": "requiem:aura",
+  "attributes": [
+    "Position",
+    "Color",
+    "UV0" 
+  ],
+  "uniforms": [
+    {
+      "name": "ModelViewMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [1.0, 0.0, 0.0, 0.0,
+                 0.0, 1.0, 0.0, 0.0,
+                 0.0, 0.0, 1.0, 0.0,
+                 0.0, 0.0, 0.0, 1.0]
+    },
+    {
+      "name": "viewMatrix",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [1.0, 0.0, 0.0, 0.0,
+                 0.0, 1.0, 0.0, 0.0,
+                 0.0, 0.0, 1.0, 0.0,
+                 0.0, 0.0, 0.0, 1.0]
+    },
+    {
+      "name": "ProjMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [1.0, 0.0, 0.0, 0.0,
+                 0.0, 1.0, 0.0, 0.0,
+                 0.0, 0.0, 1.0, 0.0,
+                 0.0, 0.0, 0.0, 1.0]
+    },
+    {
+	  "name": "normalMatrix",
+	  "type": "matrix3x3",
+	  "count": 9,
+	  "values": [1.0, 0.0, 0.0,
+				0.0, 1.0, 0.0,
+				0.0, 0.0, 1.0]
+    },
+	{
+		"name": "view",
+		"type": "float",
+		"count": 3,
+		"values": [ 0.0, 0.0, 0.0 ]
+    },
+	{
+		"name": "sizes",
+		"type": "float",
+		"count": 3,
+		"values": [ 1.0, 1.0, 1.0 ]
+    },
+    {
+		"name": "flyboost",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "time",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "auraPhase",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "freqY",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "noiseFactor",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "speed",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "amp",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "fineDetail",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "upDir",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    },
+	{
+		"name": "color1",
+		"type": "float",
+		"count": 3,
+		"values": [ 1.0, 1.0, 1.0 ]
+    },
+	{
+		"name": "color2",
+		"type": "float",
+		"count": 3,
+		"values": [ 1.0, 1.0, 1.0 ]
+    },
+	{
+		"name": "colorNoise",
+		"type": "float",
+		"count": 3,
+		"values": [ 1.0, 1.0, 1.0 ]
+    },
+	{
+		"name": "alp1",
+		"type": "float",
+		"count": 1,
+		"values": [ 1.0 ]
+    },
+	{
+		"name": "alp2",
+		"type": "float",
+		"count": 1,
+		"values": [ 1.0 ]
+    },
+	{
+		"name": "power",
+		"type": "float",
+		"count": 1,
+		"values": [1.0]
+    },
+	{
+		"name": "auravar",
+		"type": "float",
+		"count": 1,
+		"values": [1.0]
+    },
+	{
+		"name": "divis",
+		"type": "float",
+		"count": 1,
+		"values": [1.0]
+    },
+	{
+		"name": "bloomColor",
+		"type": "float",
+		"count": 3,
+		"values": [ 1.0, 1.0, 1.0 ]
+    },
+	{
+		"name": "fakeBloom",
+		"type": "float",
+		"count": 1,
+		"values": [1.0]
+    },
+	{
+		"name": "realBloom",
+		"type": "float",
+		"count": 1,
+		"values": [1.0]
+    },
+	{
+		"name": "noiseBloom",
+		"type": "float",
+		"count": 1,
+		"values": [0.0]
+    }
+	],
+	"samplers": [
+		{ "name": "NoiseTex" }
+	],
+	"blend": {
+		"func": "add",
+		"srcrgb": "srcalpha",
+		"dstrgb": "1-srcalpha"
+	},
+	"cull": false
+}

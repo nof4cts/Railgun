@@ -11,7 +11,10 @@ public enum Style {
             new String[]{"G  Awaken / Zenith (sneak+G revert)", "Double-jump  Fly while awakened", "LMB  Strike combo", "E R T Y Z X C V H  Techniques"}),
     SWORDS("Santoryu", "Three Swords", "三刀流", 0x5FD38A,
             "The way of the demon swordsman: three blades, one in the teeth. Cuts that carve the land itself.",
-            new String[]{"Hold a katana", "Z / X  Choose technique", "R  Cut"});
+            new String[]{"Hold a katana", "Z / X  Choose technique", "R  Cut"}),
+    ROSE("Requiem Rose", "Divine Reaper", "冥薔薇", 0xFF6FAE,
+            "A reaper's grace in rose and black: ascend, call the energy scythe, and cut through flesh, air and sky.",
+            new String[]{"G  Ascend (sneak+G release)", "LMB  Reap chain", "E R T Y Z X H  Techniques"});
 
     public final String title;
     public final String kind;

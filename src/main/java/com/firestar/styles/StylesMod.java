@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * One mod, three fighting styles: Made in Heaven, Silver Instinct and Santoryu. Each style is its own package with its
+ * One mod, four fighting styles: Made in Heaven, Silver Instinct, Santoryu and Requiem Rose. Each style is its own package with its
  * own assets; this class brings them up together and owns the switch between them.
  */
 @Mod(StylesMod.MODID)
@@ -18,6 +18,7 @@ public final class StylesMod {
         new com.firestar.mih.MihMod();
         new com.firestar.silver.SilverMod();
         new com.firestar.santoryu.SantoryuMod();
+        new com.firestar.rose.RoseMod();
         StyleNet.register();
     }
 

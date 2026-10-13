@@ -12,9 +12,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 
-/** Pick a style: three tall cards and "none", each with its kanji, what it does and its keys. Click or press 1-4. */
+/** Pick a style: three tall cards and "none", each with its kanji, what it does and its keys. Click or press 1-5. */
 public final class StyleScreen extends Screen {
-    private static final Style[] ORDER = {Style.HEAVEN, Style.INSTINCT, Style.SWORDS, Style.NONE};
+    private static final Style[] ORDER = {Style.HEAVEN, Style.INSTINCT, Style.SWORDS, Style.ROSE, Style.NONE};
     private final long opened = System.currentTimeMillis();
     private final float[] hover = new float[ORDER.length];
 
@@ -92,7 +92,7 @@ public final class StyleScreen extends Screen {
             String num = "[" + (i + 1) + "]";
             g.drawString(font, num, x + w - font.width(num) - 4, y + 5, 0xFF707080, false);
         }
-        String hint = "Click a card, or press 1-4.   Esc to close.";
+        String hint = "Click a card, or press 1-5.   Esc to close.";
         g.drawString(font, hint, width / 2 - font.width(hint) / 2, card(0)[1] + card(0)[3] + 14, 0xFF9AA3B0, false);
         super.render(g, mx, my, partial);
     }
@@ -117,7 +117,7 @@ public final class StyleScreen extends Screen {
 
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
-        if (key >= org.lwjgl.glfw.GLFW.GLFW_KEY_1 && key <= org.lwjgl.glfw.GLFW.GLFW_KEY_4) {
+        if (key >= org.lwjgl.glfw.GLFW.GLFW_KEY_1 && key <= org.lwjgl.glfw.GLFW.GLFW_KEY_5) {
             pick(ORDER[key - org.lwjgl.glfw.GLFW.GLFW_KEY_1]);
             return true;
         }
