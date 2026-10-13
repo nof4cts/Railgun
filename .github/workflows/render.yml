@@ -1,0 +1,41 @@
+name: Render Open cutscene
+on:
+  push:
+    branches: [open-render]
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        job: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - run: pip install -q bpy
+      - run: |
+          mkdir -p out
+          python tools/render_slice.py fire_arrow_open.blend ${{ matrix.job }} 20 $PWD/out 2>&1 | grep --line-buffered -E "\[render\]|Error|error" || true
+          ls out | wc -l
+      - uses: actions/upload-artifact@v4
+        with: { name: 'frames-${{ matrix.job }}', path: out/, retention-days: 3 }
+  encode:
+    needs: render
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: frames, pattern: 'frames-*', merge-multiple: true }
+      - run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+          ls frames | wc -l
+          ffmpeg -v error -framerate 30 -i frames/f%05d.png -c:v libx264 -profile:v baseline -level 4.0 -pix_fmt yuv420p -crf 20 -g 30 -bf 0 -movflags +faststart open.mp4
+          mkdir -p /tmp/out/stills && cp open.mp4 /tmp/out/
+          for i in 00030 00120 00260 00400 00560 00720 00880 01000 01100 01180 01260 01380; do [ -f frames/f$i.png ] && ffmpeg -v error -i frames/f$i.png -q:v 4 /tmp/out/stills/f$i.jpg; done
+          ls frames | wc -l > /tmp/out/COUNT
+          cd /tmp/out && git init -q -b open-render-out && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "render" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" open-render-out
