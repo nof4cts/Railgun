@@ -63,7 +63,6 @@ public final class OConfig {
         public final ForgeConfigSpec.DoubleValue antipodeRadius;
         public final ForgeConfigSpec.DoubleValue antipodeDamage;
         public final ForgeConfigSpec.BooleanValue blight;
-        public final ForgeConfigSpec.IntValue blightRate;
         public final ForgeConfigSpec.IntValue blightMobCap;
 
         Server(ForgeConfigSpec.Builder b) {

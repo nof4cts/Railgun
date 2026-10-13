@@ -174,13 +174,69 @@ public final class Blight extends SavedData {
         return used;
     }
 
+    // The pace of The Flesh That Hates' biome spread (FleshBlockSpread.tick, run once per server tick): a step every
+    // "Spread speed" ticks (+1 cooldown tick), each step turning up to "Number Of Blocks" blocks, for "spreadDuration"
+    // ticks, then a rest of "spreadCooldown" ticks. Read from that mod's config when it is installed, else its defaults.
+    private int restTicks, stepTicks, activeTicks, cooldownTicks;
+    private boolean resting;
+
+    private static int fleshConfig(String method, String field, int fallback) {
+        try {
+            Class<?> c = Class.forName("net.mcreator.thefleshthathates.FConfig.TFTHConfiguration");
+            Object v = method != null ? c.getMethod(method).invoke(null) : ((net.minecraftforge.common.ForgeConfigSpec.IntValue) c.getField(field).get(null)).get();
+            return v instanceof Integer i ? i : fallback;
+        } catch (Throwable t) {
+            return fallback;
+        }
+    }
+
+    private static int[] pace;
+    private static long paceRead = Long.MIN_VALUE;
+
+    /** {spread speed, blocks per step, active ticks, rest ticks}, re-read every minute so config edits apply. */
+    private static int[] pace(long now) {
+        if (pace == null || now - paceRead > 1200 || now < paceRead) {
+            paceRead = now;
+            pace = new int[]{
+                    Math.max(0, fleshConfig("biomespreadspeed", null, 10)),
+                    Math.max(1, fleshConfig(null, "NUMBEROFBLOCKS", 70)),
+                    Math.max(1, fleshConfig("getSpreadDuration", null, 800)),
+                    Math.max(0, fleshConfig("getSpreadCooldown", null, 150))};
+        }
+        return pace;
+    }
+
     public void tick(ServerLevel level, int budget) {
         if (frontier.isEmpty() || !OConfig.SERVER.blight.get()) {
             return;
         }
-        int rate = OConfig.SERVER.blightRate.get();
+        int[] p = pace(level.getGameTime());
+        if (cooldownTicks > 0) {
+            cooldownTicks--;
+            return;
+        }
+        if (resting) {
+            if (++restTicks >= p[3]) {
+                restTicks = 0;
+                resting = false;
+            }
+            return;
+        }
+        if (++activeTicks >= p[2]) {
+            activeTicks = 0;
+            resting = true;
+            return;
+        }
+        if (stepTicks < p[0]) {
+            stepTicks++;
+            return;
+        }
+        stepTicks = 0;
+        cooldownTicks = 1;
+        int blocks = Math.min(budget, p[1]);
         boolean changed = false;
-        for (int i = 0; i < rate && budget > 0 && !frontier.isEmpty(); i++) {
+        // each try reaches from a random edge column; stop once this step has turned its share of blocks
+        for (int i = 0; i < blocks * 8 && blocks > 0 && !frontier.isEmpty(); i++) {
             int idx = R.nextInt(frontier.size());
             long col = frontier.getLong(idx);
             int x = BlockPos.getX(col), z = BlockPos.getZ(col);
@@ -194,7 +250,7 @@ public final class Blight extends SavedData {
                 int ng = level.getHeight(Heightmap.Types.OCEAN_FLOOR, nx, nz) - 1;
                 BlockState s = level.getBlockState(new BlockPos(nx, ng, nz));
                 if (!infected(s) && !s.isAir()) {
-                    budget -= infect(level, nx, nz, R);
+                    blocks -= infect(level, nx, nz, R);
                     add(BlockPos.asLong(nx, 0, nz));
                     changed = true;
                 }
