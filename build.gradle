@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+}
+version = '1.0.0'
+base { archivesName = 'sukuna-patch' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+}
+repositories {
+    flatDir { dirs 'libs' }
+    maven { url = 'https://maven.kosmx.dev/' }
+    mavenCentral()
+}
+configurations { bundled }
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly fg.deobf("local:jjk:1.0.0")
+    compileOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}")
+    // pure-Java H.264 decoder for the Open cutscene (BSD-2-Clause), bundled into the jar
+    implementation 'org.jcodec:jcodec:0.2.5'
+    bundled 'org.jcodec:jcodec:0.2.5'
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+jar { finalizedBy 'reobfJar' }
+
+tasks.register('patchedJar', Jar) {
+    dependsOn 'reobfJar'
+    archiveFileName = 'jjk-1.0.0.jar'
+    destinationDirectory = file('build/out')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(['Specification-Title': 'jjk', 'Specification-Vendor': 'Ethan', 'Specification-Version': '1',
+                    'Implementation-Title': 'jjk', 'Implementation-Version': '1.0.0', 'Implementation-Vendor': 'Ethan'])
+    }
+    from(zipTree(layout.buildDirectory.file("libs/sukuna-patch-1.0.0.jar"))) { exclude 'META-INF/**' }
+    from({ configurations.bundled.collect { zipTree(it) } }) { exclude 'META-INF/**' }
+    from(zipTree('libs/jjk-1.0.0.jar')) {
+        exclude 'com/shrine/**'
+        exclude 'META-INF/MANIFEST.MF'
+    }
+}
+build.finalizedBy 'patchedJar'
