@@ -447,7 +447,8 @@ public final class Techniques {
       if (e instanceof LivingEntity l && e.isAlive()) {
          l.invulnerableTime = 0;
          // generic_kill bypasses invulnerability, so his adaptation never sees it
-         l.hurt(c.level.damageSources().source(net.minecraft.world.damagesource.DamageTypes.GENERIC_KILL, c.caster), Float.MAX_VALUE);
+         l.hurt(new DamageSource(c.level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+            .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.GENERIC_KILL), c.caster), Float.MAX_VALUE);
          if (l.isAlive()) {
             l.setHealth(0.0F);
             l.die(source(c));
