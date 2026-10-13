@@ -201,6 +201,10 @@ public final class AuraRenderer {
 
     private static float scytheTime, scytheLast, scythePhase;
 
+    static String debug() {
+        return DRAW.size() + "p/" + com.firestar.rose.client.ScytheLayer.AURA_M.size() + "s";
+    }
+
     /**
      * Draws every aura gathered by {@link #any}, with the state Dragon Block Rebirth uses. {@code strength} 1 is the
      * original; the glow buffer takes a weaker copy for the bloom.

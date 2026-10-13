@@ -36,6 +36,8 @@ public final class Canvas {
     public static final Look LOOK = new Look();
     private static Matrix4f proj = new Matrix4f();
     private static Frame last;
+    /** What the renderer did last frame (for the build server's log). */
+    public static String debug = "";
 
     /** The last frame's shapes and camera (for placing screen effects on world points). */
     public static Frame lastFrame() {
@@ -85,6 +87,7 @@ public final class Canvas {
      */
     public static void world(PoseStack view, Matrix4f projection, Camera camera, float partial) {
         glowUsed = warpUsed = false;
+        debug = "";
         if (!RoseShaders.ready()) {
             com.firestar.rose.client.ScytheLayer.blades(null, view);
             return;
@@ -102,6 +105,7 @@ public final class Canvas {
         Embers.draw(f, partial);
         com.firestar.rose.client.ScytheLayer.blades(f, view);
         boolean aura = AuraRenderer.any(partial);
+        debug += "aura=" + aura + " shapes=" + !f.empty() + " drawn=" + AuraRenderer.debug() + ";";
         if (f.empty() && !aura) {
             return;
         }
@@ -213,6 +217,7 @@ public final class Canvas {
         LOOK.reset();
         com.firestar.rose.client.RoseChoreo.screen(LOOK, partial);
         boolean grade = !LOOK.idle() || warpUsed;
+        debug += " glow=" + glowUsed + " warp=" + warpUsed + " grade=" + grade + ";";
         if (!glowUsed && !grade) {
             return;
         }

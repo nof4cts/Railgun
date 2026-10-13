@@ -54,7 +54,7 @@ public final class RoseTest {
             new Step(RMove.RIFT, "rift", 9, CameraType.THIRD_PERSON_BACK, 0, new int[]{10, 22, 26, 27, 30, 40, 55, 75, 90, 96, 97, 100}),
             new Step(RMove.LAST_BLOOM, "last_bloom", 14, CameraType.THIRD_PERSON_BACK, 0,
                     new int[]{10, 30, 50, 70, 90, 110, 124, 128, 130, 134, 135, 136, 138, 144, 155, 170, 190, 205}),
-            new Step(RMove.RELEASE, "release", 6, CameraType.THIRD_PERSON_BACK, 0, new int[]{2, 6, 12}),
+            new Step(RMove.RELEASE, "release", 6, CameraType.THIRD_PERSON_BACK, 0, new int[]{2, 6, 8, 10, 11, 12, 14, 18, 24, 30, 38}),
     };
 
     private RoseTest() {}
@@ -219,6 +219,8 @@ public final class RoseTest {
                 shot[1] = 1;
                 new File(mc.gameDirectory, "screenshots/styles").mkdirs();
                 Screenshot.grab(mc.gameDirectory, "styles/" + String.format("%s_t%03d.png", prefix, shot[0]), mc.getMainRenderTarget(), m -> {});
+                RoseMod.LOGGER.info("[rosetest] shot {} t{}: {} cam={} fov={} scythe={} aura={}", prefix, shot[0], com.firestar.rose.client.gfx.Canvas.debug,
+                        mc.gameRenderer.getMainCamera().getPosition(), mc.options.fov().get(), RoseForms.scythe(mc.player, 0), RoseForms.aura(mc.player, 0));
                 return;
             }
         }
