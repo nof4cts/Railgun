@@ -47,8 +47,21 @@ public final class Fighters {
         return s == null ? NONE : s.form;
     }
 
+    /** When this fighter's Silver Zenith runs out (0 = no limit: creative mode, or the limit is switched off). */
+    static long zenithUntil(ServerPlayer p, State s) {
+        int secs = com.firestar.silver.config.ZConfig.SERVER.zenithSeconds.get();
+        if (s.form != ZENITH || secs <= 0 || p.isCreative()) {
+            return 0;
+        }
+        return s.since + secs * 20L;
+    }
+
     public static void setForm(ServerPlayer p, int form) {
         State s = state(p);
+        if (s.form == ZENITH && form != ZENITH) {
+            // the summit is spent: it takes a long rest before it can be reached again
+            Techniques.zenithSpent(p);
+        }
         s.form = form;
         s.since = p.serverLevel().getGameTime();
         flight(p, s);
@@ -71,12 +84,12 @@ public final class Fighters {
 
     public static void sync(ServerPlayer p) {
         State s = state(p);
-        Net.toTrackingAndSelf(p, new S2CState(p.getId(), s.form, s.since));
+        Net.toTrackingAndSelf(p, new S2CState(p.getId(), s.form, s.since, zenithUntil(p, s)));
     }
 
     public static S2CState packet(ServerPlayer p) {
         State s = state(p);
-        return new S2CState(p.getId(), s.form, s.since);
+        return new S2CState(p.getId(), s.form, s.since, zenithUntil(p, s));
     }
 
     /**
@@ -121,6 +134,17 @@ public final class Fighters {
             flight(p, s0);
         }
         State s = STATES.get(p.getUUID());
+        if (s != null && s.form == ZENITH) {
+            long until = zenithUntil(p, s);
+            long now = p.serverLevel().getGameTime();
+            if (until > 0 && now >= until && Techniques.busy(p) == null) {
+                p.displayClientMessage(net.minecraft.network.chat.Component.literal("Silver Zenith fades. Its power returns in "
+                        + Math.round(com.firestar.silver.config.ZConfig.SERVER.zenithCooldownSeconds.get() / 60.0F) + " min.")
+                        .withStyle(net.minecraft.ChatFormatting.GRAY), true);
+                setForm(p, OMEN);
+                return;
+            }
+        }
         if (s == null || s.form == NONE || p.serverLevel().getGameTime() % 40 != 0) {
             return;
         }

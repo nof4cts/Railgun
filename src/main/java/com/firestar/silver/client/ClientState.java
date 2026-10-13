@@ -15,6 +15,8 @@ public final class ClientState {
     public static final class Info {
         public int form;
         public long since;
+        /** Game time Silver Zenith runs out (0 = no limit). */
+        public long until;
         /** The aura: 0 none, ~0.55 Omen, 1 Zenith. Eased per tick. */
         public float power, powerO;
     }
@@ -24,6 +26,7 @@ public final class ClientState {
         int before = i.form;
         i.form = m.form();
         i.since = m.since();
+        i.until = m.until();
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && m.entityId() == mc.player.getId()) {
             ZenithTheme.form(i.form);

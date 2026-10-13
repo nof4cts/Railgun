@@ -91,7 +91,7 @@ public final class Techniques {
         return false;
     }
 
-    private static Cast busy(ServerPlayer p) {
+    static Cast busy(ServerPlayer p) {
         for (Cast c : ACTIVE) {
             if (c.player == p) {
                 return c;
@@ -146,7 +146,8 @@ public final class Techniques {
         long[] ready = READY.computeIfAbsent(p.getUUID(), k -> new long[Move.values().length]);
         if (now < ready[m.ordinal()] && !p.isCreative()) {
             if (m != Move.STRIKE) {
-                deny(p, m.title + " is ready in " + Mth.ceil((ready[m.ordinal()] - now) / 20.0F) + "s");
+                int secs = Mth.ceil((ready[m.ordinal()] - now) / 20.0F);
+                deny(p, m.title + " is ready in " + (secs >= 60 ? (secs / 60) + ":" + String.format("%02d", secs % 60) : secs + "s"));
             }
             return;
         }
@@ -583,12 +584,25 @@ public final class Techniques {
 
     // ------------------------------------------------------------------------------------------------ bookkeeping
 
+    /** Silver Zenith ended: it can't be reached again for the configured rest (none in creative mode). */
+    static void zenithSpent(ServerPlayer p) {
+        if (p.isCreative()) {
+            return;
+        }
+        long[] ready = READY.computeIfAbsent(p.getUUID(), k -> new long[Move.values().length]);
+        long now = p.serverLevel().getGameTime();
+        ready[Move.AWAKEN_ZENITH.ordinal()] = Math.max(ready[Move.AWAKEN_ZENITH.ordinal()],
+                now + ZConfig.SERVER.zenithCooldownSeconds.get() * 20L);
+        syncCooldowns(p);
+    }
+
     public static void syncCooldowns(ServerPlayer p) {
         long[] ready = READY.computeIfAbsent(p.getUUID(), k -> new long[Move.values().length]);
         int[] total = new int[Move.values().length];
         for (Move m : Move.values()) {
             total[m.ordinal()] = (int) (m.cooldown * ZConfig.SERVER.cooldowns.get());
         }
+        total[Move.AWAKEN_ZENITH.ordinal()] = Math.max(total[Move.AWAKEN_ZENITH.ordinal()], ZConfig.SERVER.zenithCooldownSeconds.get() * 20);
         Net.toPlayer(p, new S2CCooldowns(ready.clone(), total));
     }
 

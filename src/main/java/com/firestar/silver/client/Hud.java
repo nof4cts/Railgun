@@ -75,10 +75,25 @@ public final class Hud implements IGuiOverlay {
         g.fill(x, y + 11, x + 128, y + 12, 0x60000000);
         g.fill(x, y + 11, x + (int) (128 * power), y + 12, 0xFF000000 | (form == 2 ? 0xF2F8FF : 0x8FC4FF));
         y += 16;
-        String next = form == 0 ? "awaken" : form == 1 ? "reach Zenith" : "";
-        if (!next.isEmpty()) {
-            g.drawString(font, "[" + Keys.name(Keys.AWAKEN) + "] " + next, x, y, 0xB0FFFFFF, true);
+        long zenithRest = readyAt(Move.AWAKEN_ZENITH) - now;
+        if (form == 1 && zenithRest > 0 && !mc.player.isCreative()) {
+            g.drawString(font, "Zenith returns in " + clock(zenithRest), x, y, 0x90B8C8DC, true);
             y += 11;
+        } else {
+            String next = form == 0 ? "awaken" : form == 1 ? "reach Zenith" : "";
+            if (!next.isEmpty()) {
+                g.drawString(font, "[" + Keys.name(Keys.AWAKEN) + "] " + next, x, y, 0xB0FFFFFF, true);
+                y += 11;
+            }
+        }
+        if (form == 2 && info.until > 0) {
+            long left = Math.max(0, info.until - now);
+            // the last ten seconds pulse
+            int col = left < 200 && (now / 5) % 2 == 0 ? 0xFFFF8A8A : 0xFFF2F8FF;
+            g.drawString(font, "Zenith fades in " + clock(left), x, y, col, true);
+            g.fill(x, y + 10, x + 128, y + 11, 0x60000000);
+            g.fill(x, y + 10, x + (int) (128 * Mth.clamp(left / (float) Math.max(1, info.until - info.since), 0, 1)), y + 11, 0xFFF2F8FF);
+            y += 14;
         }
         if (form > 0) {
             g.drawString(font, "[SHIFT+" + Keys.name(Keys.AWAKEN) + "] revert", x, y, 0x80FFFFFF, true);
@@ -107,5 +122,10 @@ public final class Hud implements IGuiOverlay {
             }
             y += 13;
         }
+    }
+
+    private static String clock(long ticks) {
+        int secs = (int) Math.ceil(ticks / 20.0);
+        return (secs / 60) + ":" + String.format("%02d", secs % 60);
     }
 }

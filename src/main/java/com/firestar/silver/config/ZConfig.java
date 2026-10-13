@@ -54,6 +54,8 @@ public final class ZConfig {
         public final ForgeConfigSpec.DoubleValue omenDodge;
         public final ForgeConfigSpec.DoubleValue zenithDodge;
         public final ForgeConfigSpec.BooleanValue counters;
+        public final ForgeConfigSpec.IntValue zenithSeconds;
+        public final ForgeConfigSpec.IntValue zenithCooldownSeconds;
 
         Server(ForgeConfigSpec.Builder b) {
             b.push("instinct");
@@ -63,6 +65,10 @@ public final class ZConfig {
             omenDodge = b.comment("Chance the Omen form slips an attack on its own.").defineInRange("omenDodge", 0.35, 0.0, 1.0);
             zenithDodge = b.comment("Unused: the Zenith form now slips every attack, from every direction, and counters it.").defineInRange("zenithDodge", 0.7, 0.0, 1.0);
             counters = b.comment("In Zenith, a slipped attack from close by is answered with a counter.").define("counters", true);
+            zenithSeconds = b.comment("How long Silver Zenith lasts before it falls back to Instinct Omen (0 = no limit). Creative mode has no limit.")
+                    .defineInRange("zenithSeconds", 120, 0, 86400);
+            zenithCooldownSeconds = b.comment("After Silver Zenith ends (time up, revert or death), how long before it can be reached again. Creative mode has no cooldown.")
+                    .defineInRange("zenithCooldownSeconds", 600, 0, 86400);
             b.pop();
         }
     }
