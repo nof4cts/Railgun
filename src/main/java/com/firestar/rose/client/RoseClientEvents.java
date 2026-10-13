@@ -109,7 +109,7 @@ public final class RoseClientEvents {
             }
             Lens.Pose p = Lens.pose();
             double fov = e.getFOV();
-            if (Lens.active() && p != null) {
+            if (p != null && (Lens.active() || RoseTest.observing())) {
                 fov = p.fov();
             }
             float punch = Canvas.LOOK.punch;

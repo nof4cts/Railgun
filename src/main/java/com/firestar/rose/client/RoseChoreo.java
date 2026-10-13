@@ -791,7 +791,7 @@ public final class RoseChoreo {
                 f.ring(o, d, 1 + 4 * Mth.clamp((t - 4) / 18, 0, 1), 0.5, b, 0.9F, s, 1);
             }
         }
-        star(f, o, t, RBeats.RAY_FIRE, 4.0F, c.seed * 41L);
+        star(f, o, t, RBeats.RAY_FIRE, 2.2F, c.seed * 41L);
         float on = window(t, RBeats.RAY_FIRE - 0.5F, RBeats.RAY_FIRE + 1.5F, RBeats.RAY_END - 3, RBeats.RAY_END + 10);
         if (on > 0) {
             Vec3 end = reach(o, d, RBeats.RAY_RANGE);
@@ -1151,8 +1151,8 @@ public final class RoseChoreo {
                 l.desat(0.9F * hush);
                 l.grain(0.6F * hush);
                 Vec3 seamMid = ground(c.feet.add(c.fwd.scale(RBeats.BLOOM_REACH * 0.4)));
-                l.flash(0xFFFFFF, 0.9F * hit(t, RBeats.BLOOM_CUT, 3));
-                l.lines(at(seamMid), 0.9F * window(t, RBeats.BLOOM_CUT, RBeats.BLOOM_CUT + 1, RBeats.BLOOM_IMPACT + 4, RBeats.BLOOM_IMPACT + 10));
+                l.flash(0xFFE8F2, 0.7F * hit(t, RBeats.BLOOM_CUT, 2));
+                l.lines(at(seamMid), 0.55F * window(t, RBeats.BLOOM_CUT, RBeats.BLOOM_CUT + 1, RBeats.BLOOM_IMPACT + 2, RBeats.BLOOM_IMPACT + 8));
                 l.impact(BLOOM, t - RBeats.BLOOM_IMPACT, at(seamMid), ROSE);
                 // the screen torn along the cut
                 float[] sa = at(c.feet.add(c.fwd.scale(2))), sb = at(c.feet.add(c.fwd.scale(RBeats.BLOOM_REACH)));
@@ -1166,7 +1166,7 @@ public final class RoseChoreo {
                         l.split(nx, ny, off, 1.6F * hit(t, RBeats.BLOOM_IMPACT, 10));
                     }
                 }
-                l.flash(0xFFFFFF, 1.2F * hit(t, RBeats.BLOOM_IMPACT, 7));
+                l.flash(0xFFF0F6, 0.9F * hit(t, RBeats.BLOOM_IMPACT, 4));
                 l.shake(1.6F * hit(t, RBeats.BLOOM_IMPACT, 22));
                 l.chroma(1.6F * hit(t, RBeats.BLOOM_IMPACT, 14));
                 l.zoom(at(seamMid), 0.8F * hit(t, RBeats.BLOOM_IMPACT, 8));
@@ -1184,7 +1184,7 @@ public final class RoseChoreo {
                 }
                 l.zoom(at(c.feet.add(0, 1.2, 0)), 0.35F * window(t, 86, 94, RBeats.ASCEND_IGNITE, RBeats.ASCEND_IGNITE + 1));
                 l.impact(IGNITE, t - RBeats.ASCEND_IGNITE, at(c.feet.add(0, 1.3, 0)), ROSE);
-                l.flash(0xFFE6F2, 1.3F * hit(t, RBeats.ASCEND_IGNITE, 6));
+                l.flash(0xFFE6F2, 1.0F * hit(t, RBeats.ASCEND_IGNITE, 4));
                 l.shake(1.3F * hit(t, RBeats.ASCEND_IGNITE, 14));
                 l.chroma(1.4F * hit(t, RBeats.ASCEND_IGNITE, 10));
                 l.tint(0.35F * window(t, RBeats.ASCEND_IGNITE, RBeats.ASCEND_IGNITE + 4, 130, 150));

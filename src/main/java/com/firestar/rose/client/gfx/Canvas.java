@@ -19,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 
 /**
@@ -130,7 +131,7 @@ public final class Canvas {
             RenderSystem.depthMask(false);
             RenderSystem.enableDepthTest();
             // the aura's own bloom, gentle (its glow comes from the light of the shell, not a second shell)
-            AuraRenderer.draw(view, projection, partial, 0.3F);
+            AuraRenderer.draw(view, projection, partial, 0.16F);
             draw(RoseShaders.ARC, t, Geometry.arcs(f, f.arcs));
             draw(RoseShaders.BEAM, t, Geometry.beams(f, f.beams));
             draw(RoseShaders.RING, t, Geometry.rings(f, f.rings));
@@ -164,8 +165,28 @@ public final class Canvas {
             buf.release();
             return;
         }
+        blend(sh);
         RenderSystem.setShader(() -> sh);
         BufferUploader.drawWithShader(buf);
+    }
+
+    /**
+     * Sets the blend state a program needs, every time. Minecraft only re-applies a shader's blend mode when it differs
+     * from the last one it applied itself, so vanilla rendering in between can leave blending switched off: smoke and
+     * ink then draw as solid quads. Setting it here first makes every draw exact whatever ran before.
+     */
+    static void blend(ShaderInstance sh) {
+        RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
+        if (sh == RoseShaders.ARC_INK || sh == RoseShaders.SMOKE || sh == RoseShaders.RIFT) {
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        } else if (sh == RoseShaders.BLOOM_DOWN || sh == RoseShaders.GRADE) {
+            RenderSystem.disableBlend();
+        } else {
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+        }
     }
 
     static void draw(ShaderInstance sh, float time, BufferBuilder.RenderedBuffer buf) {
@@ -266,6 +287,7 @@ public final class Canvas {
     }
 
     private static void quad(ShaderInstance sh) {
+        blend(sh);
         RenderSystem.setShader(() -> sh);
         BufferBuilder b = Tesselator.getInstance().getBuilder();
         b.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);

@@ -1,6 +1,7 @@
 package com.firestar.rose.client;
 
 import com.firestar.rose.RoseMod;
+import com.firestar.rose.client.cam.Lens;
 import com.firestar.rose.common.RMove;
 import com.firestar.rose.server.Reaper;
 import com.firestar.rose.server.Reaping;
@@ -100,6 +101,7 @@ public final class RoseTest {
             index++;
             if (index >= ORDER.length) {
                 done = true;
+                Lens.observe(null);
                 server.execute(() -> RoseMod.LOGGER.info("[rosetest] finished; form={} ", Reaper.form(player(server))));
                 RoseMod.LOGGER.info("[rosetest] finished; stopping");
                 mc.stop();
@@ -121,6 +123,17 @@ public final class RoseTest {
                 SHOTS.add(new int[]{b, 0});
             }
             mc.options.setCameraType(s.cam);
+            // techniques without a cutscene are photographed over the reaper's shoulder, from the side, so the target shows
+            boolean side = s.move != null && !s.move.cinematic && s.move != RMove.RELEASE;
+            final double dist = s.dist;
+            Lens.observe(side ? partial -> {
+                net.minecraft.world.phys.Vec3 me = mc.player.getPosition(partial);
+                double px = 0.5 - Math.min(3.0, 0.3 * dist + 0.6);
+                net.minecraft.world.phys.Vec3 target = new net.minecraft.world.phys.Vec3(0.5, me.y + 1.0, 0.5 + dist);
+                net.minecraft.world.phys.Vec3 mid = me.add(0, 1.2, 0).lerp(target, 0.45);
+                net.minecraft.world.phys.Vec3 eye = new net.minecraft.world.phys.Vec3(px - 4.5 - dist * 0.25, me.y + 2.6 + dist * 0.12, 0.5 - 3.5);
+                return new Lens.Pose(eye, mid, 64, 0);
+            } : null);
             RoseMod.LOGGER.info("[rosetest] {}", s.label);
         }
         Step s = ORDER[index];
@@ -174,6 +187,11 @@ public final class RoseTest {
                 }
             }
         }
+    }
+
+    static boolean observing() {
+        return on && !done && index >= 0 && index < ORDER.length && ORDER[index].move != null && !ORDER[index].move.cinematic
+                && ORDER[index].move != RMove.RELEASE;
     }
 
     static void afterFrame() {

@@ -98,8 +98,23 @@ public final class Lens {
         }
     }
 
+    /** A fixed observer for development (the build server's photographs); null in play. */
+    private static java.util.function.Function<Float, Pose> observer;
+
+    public static void observe(java.util.function.Function<Float, Pose> o) {
+        observer = o;
+        if (o == null) {
+            pose = null;
+        }
+    }
+
     /** Where the camera is this frame (called while the game sets up the camera). Returns false when idle. */
     public static boolean place(Camera camera, float partial) {
+        if ((reel == null || cast == null) && observer != null) {
+            pose = clip(observer.apply(partial));
+            weight = 1;
+            return setPos(camera);
+        }
         if (reel == null || cast == null) {
             return false;
         }
@@ -114,6 +129,10 @@ public final class Lens {
         float in = smooth(t / 7.0F), out = smooth((reel.end - t) / 9.0F);
         weight = Math.min(in, out);
         pose = own.lerp(shot, weight);
+        return setPos(camera);
+    }
+
+    private static boolean setPos(Camera camera) {
         try {
             if (setPosition == null) {
                 for (Method m : Camera.class.getDeclaredMethods()) {

@@ -161,6 +161,9 @@ public final class AuraRenderer {
         Minecraft mc = Minecraft.getInstance();
         int noise = mc.getTextureManager().getTexture(NOISE).getId();
         RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, com.mojang.blaze3d.platform.GlStateManager.SourceFactor.ONE,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
         RenderSystem.disableCull();
         scythe(RoseShaders.AURA, shell(), noise, hand, RenderSystem.getProjectionMatrix(), k, 1.0F);
