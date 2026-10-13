@@ -408,16 +408,8 @@ public final class Choreo {
                 }
             }
             case AWAKEN_ZENITH -> {
-                if (t == 6 || t == 30 || t == 60 || t == 78 || t == 86 || t == 91 || t == 94) {
-                    play(user, ModSounds.HEARTBEAT.get(), 1.3F, 1.0F);
-                }
-                if (t == 56) {
-                    play(user, ModSounds.AURA_HUM.get(), 1.0F, 0.8F);
-                }
+                // no heartbeat or aura hum here: the awakening is scored by the Zenith theme alone (ZenithTheme)
                 if (t == Beats.ZENITH_SURGE) {
-                    play(user, ModSounds.AWAKEN_ZENITH.get(), 1.8F, 1.0F);
-                    play(user, ModSounds.BASS.get(), 1.5F, 0.8F);
-                    play(user, ModSounds.SLAM.get(), 1.0F, 1.3F);
                     Light.flare(user, 9.0F, SILVER, 0.8F);
                     Light.flare(user, 4.0F, WHITE, 0.4F);
                     Light.ring(c.feet.add(0, 0.05, 0), UP, 0.5F, 14.0F, 1.2F, SILVER, 1.0F);
@@ -439,8 +431,9 @@ public final class Choreo {
         long now = mc.level.getGameTime();
         for (Player p : mc.level.players()) {
             int form = ClientState.form(p);
-            if (form > 0 && (now + p.getId()) % 60 == 0) {
-                play(p.position().add(0, 1, 0), ModSounds.AURA_HUM.get(), form == 2 ? 0.35F : 0.2F, form == 2 ? 1.0F : 1.15F);
+            // Silver Zenith has no hum: its sound is the Zenith theme
+            if (form == 1 && (now + p.getId()) % 60 == 0) {
+                play(p.position().add(0, 1, 0), ModSounds.AURA_HUM.get(), 0.2F, 1.15F);
             }
         }
     }

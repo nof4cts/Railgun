@@ -38,6 +38,9 @@ public final class Casts {
             }
         }
         Choreo.begin(cast);
+        if (cast.mine && cast.move == Move.AWAKEN_ZENITH) {
+            ZenithTheme.begin(cast.move.length + 40);
+        }
         if (cast.mine && cast.move.cinematic && ZConfig.CLIENT.cutscenes.get()) {
             Director.play(Films.of(cast));
         }
