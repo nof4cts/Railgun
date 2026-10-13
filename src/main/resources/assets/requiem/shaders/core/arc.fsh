@@ -41,7 +41,7 @@ void main() {
     float edge = exp(-d * (blade ? 14.0 : 8.0));
     float inner = 1.0 - smoothstep(0.45, 1.0, d);
     // the body: hot rose, streaming; brightest toward the edge
-    float h = edge * 0.9 + inner * (0.48 + 0.3 * streak) * (1.0 - 0.35 * d) + 0.1 * flow;
+    float h = edge * 0.8 + inner * (0.36 + 0.28 * streak) * (1.0 - 0.35 * d) + 0.08 * flow;
     if (blade) {
         // the scythe's blade is pinkish white: blush through its body, white at the edge, a pale shimmer of facets
         float facet = smoothstep(0.9, 1.0, fract(x * 9.0 + y * 2.5 + Time * 0.4));
@@ -50,7 +50,7 @@ void main() {
     }
     h *= mix(0.8, 1.15, heat);
     float a = clamp((edge + inner * (0.85 + 0.35 * flow)) * alive * min(fade * 1.4, 1.0), 0.0, 1.0);
-    vec3 col = rose(h) * a * 1.25;
+    vec3 col = rose(h) * a * 1.15;
     col += vec3(1.0, 0.92, 0.96) * edge * edge * heat * alive * fade;
     fragColor = vec4(col, a);
 }

@@ -106,8 +106,8 @@ final class Reels {
                         .cut(90, 118, (k, t) -> at(spline(k, rel(c, F, -6, 1, 9), rel(c, F, 0, 0.5, 12), rel(c, F, 6, 1, 9)),
                                 c.casterFeet(0).add(0, 7, 0), 80, 0))
                         // stillness before the cut
-                        .still(118, RBeats.BLOOM_CUT, (k, t) -> at(c.casterFeet(0).add(0, 2.0, 0).add(c.fwd.scale(l(k, 4.2, 3.8))).add(c.right.scale(-1.3)),
-                                c.casterFeet(0).add(0, 1.7, 0), l(k, 36, 30), 0))
+                        .still(118, RBeats.BLOOM_CUT, (k, t) -> at(c.casterFeet(0).add(0, -1.0, 0).add(c.fwd.scale(l(k, 8.5, 7.5))).add(c.right.scale(-4.5)),
+                                c.casterFeet(0).add(0, 3.0, 0), l(k, 52, 46), l(k, -3, 3)))
                         // the cut, from far off to the side: the arc the size of the sky
                         .cut(RBeats.BLOOM_CUT, RBeats.BLOOM_IMPACT + 12, (k, t) -> at(rel(c, F, l(k, 46, 52), l(k, 10, 14), RBeats.BLOOM_REACH * 0.4),
                                 rel(c, F, 0, 6, RBeats.BLOOM_REACH * 0.4), 72, l(k, -4, 4)))

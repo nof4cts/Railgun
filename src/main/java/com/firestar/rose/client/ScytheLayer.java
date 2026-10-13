@@ -57,7 +57,9 @@ public final class ScytheLayer extends RenderLayer<AbstractClientPlayer, PlayerM
         hand(ps, RoseChoreo.scytheGrow(p, partial));
         drawShaft(ps, buf, light, k);
         HELD.add(new Matrix4f(ps.last().pose()));
-        HELD_K.add(new float[]{k, RoseChoreo.bladeHeat(p, partial)});
+        // grown past the clouds, the scythe's own aura gives way to the light of the Last Bloom
+        float grow = RoseChoreo.scytheGrow(p, partial);
+        HELD_K.add(new float[]{k, RoseChoreo.bladeHeat(p, partial), k * Math.max(0, 1 - (grow - 1) / 0.6F)});
         ps.popPose();
     }
 
@@ -170,7 +172,7 @@ public final class ScytheLayer extends RenderLayer<AbstractClientPlayer, PlayerM
         AURA_K.clear();
         AURA_M.addAll(HELD);
         for (float[] k : HELD_K) {
-            AURA_K.add(k[0]);
+            AURA_K.add(k[2]);
         }
         HELD.clear();
         HELD_K.clear();

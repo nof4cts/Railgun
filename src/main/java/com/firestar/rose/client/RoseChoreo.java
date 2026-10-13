@@ -616,13 +616,13 @@ public final class RoseChoreo {
                         Vec3 u = c.right.subtract(tilt.scale(c.right.dot(tilt))).normalize();
                         Vec3 v = tilt.cross(u);
                         if (g == 0) {
-                            f.slash(at, u, v, 1.5, spin, spin + 150, 0.55, 1, fade, 1.0F, s);
-                            f.slash(at, u, v, 1.5, spin + 180, spin + 330, 0.55, 1, fade, 1.0F, s + 0.5F);
-                            f.flare(at, 1.6, 0.7F, 0.9F);
-                            f.shock(at, tilt, 1.8, 0.8, 0.8F);
+                            f.slash(at, u, v, 2.3, spin, spin + 150, 0.85, 1, fade, 1.0F, s);
+                            f.slash(at, u, v, 2.3, spin + 180, spin + 330, 0.85, 1, fade, 1.0F, s + 0.5F);
+                            f.flare(at, 2.4, 0.7F, 0.9F);
+                            f.shock(at, tilt, 2.6, 1.0, 0.8F);
                         } else {
-                            f.cut(at, u, v, 1.5, spin, spin + 150, 0.5, 1, fade, 0.8F, s);
-                            f.cut(at, u, v, 1.5, spin + 180, spin + 330, 0.5, 1, fade, 0.8F, s + 0.5F);
+                            f.cut(at, u, v, 2.3, spin, spin + 150, 0.75, 1, fade, 0.8F, s);
+                            f.cut(at, u, v, 2.3, spin + 180, spin + 330, 0.75, 1, fade, 0.8F, s + 0.5F);
                         }
                     }
                 }
