@@ -116,8 +116,11 @@ public final class Reaping {
         p.displayClientMessage(Component.literal(why).withStyle(s -> s.withColor(0xFF7FB6)), true);
     }
 
+    /** Every Requiem Rose technique hits two and a half times as hard as its base value (then the config multiplier). */
+    static final float POWER = 2.5F;
+
     private static float dmg(float base) {
-        return base * RoseConfig.SERVER.damage.get().floatValue();
+        return base * POWER * RoseConfig.SERVER.damage.get().floatValue();
     }
 
     public static void request(ServerPlayer p, RMove m) {
