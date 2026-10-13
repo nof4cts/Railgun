@@ -33,12 +33,12 @@ public final class Lens {
             return new Pose(pos.lerp(o.pos, k), look.lerp(o.look, k), Mth.lerp(k, fov, o.fov), Mth.lerp(k, roll, o.roll));
         }
 
-        float yaw() {
+        public float yaw() {
             Vec3 d = look.subtract(pos);
             return (float) Math.toDegrees(Math.atan2(-d.x, d.z));
         }
 
-        float pitch() {
+        public float pitch() {
             Vec3 d = look.subtract(pos);
             return (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
         }
