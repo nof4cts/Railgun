@@ -176,6 +176,8 @@ public final class Canvas {
      * ink then draw as solid quads. Setting it here first makes every draw exact whatever ran before.
      */
     static void blend(ShaderInstance sh) {
+        // every shape is seen from both sides (a slash turning away from the camera must not vanish)
+        RenderSystem.disableCull();
         RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
         if (sh == RoseShaders.ARC_INK || sh == RoseShaders.SMOKE || sh == RoseShaders.RIFT) {
             RenderSystem.enableBlend();

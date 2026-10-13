@@ -271,7 +271,6 @@ public final class AuraRenderer {
         }
         VertexBuffer.unbind();
         RenderSystem.depthMask(false);
-        RenderSystem.enableCull();
         RenderSystem.defaultBlendFunc();
     }
 }
