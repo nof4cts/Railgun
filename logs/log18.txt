@@ -1,0 +1,206 @@
+00:00.419  blend            | Read blend: "/home/runner/work/Railgun/Railgun/fire_arrow_open.blend"
+00:00.491  cycles           | WARNING CUEW initialization failed: Error opening the library
+EGL Error (0x3009): EGL_BAD_MATCH: Arguments are inconsistent (for example, a valid context requires buffers not supplied by a valid surface).
+EGL Error (0x3009): EGL_BAD_MATCH: Arguments are inconsistent (for example, a valid context requires buffers not supplied by a valid surface).
+EGL Error (0x3009): EGL_BAD_MATCH: Arguments are inconsistent (for example, a valid context requires buffers not supplied by a valid surface).
+00:21.131  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00018.png'
+[render] job 18 frame 37 -> 18 in 20.6s
+00:41.263  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00038.png'
+[render] job 18 frame 77 -> 38 in 20.1s
+01:01.523  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00058.png'
+[render] job 18 frame 117 -> 58 in 20.3s
+01:10.541  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00078.png'
+[render] job 18 frame 157 -> 78 in 9.0s
+01:19.544  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00098.png'
+[render] job 18 frame 197 -> 98 in 9.0s
+01:28.793  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00118.png'
+[render] job 18 frame 237 -> 118 in 9.2s
+01:38.121  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00138.png'
+[render] job 18 frame 277 -> 138 in 9.3s
+02:04.589  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00158.png'
+[render] job 18 frame 317 -> 158 in 26.5s
+02:31.149  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00178.png'
+[render] job 18 frame 357 -> 178 in 26.6s
+02:57.803  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00198.png'
+[render] job 18 frame 397 -> 198 in 26.7s
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_0
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_1
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_4
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_5
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_6
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_8
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_0
+02:57.894  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_1
+02:57.920  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_0
+02:57.920  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_1
+02:57.920  cycles           | WARNING Topology differs, discarding motion blur for object VFX_armfire_2 at time 1
+02:57.920  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_5
+02:57.920  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armfire_6
+02:57.920  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_0
+02:57.921  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_1
+03:13.773  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00218.png'
+[render] job 18 frame 437 -> 218 in 16.0s
+03:13.895  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_2
+03:13.895  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_4
+03:13.895  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_5
+03:13.895  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armspark_5
+03:13.924  cycles           | WARNING Topology differs, discarding motion blur for object VFX_armstream_0 at time 1
+03:13.924  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_2
+03:13.924  cycles           | WARNING Topology differs, discarding motion blur for object VFX_armstream_3 at time 1
+03:13.924  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_4
+03:13.924  cycles           | WARNING Topology differs, discarding motion blur for object VFX_armspark_13 at time 1
+03:33.518  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00238.png'
+[render] job 18 frame 477 -> 238 in 19.7s
+03:33.639  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_1
+03:33.639  cycles           | WARNING Topology differs, disabling motion blur for object VFX_armstream_5
+03:33.668  cycles           | WARNING Topology differs, discarding motion blur for object VFX_armstream_2 at time 1
+03:53.422  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00258.png'
+[render] job 18 frame 517 -> 258 in 19.9s
+03:53.474  cycles           | WARNING Topology differs, disabling motion blur for object VFX_body_spiral_0
+03:53.479  cycles           | WARNING Topology differs, discarding motion blur for object VFX_body_spiral_1 at time 1
+03:53.479  cycles           | WARNING Topology differs, discarding motion blur for object VFX_body_spiral_2 at time 1
+04:16.430  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00278.png'
+[render] job 18 frame 557 -> 278 in 23.0s
+04:39.725  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00298.png'
+[render] job 18 frame 597 -> 298 in 23.3s
+05:02.852  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00318.png'
+[render] job 18 frame 637 -> 318 in 23.1s
+05:25.326  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00338.png'
+[render] job 18 frame 677 -> 338 in 22.5s
+05:25.362  cycles           | WARNING Topology differs, discarding motion blur for object VFX_slash_0 at time 1
+05:25.362  cycles           | WARNING Topology differs, discarding motion blur for object VFX_slash_1 at time 1
+05:25.362  cycles           | WARNING Topology differs, discarding motion blur for object VFX_slash_2 at time 1
+05:47.889  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00358.png'
+[render] job 18 frame 717 -> 358 in 22.6s
+06:15.603  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00378.png'
+[render] job 18 frame 757 -> 378 in 27.7s
+06:43.448  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00398.png'
+[render] job 18 frame 797 -> 398 in 27.8s
+07:11.005  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00418.png'
+[render] job 18 frame 837 -> 418 in 27.6s
+07:38.580  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00438.png'
+[render] job 18 frame 877 -> 438 in 27.6s
+08:06.545  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00458.png'
+[render] job 18 frame 917 -> 458 in 28.0s
+08:34.355  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00478.png'
+[render] job 18 frame 957 -> 478 in 27.8s
+09:02.121  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00498.png'
+[render] job 18 frame 997 -> 498 in 27.8s
+09:30.395  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00518.png'
+[render] job 18 frame 1037 -> 518 in 28.3s
+09:58.075  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00538.png'
+[render] job 18 frame 1077 -> 538 in 27.7s
+10:25.540  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00558.png'
+[render] job 18 frame 1117 -> 558 in 27.5s
+10:53.433  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00578.png'
+[render] job 18 frame 1157 -> 578 in 27.9s
+11:09.974  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00598.png'
+[render] job 18 frame 1197 -> 598 in 16.5s
+11:26.744  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00618.png'
+[render] job 18 frame 1237 -> 618 in 16.8s
+11:43.757  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00638.png'
+[render] job 18 frame 1277 -> 638 in 17.0s
+12:00.988  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00658.png'
+[render] job 18 frame 1317 -> 658 in 17.2s
+12:18.380  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00678.png'
+[render] job 18 frame 1357 -> 678 in 17.4s
+12:27.384  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00698.png'
+[render] job 18 frame 1397 -> 698 in 9.0s
+12:36.392  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00718.png'
+[render] job 18 frame 1437 -> 718 in 9.0s
+12:36.418  cycles           | WARNING Topology differs, disabling motion blur for object VFX_arm_spark_9
+12:36.418  cycles           | WARNING Topology differs, disabling motion blur for object VFX_arm_spark_11
+12:36.418  cycles           | WARNING Topology differs, disabling motion blur for object VFX_arm_spark_12
+12:36.418  cycles           | WARNING Topology differs, disabling motion blur for object VFX_arm_spark_15
+12:36.418  cycles           | WARNING Topology differs, disabling motion blur for object VFX_arm_spark_17
+12:36.423  cycles           | WARNING Topology differs, discarding motion blur for object VFX_arm_spark_5 at time 1
+12:36.423  cycles           | WARNING Topology differs, discarding motion blur for object VFX_arm_spark_7 at time 1
+12:50.644  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00738.png'
+[render] job 18 frame 1477 -> 738 in 14.2s
+13:05.080  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00758.png'
+[render] job 18 frame 1517 -> 758 in 14.4s
+13:23.261  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00778.png'
+[render] job 18 frame 1557 -> 778 in 18.1s
+13:23.345  cycles           | WARNING Topology differs, disabling motion blur for object VFX_orb_swirl_2
+13:23.364  cycles           | WARNING Topology differs, discarding motion blur for object VFX_orb_swirl_1 at time 1
+13:23.365  cycles           | WARNING Topology differs, discarding motion blur for object VFX_orb_swirl_3 at time 1
+13:23.365  cycles           | WARNING Topology differs, discarding motion blur for object VFX_orb_swirl_4 at time 1
+13:42.484  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00798.png'
+[render] job 18 frame 1597 -> 798 in 19.2s
+13:42.571  cycles           | WARNING Topology differs, disabling motion blur for object VFX_orb_swirl_0
+13:42.592  cycles           | WARNING Topology differs, discarding motion blur for object VFX_orb_swirl_1 at time 1
+13:42.592  cycles           | WARNING Topology differs, discarding motion blur for object VFX_orb_swirl_2 at time 1
+14:01.347  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00818.png'
+[render] job 18 frame 1637 -> 818 in 18.8s
+14:14.274  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00838.png'
+[render] job 18 frame 1677 -> 838 in 12.9s
+14:14.390  cycles           | WARNING Topology differs, disabling motion blur for object VFX_draw_streak_0
+14:14.390  cycles           | WARNING Topology differs, disabling motion blur for object VFX_draw_streak_5
+14:14.416  cycles           | WARNING Topology differs, disabling motion blur for object VFX_draw_streak_0
+14:14.416  cycles           | WARNING Topology differs, disabling motion blur for object VFX_draw_streak_5
+14:14.416  cycles           | WARNING Topology differs, discarding motion blur for object VFX_draw_streak_6 at time 1
+14:28.549  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00858.png'
+[render] job 18 frame 1717 -> 858 in 14.2s
+14:28.653  cycles           | WARNING Topology differs, disabling motion blur for object VFX_draw_streak_8
+14:43.090  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00878.png'
+[render] job 18 frame 1757 -> 878 in 14.5s
+15:03.869  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00898.png'
+[render] job 18 frame 1797 -> 898 in 20.8s
+15:24.019  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00918.png'
+[render] job 18 frame 1837 -> 918 in 20.1s
+15:42.849  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00938.png'
+[render] job 18 frame 1877 -> 938 in 18.8s
+16:09.651  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00958.png'
+[render] job 18 frame 1917 -> 958 in 26.8s
+16:35.811  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00978.png'
+[render] job 18 frame 1957 -> 978 in 26.1s
+17:01.438  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f00998.png'
+[render] job 18 frame 1997 -> 998 in 25.6s
+17:27.349  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01018.png'
+[render] job 18 frame 2037 -> 1018 in 25.9s
+17:49.419  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01038.png'
+[render] job 18 frame 2077 -> 1038 in 22.0s
+18:11.750  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01058.png'
+[render] job 18 frame 2117 -> 1058 in 22.3s
+18:33.985  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01078.png'
+[render] job 18 frame 2157 -> 1078 in 22.2s
+18:56.165  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01098.png'
+[render] job 18 frame 2197 -> 1098 in 22.2s
+19:17.744  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01118.png'
+[render] job 18 frame 2237 -> 1118 in 21.6s
+19:39.322  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01138.png'
+[render] job 18 frame 2277 -> 1138 in 21.6s
+20:00.848  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01158.png'
+[render] job 18 frame 2317 -> 1158 in 21.5s
+20:20.694  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01178.png'
+[render] job 18 frame 2357 -> 1178 in 19.8s
+20:46.083  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01198.png'
+[render] job 18 frame 2397 -> 1198 in 25.2s
+21:12.821  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01218.png'
+[render] job 18 frame 2437 -> 1218 in 26.5s
+21:39.570  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01238.png'
+[render] job 18 frame 2477 -> 1238 in 26.5s
+22:05.944  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01258.png'
+[render] job 18 frame 2517 -> 1258 in 26.1s
+22:31.748  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01278.png'
+[render] job 18 frame 2557 -> 1278 in 25.6s
+22:57.488  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01298.png'
+[render] job 18 frame 2597 -> 1298 in 25.5s
+23:23.306  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01318.png'
+[render] job 18 frame 2637 -> 1318 in 25.6s
+23:48.691  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01338.png'
+[render] job 18 frame 2677 -> 1338 in 25.2s
+24:14.158  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01358.png'
+[render] job 18 frame 2717 -> 1358 in 25.2s
+24:39.377  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01378.png'
+[render] job 18 frame 2757 -> 1378 in 25.2s
+25:04.765  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01398.png'
+[render] job 18 frame 2797 -> 1398 in 25.4s
+25:30.330  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01418.png'
+[render] job 18 frame 2837 -> 1418 in 25.5s
+25:56.020  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01438.png'
+[render] job 18 frame 2877 -> 1438 in 25.7s
+26:05.055  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01458.png'
+[render] job 18 frame 2917 -> 1458 in 9.0s
+26:14.045  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01478.png'
+[render] job 18 frame 2957 -> 1478 in 9.0s
