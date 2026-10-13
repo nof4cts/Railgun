@@ -97,7 +97,8 @@ public final class Techniques {
    }
 
    private static int cooldown(Move m) {
-      return Math.max(200, (int)Math.round((double)m.cooldown * (Double)ShrineConfig.SERVER.cooldownScale.get()));
+      // Dismantle is ready again after 5 seconds; everything else keeps its 10 second floor
+      return Math.max(m == Move.DISMANTLE ? 100 : 200, (int)Math.round((double)m.cooldown * (Double)ShrineConfig.SERVER.cooldownScale.get()));
    }
 
    public static void cast(ServerPlayer p, Move move) {

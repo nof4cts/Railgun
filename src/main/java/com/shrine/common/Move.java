@@ -1,7 +1,7 @@
 package com.shrine.common;
 
 public enum Move {
-   DISMANTLE("dismantle", 10, false),
+   DISMANTLE("dismantle", 100, false),
    BARRAGE("barrage", 70, false),
    CLEAVE("cleave", 30, false),
    SPIDERWEB("spiderweb", 140, false),
