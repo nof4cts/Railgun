@@ -86,7 +86,8 @@ public final class OConfig {
             antipodeDamage = b.comment("Damage to everything in the zone when the worlds touch.").defineInRange("damage", 60.0, 0.0, 10000.0);
             blight = b.comment("After the exchange, the other world's flesh spreads outward from the rim with no end, and things crawl out of it.",
                     "Stop a spread in progress with /orbital_arsenal blight stop.").define("blight", true);
-            blightRate = b.comment("How many edge columns try to spread each tick (higher = faster).").defineInRange("blightRate", 60, 1, 5000);
+            blightRate = b.comment("How many edge columns try to spread each tick (higher = faster; 12 is a slow creep, the old default was 60).")
+                    .defineInRange("blightSpread", 12, 1, 5000);
             blightMobCap = b.comment("Most blight creatures alive near each player (0 = none spawn).").defineInRange("blightMobCap", 10, 0, 100);
             b.pop();
         }
