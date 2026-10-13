@@ -1,5 +1,8 @@
 package com.shrine.client;
 
+import com.shrine.common.Move;
+import net.minecraft.sounds.SoundSource;
+
 import com.shrine.client.anim.PlayerAnims;
 import com.shrine.client.cinematic.Cutscene;
 import com.shrine.common.Slash;
@@ -34,12 +37,25 @@ public final class Casts {
             PlayerAnims.play(p, msg.move);
          }
 
-         if (msg.move.cutscene) {
+         if (msg.move == Move.FUGA && !msg.film) {
+            // the move as it happens in the film, straight away: no cutscene
+         } else if (msg.move.cutscene) {
             boolean mine = caster == mc.player;
             boolean near = mc.player.getEyePosition().distanceTo(msg.origin) < (double)msg.cutsceneRadius;
             if (mine || near) {
                Cutscene.start(msg);
             }
+         }
+      }
+   }
+
+   /** The Open casts fired without their film (drawn in the world by OpenFx), with their age in ticks. */
+   public static void quickOpens(float partial, List<S2CCast> casts, List<Float> times) {
+      double now = now(partial);
+      for (Casts.Active a : ACTIVE) {
+         if (a.msg.move == Move.FUGA && !a.msg.film) {
+            casts.add(a.msg);
+            times.add((float)(now - (double)a.base));
          }
       }
    }
@@ -85,7 +101,7 @@ public final class Casts {
 
          while (it.hasNext()) {
             Casts.Active a = it.next();
-            int t = (int)(now - a.msg.startTick);
+            int t = (int)(now - a.base);
 
             for (int k = a.lastTick + 1; k <= t; k++) {
                beat(a, k);
@@ -116,11 +132,28 @@ public final class Casts {
       Entity caster = mc.level.getEntity(m.casterId);
       switch (m.move) {
          case FUGA:
-            if (t == 8 && Cutscene.isFor(m)) {
+            if (!m.film && caster != null) {
+               // the move as it happens in the film: its own sounds
+               Vec3 at = caster.position().add(0.0, 1.2, 0.0);
+               if (t == 0) {
+                  mc.level.playLocalSound(at.x, at.y, at.z, (SoundEvent)ModSounds.OPEN_ARMFIRE.get(), SoundSource.PLAYERS, 2.5F, 1.0F, false);
+               }
+               if (t == 30) {
+                  mc.level.playLocalSound(at.x, at.y, at.z, (SoundEvent)ModSounds.OPEN_FISTS.get(), SoundSource.PLAYERS, 2.5F, 1.0F, false);
+               }
+               if (t == 48) {
+                  mc.level.playLocalSound(at.x, at.y, at.z, (SoundEvent)ModSounds.OPEN_FORM.get(), SoundSource.PLAYERS, 2.5F, 1.0F, false);
+               }
+               if (t == 89) {
+                  mc.level.playLocalSound(m.point.x, m.point.y, m.point.z, (SoundEvent)ModSounds.OPEN_INFERNO.get(), SoundSource.PLAYERS, 30.0F, 1.0F, false);
+               }
+            }
+
+            if (t == 8 && Cutscene.isFor(m) && !com.shrine.client.film.Film.playing()) {
                ui((SoundEvent)ModSounds.CARD.get(), 1.0F);
             }
 
-            if (t == 48 && close) {
+            if (t == 48 && close && !com.shrine.client.film.Film.playing()) {
                ui((SoundEvent)ModSounds.FUGA_DRAW.get(), 1.0F);
             }
 
@@ -287,7 +320,7 @@ public final class Casts {
 
          for (Casts.Active a : ACTIVE) {
             S2CCast m = a.msg;
-            float t = (float)(now - (double)m.startTick);
+            float t = (float)(now - (double)a.base);
             Entity caster = mc.level.getEntity(m.casterId);
 
             for (Casts.Stroke s : a.strokes) {
@@ -383,6 +416,10 @@ public final class Casts {
 
    private static void fugaFrame(Casts.Frame f, Casts.Active a, Entity caster, float t, float partial) {
       S2CCast m = a.msg;
+      if (!m.film || t < 0.0F) {
+         // the quick Open is drawn by OpenFx from the film's own fire; the film version hides its build-up behind the film
+         return;
+      }
       if (!(t > 249.0F)) {
          f.fuga = true;
          f.fRadius = m.size;
@@ -421,13 +458,16 @@ public final class Casts {
       Vec3 fugaFrom;
       Vec3 fugaAim;
       long endTick;
+      /** When the move's beats start: the cast itself, or for the film version, the film's end minus the build-up. */
+      final long base;
 
       Active(S2CCast msg) {
          this.msg = msg;
+         this.base = msg.startTick + (msg.move == Move.FUGA && msg.film ? (long)com.shrine.common.Timing.FUGA_FILM_SHIFT : 0L);
          long var10001 = msg.startTick;
 
          this.endTick = var10001 + switch (msg.move) {
-            case FUGA -> 269L;
+            case FUGA -> msg.film ? 269L + (long)com.shrine.common.Timing.FUGA_FILM_SHIFT : 300L;
             case DOMAIN -> 52L + (long)msg.targetId * 20L + 20L;
             case WORLD_SLASH -> 358L;
             case DISMANTLE -> 80L;

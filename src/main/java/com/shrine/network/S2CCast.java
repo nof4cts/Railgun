@@ -20,8 +20,16 @@ public final class S2CCast {
    public final float size;
    public final int targetId;
    public final float cutsceneRadius;
+   /** Open only: this cast plays the film cutscene first. */
+   public final boolean film;
 
    public S2CCast(Move move, int casterId, long startTick, Vec3 origin, Vec3 dir, Vec3 point, long seed, float size, int targetId, float cutsceneRadius) {
+      this(move, casterId, startTick, origin, dir, point, seed, size, targetId, cutsceneRadius, false);
+   }
+
+   public S2CCast(Move move, int casterId, long startTick, Vec3 origin, Vec3 dir, Vec3 point, long seed, float size, int targetId, float cutsceneRadius,
+                  boolean film) {
+      this.film = film;
       this.move = move;
       this.casterId = casterId;
       this.startTick = startTick;
@@ -45,7 +53,8 @@ public final class S2CCast {
    }
 
    public S2CCast(FriendlyByteBuf b) {
-      this(Move.byId(b.readVarInt()), b.readVarInt(), b.readLong(), vec(b), vec(b), vec(b), b.readLong(), b.readFloat(), b.readVarInt(), b.readFloat());
+      this(Move.byId(b.readVarInt()), b.readVarInt(), b.readLong(), vec(b), vec(b), vec(b), b.readLong(), b.readFloat(), b.readVarInt(), b.readFloat(),
+         b.readBoolean());
    }
 
    public void encode(FriendlyByteBuf b) {
@@ -59,6 +68,7 @@ public final class S2CCast {
       b.writeFloat(this.size);
       b.writeVarInt(this.targetId);
       b.writeFloat(this.cutsceneRadius);
+      b.writeBoolean(this.film);
    }
 
    public void handle(Supplier<Context> ctx) {

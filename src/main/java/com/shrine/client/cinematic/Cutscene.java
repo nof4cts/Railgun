@@ -60,6 +60,9 @@ public final class Cutscene {
                savedCamera = mc.options.getCameraType();
                mc.options.setCameraType(CameraType.FIRST_PERSON);
                mc.setCameraEntity(camera);
+               if (msg.film) {
+                  com.shrine.client.film.Film.start(msg);
+               }
             }
          }
       }
@@ -67,6 +70,7 @@ public final class Cutscene {
 
    public static void stop() {
       Minecraft mc = Minecraft.getInstance();
+      com.shrine.client.film.Film.stop();
       if (active != null) {
          active = null;
          pose = null;
@@ -100,7 +104,12 @@ public final class Cutscene {
 
    public static float time(float partial) {
       Minecraft mc = Minecraft.getInstance();
-      return mc.level != null && active != null ? (float)mc.level.getGameTime() + partial - (float)active.startTick : 0.0F;
+      if (mc.level == null || active == null) {
+         return 0.0F;
+      }
+      // the film version's in-world shots begin where the film ends
+      long base = active.startTick + (active.film && active.move == com.shrine.common.Move.FUGA ? (long)com.shrine.common.Timing.FUGA_FILM_SHIFT : 0L);
+      return (float)mc.level.getGameTime() + partial - (float)base;
    }
 
    private static int end() {
@@ -133,7 +142,7 @@ public final class Cutscene {
             mc.setCameraEntity(camera);
          }
 
-         float t = time(partial);
+         float t = Math.max(0.0F, time(partial));
 
          pose = switch (active.move) {
             case FUGA -> fuga(t, partial);

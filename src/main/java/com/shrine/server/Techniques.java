@@ -90,11 +90,22 @@ public final class Techniques {
       return -1L;
    }
 
+   /** The build server's self-test: ready every move again. */
+   public static void testReset(ServerPlayer p) {
+      READY.remove(p.getUUID());
+      BUSY.remove(p.getUUID());
+   }
+
    private static int cooldown(Move m) {
       return Math.max(200, (int)Math.round((double)m.cooldown * (Double)ShrineConfig.SERVER.cooldownScale.get()));
    }
 
    public static void cast(ServerPlayer p, Move move) {
+      cast(p, move, false);
+   }
+
+   public static void cast(ServerPlayer p, Move move, boolean film) {
+      film = film && move == Move.FUGA;
       if (Sorcerers.is(p, Sorcerer.SUKUNA)) {
          ServerLevel level = p.serverLevel();
          long now = level.getGameTime();
@@ -140,14 +151,14 @@ public final class Techniques {
                      break;
                   case FUGA:
                      double range = (double)((Integer)ShrineConfig.SERVER.fugaRange.get()).intValue();
-                     BlockHitResult hit = level.clip(new ClipContext(eye, eye.add(look.scale(range)), Block.COLLIDER, Fluid.NONE, p));
-                     point = hit.getType() == Type.MISS ? eye.add(look.scale(range)) : hit.getLocation();
+                     BlockHitResult fhit = level.clip(new ClipContext(eye, eye.add(look.scale(range)), Block.COLLIDER, Fluid.NONE, p));
+                     point = fhit.getType() == Type.MISS ? eye.add(look.scale(range)) : fhit.getLocation();
                      Entity e = pick(p, eye.distanceTo(point));
                      if (e != null) {
                         point = e.position().add(0.0, (double)e.getBbHeight() * 0.5, 0.0);
                      }
 
-                     size = (float)((Integer)ShrineConfig.SERVER.fugaRadius.get()).intValue() * 0.1F;
+                     size = (float)((Integer)ShrineConfig.SERVER.fugaRadius.get()).intValue();
                      break;
                   case DOMAIN:
                      point = p.position();
@@ -163,10 +174,12 @@ public final class Techniques {
                ready[move.ordinal()] = now + (long)cooldown(move);
                Energy.spend(p, ceCost);
                if (move.cutscene) {
-                  BUSY.put(p.getUUID(), now + (long)(move == Move.DOMAIN ? 150 : Timing.end(move)));
+                  BUSY.put(p.getUUID(), now + (long)(move == Move.DOMAIN ? 150 : Timing.end(move, film)));
                }
 
                Techniques.Cast c = new Techniques.Cast(move, p, now, eye, look, point, seed, size, target);
+               c.film = film;
+               c.endsAt = now + (long)Timing.end(move, film);
                if (move == Move.DOMAIN) {
                   c.endsAt = now + 52L + (long)((Integer)ShrineConfig.SERVER.domainSeconds.get()).intValue() * 20L;
                }
@@ -182,7 +195,8 @@ public final class Techniques {
                   seed,
                   size,
                   move == Move.DOMAIN ? (Integer)ShrineConfig.SERVER.domainSeconds.get() : (target == null ? -1 : target.getId()),
-                  (float)((Integer)ShrineConfig.SERVER.cutsceneRadius.get()).intValue()
+                  (float)((Integer)ShrineConfig.SERVER.cutsceneRadius.get()).intValue(),
+                  film
                );
                double reach = move == Move.WORLD_SLASH ? (double)Math.max(512.0F, size) : 512.0;
                Net.CHANNEL.send(PacketDistributor.NEAR.with(() -> new TargetPoint(eye.x, eye.y, eye.z, reach, level.dimension())), msg);
@@ -423,13 +437,42 @@ public final class Techniques {
       }
    }
 
-   private static void fuga(Techniques.Cast c, int t) {
+   /** Mahoraga adapts to everything else; Open burns him out of existence in one shot. */
+   private static boolean mahoraga(Entity e) {
+      return e instanceof com.mahoraga.mod.MahoragaEntity;
+   }
+
+   private static void annihilate(Techniques.Cast c, Entity e) {
+      if (e instanceof LivingEntity l && e.isAlive()) {
+         l.invulnerableTime = 0;
+         // generic_kill bypasses invulnerability, so his adaptation never sees it
+         l.hurt(c.level.damageSources().source(net.minecraft.world.damagesource.DamageTypes.GENERIC_KILL, c.caster), Float.MAX_VALUE);
+         if (l.isAlive()) {
+            l.setHealth(0.0F);
+            l.die(source(c));
+         }
+      }
+   }
+
+   private static void openHit(Techniques.Cast c, Entity e, double scale) {
+      if (mahoraga(e)) {
+         annihilate(c, e);
+      } else {
+         hit(c, e, scale);
+      }
+   }
+
+   private static void fuga(Techniques.Cast c, int t0) {
+      // the film version runs the same beats, shifted so the blast lands the tick the film ends
+      int t = c.film ? t0 - Timing.FUGA_FILM_SHIFT : t0;
+      // whoever watches the film hears its own soundtrack; the world's sounds are for everyone else
+      Player deaf = c.film ? c.caster : null;
       if (t == 0) {
-         sound(c, c.origin, (SoundEvent)ModSounds.FUGA_IGNITE.get(), 3.0F, 1.0F);
+         c.level.playSound(deaf, c.origin.x, c.origin.y, c.origin.z, (SoundEvent)ModSounds.FUGA_IGNITE.get(), SoundSource.PLAYERS, 3.0F, 1.0F);
       }
 
       if (t == 80) {
-         sound(c, c.origin, (SoundEvent)ModSounds.FUGA_RELEASE.get(), 4.0F, 1.0F);
+         c.level.playSound(deaf, c.origin.x, c.origin.y, c.origin.z, (SoundEvent)ModSounds.FUGA_RELEASE.get(), SoundSource.PLAYERS, 4.0F, 1.0F);
       }
 
       if (t > 80 && t <= 89) {
@@ -438,14 +481,14 @@ public final class Techniques {
          Vec3 from = c.origin.lerp(c.point, (double)u0);
          Vec3 to = c.origin.lerp(c.point, (double)u1);
 
-         for (Entity e : c.level.getEntities(c.caster, new AABB(from, to).inflate(2.5), Entity::isAlive)) {
-            hit(c, e, 1.5);
-            e.setSecondsOnFire(8);
+         for (Entity e : c.level.getEntities(c.caster, new AABB(from, to).inflate(3.5), Entity::isAlive)) {
+            openHit(c, e, 5.0);
+            e.setSecondsOnFire(12);
          }
       }
 
       if (t == 89) {
-         sound(c, c.point, (SoundEvent)ModSounds.FUGA_IMPACT.get(), 40.0F, 1.0F);
+         sound(c, c.point, (SoundEvent)ModSounds.FUGA_IMPACT.get(), 60.0F, 1.0F);
          double r = (double)c.size;
          AABB box = new AABB(c.point, c.point).inflate(r * 1.8);
 
@@ -453,22 +496,24 @@ public final class Techniques {
             double d = e.position().distanceTo(c.point);
             if (!(d > r * 1.8)) {
                double k = 1.0 - d / (r * 1.8);
-               if (d < r * 0.5) {
-                  hit(c, e, 1.5);
+               if (mahoraga(e)) {
+                  annihilate(c, e);
+               } else if (d < r * 0.6) {
+                  hit(c, e, 8.0);
                } else if (e instanceof LivingEntity) {
-                  hit(c, e, 0.4 + 0.8 * k);
+                  hit(c, e, 2.0 + 4.0 * k);
                }
 
-               e.setSecondsOnFire(8);
+               e.setSecondsOnFire(15);
                Vec3 away = e.position().subtract(c.point);
                away = away.lengthSqr() < 1.0E-4 ? new Vec3(0.0, 1.0, 0.0) : away.normalize();
-               e.setDeltaMovement(e.getDeltaMovement().add(away.scale(1.0 + 3.0 * k)).add(0.0, 1.0 + 2.0 * k, 0.0));
+               e.setDeltaMovement(e.getDeltaMovement().add(away.scale(1.5 + 4.0 * k)).add(0.0, 1.2 + 2.5 * k, 0.0));
                e.hurtMarked = true;
             }
          }
 
          if ((Boolean)ShrineConfig.SERVER.cutBlocks.get()) {
-            c.blast = new Consumption(c.level, c.point, (int)Math.ceil(r * 1.6) + 1, c.level.getGameTime(), 30)
+            c.blast = new Consumption(c.level, c.point, (int)Math.ceil(r * 1.6) + 1, c.level.getGameTime(), 40)
                .with(scorcher(c, Math.max(1, (int)r)), (Consumption.Sink)null);
          }
       }
@@ -480,11 +525,11 @@ public final class Techniques {
       if (t > 89 && t % 10 == 0) {
          for (Entity ex : c.level
             .getEntities(c.caster, new AABB(c.point, c.point).inflate((double)c.size * 1.3, (double)(c.size * 4.0F), (double)c.size * 1.3), Entity::isAlive)) {
-            ex.setSecondsOnFire(4);
+            ex.setSecondsOnFire(6);
          }
       }
 
-      if (t == 174 && c.blast != null && !c.blast.done()) {
+      if (t >= 174 && c.blast != null && !c.blast.done() && c.level.getGameTime() + 2 >= c.endsAt) {
          c.endsAt += 200L;
       }
    }
@@ -561,10 +606,10 @@ public final class Techniques {
 
          if ((Boolean)ShrineConfig.SERVER.cutBlocks.get()) {
             if (c.leveler == null) {
-               c.leveler = new Leveler(c.level, BlockPos.containing(c.point), shredRadius(c.size), Mth.floor(c.point.y), c.seed);
+               c.leveler = new Leveler(c.level, BlockPos.containing(c.point), Math.max(4, (int)c.size), Mth.floor(c.point.y), c.seed);
             }
 
-            c.leveler.allow(Math.min(radius, (double)shredRadius(c.size)));
+            c.leveler.allow(radius);
             c.leveler.tick((Integer)ShrineConfig.SERVER.blocksPerTick.get());
          }
       }
@@ -591,7 +636,7 @@ public final class Techniques {
             Vec3 rel = e.position().subtract(c.point);
             double along = rel.dot(c.dir);
             if (!(along < 0.0) && !(along > len) && !(Math.abs(rel.dot(n)) > (double)e.getBbWidth() * 0.5 + 2.5)) {
-               hit(c, e, 2.0);
+               hit(c, e, 6.0);
             }
          }
 
@@ -651,6 +696,7 @@ public final class Techniques {
       Leveler leveler;
       PlaneCut cut;
       long endsAt;
+      boolean film;
 
       Cast(Move move, ServerPlayer caster, long start, Vec3 origin, Vec3 dir, Vec3 point, long seed, float size, Entity target) {
          this.move = move;

@@ -33,6 +33,7 @@ public final class ShrineConfig {
       public final DoubleValue flash;
       public final BooleanValue impactFrames;
       public final IntValue volumeSteps;
+      public final BooleanValue openFilm;
 
       Client(Builder b) {
          b.push("rendering");
@@ -45,6 +46,10 @@ public final class ShrineConfig {
          this.cameraShake = b.comment("Camera shake strength (0 disables).").defineInRange("cameraShake", 1.0, 0.0, 2.0);
          this.flash = b.comment("Flash strength (lower if bright flashes bother you).").defineInRange("flash", 1.0, 0.0, 1.0);
          this.impactFrames = b.comment("Impact frames (stark stylised frames on big hits). Contains rapid flashing.").define("impactFrames", true);
+         b.pop();
+         b.push("open");
+         this.openFilm = b.comment("Open (Fuga) plays its film cutscene first (sneak while casting to skip it and fire the move straight away).")
+            .define("openFilm", true);
          b.pop();
       }
    }
@@ -70,7 +75,8 @@ public final class ShrineConfig {
          this.cutBlocks = b.comment("Whether the technique actually cuts the world (false = visuals and damage only).").define("cutBlocks", true);
          this.cooldownScale = b.comment("Multiplier on every cooldown (0 = no cooldowns).").defineInRange("cooldownScale", 1.0, 0.0, 10.0);
          this.dismantleLength = b.comment("Reach of a Dismantle slash, in blocks.").defineInRange("dismantleLength", 48, 4, 512);
-         this.fugaRadius = b.comment("Radius of the fire arrow's blast, in blocks.").defineInRange("fugaBlastRadius", 20, 4, 256);
+         this.fugaRadius = b.comment("Radius of Open's (the fire arrow's) blast, in blocks: everything inside is burnt away into a lava crater.")
+            .defineInRange("openBlastRadius", 45, 4, 256);
          this.fugaRange = b.comment("How far the fire arrow flies, in blocks.").defineInRange("fugaRange", 220, 16, 1024);
          this.domainRadius = b.comment("Radius of the domain, in blocks (everything inside is cut; the ground is shredded in the middle part only).")
             .defineInRange("domainRange", 40, 8, 512);

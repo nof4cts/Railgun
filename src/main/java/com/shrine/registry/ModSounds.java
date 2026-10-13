@@ -25,6 +25,12 @@ public final class ModSounds {
    public static final RegistryObject<SoundEvent> IMPACT = sound("impact");
    public static final RegistryObject<SoundEvent> CARD = sound("card");
    public static final RegistryObject<SoundEvent> DENY = sound("deny");
+   /** Open's film soundtrack, and the sounds of the move as it happens in the film. */
+   public static final RegistryObject<SoundEvent> FUGA_FILM = sound("fuga.film");
+   public static final RegistryObject<SoundEvent> OPEN_ARMFIRE = sound("open.armfire");
+   public static final RegistryObject<SoundEvent> OPEN_FISTS = sound("open.fists");
+   public static final RegistryObject<SoundEvent> OPEN_FORM = sound("open.form");
+   public static final RegistryObject<SoundEvent> OPEN_INFERNO = sound("open.inferno");
 
    private ModSounds() {
    }

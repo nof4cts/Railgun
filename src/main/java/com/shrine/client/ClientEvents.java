@@ -49,6 +49,12 @@ public final class ClientEvents {
 
       @SubscribeEvent
       public static void onRenderLevel(RenderLevelStageEvent event) {
+         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+            java.util.List<com.shrine.network.S2CCast> quick = new java.util.ArrayList<>();
+            java.util.List<Float> times = new java.util.ArrayList<>();
+            Casts.quickOpens(event.getPartialTick(), quick, times);
+            com.shrine.client.film.OpenFx.render(event.getPoseStack(), event.getCamera(), event.getPartialTick(), quick, times);
+         }
          PostFx.render(event);
       }
 
@@ -139,7 +145,7 @@ public final class ClientEvents {
 
       @SubscribeEvent
       public static void onReloadListeners(RegisterClientReloadListenersEvent event) {
-         event.registerReloadListener(PostFx::reload);
+         event.registerReloadListener((net.minecraft.server.packs.resources.ResourceManagerReloadListener)PostFx::reload);
       }
 
       @SubscribeEvent

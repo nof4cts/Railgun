@@ -46,13 +46,9 @@ final class Leveler {
       this.allowed = radius;
    }
 
+   /** The domain leaves nothing standing: every block above the floor inside its reach is cut away. */
    private boolean cut(int[] c, int y) {
-      double d = Math.sqrt((double)c[2]) / (double)this.radius;
-      double ang = Math.atan2((double)c[1], (double)c[0]);
-      long h = this.seed * 31L + (long)c[0] * 73856093L ^ (long)c[1] * 19349663L ^ (long)y * 83492791L;
-      double r = (double)((h ^ h >>> 17) & 65535L) / 65535.0;
-      double gash = Math.abs(Math.sin(ang * 3.0 + (double)(this.seed % 7L))) * Math.sqrt((double)c[2]);
-      return gash < 0.8 ? true : r < 0.3 * (1.0 - d);
+      return true;
    }
 
    boolean done() {

@@ -1,5 +1,7 @@
 package com.shrine.client;
 
+import com.shrine.config.ShrineConfig;
+
 import com.jjk.mod.Sorcerer;
 import com.jjk.mod.client.ClientSorcerers;
 import com.jjk.mod.client.Keys;
@@ -91,7 +93,8 @@ public final class Keybinds {
             }
 
             while (FUGA.consumeClick()) {
-               send(Move.FUGA);
+               // Open: the film cutscene, or (sneaking, or with the film turned off) the move as it happens in the film
+               Net.CHANNEL.sendToServer(new C2SCast(Move.FUGA, ShrineConfig.CLIENT.openFilm.get() && !mc.player.isShiftKeyDown()));
             }
 
             while (DOMAIN.consumeClick()) {

@@ -36,7 +36,9 @@ public final class PlayerAnims {
          com.shrine.ShrineMod.LOGGER.warn("Missing player animation {}", id);
       } else {
          PlayerAssociatedAnimationData data = PlayerAnimationAccess.getPlayerAssociatedData(player);
-         if (data.get(LAYER_ID) instanceof ModifierLayer<IAnimation> layerAny) {
+         if (data.get(LAYER_ID) instanceof ModifierLayer<?> layer0) {
+            @SuppressWarnings("unchecked")
+            ModifierLayer<IAnimation> layerAny = (ModifierLayer<IAnimation>)layer0;
             KeyframeAnimationPlayer p = new KeyframeAnimationPlayer(anim)
                .setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL)
                .setFirstPersonConfiguration(

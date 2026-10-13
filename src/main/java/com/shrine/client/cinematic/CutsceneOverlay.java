@@ -10,6 +10,9 @@ public final class CutsceneOverlay {
    }
 
    public static void draw(GuiGraphics g, float partial) {
+      if (com.shrine.client.film.Film.draw(g, partial)) {
+         return;
+      }
       if (Cutscene.active()) {
          Minecraft mc = Minecraft.getInstance();
          Font font = mc.font;
