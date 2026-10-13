@@ -35,6 +35,8 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> SWING = reg("swing");
     public static final RegistryObject<SoundEvent> VANISH = reg("vanish");
     public static final RegistryObject<SoundEvent> WAVE_FIRE = reg("wave_fire");
+    /** The author's own track, played while the player is in Silver Zenith. */
+    public static final RegistryObject<SoundEvent> ZENITH_THEME = reg("zenith_theme");
 
     private ModSounds() {}
 

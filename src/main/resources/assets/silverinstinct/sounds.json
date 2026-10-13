@@ -155,5 +155,15 @@
   "sounds": [
    "silverinstinct:wave_fire"
   ]
+ },
+ "zenith_theme": {
+  "category": "music",
+  "subtitle": "sound.silverinstinct.zenith_theme",
+  "sounds": [
+   {
+    "name": "silverinstinct:zenith_theme",
+    "stream": true
+   }
+  ]
  }
 }

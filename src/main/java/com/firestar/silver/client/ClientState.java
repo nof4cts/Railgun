@@ -25,6 +25,9 @@ public final class ClientState {
         i.form = m.form();
         i.since = m.since();
         Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && m.entityId() == mc.player.getId()) {
+            ZenithTheme.form(i.form);
+        }
         if (before > 0 && i.form == 0 && mc.level != null && mc.level.getEntity(m.entityId()) != null) {
             Choreo.revert(mc.level.getEntity(m.entityId()));
         }
