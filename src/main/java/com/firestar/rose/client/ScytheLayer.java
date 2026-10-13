@@ -165,9 +165,20 @@ public final class ScytheLayer extends RenderLayer<AbstractClientPlayer, PlayerM
                 blade(f, HELD.get(i), inv, HELD_K.get(i)[0], HELD_K.get(i)[1]);
             }
         }
+        // the scythe's own aura is drawn from the same placements
+        AURA_M.clear();
+        AURA_K.clear();
+        AURA_M.addAll(HELD);
+        for (float[] k : HELD_K) {
+            AURA_K.add(k[0]);
+        }
         HELD.clear();
         HELD_K.clear();
     }
+
+    /** Every scythe seen this frame (hand -> view matrix) and how present it is, for its aura. */
+    public static final List<Matrix4f> AURA_M = new ArrayList<>();
+    public static final List<Float> AURA_K = new ArrayList<>();
 
     /** The world point of the blade's edge mid-way (for sparks off the edge), from the last frame, or null. */
     public static Vec3 vec(Vector3f v) {

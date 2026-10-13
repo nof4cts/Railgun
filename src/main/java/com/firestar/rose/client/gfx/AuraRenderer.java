@@ -20,6 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
@@ -101,6 +102,73 @@ public final class AuraRenderer {
         return shell;
     }
 
+    /**
+     * The aura on the scythe: the same shader and the same Rosé values, as two shells shaped to the weapon. One runs the
+     * length of the shaft with its flames streaming toward the head; a thinner one wraps the blade, burning outward.
+     * {@code hand} maps the hand's frame (the shaft along z, the blade toward +y) to view space.
+     */
+    static void scythe(ShaderInstance sh, VertexBuffer vb, int noise, Matrix4f hand, Matrix4f projection, float k, float strength) {
+        if (k < 0.05F) {
+            return;
+        }
+        float var = Mth.clamp((k - 0.2F) / 0.8F, 0, 1);
+        // along the shaft: the shell's up is the shaft's way to the head
+        Matrix4f shaft = new Matrix4f(hand).translate(0, 0, -0.62F).rotateX((float) Math.toRadians(-90)).scale(0.17F, 0.92F, 0.17F);
+        shell(sh, vb, noise, shaft, projection, var, strength, 0.55F);
+        // round the blade: its up is the blade's reach
+        Matrix4f blade = new Matrix4f(hand).translate(0, 0.42F, -1.25F).scale(0.11F, 0.42F, 0.62F);
+        shell(sh, vb, noise, blade, projection, var, strength, 0.75F);
+    }
+
+    private static void shell(ShaderInstance sh, VertexBuffer vb, int noise, Matrix4f mv, Matrix4f projection, float auravar, float strength,
+                              float amp) {
+        Matrix3f normal = new Matrix3f(mv).invert().transpose();
+        sh.safeGetUniform("ModelViewMat").set(mv);
+        sh.safeGetUniform("ProjMat").set(projection);
+        sh.safeGetUniform("normalMatrix").set(normal);
+        sh.safeGetUniform("time").set(scytheTime);
+        sh.safeGetUniform("auraPhase").set(scythePhase);
+        sh.safeGetUniform("flyboost").set(0.0F);
+        sh.safeGetUniform("auravar").set(auravar);
+        sh.safeGetUniform("sizes").set(SIZES[0], SIZES[1], SIZES[2]);
+        sh.safeGetUniform("color1").set(COLOR1[0], COLOR1[1], COLOR1[2]);
+        sh.safeGetUniform("color2").set(COLOR2[0], COLOR2[1], COLOR2[2]);
+        sh.safeGetUniform("noiseFactor").set(1.0F);
+        sh.safeGetUniform("colorNoise").set(COLOR_NOISE[0], COLOR_NOISE[1], COLOR_NOISE[2]);
+        sh.safeGetUniform("freqY").set(FREQ_Y);
+        sh.safeGetUniform("speed").set(SPEED);
+        sh.safeGetUniform("amp").set(AMP * amp);
+        sh.safeGetUniform("fineDetail").set(FINE);
+        sh.safeGetUniform("upDir").set(UP_DIR);
+        sh.safeGetUniform("alp1").set(ALP1 * strength);
+        sh.safeGetUniform("alp2").set(ALP2 * strength);
+        sh.safeGetUniform("power").set(POWER);
+        sh.safeGetUniform("divis").set(DIVIS);
+        sh.safeGetUniform("bloomColor").set(0.0F, 1.0F, 1.0F);
+        sh.safeGetUniform("fakeBloom").set(1.0F);
+        sh.safeGetUniform("realBloom").set(1.0F);
+        sh.safeGetUniform("noiseBloom").set(1.0F);
+        sh.setSampler("NoiseTex", noise);
+        vb.bind();
+        vb.drawWithShader(mv, projection, sh);
+    }
+
+    /** The first-person scythe's aura, drawn straight into the hand view. */
+    public static void handScythe(Matrix4f hand, float k) {
+        if (RoseShaders.AURA == null) {
+            return;
+        }
+        Minecraft mc = Minecraft.getInstance();
+        int noise = mc.getTextureManager().getTexture(NOISE).getId();
+        RenderSystem.enableBlend();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+        scythe(RoseShaders.AURA, shell(), noise, hand, RenderSystem.getProjectionMatrix(), k, 1.0F);
+        VertexBuffer.unbind();
+        RenderSystem.enableCull();
+        RenderSystem.defaultBlendFunc();
+    }
+
     /** Called once a frame before drawing: who has an aura, and each one's wave phase advanced. */
     static boolean any(float partial) {
         DRAW.clear();
@@ -121,15 +189,21 @@ public final class AuraRenderer {
             ph[0] = time;
             ph[1] = (ph[1] + dt * SPEED) % 1000.0F;
         }
-        return !DRAW.isEmpty();
+        float now = (System.nanoTime() / 1.0E9F) % 3600.0F;
+        scytheTime = now;
+        scythePhase = (scythePhase + Mth.clamp(now - scytheLast, 0.0F, 0.1F) * SPEED) % 1000.0F;
+        scytheLast = now;
+        return !DRAW.isEmpty() || !com.firestar.rose.client.ScytheLayer.AURA_M.isEmpty();
     }
+
+    private static float scytheTime, scytheLast, scythePhase;
 
     /**
      * Draws every aura gathered by {@link #any}, with the state Dragon Block Rebirth uses. {@code strength} 1 is the
      * original; the glow buffer takes a weaker copy for the bloom.
      */
     static void draw(PoseStack view, Matrix4f projection, float partial, float strength) {
-        if (DRAW.isEmpty()) {
+        if (DRAW.isEmpty() && com.firestar.rose.client.ScytheLayer.AURA_M.isEmpty()) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
@@ -186,6 +260,11 @@ public final class AuraRenderer {
             RenderSystem.setShaderColor(1, 1, 1, 1);
             vb.bind();
             vb.drawWithShader(ps.last().pose(), projection, sh);
+        }
+        List<Matrix4f> hands = com.firestar.rose.client.ScytheLayer.AURA_M;
+        List<Float> ks = com.firestar.rose.client.ScytheLayer.AURA_K;
+        for (int i = 0; i < hands.size(); i++) {
+            scythe(sh, vb, noise, hands.get(i), projection, ks.get(i), strength);
         }
         VertexBuffer.unbind();
         RenderSystem.depthMask(false);

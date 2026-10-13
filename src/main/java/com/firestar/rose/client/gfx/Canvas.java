@@ -283,6 +283,7 @@ public final class Canvas {
         if (!RoseShaders.ready()) {
             return;
         }
+        AuraRenderer.handScythe(m, k);
         Frame f = new Frame(Vec3.ZERO, new Vec3(0, 0, -1), new Vec3(0, 1, 0), new Vec3(-1, 0, 0), time(), new Matrix4f());
         com.firestar.rose.client.ScytheLayer.blade(f, m, new Matrix4f(), k, heat);
         if (f.empty()) {
