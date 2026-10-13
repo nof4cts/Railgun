@@ -1,0 +1,122 @@
+{
+  "fire.punch": {
+    "subtitle": "subtitles.avatar.fire.punch",
+    "sounds": [
+      {
+        "name": "avatar:fire_punch1"
+      },
+      {
+        "name": "avatar:fire_punch2"
+      },
+      {
+        "name": "avatar:fire_punch3"
+      }
+    ]
+  },
+  "fire.whoosh": {
+    "subtitle": "subtitles.avatar.fire.whoosh",
+    "sounds": [
+      {
+        "name": "avatar:fire_whoosh1"
+      },
+      {
+        "name": "avatar:fire_whoosh2"
+      },
+      {
+        "name": "avatar:fire_whoosh3"
+      }
+    ]
+  },
+  "fire.burst": {
+    "subtitle": "subtitles.avatar.fire.burst",
+    "sounds": [
+      {
+        "name": "avatar:fire_burst1"
+      },
+      {
+        "name": "avatar:fire_burst2"
+      },
+      {
+        "name": "avatar:fire_burst3"
+      }
+    ]
+  },
+  "fire.roar": {
+    "subtitle": "subtitles.avatar.fire.roar",
+    "sounds": [
+      {
+        "name": "avatar:fire_roar1"
+      },
+      {
+        "name": "avatar:fire_roar2"
+      }
+    ]
+  },
+  "fire.rumble": {
+    "subtitle": "subtitles.avatar.fire.rumble",
+    "sounds": [
+      {
+        "name": "avatar:fire_rumble1"
+      },
+      {
+        "name": "avatar:fire_rumble2"
+      }
+    ]
+  },
+  "fire.fireball": {
+    "subtitle": "subtitles.avatar.fire.fireball",
+    "sounds": [
+      {
+        "name": "avatar:fireball"
+      }
+    ]
+  },
+  "lightning.thunder": {
+    "subtitle": "subtitles.avatar.lightning.thunder",
+    "sounds": [
+      {
+        "name": "avatar:thunderclap",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "avatar:thunder_rumble",
+        "attenuation_distance": 96
+      }
+    ]
+  },
+  "lightning.zap": {
+    "subtitle": "subtitles.avatar.lightning.zap",
+    "sounds": [
+      {
+        "name": "avatar:zap1",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "avatar:zap2",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "avatar:zap3",
+        "attenuation_distance": 96
+      }
+    ]
+  },
+  "lightning.crack": {
+    "subtitle": "subtitles.avatar.lightning.crack",
+    "sounds": [
+      {
+        "name": "avatar:blast_crack",
+        "attenuation_distance": 96
+      }
+    ]
+  },
+  "dragon.roar": {
+    "subtitle": "subtitles.avatar.dragon.roar",
+    "sounds": [
+      {
+        "name": "avatar:dragon_roar",
+        "attenuation_distance": 96
+      }
+    ]
+  }
+}

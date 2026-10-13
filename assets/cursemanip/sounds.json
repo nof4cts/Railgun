@@ -1,0 +1,546 @@
+{
+  "nulljaw_bite": {
+    "sounds": [
+      {
+        "name": "cursemanip:nulljaw/nulljaw_bite",
+        "stream": false
+      }
+    ]
+  },
+  "nulljaw_die": {
+    "sounds": [
+      {
+        "name": "cursemanip:nulljaw/nulljaw_die",
+        "stream": false
+      }
+    ]
+  },
+  "nulljaw_eat": {
+    "sounds": [
+      {
+        "name": "cursemanip:nulljaw/nulljaw_eat",
+        "stream": false
+      }
+    ]
+  },
+  "nulljaw_grumble1": {
+    "sounds": [
+      {
+        "name": "cursemanip:nulljaw/nulljaw_grumble1",
+        "stream": false
+      }
+    ]
+  },
+  "nulljaw_grumble2": {
+    "sounds": [
+      {
+        "name": "cursemanip:nulljaw/nulljaw_grumble2",
+        "stream": false
+      }
+    ]
+  },
+  "nulljaw_grumble3": {
+    "sounds": [
+      {
+        "name": "cursemanip:nulljaw/nulljaw_grumble3",
+        "stream": false
+      }
+    ]
+  },
+  "nulljaw_hurt": {
+    "sounds": [
+      {
+        "name": "cursemanip:nulljaw/nulljaw_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_devastating_sweep": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_devastating_sweep",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_die": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_die",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_eat": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_eat",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_flex": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_flex",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_grumble1": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_grumble1",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_grumble2": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_grumble2",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_grumble3": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_grumble3",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_gungnir_stab": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_gungnir_stab",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_helheim_quake1": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_helheim_quake1",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_helheim_quake2": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_helheim_quake2",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_hurt": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_investigating": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_investigating",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_precise_strike": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_precise_strike",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_slam": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_slam",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_slither": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_slither",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_step": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_step",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_swipe": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_swipe",
+        "stream": false
+      }
+    ]
+  },
+  "atroxiia_underwater_bite": {
+    "sounds": [
+      {
+        "name": "cursemanip:atroxiia/atroxiia_underwater_bite",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_bite": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_bite",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_die": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_die",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_double_bite": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_double_bite",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_eat": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_eat",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_fire_body_explosion": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_fire_body_explosion",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_fire_body_start": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_fire_body_start",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_flap": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_flap",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_flex": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_flex",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_grumble1": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_grumble1",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_grumble2": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_grumble2",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_grumble3": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_grumble3",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_hurt": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_landed": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_landed",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_magma_volley": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_magma_volley",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_slash": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_slash",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_step": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_step",
+        "stream": false
+      }
+    ]
+  },
+  "cindervane_takeoff": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/cindervane_takeoff",
+        "stream": false
+      }
+    ]
+  },
+  "fire_body_loop": {
+    "sounds": [
+      {
+        "name": "cursemanip:cindervane/fire_body_loop",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_bite": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_bite",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_dash": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_dash",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_die": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_die",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_dive": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_dive",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_dive_impact": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_dive_impact",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_dodge": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_dodge",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_eat": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_eat",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_flap": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_flap",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_flex": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_flex",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_ground_rend": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_ground_rend",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_grumble1": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_grumble1",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_grumble2": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_grumble2",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_grumble3": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_grumble3",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_horngore": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_horngore",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_hurt": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_investigating": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_investigating",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_landed": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_landed",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_lightning_beam_start": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_lightning_beam_start",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_lightning_beam_stop": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_lightning_beam_stop",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_lightning_beaming": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_lightning_beaming",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_roar": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_roar",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_step": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_step",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_summon_storm": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_summon_storm",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_summon_storm_air": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_summon_storm_air",
+        "stream": false
+      }
+    ]
+  },
+  "raevyx_takeoff": {
+    "sounds": [
+      {
+        "name": "cursemanip:raevyx/raevyx_takeoff",
+        "stream": false
+      }
+    ]
+  }
+}

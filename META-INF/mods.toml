@@ -1,0 +1,38 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="jjk"
+version="1.0.0"
+displayName="Jujutsu Kaisen: Cursed Techniques"
+authors="Ethan"
+description='''Every cursed technique in one mod. Pick your sorcerer from the selector (M) and fight with keybinds: Gojo, Sukuna, Ryu, Kashimo, Choso, Hakari and Geto.'''
+
+[[dependencies.jjk]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.jjk]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.jjk]]
+    modId="playeranimator"
+    mandatory=true
+    versionRange="[1.0.2-rc1+1.20,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.jjk]]
+    modId="geckolib"
+    mandatory=true
+    versionRange="[4.4,)"
+    ordering="AFTER"
+    side="BOTH"

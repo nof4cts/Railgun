@@ -1,0 +1,4 @@
+Mahoraga 3D model: "Minecraft Mahoraga" by JoshPRuss
+https://sketchfab.com/3d-models/minecraft-mahoraga-67b0376be71843dfa6d485e688d1af5c
+Licensed under Creative Commons Attribution 4.0 (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+Changes: converted from glTF to a baked bone mesh, re-rigged with procedural animation.

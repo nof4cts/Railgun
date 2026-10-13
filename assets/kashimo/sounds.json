@@ -1,0 +1,5 @@
+{
+  "shockwave": {"subtitle": "sounds.kashimo.shockwave", "sounds": ["kashimo:shockwave"]},
+  "rumble": {"subtitle": "sounds.kashimo.rumble", "sounds": ["kashimo:rumble"]},
+  "blast_crack": {"subtitle": "sounds.kashimo.blast_crack", "sounds": ["kashimo:blast_crack"]}
+}

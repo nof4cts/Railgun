@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: jjk
+Specification-Vendor: Ethan
+Specification-Version: 1
+Implementation-Title: jjk
+Implementation-Version: 1.0.0
+Implementation-Vendor: Ethan
+Implementation-Timestamp: 2026-10-13T15:09:48-0700
+

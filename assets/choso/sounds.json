@@ -1,0 +1,5 @@
+{
+  "shockwave": {"subtitle": "sounds.choso.shockwave", "sounds": ["choso:shockwave"]},
+  "rumble": {"subtitle": "sounds.choso.rumble", "sounds": ["choso:rumble"]},
+  "blast_crack": {"subtitle": "sounds.choso.blast_crack", "sounds": ["choso:blast_crack"]}
+}

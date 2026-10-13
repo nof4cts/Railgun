@@ -1,0 +1,26 @@
+{
+  "shockwave": {
+    "sounds": [
+      {
+        "name": "gojo:shockwave",
+        "stream": false
+      }
+    ]
+  },
+  "rumble": {
+    "sounds": [
+      {
+        "name": "gojo:rumble",
+        "stream": true
+      }
+    ]
+  },
+  "blast_crack": {
+    "sounds": [
+      {
+        "name": "gojo:blast_crack",
+        "stream": false
+      }
+    ]
+  }
+}
