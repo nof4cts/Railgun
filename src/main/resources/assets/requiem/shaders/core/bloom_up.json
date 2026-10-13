@@ -1,0 +1,45 @@
+{
+ "vertex": "requiem:post",
+ "fragment": "requiem:bloom_up",
+ "attributes": [
+  "Position"
+ ],
+ "samplers": [
+  {
+   "name": "Src"
+  }
+ ],
+ "uniforms": [
+  {
+   "name": "Res",
+   "type": "float",
+   "count": 2,
+   "values": [
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Texel",
+   "type": "float",
+   "count": 2,
+   "values": [
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "name": "Weight",
+   "type": "float",
+   "count": 1,
+   "values": [
+    1.0
+   ]
+  }
+ ],
+ "blend": {
+  "func": "add",
+  "srcrgb": "one",
+  "dstrgb": "one"
+ }
+}

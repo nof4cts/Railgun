@@ -1,0 +1,39 @@
+{
+ "vertex": "requiem:post",
+ "fragment": "requiem:composite",
+ "attributes": [
+  "Position"
+ ],
+ "samplers": [
+  {
+   "name": "Glow"
+  },
+  {
+   "name": "Bloom"
+  }
+ ],
+ "uniforms": [
+  {
+   "name": "Res",
+   "type": "float",
+   "count": 2,
+   "values": [
+    1.0,
+    1.0
+   ]
+  },
+  {
+   "name": "Strength",
+   "type": "float",
+   "count": 1,
+   "values": [
+    1.0
+   ]
+  }
+ ],
+ "blend": {
+  "func": "add",
+  "srcrgb": "one",
+  "dstrgb": "one"
+ }
+}

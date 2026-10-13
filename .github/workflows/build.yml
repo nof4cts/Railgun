@@ -1,7 +1,7 @@
 name: Build Fighting Styles jar
 on:
   push:
-    branches: [styles]
+    branches: [styles, rose-wip]
   workflow_dispatch:
 permissions:
   contents: write

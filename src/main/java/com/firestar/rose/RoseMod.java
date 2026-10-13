@@ -53,6 +53,13 @@ public final class RoseMod {
     public static final RegistryObject<SoundEvent> SUB = sound("sub");
     public static final RegistryObject<SoundEvent> HEARTBEAT = sound("heartbeat");
     public static final RegistryObject<SoundEvent> SUMMON = sound("summon");
+    // the reaper's voice (recorded by the mod's author)
+    public static final RegistryObject<SoundEvent> VOICE_ASCEND_1 = sound("voice_ascend_1");
+    public static final RegistryObject<SoundEvent> VOICE_ASCEND_2 = sound("voice_ascend_2");
+    public static final RegistryObject<SoundEvent> VOICE_RAY = sound("voice_ray");
+    public static final RegistryObject<SoundEvent> VOICE_RIFT = sound("voice_rift");
+    public static final RegistryObject<SoundEvent> VOICE_BLOOM_1 = sound("voice_bloom_1");
+    public static final RegistryObject<SoundEvent> VOICE_BLOOM_2 = sound("voice_bloom_2");
 
     public RoseMod() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

@@ -231,8 +231,8 @@ public final class StylesTest {
         if (t == 530) {
             shot("09_none");
             done = true;
-            StylesMod.LOGGER.info("[selftest] finished; stopping");
-            mc.stop();
+            StylesMod.LOGGER.info("[selftest] switcher test finished; Requiem Rose next");
+            com.firestar.rose.client.RoseTest.begin();
         }
     }
 }

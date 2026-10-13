@@ -1,0 +1,362 @@
+{
+ "aura_ignite": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.aura_ignite",
+  "sounds": [
+   {
+    "name": "requiem:aura_ignite",
+    "stream": false
+   }
+  ]
+ },
+ "aura_loop": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.aura_loop",
+  "sounds": [
+   {
+    "name": "requiem:aura_loop",
+    "stream": true
+   }
+  ]
+ },
+ "aura_release": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.aura_release",
+  "sounds": [
+   {
+    "name": "requiem:aura_release",
+    "stream": false
+   }
+  ]
+ },
+ "bloom_cut": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.bloom_cut",
+  "sounds": [
+   {
+    "name": "requiem:bloom_cut",
+    "stream": false
+   }
+  ]
+ },
+ "bloom_grow": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.bloom_grow",
+  "sounds": [
+   {
+    "name": "requiem:bloom_grow",
+    "stream": false
+   }
+  ]
+ },
+ "bloom_impact": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.bloom_impact",
+  "sounds": [
+   {
+    "name": "requiem:bloom_impact",
+    "stream": true
+   }
+  ]
+ },
+ "bloom_rise": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.bloom_rise",
+  "sounds": [
+   {
+    "name": "requiem:bloom_rise",
+    "stream": false
+   }
+  ]
+ },
+ "bloom_sky": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.bloom_sky",
+  "sounds": [
+   {
+    "name": "requiem:bloom_sky",
+    "stream": true
+   }
+  ]
+ },
+ "crescent_catch": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.crescent_catch",
+  "sounds": [
+   {
+    "name": "requiem:crescent_catch",
+    "stream": false
+   }
+  ]
+ },
+ "crescent_spin": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.crescent_spin",
+  "sounds": [
+   {
+    "name": "requiem:crescent_spin",
+    "stream": false
+   }
+  ]
+ },
+ "crescent_throw": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.crescent_throw",
+  "sounds": [
+   {
+    "name": "requiem:crescent_throw",
+    "stream": false
+   }
+  ]
+ },
+ "cut": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.cut",
+  "sounds": [
+   {
+    "name": "requiem:cut",
+    "stream": false
+   }
+  ]
+ },
+ "cut_heavy": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.cut_heavy",
+  "sounds": [
+   {
+    "name": "requiem:cut_heavy",
+    "stream": false
+   }
+  ]
+ },
+ "heartbeat": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.heartbeat",
+  "sounds": [
+   {
+    "name": "requiem:heartbeat",
+    "stream": false
+   }
+  ]
+ },
+ "ray_charge": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.ray_charge",
+  "sounds": [
+   {
+    "name": "requiem:ray_charge",
+    "stream": false
+   }
+  ]
+ },
+ "ray_end": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.ray_end",
+  "sounds": [
+   {
+    "name": "requiem:ray_end",
+    "stream": false
+   }
+  ]
+ },
+ "ray_fire": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.ray_fire",
+  "sounds": [
+   {
+    "name": "requiem:ray_fire",
+    "stream": false
+   }
+  ]
+ },
+ "requiem_burst": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.requiem_burst",
+  "sounds": [
+   {
+    "name": "requiem:requiem_burst",
+    "stream": false
+   }
+  ]
+ },
+ "requiem_gather": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.requiem_gather",
+  "sounds": [
+   {
+    "name": "requiem:requiem_gather",
+    "stream": false
+   }
+  ]
+ },
+ "rift_hum": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.rift_hum",
+  "sounds": [
+   {
+    "name": "requiem:rift_hum",
+    "stream": true
+   }
+  ]
+ },
+ "rift_snap": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.rift_snap",
+  "sounds": [
+   {
+    "name": "requiem:rift_snap",
+    "stream": false
+   }
+  ]
+ },
+ "rift_tear": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.rift_tear",
+  "sounds": [
+   {
+    "name": "requiem:rift_tear",
+    "stream": false
+   }
+  ]
+ },
+ "sub": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.sub",
+  "sounds": [
+   {
+    "name": "requiem:sub",
+    "stream": false
+   }
+  ]
+ },
+ "summon": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.summon",
+  "sounds": [
+   {
+    "name": "requiem:summon",
+    "stream": false
+   }
+  ]
+ },
+ "swing": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.swing",
+  "sounds": [
+   {
+    "name": "requiem:swing",
+    "stream": false
+   }
+  ]
+ },
+ "swing_heavy": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.swing_heavy",
+  "sounds": [
+   {
+    "name": "requiem:swing_heavy",
+    "stream": false
+   }
+  ]
+ },
+ "tether_bind": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.tether_bind",
+  "sounds": [
+   {
+    "name": "requiem:tether_bind",
+    "stream": false
+   }
+  ]
+ },
+ "tether_fire": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.tether_fire",
+  "sounds": [
+   {
+    "name": "requiem:tether_fire",
+    "stream": false
+   }
+  ]
+ },
+ "tether_yank": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.tether_yank",
+  "sounds": [
+   {
+    "name": "requiem:tether_yank",
+    "stream": false
+   }
+  ]
+ },
+ "vanish": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.vanish",
+  "sounds": [
+   {
+    "name": "requiem:vanish",
+    "stream": false
+   }
+  ]
+ },
+ "voice_ascend_1": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.voice_ascend_1",
+  "sounds": [
+   {
+    "name": "requiem:voice_ascend_1",
+    "stream": false
+   }
+  ]
+ },
+ "voice_ascend_2": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.voice_ascend_2",
+  "sounds": [
+   {
+    "name": "requiem:voice_ascend_2",
+    "stream": false
+   }
+  ]
+ },
+ "voice_bloom_1": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.voice_bloom_1",
+  "sounds": [
+   {
+    "name": "requiem:voice_bloom_1",
+    "stream": false
+   }
+  ]
+ },
+ "voice_bloom_2": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.voice_bloom_2",
+  "sounds": [
+   {
+    "name": "requiem:voice_bloom_2",
+    "stream": false
+   }
+  ]
+ },
+ "voice_ray": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.voice_ray",
+  "sounds": [
+   {
+    "name": "requiem:voice_ray",
+    "stream": false
+   }
+  ]
+ },
+ "voice_rift": {
+  "category": "player",
+  "subtitle": "subtitles.requiem.voice_rift",
+  "sounds": [
+   {
+    "name": "requiem:voice_rift",
+    "stream": false
+   }
+  ]
+ }
+}
