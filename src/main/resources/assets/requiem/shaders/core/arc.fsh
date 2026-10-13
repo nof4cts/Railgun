@@ -43,10 +43,10 @@ void main() {
     // the body: hot rose, streaming; brightest toward the edge
     float h = edge * 0.9 + inner * (0.48 + 0.3 * streak) * (1.0 - 0.35 * d) + 0.1 * flow;
     if (blade) {
-        // crystal facets catching light along the blade, a slow pulse through it
+        // the scythe's blade is pinkish white: blush through its body, white at the edge, a pale shimmer of facets
         float facet = smoothstep(0.9, 1.0, fract(x * 9.0 + y * 2.5 + Time * 0.4));
-        h += facet * 0.3 * inner;
-        h *= 0.9 + 0.1 * sin(Time * 6.0 + x * 12.0);
+        h = 0.68 + 0.22 * inner * (0.6 + 0.4 * streak) + edge * 0.35 + facet * 0.12 * inner;
+        h *= 0.95 + 0.05 * sin(Time * 6.0 + x * 12.0);
     }
     h *= mix(0.8, 1.15, heat);
     float a = clamp((edge + inner * (0.85 + 0.35 * flow)) * alive * min(fade * 1.4, 1.0), 0.0, 1.0);
