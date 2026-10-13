@@ -75,6 +75,25 @@ public final class Canvas {
         }
     }
 
+    private static final com.mojang.blaze3d.shaders.BlendMode OPAQUE = new com.mojang.blaze3d.shaders.BlendMode();
+    private static final com.mojang.blaze3d.shaders.BlendMode TRANSLUCENT = new com.mojang.blaze3d.shaders.BlendMode(
+            GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL14.GL_FUNC_ADD);
+
+    /**
+     * Hands the blend state back to Minecraft the way it expects it. Minecraft remembers the last blend mode a shader
+     * applied, but only updates that memory when blending switches between on and off; after our additive programs it
+     * would believe "additive" was still current, and the next translucent vanilla shader (the HUD's vignette, drawn
+     * over the whole screen) would reset the blend function and paint itself opaque: a black screen. Passing through an
+     * opaque mode into the standard translucent one makes its memory true again; then blending is left off, as vanilla
+     * leaves it.
+     */
+    public static void restore() {
+        OPAQUE.apply();
+        TRANSLUCENT.apply();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+    }
+
     public static float time() {
         return (float) ((System.nanoTime() / 1.0E9) % 3600.0);
     }
@@ -155,8 +174,7 @@ public final class Canvas {
         main.bindWrite(true);
         RenderSystem.depthMask(true);
         RenderSystem.enableCull();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
+        restore();
         mv.popPose();
         RenderSystem.applyModelViewMatrix();
     }
@@ -267,8 +285,7 @@ public final class Canvas {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         RenderSystem.enableCull();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
+        restore();
     }
 
     private static void bloom() {
@@ -328,8 +345,7 @@ public final class Canvas {
         draw(RoseShaders.ARC, f.time, Geometry.arcs(f, f.arcs));
         RenderSystem.depthMask(true);
         RenderSystem.enableCull();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableBlend();
+        restore();
         mv.popPose();
         RenderSystem.applyModelViewMatrix();
     }

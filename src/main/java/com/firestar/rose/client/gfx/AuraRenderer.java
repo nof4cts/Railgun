@@ -169,7 +169,7 @@ public final class AuraRenderer {
         scythe(RoseShaders.AURA, shell(), noise, hand, RenderSystem.getProjectionMatrix(), k, 1.0F);
         VertexBuffer.unbind();
         RenderSystem.enableCull();
-        RenderSystem.defaultBlendFunc();
+        Canvas.restore();
     }
 
     /** Called once a frame before drawing: who has an aura, and each one's wave phase advanced. */
