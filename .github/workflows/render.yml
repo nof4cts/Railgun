@@ -1,0 +1,46 @@
+name: Render Toji cutaways
+on:
+  push:
+    branches: [toji-render]
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        job: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.13' }
+      - run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libxrender1 libxxf86vm1 libxfixes3 libxi6 libxkbcommon0 libsm6 libgl1 libegl1 > /dev/null
+          pip install -q bpy pillow numpy
+      - run: |
+          mkdir -p out
+          python tools/toji_inserts.py ${{ matrix.job }} 20 $PWD/out > out/log${{ matrix.job }}.txt 2>&1 || echo "render exited $?" >> out/log${{ matrix.job }}.txt
+          grep -E "\[render\]|rror" out/log${{ matrix.job }}.txt | tail -8
+          ls out | wc -l
+      - uses: actions/upload-artifact@v4
+        with: { name: 'frames-${{ matrix.job }}', path: out/, retention-days: 3 }
+  encode:
+    needs: render
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: frames, pattern: 'frames-*', merge-multiple: true }
+      - run: |
+          set +e
+          sudo apt-get update -qq; sudo apt-get install -y -qq ffmpeg > /dev/null
+          mkdir -p /tmp/out/logs /tmp/out/stills && cp frames/log*.txt /tmp/out/logs/ 2>/dev/null
+          for s in sky leaves drops; do
+            ls frames/${s}_f*.png | wc -l > /tmp/out/COUNT_$s
+            ffmpeg -v error -framerate 30 -i frames/${s}_f%04d.png -vf "scale=960:544:flags=lanczos" -c:v libx264 -profile:v baseline -level 3.1 -pix_fmt yuv420p -crf 19 -g 30 -bf 0 -movflags +faststart /tmp/out/toji_$s.mp4
+            for f in frames/${s}_f00[0-9]0.png frames/${s}_f01[0-9]0.png; do [ -f $f ] && ffmpeg -v error -i $f -q:v 4 /tmp/out/stills/$(basename $f .png).jpg; done
+          done
+          cd /tmp/out && git init -q -b toji-render-out && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "render" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" toji-render-out
