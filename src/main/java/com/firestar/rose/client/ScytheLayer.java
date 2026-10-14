@@ -70,6 +70,8 @@ public final class ScytheLayer extends RenderLayer<AbstractClientPlayer, PlayerM
      */
     static void hand(PoseStack ps, float grow) {
         ps.translate(-0.0625F, 0.62F, -0.02F);
+        // leaned in against the arm's outward roll so the shaft stands beside the body rather than off to the side
+        ps.mulPose(Axis.ZP.rotationDegrees(20));
         ps.mulPose(Axis.XP.rotationDegrees(-42));
         if (grow != 1.0F) {
             ps.scale(grow, grow, grow);
