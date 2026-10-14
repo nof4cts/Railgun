@@ -175,9 +175,13 @@ public final class RoseClientEvents {
             }
             ps.translate(0.62F, -0.62F, -0.85F);
             ps.mulPose(Axis.YP.rotationDegrees(swing));
-            ps.mulPose(Axis.ZP.rotationDegrees(24));
-            ps.mulPose(Axis.XP.rotationDegrees(70 + lift));
-            ps.mulPose(Axis.ZP.rotationDegrees(90));
+            ps.mulPose(Axis.XP.rotationDegrees(lift));
+            // held upright in the right hand, the shaft leaning a little left and away, the blade reaching straight
+            // forward from the top (columns: where the scythe's x, y = blade side and z = butt end point on screen)
+            ps.mulPose(new org.joml.Quaternionf().setFromNormalized(new org.joml.Matrix3f(
+                    -0.963F, -0.267F, 0.0F,
+                    0.094F, -0.338F, -0.936F,
+                    0.25F, -0.902F, 0.351F)));
             ps.scale(0.8F, 0.8F, 0.8F);
             ScytheLayer.drawShaft(ps, e.getMultiBufferSource(), e.getPackedLight(), k);
             Canvas.handBlade(ps.last().pose(), k, RoseChoreo.bladeHeat(p, e.getPartialTick()));
