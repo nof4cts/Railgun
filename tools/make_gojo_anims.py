@@ -133,17 +133,23 @@ calm = P(floatp, right_arm=[-6, 0, 22], left_arm=[-6, 0, -22], head=[6, 0, 0])
 calm_b = P(calm, head=[2, 8, 0], right_arm=[-10, 0, 26])
 toji_aim = P(floatp, right_arm=[-90, 4, 0], left_arm=[-14, 20, -26], torso=[0, -14, 0], head=[0, 12, 0])
 toji_aim_b = P(toji_aim, right_arm=[-92, 4, 0])
-keys = [(0, STAND, None), (20, floatp, GLIDE), (60, ascend, GLIDE)]
-for k in range(100, 231, 40):
-    keys.append((k, ascend_b if (k // 40) % 2 else ascend, BREATH))
-keys += [(238, P(ascend, head=[-10, 0, 0]), None), (243, laugh, SNAP)]
-for k in range(250, 286, 6):
+# timed to the player's Toji track (see GBeats.IM_*): rising with arms opening through the first lines and the piano;
+# the laugh on "Throughout Heaven and Earth" (697); calm while he talks; the right hand out as the drops meet; held,
+# aimed, until it goes on "Purple" (1716)
+keys = [(0, STAND, None), (20, floatp, GLIDE), (90, ascend, GLIDE)]
+for k in range(140, 671, 50):
+    keys.append((k, ascend_b if (k // 50) % 2 else ascend, BREATH))
+keys += [(690, P(ascend, head=[-10, 0, 0]), None), (700, laugh, SNAP)]
+for k in range(708, 756, 6):
     keys.append((k, laugh_b if (k // 6) % 2 else laugh, BREATH))
-keys += [(296, calm, GLIDE), (360, calm_b, BREATH), (420, calm, BREATH), (480, calm_b, BREATH), (540, calm, BREATH),
-         (670, calm, None), (690, toji_aim, SNAP)]
-for k in range(710, 728 + AIM_MAX + 1, 20):
+keys += [(780, calm, GLIDE)]
+for k in range(840, 1381, 60):
+    keys.append((k, calm_b if (k // 60) % 2 else calm, BREATH))
+keys += [(1420, calm, None), (1460, P(calm, right_arm=[-60, 4, 10], head=[0, 4, 0]), GLIDE), (1600, P(calm, right_arm=[-70, 4, 6]), BREATH),
+         (1642, toji_aim, SNAP)]
+for k in range(1660, 1781, 20):
     keys.append((k, toji_aim_b if (k // 20) % 2 else toji_aim, BREATH))
-anim('g_imaginary', 728 + AIM_MAX + 10, keys)
+anim('g_imaginary', 1790, keys)
 fire_anim('g_imaginary_fire', toji_aim_b, P(floatp, right_arm=[-98, 8, 0], left_arm=[10, 0, -32], torso=[12, -4, 0], head=[-6, 2, 0]), 70)
 
 # ---- Hollow Nuke: risen, he shoots Blue out of his right hand (it circles him), fires Red up out of his left, holds

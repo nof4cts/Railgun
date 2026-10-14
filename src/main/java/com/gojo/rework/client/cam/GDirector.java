@@ -314,52 +314,94 @@ public final class GDirector {
         Vec3 eyeP = play.eye(partial);
         Vec3 o = play.msg.origin();
         Vec3 feet = play.feet(partial);
-        if (t < 64) {
-            // from the ground, looking up as he leaves it
-            float u = ease(span(t, 0, 64));
+        int[] sky = GBeats.IM_FILM_SKY, leaves = GBeats.IM_FILM_LEAVES, drops = GBeats.IM_FILM_DROPS;
+        if (t < 80) {
+            // "Sorry, Amanai.": from the ground, looking up as he leaves it
+            float u = ease(span(t, 0, 80));
             Vec3 pos = o.add(f.scale(5.0)).add(r.scale(-2.0)).add(0, -1.3, 0);
             return new Shot(above(pos, 0.3), eyeP.add(0, 0.6 * u, 0), 66 - 6 * u, -3);
         }
-        if (t < GBeats.IM_FILM_SKY[1] + 2) {
-            // his face, lit gold, a slow push in
-            float u = ease(span(t, 64, GBeats.IM_FILM_SKY[0]));
-            Vec3 pos = eyeP.add(f.scale(1.9 - 0.5 * u)).add(r.scale(0.45)).add(0, -0.25, 0);
+        if (t < 180) {
+            // "...I'm not even angry at you.": his face, lit gold, a slow push in
+            float u = ease(span(t, 80, 180));
+            Vec3 pos = eyeP.add(f.scale(1.9 - 0.4 * u)).add(r.scale(0.45)).add(0, -0.25, 0);
             return new Shot(pos.add(drift(t, 0.02)), eyeP.add(0, 0.02, 0), 40, 2);
         }
-        if (t < GBeats.IM_TENJO) {
-            // straight down on him from above, arms spread to the sky, the camera turning slowly
-            float u = ease(span(t, GBeats.IM_FILM_SKY[1], GBeats.IM_TENJO));
-            double a = 0.6 * u;
+        if (t < 262) {
+            // "I don't hate anyone.": side on, still
+            float u = ease(span(t, 180, 262));
+            Vec3 pos = eyeP.add(r.scale(2.2 - 0.3 * u)).add(f.scale(0.4)).add(0, -0.1, 0);
+            return new Shot(pos, eyeP.add(f.scale(1.0)).add(0, 0.2, 0), 46, 0);
+        }
+        if (t < sky[0] + 2) {
+            // "...this world just feels so good.": straight down on him, arms spread to the sky, turning slowly
+            float u = ease(span(t, 262, sky[0]));
+            double a = 0.7 * u;
             Vec3 ahead = f.scale(Math.cos(a) * 0.4).add(r.scale(Math.sin(a) * 0.4));
             return new Shot(feet.add(0, 7.5 - 1.5 * u, 0).add(ahead), feet.add(0, 0.8, 0), 60, 0);
         }
-        if (t < GBeats.IM_FILM_LEAVES[0] + 2) {
-            // "Throughout Heaven and Earth...": low and close, looking up at him, pushing in
+        if (t < sky[1] + 2) {
+            return new Shot(eyeP.add(f.scale(3)).add(0, -1, 0), eyeP, 60, 0);
+        }
+        if (t < 600) {
+            // the piano: a long slow circle round him as he keeps rising
+            float u = ease(span(t, sky[1], 600));
+            double a = Math.PI * (0.1 + 0.7 * u);
+            Vec3 pos = eyeP.add(f.scale(Math.cos(a) * 9)).add(r.scale(Math.sin(a) * 9)).add(0, 1.0 - 2.0 * u, 0);
+            return new Shot(pos, eyeP.add(0, -0.4, 0), 62, 0);
+        }
+        if (t < GBeats.IM_TENJO) {
+            // far below: him small against the sky, still going up
+            float u = ease(span(t, 600, GBeats.IM_TENJO));
+            Vec3 pos = above(feet.add(f.scale(10)).add(r.scale(-6)).add(0, -GBeats.IM_RISE + 0.5, 0), 0.4);
+            return new Shot(pos, eyeP.add(0, 1.0, 0), 58 - 10 * u, -4);
+        }
+        if (t < leaves[0] + 2) {
+            // "Throughout Heaven and Earth...": low and close, looking up at him, pushing in as he laughs
             float u = ease(span(t, GBeats.IM_TENJO, GBeats.IM_TENJO_END));
             Vec3 pos = eyeP.add(f.scale(2.6 - 0.8 * u)).add(r.scale(-0.8)).add(0, -1.6 + 0.4 * u, 0);
             return new Shot(pos, eyeP.add(0, 0.1, 0), 58 - 8 * u, -4);
         }
-        if (t < GBeats.IM_FILM_LEAVES[1] + 2) {
+        if (t < leaves[1] + 2) {
             return new Shot(eyeP.add(f.scale(3)).add(0, -1, 0), eyeP, 60, 0);
         }
-        if (t < 494) {
-            // high above everything: a long circle round him, the land far below
-            float u = ease(span(t, GBeats.IM_FILM_LEAVES[1], 494));
-            double a = Math.PI * (0.2 + 0.55 * u);
-            Vec3 pos = eyeP.add(f.scale(Math.cos(a) * 11)).add(r.scale(Math.sin(a) * 11)).add(0, 1.5 - 2.5 * u, 0);
-            return new Shot(pos, eyeP.add(0, -0.6, 0), 64, 0);
+        if (t < 1050) {
+            // the piano: close on his face, the light moving across it
+            float u = ease(span(t, leaves[1], 1050));
+            Vec3 pos = eyeP.add(f.scale(1.6)).add(r.scale(-0.6 + 1.2 * u)).add(0, -0.15, 0);
+            return new Shot(pos.add(drift(t, 0.02)), eyeP, 38, 0);
         }
-        if (t < GBeats.IM_FILM_DROPS[0] + 2) {
+        if (t < GBeats.IM_GOJOKE) {
+            // behind him, looking out over the land far below
+            float u = ease(span(t, 1050, GBeats.IM_GOJOKE));
+            Vec3 pos = eyeP.subtract(f.scale(3.0 + 1.0 * u)).add(r.scale(0.8)).add(0, 0.6, 0);
+            return new Shot(pos, eyeP.add(f.scale(20)).add(0, -8, 0), 66, 0);
+        }
+        if (t < 1301) {
             // "...only a handful of the Gojo clan know": side on, close, still
-            float u = ease(span(t, 494, GBeats.IM_FILM_DROPS[0]));
+            float u = ease(span(t, GBeats.IM_GOJOKE, 1301));
             Vec3 pos = eyeP.add(r.scale(2.4 - 0.4 * u)).add(f.scale(0.5)).add(0, 0.05, 0);
             return new Shot(pos.add(drift(t, 0.02)), eyeP.add(f.scale(1.2)), 44, 0);
         }
-        if (t < GBeats.IM_FILM_DROPS[1]) {
+        if (t < 1420) {
+            // the piano: wide, the whole sky round him
+            float u = ease(span(t, 1301, 1420));
+            double a = Math.PI * (0.9 + 0.4 * u);
+            Vec3 pos = eyeP.add(f.scale(Math.cos(a) * 14)).add(r.scale(Math.sin(a) * 14)).add(0, 2.5, 0);
+            return new Shot(pos, eyeP, 60, 0);
+        }
+        if (t < drops[0] + 2) {
+            // in front and low, pushing in on his raised hand
+            float u = ease(span(t, 1420, drops[0]));
+            Vec3 hand = eyeP.add(f.scale(0.9)).add(r.scale(0.35)).add(0, -0.35, 0);
+            Vec3 pos = hand.add(f.scale(3.4 - 1.6 * u)).add(r.scale(0.8)).add(0, -0.3, 0);
+            return new Shot(pos, hand, 50 - 8 * u, 0);
+        }
+        if (t < drops[1]) {
             return new Shot(eyeP.add(f.scale(3)).add(0, -0.5, 0), eyeP, 60, 0);
         }
-        // the Purple is simply there in front of his hand: in front and to the side, it big in the frame, him behind it
-        float u = ease(span(t, GBeats.IM_FILM_DROPS[1], GBeats.IM_READY));
+        // the Purple, simply there at his fingertips, him behind it
+        float u = ease(span(t, drops[1], GBeats.IM_READY));
         Vec3 centre = eyeP.add(f.scale(GBeats.purpleAhead(GMove.IMAGINARY))).add(0, -0.2, 0);
         Vec3 pos = centre.add(f.scale(4.2 - 1.0 * u)).add(r.scale(2.0)).add(0, 0.4, 0);
         return new Shot(pos.add(drift(t, 0.05)), centre.lerp(eyeP, 0.35), 64 - 4 * u, 0);

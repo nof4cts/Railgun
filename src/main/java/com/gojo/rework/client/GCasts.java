@@ -126,6 +126,9 @@ public final class GCasts {
             GAnims.play(pl, m.gmove());
         }
         GFx.begin(p);
+        if (p.mine && m.gmove() == GMove.IMAGINARY) {
+            GBanner.tojiStart = m.start();
+        }
         boolean watch = p.mine;
         if (m.gmove() == GMove.DOMAIN && mc.player != null && mc.player.position().distanceTo(m.origin()) < GBeats.DV_RADIUS + 4) {
             // everyone the domain swallows sees it open
@@ -201,7 +204,12 @@ public final class GCasts {
                 GFx.beat(p, k);
             }
             p.lastBeat = t;
-            if (p.mine && !p.let && p.aiming(0) && t >= GBeats.ready(p.move()) + GBeats.AIM_MAX && mc.player != null) {
+            if (p.mine && !p.let && p.move() == GMove.IMAGINARY && p.fireAt < 0 && t >= GBeats.IM_FIRE - 2 && mc.player != null) {
+                // Toji's goes on "Purple" in the track: send where he is looking just before
+                p.let = true;
+                com.gojo.rework.net.GNet.CHANNEL.sendToServer(new com.gojo.rework.net.GNet.Shoot(mc.player.getViewVector(1.0F)));
+            }
+            if (p.mine && !p.let && p.move() != GMove.IMAGINARY && p.aiming(0) && t >= GBeats.ready(p.move()) + GBeats.AIM_MAX && mc.player != null) {
                 // held as long as it can be: it goes where he is looking
                 p.let = true;
                 com.gojo.rework.net.GNet.CHANNEL.sendToServer(new com.gojo.rework.net.GNet.Shoot(mc.player.getViewVector(1.0F)));

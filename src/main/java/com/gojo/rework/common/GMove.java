@@ -6,7 +6,7 @@ public enum GMove {
     MAX_BLUE("max_blue", "Maximum Output: Blue", "", false, 176),
     MAX_RED("max_red", "Maximum Output: Red", "", false, 96),
     PURPLE("purple", "Hollow Purple", "虚式「茈」", true, 150 + 100 + 70),
-    IMAGINARY("imaginary", "Imaginary Technique: Purple", "虚式「茈」", true, 728 + 100 + 80),
+    IMAGINARY("imaginary", "Imaginary Technique: Purple", "虚式「茈」", true, 1716 + 120),
     PURPLE_200("purple_200", "200% Hollow Purple", "虚式「茈」", true, 230 + 100 + 90),
     NUKE("nuke", "Hollow Nuke", "", true, 172 + 100 + 130),
     DOMAIN("domain", "Domain Expansion: Unlimited Void", "無量空処", true, 156),

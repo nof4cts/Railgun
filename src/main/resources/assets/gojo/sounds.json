@@ -311,15 +311,6 @@
       }
     ]
   },
-  "voice_toji": {
-    "subtitle": "subtitles.gojo.voice",
-    "sounds": [
-      {
-        "name": "gojo:voice_toji",
-        "stream": true
-      }
-    ]
-  },
   "voice_toji_kyoshiki": {
     "subtitle": "subtitles.gojo.voice",
     "sounds": [
@@ -338,10 +329,11 @@
       }
     ]
   },
-  "music_toji": {
+  "toji_mix": {
+    "subtitle": "subtitles.gojo.voice",
     "sounds": [
       {
-        "name": "gojo:music_toji",
+        "name": "gojo:toji_mix",
         "stream": true
       }
     ]

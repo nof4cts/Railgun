@@ -117,7 +117,7 @@ public final class GRites {
 
         int end() {
             if (GBeats.aims(move)) {
-                return (fireT < 0 ? (shootT < 0 ? GBeats.ready(move) + GBeats.AIM_MAX : shootT) + GBeats.KYO : fireT) + GBeats.after(move);
+                return (fireT < 0 ? (move == GMove.IMAGINARY ? GBeats.IM_FIRE : (shootT < 0 ? GBeats.ready(move) + GBeats.AIM_MAX : shootT) + GBeats.KYO) : fireT) + GBeats.after(move);
             }
             return switch (move) {
                 case DOMAIN -> GBeats.DV_HOLD;
@@ -401,18 +401,19 @@ public final class GRites {
     static void toji(Cast c, int t) {
         Vec3 at = c.p.position();
         if (c.opening()) {
-            c.level.playSound(null, at.x, at.y, at.z, Gojo2.MUSIC_TOJI.get(), SoundSource.RECORDS, 4.0F, 1.0F);
+            // the player's own soundtrack: his piano with his voice over it, "Hollow... Purple" included
+            c.level.playSound(null, at.x, at.y, at.z, Gojo2.TOJI_MIX.get(), SoundSource.VOICE, 4.0F, 1.0F);
             if (Boolean.getBoolean("shrine.selftest")) {
-                Gojo2.LOGGER.info("[gojo] piano starts");
+                Gojo2.LOGGER.info("[gojo] toji track starts");
             }
-        }
-        if (t == GBeats.IM_V0) {
-            voice(c.p, "toji");
         }
         if (t == GBeats.IM_MERGE) {
             sound(c.level, at, Gojo2.PURPLE_MERGE.get(), 4.0F, 0.85F);
         }
-        held(c, t);
+        // it leaves on "Purple", where he is looking
+        if (c.fireT < 0 && t >= GBeats.IM_FIRE) {
+            fire(c, t);
+        }
     }
 
     /** He has aimed: let his held Purple go. */
@@ -421,6 +422,10 @@ public final class GRites {
             if (c.p == p && GBeats.aims(c.move) && c.fireT < 0 && c.shootT < 0 && c.t() >= GBeats.ready(c.move)) {
                 if (dir != null && dir.lengthSqr() > 1e-6 && Double.isFinite(dir.x + dir.y + dir.z)) {
                     c.aimDir = dir.normalize();
+                }
+                if (c.move == GMove.IMAGINARY) {
+                    // its words are in the track: it goes on "Purple" whatever; the click only sets the aim
+                    return;
                 }
                 call(c, c.t());
                 return;

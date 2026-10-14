@@ -46,6 +46,7 @@ public final class GBanner {
             }
         }
         aim(g, w, h, partial);
+        tojiSubs(g, w, h, partial);
         // the 0.2-second domain, for everyone it catches: a fifth of a second of the void
         for (GCasts.Play c : GCasts.all()) {
             if (c.move() == GMove.DOMAIN_02 && mc.player != null) {
@@ -215,7 +216,9 @@ public final class GBanner {
             return;
         }
         float held = p.time(partial) - GBeats.ready(p.move());
-        float left = 1 - Mth.clamp(held / GBeats.AIM_MAX, 0, 1);
+        boolean toji = p.move() == GMove.IMAGINARY;
+        float left = toji ? Mth.clamp((GBeats.IM_FIRE - p.time(partial)) / (float) (GBeats.IM_FIRE - GBeats.IM_READY), 0, 1)
+                : 1 - Mth.clamp(held / GBeats.AIM_MAX, 0, 1);
         int cx = w / 2, cy = h / 2;
         float pulse = 0.5F + 0.5F * (float) Math.sin(p.time(partial) * 0.4);
         int col = p.move() == GMove.NUKE ? 0xD27BFF : 0xC890FF;
@@ -232,7 +235,7 @@ public final class GBanner {
         g.fill(cx - 1, cy + 2, cx + 1, cy + 6, 0xD0FFFFFF);
         g.fill(cx - 6, cy - 1, cx - 2, cy + 1, 0xD0FFFFFF);
         g.fill(cx + 2, cy - 1, cx + 6, cy + 1, 0xD0FFFFFF);
-        String s = p.move() == GMove.NUKE ? "AIM AT THE GROUND  -  CLICK TO DROP" : "AIM  -  CLICK TO FIRE";
+        String s = p.move() == GMove.NUKE ? "AIM AT THE GROUND  -  CLICK TO DROP" : toji ? "AIM  -  IT GOES ON \"PURPLE\"" : "AIM  -  CLICK TO FIRE";
         Font font = mc.font;
         int a = (int) (170 + 85 * pulse);
         g.drawString(font, s, cx - font.width(s) / 2, cy + rr + 10, a << 24 | 0xFFFFFF, true);
@@ -266,35 +269,59 @@ public final class GBanner {
         com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
     }
 
-    /** His words (the player's recording), as subtitles: [start, end) ticks of the cast, line. */
+    /** The Toji track's words (the player's own voice), as subtitles: [start, end) seconds into the track, line. */
     static final Object[][] TOJI_LINES = {
-            {0.0F, 1.95F, "Sorry."},
-            {2.2F, 5.45F, "Right now, I'm not even angry at you."},
-            {5.85F, 7.4F, "I don't hate anyone."},
-            {7.6F, 10.7F, "Right now... this world just feels so good."},
-            {10.9F, 13.2F, "Throughout Heaven and Earth, I alone am the honoured one."},
-            {13.2F, 16.35F, "The downside: my technique's secrets get out."},
-            {16.5F, 20.1F, "You're a Zen'in, aren't you?"},
-            {20.3F, 23.6F, "Then you know Limitless well enough."},
-            {23.7F, 28.95F, "But only a handful in the Gojo clan know this."},
-            {29.05F, 33.5F, "Lapse and reversal - collide each infinity..."},
-            {33.7F, 35.45F, "...and push out the imaginary mass it makes."},
+            {0.85F, 3.0F, "Sorry, Amanai."},
+            {4.0F, 7.35F, "Right now, I'm not even angry at you."},
+            {8.7F, 10.1F, "I don't hate anyone."},
+            {12.9F, 17.5F, "Right now... this world just feels so good."},
+            {34.7F, 38.0F, "Throughout Heaven and Earth, I alone am the honoured one."},
+            {60.0F, 65.1F, "But only a handful in the Gojo clan know this."},
+            {76.6F, 81.8F, "Lapse and reversal - collide each infinity..."},
+            {81.9F, 84.4F, "...and push out the imaginary mass it makes."},
+            {84.5F, 85.6F, "Hollow Technique..."},
+            {85.6F, 86.9F, "Purple."},
+            {99.1F, 101.0F, "Working for free? No thanks."},
+            {101.3F, 104.7F, "Any other day, I'd have said that and walked."},
+            {105.9F, 110.2F, "But in front of me was an awakened user of Limitless -"},
+            {111.4F, 113.8F, "- likely the strongest sorcerer of this era."},
+            {115.2F, 116.4F, "I wanted to deny him."},
+            {117.2F, 119.5F, "I wanted to crush him."},
+            {119.7F, 124.7F, "The Zen'in clan, the jujutsu world that denied me - its very summit."},
+            {125.5F, 130.2F, "To affirm myself, I bent the self I always was."},
+            {131.2F, 133.3F, "The moment I did, I'd already lost."},
     };
+    /** When the player's own Toji track began (game time), or MIN_VALUE. */
+    static long tojiStart = Long.MIN_VALUE;
 
-    static void toji(GuiGraphics g, GCasts.Play p, float t, int w, int h) {
-        Font font = Minecraft.getInstance().font;
-        float sec = (t - GBeats.IM_V0) / 20F;
+    /** The track's subtitles, for him, for as long as it plays - cutscene or not. */
+    static void tojiSubs(GuiGraphics g, int w, int h, float partial) {
+        Minecraft mc = Minecraft.getInstance();
+        if (tojiStart == Long.MIN_VALUE || mc.level == null) {
+            return;
+        }
+        float t = mc.level.getGameTime() - tojiStart + partial;
+        if (t > GBeats.IM_TRACK_LEN || t < 0) {
+            return;
+        }
+        Font font = mc.font;
+        float sec = (t - GBeats.IM_TRACK) / 20F;
+        boolean film = GDirector.active();
         for (Object[] l : TOJI_LINES) {
             float a0 = (Float) l[0], a1 = (Float) l[1];
             if (sec >= a0 && sec < a1) {
                 float a = Math.min(1, (sec - a0) / 0.2F) * Math.min(1, (a1 - sec) / 0.2F);
                 String line = (String) l[2];
                 int tw = font.width(line);
-                int y = h - (int) (h * 0.09) - 22;
+                int y = film ? h - (int) (h * 0.09) - 22 : h - 72;
                 g.fill(w / 2 - tw / 2 - 6, y - 4, w / 2 + tw / 2 + 6, y + 12, (int) (a * 150) << 24);
                 g.drawString(font, line, w / 2 - tw / 2, y, (int) (a * 255) << 24 | 0xFFFFFF, false);
             }
         }
+    }
+
+    static void toji(GuiGraphics g, GCasts.Play p, float t, int w, int h) {
+        Font font = Minecraft.getInstance().font;
         // 天上天下唯我独尊, large, down the left
         if (t >= GBeats.IM_TENJO && t < GBeats.IM_TENJO_END) {
             float a = Math.min(1, (t - GBeats.IM_TENJO) / 5F) * Math.min(1, (GBeats.IM_TENJO_END - t) / 6F);

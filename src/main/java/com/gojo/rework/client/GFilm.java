@@ -100,7 +100,7 @@ public final class GFilm {
             return false;
         }
         Decoder d = decoders[i];
-        int want = Math.max(0, (int) ((t - WINDOWS[i][0]) / 20F * FPS));
+        int want = Math.max(0, frameAt(i, t));
         int[] next = null;
         int nw = 0, nh = 0;
         while (true) {
@@ -158,6 +158,21 @@ public final class GFilm {
             g.fill(0, 0, sw, sh, (int) (fade * 255) << 24 | 0xFFF2D0);
         }
         return true;
+    }
+
+    /** Which frame of film i belongs at tick t: straight through at 30 fps, except the drops, held to the words. */
+    static int frameAt(int i, float t) {
+        if (i == 2) {
+            int[][] m = GBeats.IM_DROPS_MAP;
+            for (int k = 0; k + 1 < m.length; k++) {
+                if (t < m[k + 1][0]) {
+                    float u = (t - m[k][0]) / (float) (m[k + 1][0] - m[k][0]);
+                    return Math.round(m[k][1] + Math.max(0, u) * (m[k + 1][1] - m[k][1]));
+                }
+            }
+            return m[m.length - 1][1];
+        }
+        return (int) ((t - WINDOWS[i][0]) / 20F * FPS);
     }
 
     private static final class Decoder extends Thread {

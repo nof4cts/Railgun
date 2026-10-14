@@ -37,15 +37,21 @@ public final class GBeats {
     public static final int[] CHANT = {14, 36, 58, 80};
     public static final String[] CHANT_LINES = {"Nine Ropes.", "Polarized Light.", "Crow and Declaration.", "Between Front and Back."};
     public static final String[] CHANT_KANJI = {"九綱", "偏光", "烏と声明", "表裏の間"};
-    // Imaginary Technique: Purple (Toji): he ascends into a golden sky over the piano while he speaks (the player's
-    // own recording, from IM_V0): "...Throughout Heaven and Earth, I alone am the honoured one" (IM_TENJO), the
-    // technique laid open, then lapse (blue drop) and reversal (red drop) collide - the cutaways show it in water
-    // drops - and the Purple is simply there (IM_MERGE); "Hollow..." at IM_READY, he aims, "Purple" as it goes
-    public static final int IM_V0 = 20, IM_TENJO = 239, IM_TENJO_END = 290, IM_RISEN = 420;
-    public static final int IM_V_RED = 609, IM_RED = 615, IM_V_BLUE = 596, IM_BLUE = 602, IM_JOIN = 647, IM_V_HOLLOW = 728, IM_MERGE = 690,
-            IM_READY = 728;
+    // Imaginary Technique: Purple (Toji), timed to the player's own soundtrack (piano with his voice over it, from
+    // tick IM_TRACK; a second of it is 20 ticks): he ascends into a golden sky while he speaks; "Throughout Heaven and
+    // Earth" at 0:34.7; "...only a handful of the Gojo clan know" at 1:00; lapse (the blue drop) at 1:16.7, reversal
+    // (the red drop) at 1:17.6, "collide" at 1:19.9; the Purple is there on "imaginary mass" (1:22); he aims through
+    // "push out... Hollow..."; it leaves on "Purple" (1:25.7). The track carries on after the shot.
+    public static final int IM_TRACK = 2;
+    public static final int IM_TENJO = 697, IM_TENJO_END = 760, IM_GOJOKE = 1203, IM_RISEN = 700;
+    public static final int IM_V_RED = 1553, IM_RED = 1553, IM_V_BLUE = 1536, IM_BLUE = 1536, IM_JOIN = 1600, IM_V_HOLLOW = 1660, IM_MERGE = 1642,
+            IM_READY = 1660, IM_FIRE = 1716;
+    /** The track's length in ticks (2:15). */
+    public static final int IM_TRACK_LEN = 2704;
     /** The rendered cutaways, as [start, end) ticks of the cast: golden sky, leaves with drops, the two drops. */
-    public static final int[] IM_FILM_SKY = {132, 196}, IM_FILM_LEAVES = {290, 390}, IM_FILM_DROPS = {592, 690};
+    public static final int[] IM_FILM_SKY = {380, 444}, IM_FILM_LEAVES = {790, 890}, IM_FILM_DROPS = {1526, 1642};
+    /** The drops film is held to the words: [tick, frame] pairs (blue on "lapse", red on "reversal", meeting on "collide"). */
+    public static final int[][] IM_DROPS_MAP = {{1526, 0}, {1536, 15}, {1553, 34}, {1600, 82}, {1636, 140}, {1642, 146}};
     public static final double IM_SPEED = 3.2, IM_RANGE = 120, IM_RADIUS = 3.5, IM_RISE = 16;
     public static final int P2_SHIFT = 8;
     public static final int P2_V_RED = 104, P2_RED = 140, P2_V_BLUE = 150, P2_BLUE = 186, P2_JOIN = 198, P2_V_HOLLOW = 206, P2_MERGE = 218,
