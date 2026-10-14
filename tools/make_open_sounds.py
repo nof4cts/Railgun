@@ -143,15 +143,13 @@ for k in range(6):
 film.add(F(1675), crackle(1.8, 300), 0.4)
 film.add(F(1891), sting(1.2, 1320), 0.3)                     # S16 the cube is summoned
 film.add(F(1927), whoosh(1.4, True), 0.4)
-film.add(F(2043), drone(F(2323) - F(2043), 33.0, 0.8))       # S17 the standoff
-film.add(F(2043), riser(F(2323) - F(2043) - 0.2, 70, 600), 0.65)
+film.add(F(2043), drone(F(2323) - F(2043), 33.0, 0.8)[:int((F(2323) - F(2043)) * SR)])   # S17 the standoff (cut dead at the shot)
+film.add(F(2043), riser(F(2323) - F(2043), 70, 600), 0.65)
 film.add(F(2043), roar(F(2323) - F(2043), 80, 1200, 0.3), 0.35)
-film.add(F(2323) - 0.35, rl, 1.0)                            # the shot
-film.add(F(2323), im, 1.0)                                   # S22 the explosion
-film.add(F(2323), boom(4.5, 75, 20), 1.0)
-film.add(F(2323), roar(6.0, 60, 2500, 0.6) * env(int(6.0 * SR), 0.05, 4.0, 1.5), 0.9)
-film.add(F(2365), crackle(F(2905) - F(2365), 180) * env(int((F(2905) - F(2365)) * SR), 0.5, 3.0), 0.5)  # the bonfires
-film.add(F(2365), roar(F(2905) - F(2365), 60, 700, 0.2) * env(int((F(2905) - F(2365)) * SR), 1.0, 3.0), 0.35)
+film.b[int(F(2323) * SR):int(F(2365) * SR)] = 0.0
+# S22: the shot makes no sound at all. The standoff's rise cuts to dead silence, the golem is simply gone; only
+# the smallest crackle of what's left creeps back in.
+film.add(F(2365) + 1.5, crackle(F(2905) - F(2365) - 1.5, 60) * env(int((F(2905) - F(2365) - 1.5) * SR), 2.5, 3.0), 0.18)
 film.add(F(2685), drone(F(2966) - F(2685) + 0.6, 41.0, 0.45))  # S23 the hero, after
 film.write(os.path.join(out, 'film'))
 
