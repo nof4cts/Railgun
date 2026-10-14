@@ -534,7 +534,7 @@ public final class GFx {
                     new int[]{a(PURPLE, 0.1F * wake), a(PURPLE, 0.3F * wake), a(VIOLET_CORE, 0.5F * wake)});
         }
         // where it left: a shock that blows outward
-        burst(ink, from, radius * 0.4, age, c.msg.seed(), VIOLET_CORE, PURPLE, DARK_VIOLET);
+        burst(ink, from, radius * 0.18, age, c.msg.seed(), VIOLET_CORE, PURPLE, DARK_VIOLET);
     }
 
     // ---- Imaginary Technique: Purple (Toji) and 200%
@@ -662,7 +662,8 @@ public final class GFx {
             double R = GBeats.NK_CRATER * 1.6;
             // the detonation: a white sun that swells into a violet dome, a pillar, rings racing over the land
             float core = (float) Math.exp(-age / 5.0);
-            ink.glow(T, R * (2 + 3 * (1 - core)), a(WHITE, core));
+            ink.glow(T, R * (1.0 + 1.5 * (1 - core)), a(VIOLET_CORE, 0.6F * core));
+            GShade.orb(g.add(0, R * 0.3, 0), R * 0.55 * (1 - k * 0.7), 2, GShade.PUR_A, GShade.PUR_B, 1.0F * (1 - k), c.msg.seed());
             ink.sphere(true, g, R * (0.4 + 0.9 * Math.sqrt(Math.min(1, age / 16F))), a(PURPLE, 0.45F * (1 - k) * (1 - k)), a(MAGENTA, 0.55F * (1 - k)), 1.2);
             ink.sphere(false, g.add(0, R * 0.2, 0), R * (0.6 + 0.9 * k), a(DARK_VIOLET, 0.45F * window(age, 6, 20, 60, 110)), a(NIGHT, 0), 0.7);
             ink.beam(g, g.add(0, R * 5 * Math.sqrt(Math.min(1, age / 20F)), 0), R * 0.5 * (1 - k), a(VIOLET_CORE, 0.7F * (1 - k)));

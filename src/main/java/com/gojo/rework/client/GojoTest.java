@@ -45,7 +45,7 @@ public final class GojoTest {
             new Step(GMove.RED, "red", 20, 4, CameraType.THIRD_PERSON_BACK, 0, new int[]{4, 10, 14, 16, 18, 20, 23, 30, 44}),
             new Step(GMove.MAX_BLUE, "max_blue", 14, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 20, 30, 44, 60, 80, 99, 104}),
             new Step(GMove.MAX_RED, "max_red", 18, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 20, 27, 28, 29, 31, 35, 42, 56}),
-            new Step(GMove.PURPLE, "purple", 26, 6, null, 0, new int[]{10, 22, 28, 34, 40, 46, 52, 55, 57, 62, 75}),
+            new Step(GMove.PURPLE, "purple", 26, 0, null, 0, new int[]{10, 22, 28, 34, 40, 46, 52, 55, 57, 62, 75}),
             new Step(GMove.IMAGINARY, "imaginary", 30, 0, null, 0,
                     new int[]{8, 20, 40, 62, 84, 100, 110, 120, 130, 134, 135, 137, 146, 160, 176}),
             new Step(GMove.PURPLE_200, "purple_200", 30, 0, null, 0,
