@@ -532,7 +532,8 @@ public final class GFx {
         if (hold > 0) {
             Vec3 side = new Vec3(-aim.z, 0, aim.x);
             side = side.lengthSqr() < 1e-6 ? r : side.normalize();
-            centre = centre.add(side.scale(1.6 * scale * hold)).add(0, -0.7 * scale * hold, 0);
+            double off = toji ? 0.8 : 1.6 * scale;
+            centre = centre.add(side.scale(off * hold)).add(0, -(toji ? 0.4 : 0.7 * scale) * hold, 0);
         }
         double heldScale = 1 - (c.mine ? 0.35 : 0.0) * hold;
         if (m == GMove.PURPLE_200) {
@@ -580,6 +581,10 @@ public final class GFx {
                 float pk = span(t, b[6] - 1, b[6] + 6);
                 // it swells while it is held, breathing
                 double size = radius * (0.35 + 0.25 * smooth(span(t, b[6], b[7] + 20))) * (1 + 0.04 * Math.sin(t * 0.5)) * heldScale;
+                if (toji) {
+                    // as against Toji: a small sphere just past his fingertips
+                    size = 0.55 * (1 + 0.2 * smooth(span(t, b[6], b[7] + 20))) * (1 + 0.04 * Math.sin(t * 0.5)) * heldScale;
+                }
                 purpleOrb(ink, centre, size * pk, t, pk, seed);
                 // the air is sucked into it
                 for (int i = 0; i < 3; i++) {
@@ -601,7 +606,7 @@ public final class GFx {
         }
         if (c.fireAt >= 0) {
             flight(ink, c, t - c.fireAt, m == GMove.PURPLE_200 ? GBeats.P2_SPEED : m == GMove.IMAGINARY ? GBeats.IM_SPEED : GBeats.HP_SPEED,
-                    m == GMove.PURPLE_200 ? GBeats.P2_RANGE : m == GMove.IMAGINARY ? GBeats.IM_RANGE : GBeats.HP_RANGE, radius, c.fireFrom, c.fireDir, t);
+                    m == GMove.PURPLE_200 ? GBeats.P2_RANGE : m == GMove.IMAGINARY ? GBeats.IM_RANGE : GBeats.HP_RANGE, toji ? 1.2 : radius, c.fireFrom, c.fireDir, t);
             if (m == GMove.PURPLE_200) {
                 // twice the strength: a beam of white rides inside the wake
                 float age = t - c.fireAt;

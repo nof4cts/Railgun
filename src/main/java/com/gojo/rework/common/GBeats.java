@@ -46,7 +46,7 @@ public final class GBeats {
             IM_READY = 728;
     /** The rendered cutaways, as [start, end) ticks of the cast: golden sky, leaves with drops, the two drops. */
     public static final int[] IM_FILM_SKY = {132, 196}, IM_FILM_LEAVES = {290, 390}, IM_FILM_DROPS = {592, 690};
-    public static final double IM_SPEED = 3.2, IM_RANGE = 120, IM_RADIUS = 6.0, IM_RISE = 16;
+    public static final double IM_SPEED = 3.2, IM_RANGE = 120, IM_RADIUS = 3.5, IM_RISE = 16;
     public static final int P2_SHIFT = 8;
     public static final int P2_V_RED = 104, P2_RED = 140, P2_V_BLUE = 150, P2_BLUE = 186, P2_JOIN = 198, P2_V_HOLLOW = 206, P2_MERGE = 218,
             P2_READY = 230;
@@ -166,7 +166,7 @@ public final class GBeats {
 
     public static double purpleAhead(GMove m) {
         return switch (m) {
-            case IMAGINARY -> 4.0;
+            case IMAGINARY -> 1.8;
             case PURPLE_200 -> 5.5;
             default -> 2.4;
         };
