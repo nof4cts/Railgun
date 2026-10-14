@@ -688,7 +688,8 @@ public final class GRites {
             sound(c.level, c.p.position(), Gojo2.DOMAIN_SIGN.get(), 2.0F, 1.0F);
             voice(c.p, "ryoiki");
         }
-        if (t == GBeats.DV_VOID - 6) {
+        if (t == GBeats.DV_FLASH1 - 2) {
+            // "Unlimited Void" as the domain opens over everything
             voice(c.p, "muryokusho");
         }
         if (t == GBeats.DV_BANNER) {
