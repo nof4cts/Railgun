@@ -199,8 +199,8 @@ public final class Director {
         if (t < SBeats.MANTLE_IGNITE) {
             float u = ease(span(t, SBeats.MANTLE_HALO, SBeats.MANTLE_IGNITE));
             // in front and below, looking up at the face and the halo closing over it
-            Vec3 pos = ft.add(f.scale(4.2 - 0.8 * u)).add(r.scale(-1.3)).add(0, 0.5, 0);
-            return new Shot(pos, head.add(0, 0.35 + 0.2 * u, 0), 44 - 6 * u, 2);
+            Vec3 pos = ft.add(f.scale(4.6 - 0.8 * u)).add(r.scale(-1.3)).add(0, 0.9, 0);
+            return new Shot(pos, head.add(0, 0.2 + 0.2 * u, 0), 50 - 6 * u, 2);
         }
         float u = ease(span(t, SBeats.MANTLE_IGNITE, 128));
         Vec3 pos = ft.add(f.scale(9 + 4 * u)).add(r.scale(-3)).add(0, 1.0 + 2 * u, 0);

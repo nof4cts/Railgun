@@ -36,6 +36,19 @@ public final class SageClientEvents {
     private static final Ink INK = new Ink();
     static final Look LOOK = new Look();
     private static float lastRoll;
+    /** The player's cloud setting, held while the rites darken the sky (clouds would draw bright over the dark). */
+    private static net.minecraft.client.CloudStatus heldClouds;
+
+    static void clouds(Minecraft mc) {
+        float v = mc.level == null ? 0 : SageFx.veil(0);
+        if (v > 0.25F && heldClouds == null) {
+            heldClouds = mc.options.cloudStatus().get();
+            mc.options.cloudStatus().set(net.minecraft.client.CloudStatus.OFF);
+        } else if (v < 0.1F && heldClouds != null) {
+            mc.options.cloudStatus().set(heldClouds);
+            heldClouds = null;
+        }
+    }
 
     private SageClientEvents() {}
 
@@ -86,6 +99,7 @@ public final class SageClientEvents {
             SageAnims.tick();
             Director.tick();
             SageTest.tick();
+            clouds(mc);
             if (mc.player == null || mc.screen != null || !mine() || Director.active()) {
                 return;
             }
@@ -121,8 +135,7 @@ public final class SageClientEvents {
 
         @SubscribeEvent
         public static void onStage(RenderLevelStageEvent e) {
-            // after the clouds and the weather, so nothing in the sky is drawn over the rites
-            if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) {
+            if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
                 return;
             }
             Minecraft mc = Minecraft.getInstance();
@@ -227,6 +240,10 @@ public final class SageClientEvents {
         public static void onLogout(ClientPlayerNetworkEvent.LoggingOut e) {
             Director.stop();
             SageCasts.clear();
+            if (heldClouds != null) {
+                Minecraft.getInstance().options.cloudStatus().set(heldClouds);
+                heldClouds = null;
+            }
             SageForms.forget();
         }
     }
