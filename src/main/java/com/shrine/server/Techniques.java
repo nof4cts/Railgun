@@ -474,11 +474,12 @@ public final class Techniques {
       int t = c.film ? t0 - Timing.FUGA_FILM_SHIFT : t0;
       // whoever watches the film hears its own soundtrack; the world's sounds are for everyone else
       Player deaf = c.film ? c.caster : null;
-      if (t == 0) {
+      // the film version is silent until it lands (everyone in the world is watching the film)
+      if (t == 0 && !c.film) {
          c.level.playSound(deaf, c.origin.x, c.origin.y, c.origin.z, (SoundEvent)ModSounds.FUGA_IGNITE.get(), SoundSource.PLAYERS, 3.0F, 1.0F);
       }
 
-      if (t == 80) {
+      if (t == 80 && !c.film) {
          c.level.playSound(deaf, c.origin.x, c.origin.y, c.origin.z, (SoundEvent)ModSounds.FUGA_RELEASE.get(), SoundSource.PLAYERS, 4.0F, 1.0F);
       }
 
@@ -554,8 +555,8 @@ public final class Techniques {
                int floor = c.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, Mth.floor(e.getX()), Mth.floor(e.getZ()));
                if (e.getY() - floor < 2.5) {
                   l.invulnerableTime = 0;
-                  l.hurt(c.level.damageSources().inFire(), 4.0F);
-                  l.setSecondsOnFire(4);
+                  l.hurt(c.level.damageSources().inFire(), 7.0F);
+                  l.setSecondsOnFire(6);
                }
             }
          }

@@ -146,7 +146,8 @@ film.add(F(1927), whoosh(1.4, True), 0.4)
 film.add(F(2043), drone(F(2323) - F(2043), 33.0, 0.8)[:int((F(2323) - F(2043)) * SR)])   # S17 the standoff (cut dead at the shot)
 film.add(F(2043), riser(F(2323) - F(2043), 70, 600), 0.65)
 film.add(F(2043), roar(F(2323) - F(2043), 80, 1200, 0.3), 0.35)
-film.b[int(F(2323) * SR):int(F(2365) * SR)] = 0.0
+# the arrow leaves the bow in silence: everything stops dead the moment he fires
+film.b[int(F(2310) * SR):int(F(2365) * SR)] = 0.0
 # S22: the shot makes no sound at all. The standoff's rise cuts to dead silence, the golem is simply gone; only
 # the smallest crackle of what's left creeps back in.
 film.add(F(2365) + 1.5, crackle(F(2905) - F(2365) - 1.5, 60) * env(int((F(2905) - F(2365) - 1.5) * SR), 2.5, 3.0), 0.18)

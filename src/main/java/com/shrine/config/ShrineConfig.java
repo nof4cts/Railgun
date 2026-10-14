@@ -71,7 +71,7 @@ public final class ShrineConfig {
          this.cooldownScale = b.comment("Multiplier on every cooldown (0 = no cooldowns).").defineInRange("cooldownScale", 1.0, 0.0, 10.0);
          this.dismantleLength = b.comment("Reach of a Dismantle slash, in blocks.").defineInRange("dismantleLength", 48, 4, 512);
          this.fugaRadius = b.comment("Radius of Open's (the fire arrow's) blast, in blocks: everything inside is burnt away into a lava crater.")
-            .defineInRange("openRadius", 38, 4, 256);
+            .defineInRange("openBlastRadius45", 45, 4, 256);
          this.fugaRange = b.comment("How far the fire arrow flies, in blocks.").defineInRange("fugaRange", 220, 16, 1024);
          this.domainRadius = b.comment("Radius of the domain, in blocks (everything inside is cut; the ground is shredded in the middle part only).")
             .defineInRange("domainRange", 40, 8, 512);

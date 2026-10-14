@@ -281,7 +281,7 @@ public final class OpenFx {
             return 0;
         }
         int tris = 0;
-        int n = Mth.clamp((int) (R * R * 0.16F), 60, 420);
+        int n = Mth.clamp((int) (R * R * 0.24F), 90, 620);
         java.util.Random rnd = new java.util.Random(m.seed * 31 + 7);
         for (int i = 0; i < n; i++) {
             double a = rnd.nextDouble() * Math.PI * 2;
@@ -296,7 +296,7 @@ public final class OpenFx {
             }
             int floor = mc.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, Mth.floor(x), Mth.floor(z));
             float flick = 0.7F + 0.3F * noise(i * 0.37F, t * 0.25F + phase, 3);
-            float h = (float) ((1.2 + 2.4 * (1 - d / R)) * hScale * flick * life);
+            float h = (float) ((2.0 + 4.2 * (1 - d / R)) * hScale * flick * life);
             if (h < 0.15F) {
                 continue;
             }
@@ -309,11 +309,11 @@ public final class OpenFx {
                 int seg = 5;
                 for (int s = 0; s <= seg; s++) {
                     float u = s / (float) seg;
-                    double sway = Math.sin(t * 0.55F + phase + k * 1.3F + u * 4.0F) * 0.28 * u;
-                    double sway2 = Math.cos(t * 0.47F + phase * 1.3F + k + u * 3.0F) * 0.28 * u;
+                    double sway = Math.sin(t * 0.85F + phase + k * 1.3F + u * 4.0F) * 0.42 * u;
+                    double sway2 = Math.cos(t * 0.73F + phase * 1.3F + k + u * 3.0F) * 0.42 * u;
                     org.joml.Vector3f p = new org.joml.Vector3f((float) (bx + sway), (float) (floor + u * h * (0.75F + 0.25F * k / 2.0F)),
                             (float) (bz + sway2));
-                    float w = 0.32F * (1 - u * 0.9F) * (0.8F + 0.2F * flick);
+                    float w = 0.45F * (1 - u * 0.9F) * (0.8F + 0.2F * flick);
                     if (prev != null) {
                         tris += ribbon(buf, cam, prev, p, prevW, w, (s - 1) / (float) seg, u);
                     }
