@@ -212,7 +212,7 @@ public final class GBanner {
                 float a = Math.min(1, u / 4F) * Math.min(1, (end - t) / 4F);
                 // the word, large, in kanji, to the left; the English line as a subtitle
                 String kj = GBeats.CHANT_KANJI[i];
-                float ks = h / 50F;
+                float ks = h / 85F;
                 g.pose().pushPose();
                 g.pose().translate(w * 0.12F, h * 0.5F - kj.length() * ks * 5, 0);
                 for (int c = 0; c < kj.length(); c++) {
@@ -233,10 +233,10 @@ public final class GBanner {
             }
         }
         int merge = p200 ? GBeats.P2_MERGE : GBeats.IM_MERGE;
-        card(g, w, h, t, merge + 2, p200 ? "200%  HOLLOW PURPLE" : "HOLLOW TECHNIQUE: PURPLE", "虚式「茈」", 0xFFC890FF);
+        card(g, w, h, t, merge + 2, p200 ? "200%  HOLLOW PURPLE" : "HOLLOW TECHNIQUE: PURPLE", "虚式茈", 0xFFC890FF);
         if (p200 && t >= merge + 8 && t < merge + 30) {
             float a = Math.min(1, (t - merge - 8) / 3F) * Math.min(1, (merge + 30 - t) / 4F);
-            bigText(g, font, "200%", (int) (w * 0.62F), (int) (h * 0.28F), h / 28F, (int) (a * 255));
+            bigText(g, font, "200%", (int) (w * 0.62F), (int) (h * 0.28F), h / 60F, (int) (a * 255));
         }
     }
 
@@ -252,7 +252,7 @@ public final class GBanner {
         if (alpha < 8) {
             return;
         }
-        float ks = h / 45F;
+        float ks = h / 85F;
         StringBuilder sb0 = new StringBuilder();
         for (char c : name.toCharArray()) {
             sb0.append(c).append(' ');

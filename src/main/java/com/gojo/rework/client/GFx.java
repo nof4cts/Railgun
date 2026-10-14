@@ -305,7 +305,7 @@ public final class GFx {
                 case NUKE -> {
                     float far = (float) Mth.clamp(1 - mc.player.position().distanceTo(c.msg.point()) / 300, 0, 1);
                     impactFrames(look, t, GBeats.NK_COLLIDE, Math.max(near, far));
-                    look.flash(1.0F * far * window(t, GBeats.NK_BLAST, GBeats.NK_BLAST + 1, GBeats.NK_BLAST + 8, GBeats.NK_BLAST + 40), 0xFFF0FF);
+                    look.flash(0.75F * far * window(t, GBeats.NK_BLAST, GBeats.NK_BLAST + 1, GBeats.NK_BLAST + 4, GBeats.NK_BLAST + 18), 0xFFF0FF);
                     look.shake(2.4F * far * hit(t, GBeats.NK_BLAST, 50));
                     look.shake(0.4F * far * window(t, GBeats.NK_CONVERGE, GBeats.NK_COLLIDE, GBeats.NK_COLLIDE, GBeats.NK_BLAST));
                 }
@@ -538,7 +538,7 @@ public final class GFx {
                     new int[]{a(PURPLE, 0.1F * wake), a(PURPLE, 0.3F * wake), a(VIOLET_CORE, 0.5F * wake)});
         }
         // where it left: a shock that blows outward
-        burst(ink, from, radius * 0.9, age, c.msg.seed(), VIOLET_CORE, PURPLE, DARK_VIOLET);
+        burst(ink, from, radius * 0.4, age, c.msg.seed(), VIOLET_CORE, PURPLE, DARK_VIOLET);
     }
 
     // ---- Imaginary Technique: Purple (Toji) and 200%
@@ -653,7 +653,7 @@ public final class GFx {
             // the detonation: a white sun that swells into a violet dome, a pillar, rings racing over the land
             float core = (float) Math.exp(-age / 5.0);
             ink.glow(T, R * (2 + 3 * (1 - core)), a(WHITE, core));
-            ink.sphere(true, g, R * (0.4 + 0.9 * Math.sqrt(Math.min(1, age / 16F))), a(VIOLET_CORE, 0.85F * (1 - k) * (1 - k)), a(PURPLE, 0.7F * (1 - k)), 1.2);
+            ink.sphere(true, g, R * (0.4 + 0.9 * Math.sqrt(Math.min(1, age / 16F))), a(PURPLE, 0.45F * (1 - k) * (1 - k)), a(MAGENTA, 0.55F * (1 - k)), 1.2);
             ink.sphere(false, g.add(0, R * 0.2, 0), R * (0.6 + 0.9 * k), a(DARK_VIOLET, 0.45F * window(age, 6, 20, 60, 110)), a(NIGHT, 0), 0.7);
             ink.beam(g, g.add(0, R * 5 * Math.sqrt(Math.min(1, age / 20F)), 0), R * 0.5 * (1 - k), a(VIOLET_CORE, 0.7F * (1 - k)));
             ink.beam(g, g.add(0, R * 5 * Math.sqrt(Math.min(1, age / 20F)), 0), R * 1.4 * (1 - k), a(MAGENTA, 0.25F * (1 - k)));
