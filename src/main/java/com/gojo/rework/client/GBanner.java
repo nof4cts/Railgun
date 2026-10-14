@@ -211,7 +211,7 @@ public final class GBanner {
     static void aim(GuiGraphics g, int w, int h, float partial) {
         Minecraft mc = Minecraft.getInstance();
         GCasts.Play p = GCasts.of(mc.player);
-        if (p == null || !p.mine || !p.aiming(partial) || GDirector.active()) {
+        if (p == null || !p.mine || p.let || !p.aiming(partial) || GDirector.active()) {
             return;
         }
         float held = p.time(partial) - GBeats.ready(p.move());

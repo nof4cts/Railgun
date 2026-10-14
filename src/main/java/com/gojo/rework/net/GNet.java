@@ -132,20 +132,23 @@ public final class GNet {
         }
     }
 
-    /** Client to server: he has aimed; let the Purple go. */
-    public record Shoot() {
+    /** Client to server: he has aimed (this way, as his own screen shows it); let the Purple go. */
+    public record Shoot(Vec3 dir) {
         static void encode(Shoot m, FriendlyByteBuf b) {
+            b.writeDouble(m.dir.x);
+            b.writeDouble(m.dir.y);
+            b.writeDouble(m.dir.z);
         }
 
         static Shoot decode(FriendlyByteBuf b) {
-            return new Shoot();
+            return new Shoot(new Vec3(b.readDouble(), b.readDouble(), b.readDouble()));
         }
 
         static void handle(Shoot m, Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer p = ctx.get().getSender();
             ctx.get().enqueueWork(() -> {
                 if (p != null) {
-                    com.gojo.rework.server.GRites.shoot(p);
+                    com.gojo.rework.server.GRites.shoot(p, m.dir);
                 }
             });
             ctx.get().setPacketHandled(true);

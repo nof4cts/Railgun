@@ -164,10 +164,12 @@ public final class GojoTest {
             server.execute(() -> {
                 ServerPlayer p = player(server);
                 // aim, as a player would: at the middle golem
+                Vec3 aimDir = p.getLookAngle();
                 IronGolem g = p.serverLevel().getEntitiesOfClass(IronGolem.class, p.getBoundingBox().inflate(120), LivingEntity::isAlive).stream()
                         .min(java.util.Comparator.comparingDouble(e -> Math.abs(e.getX() - p.getX()))).orElse(null);
                 if (g != null) {
                     Vec3 d = g.position().add(0, 1.2, 0).subtract(p.getEyePosition()).normalize();
+                    aimDir = d;
                     float yaw = (float) (Math.toDegrees(Math.atan2(-d.x, d.z)));
                     float pitch = (float) (-Math.toDegrees(Math.asin(d.y)));
                     p.connection.teleport(p.getX(), p.getY(), p.getZ(), yaw, pitch);
@@ -175,7 +177,7 @@ public final class GojoTest {
                     p.setXRot(pitch);
                     p.setYHeadRot(yaw);
                 }
-                GRites.shoot(p);
+                GRites.shoot(p, aimDir);
                 Gojo2.LOGGER.info("[gojotest] shoot {}", s.move);
             });
         }

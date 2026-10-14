@@ -24,6 +24,7 @@ public final class GCasts {
         int lastBeat = -1;
         /** The cutscene was skipped: it does not come back to follow the shot. */
         public boolean skipped;
+        boolean let;
         /** A held Purple once let go: when (ticks into the cast), from where, which way, onto what. */
         public int fireAt = -1;
         public Vec3 fireFrom, fireDir, target;
@@ -200,6 +201,11 @@ public final class GCasts {
                 GFx.beat(p, k);
             }
             p.lastBeat = t;
+            if (p.mine && !p.let && p.aiming(0) && t >= GBeats.ready(p.move()) + GBeats.AIM_MAX && mc.player != null) {
+                // held as long as it can be: it goes where he is looking
+                p.let = true;
+                com.gojo.rework.net.GNet.CHANNEL.sendToServer(new com.gojo.rework.net.GNet.Shoot(mc.player.getViewVector(1.0F)));
+            }
             if (t > p.end() + 200) {
                 it.remove();
             }

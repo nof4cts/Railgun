@@ -138,7 +138,11 @@ public final class GClientEvents {
             if (p != null && p.mine && p.aiming(0) && !GDirector.active() && (e.isAttack() || e.isUseItem())) {
                 e.setCanceled(true);
                 e.setSwingHand(false);
-                com.gojo.rework.net.GNet.CHANNEL.sendToServer(new com.gojo.rework.net.GNet.Shoot());
+                if (p.let) {
+                    return;
+                }
+                p.let = true;
+                com.gojo.rework.net.GNet.CHANNEL.sendToServer(new com.gojo.rework.net.GNet.Shoot(mc.player.getViewVector(1.0F)));
             } else if (GDirector.active()) {
                 e.setCanceled(true);
                 e.setSwingHand(false);

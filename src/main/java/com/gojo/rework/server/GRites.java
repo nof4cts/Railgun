@@ -69,6 +69,8 @@ public final class GRites {
         int fireT = -1;
         /** When he let go of the aim and began "Hollow..."; the Purple leaves on "Purple", GBeats.KYO later. */
         int shootT = -1;
+        /** Which way he was looking when he let go, from his own client. */
+        Vec3 aimDir;
         Vec3 fireFrom, fireDir, target;
         /** Maximum Blue, steered: where it is now. */
         Vec3 mb;
@@ -161,7 +163,10 @@ public final class GRites {
 
     /** What the eye is on: the first living thing near the line of sight, else the first block, else the end of reach. */
     static Vec3 aim(ServerPlayer p, double range) {
-        Vec3 eye = p.getEyePosition(), look = p.getLookAngle();
+        return aim(p, p.getEyePosition(), p.getLookAngle(), range);
+    }
+
+    static Vec3 aim(ServerPlayer p, Vec3 eye, Vec3 look, double range) {
         Vec3 end = eye.add(look.scale(range));
         BlockHitResult bh = p.level().clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
         Vec3 stop = bh.getType() == HitResult.Type.MISS ? end : bh.getLocation();
@@ -304,7 +309,8 @@ public final class GRites {
         k = k * k * (3 - 2 * k);
         Vec3 at = c.feet.add(0, height * k + Math.sin(t * 0.12) * 0.08, 0);
         c.p.setDeltaMovement(Vec3.ZERO);
-        c.p.connection.teleport(at.x, at.y, at.z, 0, 0, java.util.EnumSet.of(net.minecraft.world.entity.RelativeMovement.X_ROT,
+        // relative rotation: the client keeps its own view; the server keeps the facing it last had
+        c.p.connection.teleport(at.x, at.y, at.z, c.p.getYRot(), c.p.getXRot(), java.util.EnumSet.of(net.minecraft.world.entity.RelativeMovement.X_ROT,
                 net.minecraft.world.entity.RelativeMovement.Y_ROT));
         c.p.fallDistance = 0;
     }
@@ -351,7 +357,8 @@ public final class GRites {
         if (c.fireT >= 0) {
             return;
         }
-        if (c.shootT < 0 && t >= GBeats.ready(c.move) + GBeats.AIM_MAX) {
+        // held too long: his client lets it go at AIM_MAX with his view; this is only the fallback
+        if (c.shootT < 0 && t >= GBeats.ready(c.move) + GBeats.AIM_MAX + 6) {
             call(c, t);
         }
         if (c.shootT >= 0) {
@@ -389,9 +396,12 @@ public final class GRites {
     }
 
     /** He has aimed: let his held Purple go. */
-    public static void shoot(ServerPlayer p) {
+    public static void shoot(ServerPlayer p, Vec3 dir) {
         for (Cast c : ACTIVE) {
             if (c.p == p && GBeats.aims(c.move) && c.fireT < 0 && c.shootT < 0 && c.t() >= GBeats.ready(c.move)) {
+                if (dir != null && dir.lengthSqr() > 1e-6 && Double.isFinite(dir.x + dir.y + dir.z)) {
+                    c.aimDir = dir.normalize();
+                }
                 call(c, c.t());
                 return;
             }
@@ -400,11 +410,11 @@ public final class GRites {
 
     static void fire(Cast c, int t) {
         c.fireT = t;
-        Vec3 look = c.p.getLookAngle().normalize();
+        Vec3 look = c.aimDir != null ? c.aimDir : c.p.getLookAngle().normalize();
         Vec3 eye = c.p.getEyePosition();
         if (c.move == GMove.NUKE) {
             c.fireFrom = GBeats.nukeRedPoint(c.origin, c.dir);
-            c.target = ground(c.level, aim(c.p, GBeats.NK_RANGE));
+            c.target = ground(c.level, aim(c.p, eye, look, GBeats.NK_RANGE));
             c.fireDir = c.target.subtract(c.fireFrom).normalize();
         } else {
             c.fireFrom = eye.add(look.scale(GBeats.purpleAhead(c.move)));
