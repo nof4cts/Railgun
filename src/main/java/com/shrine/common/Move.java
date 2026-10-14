@@ -6,7 +6,7 @@ public enum Move {
    CLEAVE("cleave", 30, false),
    SPIDERWEB("spiderweb", 140, false),
    BLACK_FLASH("black_flash", 50, false),
-   FUGA("fuga", 3600, true),
+   FUGA("fuga", 1200, true),
    DOMAIN("domain", 1600, true),
    WORLD_SLASH("world_slash", 2200, true);
 
