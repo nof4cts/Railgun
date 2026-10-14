@@ -233,25 +233,62 @@ def cloud(name, loc, size, mat, rnd):
 
 def build_sky():
     sc = reset()
+    sc.view_settings.exposure = -0.6
     sun = Vector((0, 260, 70))
     world_gold(top=(0.85, 0.36, 0.04), horizon=(1.0, 0.7, 0.2), strength=1.0, sun_dir=sun, sun_power=40.0, sun_tight=0.95)
     rnd = random.Random(7)
-    cm = cloud_mat()
     clouds = []
-    # a broken wall of cloud between the lens and the sun, a hole where the light comes through
-    for i in range(22):
-        a = rnd.uniform(0, math.tau)
-        rad = rnd.uniform(45, 130)
-        x, z = math.cos(a) * rad * 1.5, math.sin(a) * rad * 0.7 + 70
-        y = rnd.uniform(170, 230)
-        size = rnd.uniform(18, 34)
-        parts = cloud(f'c{i}', (x, y, z), size, cm, rnd)
-        clouds.append((parts, Vector((x, 0, z - 70)).normalized()))
-    # nearer, darker banks low across the frame
-    for i in range(6):
-        x = rnd.choice([rnd.uniform(-170, -60), rnd.uniform(60, 170)])
-        parts = cloud(f'n{i}', (x, rnd.uniform(110, 140), rnd.uniform(-10, 25)), rnd.uniform(22, 36), cm, rnd)
-        clouds.append((parts, Vector((x, 0, -40)).normalized()))
+    # a deck of real cloud (a volume shaped by noise) between the lens and the sun, lit from behind so its body is dark
+    # and its edges burn; a hole opens over the sun as the shot goes on
+    vm, vnt, vout = node_mat('cloudvol')
+    tc = vnt.nodes.new('ShaderNodeTexCoord')
+    mp = vnt.nodes.new('ShaderNodeMapping')
+    vnt.links.new(tc.outputs['Object'], mp.inputs['Vector'])
+    mp.inputs['Scale'].default_value = (1.0, 2.2, 3.0)
+    nz = vnt.nodes.new('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = 3.2
+    nz.inputs['Detail'].default_value = 7.0
+    nz.inputs['Roughness'].default_value = 0.58
+    vnt.links.new(mp.outputs['Vector'], nz.inputs['Vector'])
+    # the hole: distance from the deck's centre, in its own space, pushes the density down
+    ln = vnt.nodes.new('ShaderNodeVectorMath'); ln.operation = 'LENGTH'
+    sq = vnt.nodes.new('ShaderNodeVectorMath'); sq.operation = 'MULTIPLY'; sq.inputs[1].default_value = (1.0, 0.0, 1.6)
+    vnt.links.new(tc.outputs['Object'], sq.inputs[0]); vnt.links.new(sq.outputs[0], ln.inputs[0])
+    hole = vnt.nodes.new('ShaderNodeMapRange')
+    hole.inputs['From Min'].default_value = 0.0
+    hole.inputs['To Min'].default_value = -0.35
+    hole.inputs['To Max'].default_value = 0.0
+    vnt.links.new(ln.outputs['Value'], hole.inputs['Value'])
+    hole.name = 'hole'
+    hole.inputs['From Max'].default_value = 0.35
+    add = vnt.nodes.new('ShaderNodeMath'); add.operation = 'ADD'
+    vnt.links.new(nz.outputs['Fac'], add.inputs[0]); vnt.links.new(hole.outputs['Result'], add.inputs[1])
+    dens = vnt.nodes.new('ShaderNodeMapRange')
+    dens.inputs['From Min'].default_value = 0.5
+    dens.inputs['From Max'].default_value = 0.6
+    dens.inputs['To Min'].default_value = 0.0
+    dens.inputs['To Max'].default_value = 1.6
+    vnt.links.new(add.outputs[0], dens.inputs['Value'])
+    pv = vnt.nodes.new('ShaderNodeVolumePrincipled')
+    pv.inputs['Color'].default_value = (1.0, 0.62, 0.25, 1)
+    pv.inputs['Anisotropy'].default_value = 0.55
+    vnt.links.new(dens.outputs['Result'], pv.inputs['Density'])
+    vnt.links.new(pv.outputs[0], vout.inputs['Volume'])
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 200, 70))
+    deck = bpy.context.active_object
+    deck.scale = (520, 40, 260)
+    deck.data.materials.append(vm)
+    clouds.append(([deck], Vector((0, 0, 0))))
+    sunl = bpy.data.lights.new('sunback', 'SUN')
+    sunl.energy = 14.0
+    sunl.color = (1.0, 0.8, 0.5)
+    sunl.angle = math.radians(1.5)
+    so = bpy.data.objects.new('sunback', sunl)
+    bpy.context.scene.collection.objects.link(so)
+    so.rotation_euler = (Vector((0, 0, 0)) - sun).to_track_quat('-Z', 'Y').to_euler()
+    sc.cycles.volume_step_rate = 4.0
+    sc.cycles.volume_max_steps = 256
+    sc.cycles.volume_bounces = 1
     # the light breaking out round the edges: rays fanning from the sun
     rays = []
     rm, _ = emission_mat('ray', (1.0, 0.78, 0.35), 1.6, alpha_gradient=True)
@@ -271,8 +308,8 @@ def build_sky():
         p.scale = (width, length, 1)
         rays.append((p, a, length, width, rnd.uniform(0, 6)))
     # the hot core
-    core_m, core_em = emission_mat('core', (1.0, 0.92, 0.7), 8.0)
-    core = uv_sphere('core', sun, 16, core_m)
+    core_m, core_em = emission_mat('core', (1.0, 0.92, 0.7), 3.0)
+    core = uv_sphere('core', sun, 8, core_m)
     cam = camera((0, -10, 8), (0, 200, 62), lens=26)
     for f in range(SHOTS['sky']):
         pass
@@ -288,14 +325,15 @@ def frame_sky(state, f):
     cam.data.lens = 26 - 4 * k
     for parts, out in clouds:
         for o in parts:
-            if 'base' not in o:
-                o['base'] = tuple(o.location)
-            b = Vector(o['base'])
-            o.location = b + out * (24 * k) + Vector((0, 0, 0))
+            m = o.data.materials[0]
+            h = m.node_tree.nodes.get('hole')
+            if h:
+                h.inputs['From Max'].default_value = 0.08 + 0.3 * k
+            o.location = Vector((u * 8, 200, 70))
     for p, a, length, width, ph in rays:
         p.rotation_euler = Euler((math.radians(90), a + u * 0.12, 0), 'XYZ')
         p.scale = (width * (0.6 + 0.6 * k) * (1 + 0.15 * math.sin(f * 0.2 + ph)), length * (0.55 + 0.6 * k), 1)
-    core_em.inputs['Strength'].default_value = 8 + 16 * k
+    core_em.inputs['Strength'].default_value = 3 + 6 * k
 
 
 # ------------------------------------------------------------------------------------------------ leaves and drops
@@ -566,12 +604,13 @@ def frame_drops(state, f):
     blue.hide_render = merged
     red.hide_render = merged
     purple.hide_render = not merged
-    flash.hide_render = not merged
+    flash.hide_render = True
     if merged:
         m = (f - TOUCH) / float(SHOTS['drops'] - TOUCH)
         purple.location = mid + up * 1.2
         pem.inputs['Color'].default_value = (0.6, 0.12, 1.0, 1)
-        pem.inputs['Strength'].default_value = 2.5 + 5 * m
+        pem.inputs['Strength'].default_value = 2.5 + 14 * m ** 1.5
+        purple.scale = Vector((1.0, 1.0, 0.62)) * (1 + 0.9 * m)
         lights['lp'].data.energy = 2 + 8 * m
         lights['lp'].location = purple.location
         flash.location = purple.location

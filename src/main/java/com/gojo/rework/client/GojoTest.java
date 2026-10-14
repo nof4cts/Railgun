@@ -80,7 +80,7 @@ public final class GojoTest {
             return s.hold;
         }
         if (com.gojo.rework.common.GBeats.aims(s.move)) {
-            return shootAt(s.move) + com.gojo.rework.common.GBeats.after(s.move) + 20;
+            return shootAt(s.move) + com.gojo.rework.common.GBeats.KYO + com.gojo.rework.common.GBeats.after(s.move) + 20;
         }
         return s.move.length + 30;
     }

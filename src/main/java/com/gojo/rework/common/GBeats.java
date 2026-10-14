@@ -54,6 +54,8 @@ public final class GBeats {
 
     /** How long he may hold a finished Purple while aiming before it goes by itself. */
     public static final int AIM_MAX = 100;
+    /** From "Hollow..." (when he lets go) to "Purple", when it leaves. */
+    public static final int KYO = 19;
 
     // Hollow Nuke: he rises; "Maximum Output: Blue" and shoots Blue, which circles him; "Maximum Output: Red" and
     // fires Red up into the sky; Blue breaks orbit and crashes into Red; the Purple they make is aimed at the land and

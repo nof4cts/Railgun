@@ -67,6 +67,8 @@ public final class GRites {
         boolean held;
         /** A held Purple: the tick it was let go (-1 while held), where from, which way, onto what. */
         int fireT = -1;
+        /** When he let go of the aim and began "Hollow..."; the Purple leaves on "Purple", GBeats.KYO later. */
+        int shootT = -1;
         Vec3 fireFrom, fireDir, target;
         /** Maximum Blue, steered: where it is now. */
         Vec3 mb;
@@ -99,7 +101,7 @@ public final class GRites {
 
         int end() {
             if (GBeats.aims(move)) {
-                return (fireT < 0 ? GBeats.ready(move) + GBeats.AIM_MAX : fireT) + GBeats.after(move);
+                return (fireT < 0 ? (shootT < 0 ? GBeats.ready(move) + GBeats.AIM_MAX : shootT) + GBeats.KYO : fireT) + GBeats.after(move);
             }
             return switch (move) {
                 case DOMAIN -> GBeats.DV_HOLD;
@@ -335,15 +337,36 @@ public final class GRites {
         if (t == b[3]) {
             sound(c.level, at, Gojo2.BLUE_CHARGE.get(), 2.0F, max ? 0.7F : 1.0F);
         }
-        if (t == b[5]) {
-            voice(c.p, "kyoshiki");
-        }
         if (t == b[6]) {
             sound(c.level, at, Gojo2.PURPLE_MERGE.get(), max ? 8.0F : 3.0F, max ? 0.7F : 1.0F);
         }
-        if (c.fireT < 0 && t >= b[7] + GBeats.AIM_MAX) {
-            fire(c, t);
+        held(c, t);
+    }
+
+    /**
+     * A finished Purple, held: once he lets go (or has held it too long) he says "Hollow..." and it leaves on
+     * "Purple" - the voice and the shot in step.
+     */
+    static void held(Cast c, int t) {
+        if (c.fireT >= 0) {
+            return;
         }
+        if (c.shootT < 0 && t >= GBeats.ready(c.move) + GBeats.AIM_MAX) {
+            call(c, t);
+        }
+        if (c.shootT >= 0) {
+            if (t == c.shootT + GBeats.KYO - 2) {
+                voice(c.p, c.move == GMove.IMAGINARY ? "toji_murasaki" : "murasaki");
+            }
+            if (t >= c.shootT + GBeats.KYO) {
+                fire(c, t);
+            }
+        }
+    }
+
+    static void call(Cast c, int t) {
+        c.shootT = t;
+        voice(c.p, c.move == GMove.IMAGINARY ? "toji_kyoshiki" : "kyoshiki");
     }
 
     /**
@@ -362,19 +385,14 @@ public final class GRites {
         if (t == GBeats.IM_MERGE) {
             sound(c.level, at, Gojo2.PURPLE_MERGE.get(), 4.0F, 0.85F);
         }
-        if (t == GBeats.IM_READY) {
-            voice(c.p, "toji_kyoshiki");
-        }
-        if (c.fireT < 0 && t >= GBeats.IM_READY + GBeats.AIM_MAX) {
-            fire(c, t);
-        }
+        held(c, t);
     }
 
     /** He has aimed: let his held Purple go. */
     public static void shoot(ServerPlayer p) {
         for (Cast c : ACTIVE) {
-            if (c.p == p && GBeats.aims(c.move) && c.fireT < 0 && c.t() >= GBeats.ready(c.move)) {
-                fire(c, c.t());
+            if (c.p == p && GBeats.aims(c.move) && c.fireT < 0 && c.shootT < 0 && c.t() >= GBeats.ready(c.move)) {
+                call(c, c.t());
                 return;
             }
         }
@@ -393,7 +411,6 @@ public final class GRites {
             c.fireDir = look;
             c.target = c.fireFrom.add(look.scale(80));
         }
-        voice(c.p, c.move == GMove.IMAGINARY ? "toji_murasaki" : "murasaki");
         sound(c.level, c.fireFrom, c.move == GMove.PURPLE ? Gojo2.PURPLE_FIRE.get() : Gojo2.PURPLE_BIG.get(), 8.0F, 1.0F);
         GNet.near(c.p, c.fireFrom, c.move == GMove.NUKE ? 420 : 320, new GNet.Fire(c.p.getId(), c.move.ordinal(), t, c.fireFrom, c.fireDir, c.target));
     }

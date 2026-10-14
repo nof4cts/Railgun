@@ -103,7 +103,7 @@ public final class GCasts {
 
         public int end() {
             if (GBeats.aims(move())) {
-                return (fireAt < 0 ? GBeats.ready(move()) + GBeats.AIM_MAX : fireAt) + GBeats.after(move());
+                return (fireAt < 0 ? GBeats.ready(move()) + GBeats.AIM_MAX + GBeats.KYO : fireAt) + GBeats.after(move());
             }
             return switch (move()) {
                 case DOMAIN -> GBeats.DV_HOLD;
