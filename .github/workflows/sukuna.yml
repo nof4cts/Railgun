@@ -32,7 +32,8 @@ jobs:
           pip install -q portablemc
           MC=$PWD/mc; mkdir -p $MC/mods
           cp build/out/jjk-1.0.0.jar $MC/mods/
-          for v in 4.4.9 4.7.1 4.4.4; do curl -sSfL -o $MC/mods/geckolib.jar "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/software/bernie/geckolib/geckolib-forge-1.20.1/$v/geckolib-forge-1.20.1-$v.jar" && break; done
+          GL=$(curl -sSf 'https://api.modrinth.com/v2/project/geckolib/version?game_versions=%5B%221.20.1%22%5D&loaders=%5B%22forge%22%5D' | python3 -c "import json,sys; v=json.load(sys.stdin); print(v[0]['files'][0]['url'])")
+          echo "geckolib: $GL"; curl -sSfL -o $MC/mods/geckolib.jar "$GL"
           ls -la $MC/mods
           curl -sSfL -o $MC/mods/player-animation-lib-forge.jar "https://maven.kosmx.dev/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1+1.20/player-animation-lib-forge-1.0.2-rc1+1.20.jar"
           printf 'onboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nrenderDistance:6\nsimulationDistance:6\nmaxFps:60\nguiScale:2\nsoundCategory_master:0.0\nfov:0.0\n' > $MC/options.txt
