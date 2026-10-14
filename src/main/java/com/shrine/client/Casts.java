@@ -50,6 +50,20 @@ public final class Casts {
       }
    }
 
+   /** Every Open whose crater is burning, with its age in ticks since the blast. */
+   public static void burning(float partial, List<S2CCast> casts, List<Float> times) {
+      double now = now(partial);
+      for (Casts.Active a : ACTIVE) {
+         if (a.msg.move == Move.FUGA) {
+            float t = (float)(now - (double)a.base) - 89.0F;
+            if (t >= 0.0F && t < (float)com.shrine.common.Timing.FUGA_BURN) {
+               casts.add(a.msg);
+               times.add(t);
+            }
+         }
+      }
+   }
+
    /** The Open casts fired without their film (drawn in the world by OpenFx), with their age in ticks. */
    public static void quickOpens(float partial, List<S2CCast> casts, List<Float> times) {
       double now = now(partial);
@@ -491,7 +505,7 @@ public final class Casts {
          long var10001 = msg.startTick;
 
          this.endTick = var10001 + switch (msg.move) {
-            case FUGA -> msg.film ? 269L + (long)com.shrine.common.Timing.FUGA_FILM_SHIFT : 300L;
+            case FUGA -> (msg.film ? (long)com.shrine.common.Timing.FUGA_FILM_SHIFT : 0L) + 89L + (long)com.shrine.common.Timing.FUGA_BURN + 20L;
             case DOMAIN -> 52L + (long)msg.targetId * 20L + 20L;
             case WORLD_SLASH -> 358L;
             case DISMANTLE -> 80L;

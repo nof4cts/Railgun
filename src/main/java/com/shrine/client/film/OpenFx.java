@@ -161,8 +161,9 @@ public final class OpenFx {
     private record Shot(Seq seq, float frame, Matrix4f M) {}
 
     /** Called at the end of the level render with the camera's pose. */
-    public static void render(PoseStack pose, Camera camera, float partial, List<S2CCast> quick, List<Float> times) {
-        if (quick.isEmpty()) {
+    public static void render(PoseStack pose, Camera camera, float partial, List<S2CCast> quick, List<Float> times, List<S2CCast> burning,
+                              List<Float> burnTimes) {
+        if (quick.isEmpty() && burning.isEmpty()) {
             return;
         }
         load();
@@ -174,6 +175,9 @@ public final class OpenFx {
         BufferBuilder buf = Tesselator.getInstance().getBuilder();
         buf.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         int drawn = 0;
+        for (int i = 0; i < burning.size(); i++) {
+            drawn += burn(buf, burning.get(i), cam, burnTimes.get(i));
+        }
         for (int i = 0; i < quick.size(); i++) {
             S2CCast m = quick.get(i);
             float t = times.get(i);
@@ -256,6 +260,69 @@ public final class OpenFx {
                 (float) side.x * scale, (float) side.y * scale, (float) side.z * scale, 0,
                 (float) u.x * scale, (float) u.y * scale, (float) u.z * scale, 0,
                 (float) origin.x, (float) origin.y, (float) origin.z, 1);
+    }
+
+    // ------------------------------------------------------------------------------------------------ the burning crater
+
+    /**
+     * Open's crater burns: flames stand all over its floor (they hurt whoever walks into them, server side), taller
+     * near the middle, licking and flickering, dying down over the last few seconds.
+     */
+    private static int burn(BufferBuilder buf, S2CCast m, Vec3 cam, float t) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) {
+            return 0;
+        }
+        float R = Math.max(6.0F, m.size * 10.0F) * 1.02F;
+        float rise = Mth.clamp((t - 8.0F) / 24.0F, 0, 1);
+        float die = 1 - Mth.clamp((t - (com.shrine.common.Timing.FUGA_BURN - 120)) / 120.0F, 0, 1);
+        float life = rise * die;
+        if (life <= 0.01F || cam.distanceTo(m.point) > R + 160) {
+            return 0;
+        }
+        int tris = 0;
+        int n = Mth.clamp((int) (R * R * 0.16F), 60, 420);
+        java.util.Random rnd = new java.util.Random(m.seed * 31 + 7);
+        for (int i = 0; i < n; i++) {
+            double a = rnd.nextDouble() * Math.PI * 2;
+            double d = R * Math.sqrt(rnd.nextDouble());
+            double x = m.point.x + Math.cos(a) * d, z = m.point.z + Math.sin(a) * d;
+            float phase = rnd.nextFloat() * 50;
+            float hScale = 0.6F + rnd.nextFloat() * 0.8F;
+            // skip flames far from the camera to keep the frame light
+            double dist = Math.sqrt((x - cam.x) * (x - cam.x) + (z - cam.z) * (z - cam.z));
+            if (dist > 90 && (i & 3) != 0) {
+                continue;
+            }
+            int floor = mc.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, Mth.floor(x), Mth.floor(z));
+            float flick = 0.7F + 0.3F * noise(i * 0.37F, t * 0.25F + phase, 3);
+            float h = (float) ((1.2 + 2.4 * (1 - d / R)) * hScale * flick * life);
+            if (h < 0.15F) {
+                continue;
+            }
+            int tongues = 3;
+            for (int k = 0; k < tongues; k++) {
+                double ka = a * 3 + k * 2.1;
+                double bx = x + Math.cos(ka) * 0.35, bz = z + Math.sin(ka) * 0.35;
+                org.joml.Vector3f prev = null;
+                float prevW = 0;
+                int seg = 5;
+                for (int s = 0; s <= seg; s++) {
+                    float u = s / (float) seg;
+                    double sway = Math.sin(t * 0.55F + phase + k * 1.3F + u * 4.0F) * 0.28 * u;
+                    double sway2 = Math.cos(t * 0.47F + phase * 1.3F + k + u * 3.0F) * 0.28 * u;
+                    org.joml.Vector3f p = new org.joml.Vector3f((float) (bx + sway), (float) (floor + u * h * (0.75F + 0.25F * k / 2.0F)),
+                            (float) (bz + sway2));
+                    float w = 0.32F * (1 - u * 0.9F) * (0.8F + 0.2F * flick);
+                    if (prev != null) {
+                        tris += ribbon(buf, cam, prev, p, prevW, w, (s - 1) / (float) seg, u);
+                    }
+                    prev = p;
+                    prevW = w;
+                }
+            }
+        }
+        return tris;
     }
 
     // ------------------------------------------------------------------------------------------------ living fire

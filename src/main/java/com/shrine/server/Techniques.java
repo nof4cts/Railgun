@@ -539,6 +539,27 @@ public final class Techniques {
       if (t >= 174 && c.blast != null && !c.blast.done() && c.level.getGameTime() + 2 >= c.endsAt) {
          c.endsAt += 200L;
       }
+
+      // the crater burns: Open's flames stand on its floor and hurt whoever walks into them
+      if (t > 89 && t <= 89 + Timing.FUGA_BURN) {
+         c.endsAt = Math.max(c.endsAt, c.start + (long)(t0 - t) + 89L + Timing.FUGA_BURN + 2L);
+         if (t % 10 == 0) {
+            double r = (double)c.size * 1.05;
+            for (Entity e : c.level.getEntities(c.caster, new AABB(c.point, c.point).inflate(r, r, r), Entity::isAlive)) {
+               double dx = e.getX() - c.point.x, dz = e.getZ() - c.point.z;
+               if (dx * dx + dz * dz > r * r || !(e instanceof LivingEntity l)) {
+                  continue;
+               }
+               // only at the floor: standing (or lying) in the flames, not flying over them
+               int floor = c.level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, Mth.floor(e.getX()), Mth.floor(e.getZ()));
+               if (e.getY() - floor < 2.5) {
+                  l.invulnerableTime = 0;
+                  l.hurt(c.level.damageSources().inFire(), 4.0F);
+                  l.setSecondsOnFire(4);
+               }
+            }
+         }
+      }
    }
 
    private static Consumption.Replacer scorcher(Techniques.Cast c, int r) {
@@ -550,8 +571,9 @@ public final class Techniques {
       return (pos, old, d, dx, dy, dz) -> {
          if (d <= (double)r) {
             double floor = -Math.sqrt(Math.max(0.0, (double)r * (double)r - (double)(dx * dx) - (double)(dz * dz)));
-            if ((double)dy < floor + 3.0 && (double)dy < (double)(-r) * 0.3) {
-               return lava;
+            if ((double)dy < floor + 1.0 && (double)dy < (double)(-r) * 0.3) {
+               // the crater's floor is scorched black (its flames are Open's own, see fuga())
+               return old.isAir() || old.is(Blocks.BEDROCK) ? null : black;
             } else if (old.is(Blocks.BEDROCK)) {
                return null;
             } else {

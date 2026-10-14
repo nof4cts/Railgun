@@ -23,6 +23,8 @@ public final class Timing {
    public static final int FUGA_END = 175;
    /** Open with its film: the cutscene (the author's Blender film, 1483 frames at 30 fps) runs this many ticks; the blast lands the tick it ends. */
    public static final int FUGA_FILM = 989;
+   /** After the blast its crater burns: ticks the flames stand and hurt whoever walks in them. */
+   public static final int FUGA_BURN = 600;
    /** In the film version every Fuga beat is shifted so the impact (tick 89) lands on the film's last tick. */
    public static final int FUGA_FILM_SHIFT = FUGA_FILM - FUGA_IMPACT;
 

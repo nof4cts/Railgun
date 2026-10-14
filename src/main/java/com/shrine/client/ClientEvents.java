@@ -53,7 +53,10 @@ public final class ClientEvents {
             java.util.List<com.shrine.network.S2CCast> quick = new java.util.ArrayList<>();
             java.util.List<Float> times = new java.util.ArrayList<>();
             Casts.quickOpens(event.getPartialTick(), quick, times);
-            com.shrine.client.film.OpenFx.render(event.getPoseStack(), event.getCamera(), event.getPartialTick(), quick, times);
+            java.util.List<com.shrine.network.S2CCast> burning = new java.util.ArrayList<>();
+            java.util.List<Float> burnTimes = new java.util.ArrayList<>();
+            Casts.burning(event.getPartialTick(), burning, burnTimes);
+            com.shrine.client.film.OpenFx.render(event.getPoseStack(), event.getCamera(), event.getPartialTick(), quick, times, burning, burnTimes);
          }
          PostFx.render(event);
       }
