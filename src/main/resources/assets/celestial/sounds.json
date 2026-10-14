@@ -1,0 +1,191 @@
+{
+ "bell": {
+  "subtitle": "subtitles.celestial.bell",
+  "sounds": [
+   {
+    "name": "celestial:bell",
+    "stream": false
+   }
+  ]
+ },
+ "colossus_cut": {
+  "subtitle": "subtitles.celestial.colossus_cut",
+  "sounds": [
+   {
+    "name": "celestial:colossus_cut",
+    "stream": true
+   }
+  ]
+ },
+ "colossus_rise": {
+  "subtitle": "subtitles.celestial.colossus_rise",
+  "sounds": [
+   {
+    "name": "celestial:colossus_rise",
+    "stream": true
+   }
+  ]
+ },
+ "eclipse_cover": {
+  "subtitle": "subtitles.celestial.eclipse_cover",
+  "sounds": [
+   {
+    "name": "celestial:eclipse_cover",
+    "stream": true
+   }
+  ]
+ },
+ "eclipse_ring": {
+  "subtitle": "subtitles.celestial.eclipse_ring",
+  "sounds": [
+   {
+    "name": "celestial:eclipse_ring",
+    "stream": true
+   }
+  ]
+ },
+ "hum": {
+  "subtitle": "subtitles.celestial.hum",
+  "sounds": [
+   {
+    "name": "celestial:hum",
+    "stream": false
+   }
+  ]
+ },
+ "mantle_gather": {
+  "subtitle": "subtitles.celestial.mantle_gather",
+  "sounds": [
+   {
+    "name": "celestial:mantle_gather",
+    "stream": true
+   }
+  ]
+ },
+ "mantle_ignite": {
+  "subtitle": "subtitles.celestial.mantle_ignite",
+  "sounds": [
+   {
+    "name": "celestial:mantle_ignite",
+    "stream": false
+   }
+  ]
+ },
+ "mantle_release": {
+  "subtitle": "subtitles.celestial.mantle_release",
+  "sounds": [
+   {
+    "name": "celestial:mantle_release",
+    "stream": false
+   }
+  ]
+ },
+ "mirror_strike": {
+  "subtitle": "subtitles.celestial.mirror_strike",
+  "sounds": [
+   {
+    "name": "celestial:mirror_strike",
+    "stream": false
+   }
+  ]
+ },
+ "mirror_vanish": {
+  "subtitle": "subtitles.celestial.mirror_vanish",
+  "sounds": [
+   {
+    "name": "celestial:mirror_vanish",
+    "stream": false
+   }
+  ]
+ },
+ "orb_erase": {
+  "subtitle": "subtitles.celestial.orb_erase",
+  "sounds": [
+   {
+    "name": "celestial:orb_erase",
+    "stream": false
+   }
+  ]
+ },
+ "orb_fire": {
+  "subtitle": "subtitles.celestial.orb_fire",
+  "sounds": [
+   {
+    "name": "celestial:orb_fire",
+    "stream": false
+   }
+  ]
+ },
+ "pull_bind": {
+  "subtitle": "subtitles.celestial.pull_bind",
+  "sounds": [
+   {
+    "name": "celestial:pull_bind",
+    "stream": false
+   }
+  ]
+ },
+ "pull_burst": {
+  "subtitle": "subtitles.celestial.pull_burst",
+  "sounds": [
+   {
+    "name": "celestial:pull_burst",
+    "stream": false
+   }
+  ]
+ },
+ "staff_hit": {
+  "subtitle": "subtitles.celestial.staff_hit",
+  "sounds": [
+   {
+    "name": "celestial:staff_hit",
+    "stream": false
+   }
+  ]
+ },
+ "staff_swing": {
+  "subtitle": "subtitles.celestial.staff_swing",
+  "sounds": [
+   {
+    "name": "celestial:staff_swing",
+    "stream": false
+   }
+  ]
+ },
+ "star_call": {
+  "subtitle": "subtitles.celestial.star_call",
+  "sounds": [
+   {
+    "name": "celestial:star_call",
+    "stream": false
+   }
+  ]
+ },
+ "star_impact": {
+  "subtitle": "subtitles.celestial.star_impact",
+  "sounds": [
+   {
+    "name": "celestial:star_impact",
+    "stream": true
+   }
+  ]
+ },
+ "star_roar": {
+  "subtitle": "subtitles.celestial.star_roar",
+  "sounds": [
+   {
+    "name": "celestial:star_roar",
+    "stream": false
+   }
+  ]
+ },
+ "thorn_erupt": {
+  "subtitle": "subtitles.celestial.thorn_erupt",
+  "sounds": [
+   {
+    "name": "celestial:thorn_erupt",
+    "stream": false
+   }
+  ]
+ }
+}

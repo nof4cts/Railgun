@@ -29,9 +29,9 @@ public final class StaffLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         }
         ps.pushPose();
         getParentModel().rightArm.translateAndRotate(ps);
-        // the grip in the fist; the staff stands upright along the arm's raised line
+        // the staff crosses the fist like any held item, along the hand's forward: with the arm raised forward it stands
+        // upright, lowered it levels into a thrust, raised overhead it lies back over the shoulder
         ps.translate(-0.0625F, 0.62F, -0.06F);
-        ps.mulPose(Axis.XP.rotationDegrees(-90));
         draw(ps.last().pose(), buf, m);
         ps.popPose();
     }
