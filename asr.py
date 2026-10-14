@@ -1,7 +1,7 @@
 from faster_whisper import WhisperModel
 m = WhisperModel("medium", device="cpu", compute_type="int8")
 out = []
-for f in ["v1.mp3", "v2.mp3"]:
+for f in ["v1.mp3", "v2.mp3", "v3.mp3"]:
     segs, info = m.transcribe(f, language="ja", word_timestamps=True, vad_filter=False)
     out.append("== " + f)
     for s in segs:
