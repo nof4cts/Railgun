@@ -128,6 +128,10 @@ public final class GRites {
             case RED -> aim(p, GBeats.RED_RANGE);
             case NUKE -> ground(p.serverLevel(), aim(p, GBeats.NK_RANGE));
             case MAX_BLUE -> eye.add(dir.scale(3));
+            // the Purples are fired from the air at whatever he was looking at when he began
+            case PURPLE -> aim(p, GBeats.HP_RANGE);
+            case IMAGINARY -> aim(p, GBeats.IM_RANGE);
+            case PURPLE_200 -> aim(p, GBeats.P2_RANGE);
             default -> eye.add(dir.scale(4));
         };
         if (m == GMove.MAX_BLUE) {
@@ -228,7 +232,10 @@ public final class GRites {
                     case RED -> red(c, t);
                     case MAX_BLUE -> maxBlue(c, t);
                     case MAX_RED -> maxRed(c, t);
-                    case PURPLE -> purple(c, t, GBeats.HP_FIRE, GBeats.HP_SPEED, GBeats.HP_RANGE, GBeats.HP_RADIUS, 90F);
+                    case PURPLE -> {
+                        rise(c, t, GBeats.HP_RISE, GBeats.HP_RISEN);
+                        purple(c, t, GBeats.HP_FIRE, GBeats.HP_SPEED, GBeats.HP_RANGE, GBeats.HP_RADIUS, 90F);
+                    }
                     case IMAGINARY -> {
                         rise(c, t, GBeats.IM_RISE, 20);
                         chant(c, t);
@@ -261,6 +268,8 @@ public final class GRites {
             c.held = false;
             c.p.setNoGravity(false);
             c.p.fallDistance = 0;
+            // he drifts back down from the air rather than dropping
+            c.p.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 0, false, false));
         }
     }
 
@@ -442,18 +451,19 @@ public final class GRites {
             return;
         }
         Vec3 from = start(c);
+        Vec3 fd = GBeats.purpleDir(c.move, c.origin, c.dir, c.point);
         double d0 = Math.min(range, (t - 1 - fire) * speed), d1 = Math.min(range, (t - fire) * speed);
         if (d0 >= range) {
             return;
         }
         Carver.Batch b = Carver.batch(c.level);
         for (double s = Math.max(0, d0); s <= d1; s += 1.0) {
-            sphere(b, from.add(c.dir.scale(s)), radius);
+            sphere(b, from.add(fd.scale(s)), radius);
         }
         b.go();
-        Vec3 a = from.add(c.dir.scale(Math.max(0, d0))), z = from.add(c.dir.scale(d1));
+        Vec3 a = from.add(fd.scale(Math.max(0, d0))), z = from.add(fd.scale(d1));
         for (LivingEntity e : nearSegment(c, a, z, radius + 1)) {
-            hurt(c, e, dmg, c.dir.scale(1.5));
+            hurt(c, e, dmg, fd.scale(1.5));
         }
         for (Entity e : c.level.getEntities((Entity) null, new AABB(a, z).inflate(radius + 1),
                 x -> x instanceof ItemEntity || (x instanceof Projectile pr && pr.getOwner() != c.p))) {
@@ -463,18 +473,13 @@ public final class GRites {
 
     /** Where the Purple leaves from: in front of his hands. */
     static Vec3 start(Cast c) {
-        double lift = switch (c.move) {
-            case IMAGINARY -> GBeats.IM_RISE;
-            case PURPLE_200 -> GBeats.P2_RISE;
-            default -> 0;
-        };
-        return c.origin.add(0, lift, 0).add(c.dir.scale(c.move == GMove.PURPLE ? 2.2 : 4.0));
+        return GBeats.purpleStart(c.move, c.origin, c.dir);
     }
 
     // ---- Hollow Nuke
 
     public static Vec3 nukeTarget(Vec3 point) {
-        return point.add(0, GBeats.NK_HEIGHT, 0);
+        return point;
     }
 
     static void nuke(Cast c, int t) {
@@ -483,17 +488,21 @@ public final class GRites {
         } else {
             release(c);
         }
+        Vec3 sky = GBeats.nukeRedPoint(c.origin, c.dir);
         if (t == GBeats.NK_BLUE) {
-            sound(c.level, c.p.position(), Gojo2.BLUE_CHARGE.get(), 6.0F, 0.6F);
+            sound(c.level, c.p.position(), Gojo2.BLUE_CHARGE.get(), 6.0F, 0.7F);
         }
         if (t == GBeats.NK_RED) {
-            sound(c.level, c.p.position(), Gojo2.RED_CHARGE.get(), 6.0F, 0.6F);
+            sound(c.level, c.p.position(), Gojo2.RED_FIRE.get(), 6.0F, 0.7F);
         }
-        if (t == GBeats.NK_CONVERGE) {
-            sound(c.level, nukeTarget(c.point), Gojo2.NUKE_CHARGE.get(), 16.0F, 1.0F);
+        if (t == GBeats.NK_JOIN) {
+            sound(c.level, sky, Gojo2.NUKE_CHARGE.get(), 16.0F, 1.0F);
         }
-        if (t == GBeats.NK_COLLIDE) {
-            sound(c.level, nukeTarget(c.point), Gojo2.PURPLE_MERGE.get(), 16.0F, 0.6F);
+        if (t == GBeats.NK_MERGE) {
+            sound(c.level, sky, Gojo2.PURPLE_MERGE.get(), 16.0F, 0.6F);
+        }
+        if (t == GBeats.NK_LAUNCH) {
+            sound(c.level, sky, Gojo2.PURPLE_BIG.get(), 16.0F, 0.8F);
         }
         if (t == GBeats.NK_BLAST) {
             Vec3 g = c.point;

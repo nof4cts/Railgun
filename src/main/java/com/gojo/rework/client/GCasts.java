@@ -44,7 +44,12 @@ public final class GCasts {
             return mc.level == null ? null : mc.level.getEntity(msg.caster());
         }
 
+        /** Which way it goes: for the Purples, from where he fires it in the air down at what he aimed at. */
         public Vec3 dir() {
+            GMove m = move();
+            if (m == GMove.PURPLE || m == GMove.IMAGINARY || m == GMove.PURPLE_200) {
+                return GBeats.purpleDir(m, msg.origin(), msg.dir(), msg.point());
+            }
             return msg.dir();
         }
 

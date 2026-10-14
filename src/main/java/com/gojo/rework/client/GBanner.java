@@ -31,7 +31,7 @@ public final class GBanner {
                 case DOMAIN -> domain(g, p, t, w, h, partial);
                 case IMAGINARY -> chant(g, p, t, w, h, false);
                 case PURPLE_200 -> chant(g, p, t, w, h, true);
-                case NUKE -> card(g, w, h, t, GBeats.NK_CONVERGE, "HOLLOW NUKE", "", 0xFFB46BFF);
+                case NUKE -> card(g, w, h, t, GBeats.NK_MERGE, "HOLLOW NUKE", "", 0xFFB46BFF);
                 default -> {
                 }
             }

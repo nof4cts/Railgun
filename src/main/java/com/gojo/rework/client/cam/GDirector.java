@@ -111,6 +111,7 @@ public final class GDirector {
 
     public static int end(GMove m) {
         return switch (m) {
+            case PURPLE -> GBeats.HP_FIRE + 34;
             case IMAGINARY -> GBeats.IM_FIRE + 46;
             case PURPLE_200 -> GBeats.P2_FIRE + 56;
             case NUKE -> GBeats.NK_BLAST + 90;
@@ -130,6 +131,7 @@ public final class GDirector {
         }
         float t = play.time(partial);
         Shot s = switch (play.move()) {
+            case PURPLE -> hanami(t, partial);
             case IMAGINARY -> chanted(t, partial, false);
             case PURPLE_200 -> chanted(t, partial, true);
             case NUKE -> nuke(t, partial);
@@ -229,7 +231,7 @@ public final class GDirector {
         }
         float age = t - fire;
         double speed = p200 ? GBeats.P2_SPEED : GBeats.IM_SPEED;
-        Vec3 from = play.msg.origin().add(0, p200 ? GBeats.P2_RISE : GBeats.IM_RISE, 0).add(d.scale(4));
+        Vec3 from = GBeats.purpleStart(play.move(), play.msg.origin(), play.msg.dir());
         if (age < 12) {
             // behind him as it leaves
             Vec3 pos = eyeP.subtract(d.scale(4.5)).add(r.scale(1.6)).add(0, 1.0, 0);
@@ -243,38 +245,81 @@ public final class GDirector {
         return new Shot(pos, mid.lerp(ball, 0.6), 74, 0);
     }
 
-    /** The Hollow Nuke: rising, Blue and Red in the sky, from the ground beneath as they meet, the blast from far. */
+    /**
+     * The Hollow Nuke: rising from below him; Blue shot and circling him; Red fired up past the lens; the two meeting
+     * in the sky over his head; the Purple hurled down, followed; the blast from far off.
+     */
     static Shot nuke(float t, float partial) {
         Vec3 f = play.flat(), r = play.right();
+        Vec3 o = play.msg.origin(), d = play.msg.dir();
         Vec3 eyeP = play.eye(partial);
-        Vec3 T = GRites.nukeTarget(play.msg.point());
         Vec3 g = play.msg.point();
+        Vec3 sky = GBeats.nukeRedPoint(o, d);
         if (t < GBeats.NK_RISE) {
             float u = ease(span(t, 0, GBeats.NK_RISE));
-            Vec3 pos = play.msg.origin().add(f.scale(4)).add(r.scale(1.5)).add(0, -1.0, 0);
+            Vec3 pos = o.add(f.scale(4)).add(r.scale(1.5)).add(0, -1.0, 0);
             return new Shot(above(pos, 0.4), eyeP, 66 - 8 * u, 2);
         }
-        if (t < GBeats.NK_CONVERGE) {
-            // wide: him, small against the sky, the two lights forming over the target
-            float u = ease(span(t, GBeats.NK_RISE, GBeats.NK_CONVERGE));
-            Vec3 pos = eyeP.subtract(f.scale(10 + 4 * u)).add(r.scale(5)).add(0, 3, 0);
-            return new Shot(pos.add(drift(t, 0.3)), eyeP.lerp(T.add(0, 18, 0), 0.75), 76, -3);
+        if (t < GBeats.NK_RED - 2) {
+            // close and level with him in the air, Blue sweeping round
+            float u = ease(span(t, GBeats.NK_RISE, GBeats.NK_RED));
+            double a = Math.PI * (0.15 + 0.4 * u);
+            Vec3 pos = eyeP.add(f.scale(Math.cos(a) * 8)).add(r.scale(Math.sin(a) * 8)).add(0, 0.6, 0);
+            return new Shot(pos, eyeP.add(0, -0.3, 0), 62, 0);
         }
-        if (t < GBeats.NK_COLLIDE) {
-            // from the ground beneath, looking up as they come together
-            float u = ease(span(t, GBeats.NK_CONVERGE, GBeats.NK_COLLIDE));
-            Vec3 pos = above(g.add(f.scale(-22)).add(r.scale(14)), 1.5);
-            return new Shot(pos, T.add(0, 10 * (1 - u), 0), 72 - 10 * u, 4 * u);
+        if (t < GBeats.NK_JOIN) {
+            // behind him, looking up as Red goes up into the sky
+            float u = ease(span(t, GBeats.NK_RED - 2, GBeats.NK_JOIN));
+            Vec3 pos = eyeP.subtract(f.scale(5)).add(r.scale(1.6)).add(0, -1.5, 0);
+            return new Shot(pos, eyeP.lerp(sky, 0.4 + 0.5 * u), 66, -2);
+        }
+        if (t < GBeats.NK_LAUNCH) {
+            // from the side, wide: him small below the two meeting, then the Purple swelling
+            float u = ease(span(t, GBeats.NK_JOIN, GBeats.NK_LAUNCH));
+            Vec3 pos = eyeP.lerp(sky, 0.5).add(r.scale(-24 - 6 * u)).add(f.scale(-4));
+            return new Shot(pos.add(drift(t, 0.3)), eyeP.lerp(sky, 0.6 + 0.3 * u), 66, 3 * u);
         }
         if (t < GBeats.NK_BLAST) {
-            float u = ease(span(t, GBeats.NK_COLLIDE, GBeats.NK_BLAST));
-            Vec3 pos = T.add(f.scale(-26 + 8 * u)).add(r.scale(10)).add(0, 4, 0);
-            return new Shot(pos.add(drift(t, 0.6 * u)), T, 60 - 10 * u, 0);
+            // over his shoulder, down the line it falls
+            float u = ease(span(t, GBeats.NK_LAUNCH, GBeats.NK_BLAST));
+            Vec3 pos = eyeP.subtract(f.scale(4)).add(r.scale(1.4)).add(0, 2.0, 0);
+            return new Shot(pos, GBeats.nukePurple(o, d, g, t).lerp(g, 0.3 * u), 72 + 6 * u, 0);
         }
         // the blast from far off, the camera rocked back by it
         float u = ease(span(t, GBeats.NK_BLAST, GBeats.NK_BLAST + 90));
         Vec3 pos = above(g.add(f.scale(-110 - 30 * u)).add(r.scale(70)).add(0, 30 + 20 * u, 0), 4);
         return new Shot(pos.add(drift(t, 1.5 * (1 - u))), g.add(0, 25 + 20 * u, 0), 68, 0);
+    }
+
+    /** Hollow Purple (Hanami): rising from below, Red and Blue blooming either side of him, the shot down the line. */
+    static Shot hanami(float t, float partial) {
+        Vec3 f = play.flat(), r = play.right(), d = play.dir();
+        Vec3 eyeP = play.eye(partial);
+        Vec3 o = play.msg.origin();
+        if (t < GBeats.HP_RISEN + 2) {
+            float u = ease(span(t, 0, GBeats.HP_RISEN));
+            Vec3 pos = o.add(f.scale(4.5)).add(r.scale(-1.6)).add(0, -1.2, 0);
+            return new Shot(above(pos, 0.4), eyeP, 64 - 6 * u, -2);
+        }
+        if (t < GBeats.HP_MERGE) {
+            // in front, wide enough to hold him and both colours
+            float u = ease(span(t, GBeats.HP_RISEN, GBeats.HP_MERGE));
+            Vec3 pos = eyeP.add(f.scale(8.5 - 1.5 * u)).add(0, -0.6, 0);
+            return new Shot(pos.add(drift(t, 0.06)), eyeP.add(0, -0.3, 0), 68, 0);
+        }
+        if (t < GBeats.HP_FIRE) {
+            // tight on the Purple in his hand
+            float u = ease(span(t, GBeats.HP_MERGE, GBeats.HP_FIRE));
+            Vec3 centre = eyeP.add(d.scale(2.4));
+            Vec3 pos = centre.add(f.scale(3.2 - 0.8 * u)).add(r.scale(-1.6)).add(0, 0.5, 0);
+            return new Shot(pos, centre, 54 - 8 * u, 0);
+        }
+        // behind him as it goes down the line
+        float age = t - GBeats.HP_FIRE;
+        Vec3 from = GBeats.purpleStart(play.move(), o, play.msg.dir());
+        Vec3 ball = from.add(d.scale(Math.min(GBeats.HP_RANGE, age * GBeats.HP_SPEED)));
+        Vec3 pos = eyeP.subtract(f.scale(4.0)).add(r.scale(1.5)).add(0, 1.2, 0);
+        return new Shot(pos, ball, 72, 0);
     }
 
     /** Unlimited Void: the hand sign, held through the banner, then the black hole and the void. */

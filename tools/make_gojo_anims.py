@@ -82,8 +82,13 @@ pull = P(squat, right_arm=[-70, -30, 10], left_arm=[-70, 30, -10], torso=[10, 0,
 aim = P(squat, right_arm=[-90, 4, 0], left_arm=[-30, 30, -12], torso=[2, -14, 0], head=[0, 12, 0], right_leg=[-18, 0, 6], left_leg=[18, 0, -6])
 aim_b = P(aim, right_arm=[-92, 4, 0])
 drive = P(right_arm=[-96, 8, 0], left_arm=[20, 0, -22], torso=[16, -6, 0], head=[-8, 4, 0], right_leg=[22, 0, 4], left_leg=[-28, 0, -4], pos=[0, -3, 0])
-anim('g_purple', 72, [(0, STAND, None), (3, spread, SETTLE), (14, spread_b, BREATH), (18, pull, IN), (21, aim, SNAP), (29, aim_b, BREATH),
-                      (31, drive, SNAP), (38, P(drive, torso=[12, -6, 0]), SETTLE), (54, drive, None), (72, STAND, GLIDE)])
+# he rises first (hanging in the air, legs loose), then the choreography plays out up there
+hang = P(right_arm=[-8, 0, 16], left_arm=[-8, 0, -16], right_leg=[-6, 0, 3], left_leg=[14, 0, -3], head=[6, 0, 0])
+air = lambda p: P(p, right_leg=[-6 + p['right_leg'][0] * 0.3, 0, 3], left_leg=[14 + p['left_leg'][0] * 0.3, 0, -3], pos=[0, 0, 0])
+D = 22
+anim('g_purple', 100, [(0, STAND, None), (14, hang, GLIDE), (3 + D, air(spread), SETTLE), (14 + D, air(spread_b), BREATH), (18 + D, air(pull), IN),
+                       (21 + D, air(aim), SNAP), (31 + D, air(aim_b), BREATH), (33 + D, air(drive), SNAP), (40 + D, air(P(drive, torso=[12, -6, 0])), SETTLE),
+                       (80, air(drive), None), (100, STAND, GLIDE)])
 
 
 # ---- the Purples spoken in full (Toji's, and the 200%)
@@ -109,14 +114,19 @@ def chanted(name, length, shift, red, blue, merge, fire):
 chanted('g_imaginary', 200, 0, 96, 102, 114, 134)
 chanted('g_purple_200', 236, 8, 106, 112, 126, 150)
 
-# ---- Hollow Nuke
-fl = P(right_arm=[-14, 0, 22], left_arm=[-14, 0, -22], right_leg=[-8, 0, 4], left_leg=[16, 0, -4], head=[-8, 0, 0])
-lup = P(fl, left_arm=[-150, 0, -38], head=[-20, -12, 0])
-rup = P(lup, right_arm=[-150, 0, 38], head=[-24, 0, 0])
-press = P(fl, right_arm=[-176, 0, 8], left_arm=[-176, 0, -8], head=[-26, 0, 0], torso=[-8, 0, 0])
-wide = P(fl, right_arm=[-30, 0, 104], left_arm=[-30, 0, -104], head=[-6, 0, 0], torso=[-10, 0, 0], right_leg=[0, 0, 12], left_leg=[0, 0, -12])
-anim('g_nuke', 250, [(0, STAND, None), (26, fl, GLIDE), (36, lup, SETTLE), (46, rup, SETTLE), (82, rup, None), (100, press, GLIDE), (120, P(press, right_arm=[-180, 0, 4], left_arm=[-180, 0, -4]), BREATH),
-                     (134, wide, SNAP), (170, wide, None), (250, STAND, GLIDE)])
+# ---- Hollow Nuke: risen, he shoots Blue out of his right hand (it circles him), fires Red up out of his left, holds
+# both hands up as they meet, then hurls the Purple down with both arms
+fl = P(right_arm=[-14, 0, 22], left_arm=[-14, 0, -22], right_leg=[-8, 0, 4], left_leg=[16, 0, -4], head=[-4, 0, 0])
+shoot_b = P(fl, right_arm=[-92, -10, 30], torso=[0, -16, 0], head=[0, 14, 0])
+follow = P(fl, right_arm=[-70, 30, 50], head=[0, -20, 0])
+shoot_r = P(fl, left_arm=[-168, 10, -16], right_arm=[-30, 0, 30], head=[-30, 0, 0], torso=[-8, 10, 0])
+up2 = P(fl, right_arm=[-172, 0, 12], left_arm=[-172, 0, -12], head=[-34, 0, 0], torso=[-10, 0, 0])
+up2b = P(up2, right_arm=[-178, 0, 8], left_arm=[-178, 0, -8])
+hurl = P(fl, right_arm=[-46, 0, 8], left_arm=[-46, 0, -8], torso=[22, 0, 0], head=[14, 0, 0])
+wide = P(fl, right_arm=[-30, 0, 100], left_arm=[-30, 0, -100], head=[10, 0, 0], torso=[-6, 0, 0])
+anim('g_nuke', 270, [(0, STAND, None), (26, fl, GLIDE), (34, P(fl, right_arm=[-60, 20, 10]), SETTLE), (36, shoot_b, SNAP), (50, follow, GLIDE),
+                     (63, P(fl, left_arm=[-90, 0, -10]), SETTLE), (66, shoot_r, SNAP), (90, shoot_r, None), (100, up2, GLIDE), (130, up2b, BREATH),
+                     (136, P(up2b, torso=[-14, 0, 0]), IN), (139, hurl, SNAP), (154, hurl, None), (160, wide, SETTLE), (200, wide, None), (270, STAND, GLIDE)])
 
 # ---- Unlimited Void: the hand sign at his face, index and middle crossed
 sign = P(right_arm=[-126, -34, -4], left_arm=[4, 0, -8], head=[8, 6, 0], torso=[2, 0, 0])

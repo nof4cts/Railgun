@@ -304,10 +304,11 @@ public final class GFx {
                 }
                 case NUKE -> {
                     float far = (float) Mth.clamp(1 - mc.player.position().distanceTo(c.msg.point()) / 300, 0, 1);
-                    impactFrames(look, t, GBeats.NK_COLLIDE, Math.max(near, far));
+                    impactFrames(look, t, GBeats.NK_MERGE, Math.max(near, far));
+                    impactFrames(look, t, GBeats.NK_BLAST, far);
                     look.flash(0.75F * far * window(t, GBeats.NK_BLAST, GBeats.NK_BLAST + 1, GBeats.NK_BLAST + 4, GBeats.NK_BLAST + 18), 0xFFF0FF);
                     look.shake(2.4F * far * hit(t, GBeats.NK_BLAST, 50));
-                    look.shake(0.4F * far * window(t, GBeats.NK_CONVERGE, GBeats.NK_COLLIDE, GBeats.NK_COLLIDE, GBeats.NK_BLAST));
+                    look.shake(0.4F * far * window(t, GBeats.NK_JOIN, GBeats.NK_MERGE, GBeats.NK_LAUNCH, GBeats.NK_BLAST));
                 }
                 case DOMAIN_02 -> {
                     float dd = (float) mc.player.position().distanceTo(c.msg.origin());
@@ -508,12 +509,7 @@ public final class GFx {
     }
 
     static Vec3 purpleStart(GCasts.Play c, float partial, double ahead) {
-        double lift = switch (c.move()) {
-            case IMAGINARY -> GBeats.IM_RISE;
-            case PURPLE_200 -> GBeats.P2_RISE;
-            default -> 0;
-        };
-        return c.msg.origin().add(0, lift, 0).add(c.dir().scale(ahead));
+        return GBeats.purpleStart(c.move(), c.msg.origin(), c.msg.dir());
     }
 
     /** The sphere in flight, the erased wake behind it, and the shock where it left. */
@@ -614,37 +610,51 @@ public final class GFx {
 
     // ---- Hollow Nuke
 
-    static Vec3 nukeBlue(GCasts.Play c) {
-        return GRites.nukeTarget(c.msg.point()).add(c.right().scale(-34)).add(0, 22, 0);
-    }
-
-    static Vec3 nukeRed(GCasts.Play c) {
-        return GRites.nukeTarget(c.msg.point()).add(c.right().scale(34)).add(0, 22, 0);
-    }
-
     static void drawNuke(Ink ink, GCasts.Play c, float t, float partial) {
-        Vec3 T = GRites.nukeTarget(c.msg.point());
+        Vec3 o = c.msg.origin(), d = c.msg.dir();
         Vec3 g = c.msg.point();
-        if (t < GBeats.NK_COLLIDE + 2) {
-            float conv = smooth(span(t, GBeats.NK_CONVERGE, GBeats.NK_COLLIDE));
-            float bk = span(t, GBeats.NK_BLUE, GBeats.NK_BLUE + 30), rk = span(t, GBeats.NK_RED, GBeats.NK_RED + 30);
-            Vec3 bp = nukeBlue(c).lerp(T, conv), rp = nukeRed(c).lerp(T, conv);
-            blueOrb(ink, bp, 6.5 * bk, t, bk, c.msg.seed());
-            redOrb(ink, rp, 5.5 * rk, t, rk, c.msg.seed());
-            // each drags a tail of its colour as it comes in
-            if (conv > 0.02F) {
-                ink.ribbon(new Vec3[]{nukeBlue(c), bp}, new double[]{0.5, 4}, new int[]{a(BLUE, 0), a(BLUE, 0.5F)});
-                ink.ribbon(new Vec3[]{nukeRed(c), rp}, new double[]{0.5, 3.5}, new int[]{a(RED, 0), a(RED, 0.5F)});
+        Vec3 T = g;
+        long seed = c.msg.seed();
+        // Blue: shot out of his right hand and swung into an orbit round him, a trail behind it
+        if (t >= GBeats.NK_BLUE && t < GBeats.NK_MERGE + 1) {
+            float bk = span(t, GBeats.NK_BLUE, GBeats.NK_BLUE + 4);
+            Vec3 bp = GBeats.nukeBlue(o, d, t);
+            blueOrb(ink, bp, 1.6 * bk, t, bk, seed);
+            Vec3[] tail = new Vec3[8];
+            float[] w = new float[8];
+            for (int i = 0; i < 8; i++) {
+                tail[i] = GBeats.nukeBlue(o, d, Math.max(GBeats.NK_BLUE, t - i * 0.8F));
+                w[i] = 0.6F * (1 - i / 8F);
             }
-            // a thread of light from his hands to each
-            Vec3 h = c.eye(partial);
-            ink.beam(h, bp, 0.08, a(BLUE_CORE, 0.5F * bk));
-            ink.beam(h, rp, 0.08, a(RED_CORE, 0.5F * rk));
+            GShade.ribbon(tail, w, GShade.BLUE_A, 0.8F * bk, 1);
         }
-        if (t >= GBeats.NK_COLLIDE - 2 && t < GBeats.NK_BLAST + 2) {
-            float pk = span(t, GBeats.NK_COLLIDE - 2, GBeats.NK_BLAST);
-            purpleOrb(ink, T, 4 + 8 * pk, t, 1, c.msg.seed());
-            lightning(ink, T, 6 + 8 * pk, t, 1, c.msg.seed() + 11, 12, 40 * pk + 10);
+        // Red: fired up out of his left hand into the sky, where it hangs, burning
+        if (t >= GBeats.NK_RED && t < GBeats.NK_MERGE + 1) {
+            float rk = span(t, GBeats.NK_RED, GBeats.NK_RED + 3);
+            Vec3 rp = GBeats.nukeRed(o, d, t);
+            double size = 1.4 + 0.6 * smooth(span(t, GBeats.NK_RED_STOP, GBeats.NK_JOIN));
+            redOrb(ink, rp, size * rk, t, rk, seed);
+            if (t < GBeats.NK_RED_STOP + 4) {
+                Vec3 from = GBeats.nukeRed(o, d, GBeats.NK_RED);
+                GShade.ribbon(new Vec3[]{from, rp}, new float[]{0.1F, 0.7F}, GShade.RED_A, 0.7F * (1 - span(t, GBeats.NK_RED_STOP, GBeats.NK_RED_STOP + 4)), 1);
+            }
+        }
+        // as Blue comes in, the two pull at each other: lightning between them
+        if (t >= GBeats.NK_JOIN && t < GBeats.NK_MERGE) {
+            Vec3 bp = GBeats.nukeBlue(o, d, t), rp = GBeats.nukeRed(o, d, t);
+            lightning(ink, bp.lerp(rp, 0.5), 0.8, t, span(t, GBeats.NK_JOIN, GBeats.NK_MERGE), seed + 9, 6, bp.distanceTo(rp) * 0.6 + 2);
+        }
+        // the Purple: born in the sky, swelling, then hurled down at the target
+        if (t >= GBeats.NK_MERGE - 1 && t < GBeats.NK_BLAST + 1) {
+            float pk = span(t, GBeats.NK_MERGE - 1, GBeats.NK_MERGE + 4);
+            double size = 2.5 + 7.5 * smooth(span(t, GBeats.NK_MERGE, GBeats.NK_LAUNCH));
+            Vec3 pp = GBeats.nukePurple(o, d, g, t);
+            purpleOrb(ink, pp, size * pk, t, pk, seed);
+            lightning(ink, pp, size, t, pk, seed + 11, 10, size * 3);
+            if (t >= GBeats.NK_LAUNCH) {
+                Vec3 sky = GBeats.nukeRedPoint(o, d);
+                GShade.ribbon(new Vec3[]{sky, pp}, new float[]{(float) (size * 0.3), (float) (size * 0.9)}, GShade.PUR_A, 0.6F, 1);
+            }
         }
         if (t >= GBeats.NK_BLAST) {
             float age = t - GBeats.NK_BLAST;
