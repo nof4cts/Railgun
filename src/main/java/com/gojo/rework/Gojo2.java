@@ -30,6 +30,7 @@ public final class Gojo2 {
     public static final RegistryObject<SoundEvent> PURPLE_FIRE = sound("purple_fire");
     public static final RegistryObject<SoundEvent> PURPLE_BIG = sound("purple_big");
     public static final RegistryObject<SoundEvent> CHANT = sound("chant");
+    public static final RegistryObject<SoundEvent> MUSIC_TOJI = sound("music_toji");
     public static final RegistryObject<SoundEvent> NUKE_CHARGE = sound("nuke_charge");
     public static final RegistryObject<SoundEvent> NUKE_BLAST = sound("nuke_blast");
     public static final RegistryObject<SoundEvent> DOMAIN_SIGN = sound("domain_sign");
@@ -37,6 +38,16 @@ public final class Gojo2 {
     public static final RegistryObject<SoundEvent> DOMAIN_VOID = sound("domain_void");
     public static final RegistryObject<SoundEvent> INFINITY_ON = sound("infinity_on");
     public static final RegistryObject<SoundEvent> INFINITY_RIPPLE = sound("infinity_ripple");
+
+    /** The player's own recorded voice lines. */
+    public static final java.util.Map<String, RegistryObject<SoundEvent>> VOICE = new java.util.HashMap<>();
+
+    static {
+        for (String v : new String[]{"kyoshiki", "murasaki", "ryoiki", "muryokusho", "honki", "tenjo", "taunt", "strongest", "blue_full", "blue",
+                "red_full", "red", "max_blue", "max_red", "toji", "toji_kyoshiki", "toji_murasaki"}) {
+            VOICE.put(v, sound("voice_" + v));
+        }
+    }
 
     private Gojo2() {}
 

@@ -26,10 +26,15 @@ public final class GBanner {
         int w = g.guiWidth(), h = g.guiHeight();
         if (p != null) {
             float t = p.time(partial);
+            if (p.move() == GMove.IMAGINARY && p.fireAt < 0) {
+                if (!GFilm.draw(g, p, partial)) {
+                    heaven(g, t, w, h, p.msg.seed());
+                }
+            }
             bars(g, w, h);
             switch (p.move()) {
                 case DOMAIN -> domain(g, p, t, w, h, partial);
-                case IMAGINARY -> chant(g, p, t, w, h, false);
+                case IMAGINARY -> toji(g, p, t, w, h);
                 case PURPLE_200 -> chant(g, p, t, w, h, true);
                 case NUKE -> card(g, w, h, t, GBeats.NK_MERGE, "HOLLOW NUKE", "", 0xFFB46BFF);
                 default -> {
@@ -40,6 +45,7 @@ public final class GBanner {
                 g.drawString(mc.font, hint, w - mc.font.width(hint) - 8, h - 12, 0x66FFFFFF, false);
             }
         }
+        aim(g, w, h, partial);
         // the 0.2-second domain, for everyone it catches: a fifth of a second of the void
         for (GCasts.Play c : GCasts.all()) {
             if (c.move() == GMove.DOMAIN_02 && mc.player != null) {
@@ -199,6 +205,117 @@ public final class GBanner {
         }
     }
 
+    // ------------------------------------------------------------------------------------------------ aiming
+
+    /** While he holds a finished Purple: a reticle where it will go, and how long he can hold it. */
+    static void aim(GuiGraphics g, int w, int h, float partial) {
+        Minecraft mc = Minecraft.getInstance();
+        GCasts.Play p = GCasts.of(mc.player);
+        if (p == null || !p.mine || !p.aiming(partial) || GDirector.active()) {
+            return;
+        }
+        float held = p.time(partial) - GBeats.ready(p.move());
+        float left = 1 - Mth.clamp(held / GBeats.AIM_MAX, 0, 1);
+        int cx = w / 2, cy = h / 2;
+        float pulse = 0.5F + 0.5F * (float) Math.sin(p.time(partial) * 0.4);
+        int col = p.move() == GMove.NUKE ? 0xD27BFF : 0xC890FF;
+        int rr = 14 + (int) (3 * pulse);
+        // a ring of ticks round the centre, those still lit showing the time left
+        int n = 32;
+        for (int i = 0; i < n; i++) {
+            double a = i / (double) n * Math.PI * 2 - Math.PI / 2;
+            boolean lit = i / (float) n < left;
+            int x = cx + (int) Math.round(Math.cos(a) * rr), y = cy + (int) Math.round(Math.sin(a) * rr);
+            g.fill(x - 1, y - 1, x + 1, y + 1, (lit ? 0xE0 : 0x40) << 24 | col);
+        }
+        g.fill(cx - 1, cy - 6, cx + 1, cy - 2, 0xD0FFFFFF);
+        g.fill(cx - 1, cy + 2, cx + 1, cy + 6, 0xD0FFFFFF);
+        g.fill(cx - 6, cy - 1, cx - 2, cy + 1, 0xD0FFFFFF);
+        g.fill(cx + 2, cy - 1, cx + 6, cy + 1, 0xD0FFFFFF);
+        String s = p.move() == GMove.NUKE ? "AIM AT THE GROUND  -  CLICK TO DROP" : "AIM  -  CLICK TO FIRE";
+        Font font = mc.font;
+        int a = (int) (170 + 85 * pulse);
+        g.drawString(font, s, cx - font.width(s) / 2, cy + rr + 10, a << 24 | 0xFFFFFF, true);
+    }
+
+    // ------------------------------------------------------------------------------------------------ Toji
+
+    /** The golden heaven he rises into: the picture washed with warm light, rays falling slantwise from above. */
+    static void heaven(GuiGraphics g, float t, int w, int h, long seed) {
+        float k = Mth.clamp(t / 30F, 0, 1) * (1 - Mth.clamp((t - GBeats.IM_FILM_DROPS[1]) / 8F, 0, 1));
+        if (k <= 0.01F) {
+            return;
+        }
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        g.fillGradient(0, 0, w, h, (int) (k * 120) << 24 | 0xFFC850, (int) (k * 70) << 24 | 0xFF8A1E);
+        // rays
+        com.mojang.blaze3d.systems.RenderSystem.blendFunc(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA,
+                com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE);
+        Random r = new Random(seed ^ 0x51);
+        for (int i = 0; i < 14; i++) {
+            float x0 = (float) (r.nextDouble() * w * 1.4 - w * 0.2);
+            float width = (float) (w * (0.03 + r.nextDouble() * 0.08));
+            float sway = (float) Math.sin(t * 0.02 + i) * w * 0.02F;
+            float a = k * (float) (0.10 + 0.12 * r.nextDouble()) * (0.75F + 0.25F * (float) Math.sin(t * 0.05 + i * 1.7));
+            g.pose().pushPose();
+            g.pose().translate(x0 + sway, -h * 0.1F, 0);
+            g.pose().mulPose(Axis.ZP.rotationDegrees(-18));
+            g.fillGradient(0, 0, (int) width, (int) (h * 1.5F), (int) (a * 255) << 24 | 0xFFF0C0, 0x00FFD080);
+            g.pose().popPose();
+        }
+        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
+    }
+
+    /** His words (the player's recording), as subtitles: [start, end) ticks of the cast, line. */
+    static final Object[][] TOJI_LINES = {
+            {0.0F, 1.95F, "Sorry."},
+            {2.2F, 5.45F, "Right now, I'm not even angry at you."},
+            {5.85F, 7.4F, "I don't hate anyone."},
+            {7.6F, 10.7F, "Right now... this world just feels so good."},
+            {10.9F, 13.2F, "Throughout Heaven and Earth, I alone am the honoured one."},
+            {13.2F, 16.35F, "The downside: my technique's secrets get out."},
+            {16.5F, 20.1F, "You're a Zen'in, aren't you?"},
+            {20.3F, 23.6F, "Then you know Limitless well enough."},
+            {23.7F, 28.95F, "But only a handful in the Gojo clan know this."},
+            {29.05F, 33.5F, "Lapse and reversal - collide each infinity..."},
+            {33.7F, 35.45F, "...and push out the imaginary mass it makes."},
+    };
+
+    static void toji(GuiGraphics g, GCasts.Play p, float t, int w, int h) {
+        Font font = Minecraft.getInstance().font;
+        float sec = (t - GBeats.IM_V0) / 20F;
+        for (Object[] l : TOJI_LINES) {
+            float a0 = (Float) l[0], a1 = (Float) l[1];
+            if (sec >= a0 && sec < a1) {
+                float a = Math.min(1, (sec - a0) / 0.2F) * Math.min(1, (a1 - sec) / 0.2F);
+                String line = (String) l[2];
+                int tw = font.width(line);
+                int y = h - (int) (h * 0.09) - 22;
+                g.fill(w / 2 - tw / 2 - 6, y - 4, w / 2 + tw / 2 + 6, y + 12, (int) (a * 150) << 24);
+                g.drawString(font, line, w / 2 - tw / 2, y, (int) (a * 255) << 24 | 0xFFFFFF, false);
+            }
+        }
+        // 天上天下唯我独尊, large, down the left
+        if (t >= GBeats.IM_TENJO && t < GBeats.IM_TENJO_END) {
+            float a = Math.min(1, (t - GBeats.IM_TENJO) / 5F) * Math.min(1, (GBeats.IM_TENJO_END - t) / 6F);
+            String kj = "天上天下唯我独尊";
+            float ks = h / 110F;
+            g.pose().pushPose();
+            g.pose().translate(w * 0.1F, h * 0.5F - kj.length() * ks * 5, 0);
+            for (int c = 0; c < kj.length(); c++) {
+                g.pose().pushPose();
+                g.pose().translate(0, c * ks * 10, 0);
+                g.pose().scale(ks, ks, 1);
+                String ch = kj.substring(c, c + 1);
+                g.drawString(font, ch, 1, 1, (int) (a * 150) << 24, false);
+                g.drawString(font, ch, 0, 0, (int) (a * 255) << 24 | 0xFFF4D8, false);
+                g.pose().popPose();
+            }
+            g.pose().popPose();
+        }
+        card(g, w, h, t, GBeats.IM_MERGE + 4, "IMAGINARY TECHNIQUE: PURPLE", "虚式茈", 0xFFC890FF);
+    }
+
     // ------------------------------------------------------------------------------------------------ the incantation
 
     static void chant(GuiGraphics g, GCasts.Play p, float t, int w, int h, boolean p200) {
@@ -206,7 +323,7 @@ public final class GBanner {
         int shift = p200 ? GBeats.P2_SHIFT : 0;
         for (int i = 0; i < GBeats.CHANT.length; i++) {
             float start = GBeats.CHANT[i] + shift;
-            float end = i + 1 < GBeats.CHANT.length ? GBeats.CHANT[i + 1] + shift : (p200 ? GBeats.P2_RED : GBeats.IM_RED);
+            float end = i + 1 < GBeats.CHANT.length ? GBeats.CHANT[i + 1] + shift : GBeats.P2_V_RED;
             if (t >= start && t < end) {
                 float u = t - start;
                 float a = Math.min(1, u / 4F) * Math.min(1, (end - t) / 4F);
@@ -232,8 +349,8 @@ public final class GBanner {
                 g.drawString(font, line, w / 2 - tw / 2, y, (int) (a * 255) << 24 | 0xFFFFFF, false);
             }
         }
-        int merge = p200 ? GBeats.P2_MERGE : GBeats.IM_MERGE;
-        card(g, w, h, t, merge + 2, p200 ? "200%  HOLLOW PURPLE" : "HOLLOW TECHNIQUE: PURPLE", "虚式茈", 0xFFC890FF);
+        int merge = GBeats.P2_MERGE;
+        card(g, w, h, t, merge + 2, "200%  HOLLOW PURPLE", "虚式茈", 0xFFC890FF);
         if (p200 && t >= merge + 8 && t < merge + 30) {
             float a = Math.min(1, (t - merge - 8) / 3F) * Math.min(1, (merge + 30 - t) / 4F);
             bigText(g, font, "200%", (int) (w * 0.62F), (int) (h * 0.28F), h / 60F, (int) (a * 255));

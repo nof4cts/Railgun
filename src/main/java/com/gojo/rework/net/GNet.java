@@ -25,6 +25,9 @@ public final class GNet {
         CHANNEL.registerMessage(i++, Cast.class, Cast::encode, Cast::decode, Cast::handle);
         CHANNEL.registerMessage(i++, Inf.class, Inf::encode, Inf::decode, Inf::handle);
         CHANNEL.registerMessage(i++, Ripple.class, Ripple::encode, Ripple::decode, Ripple::handle);
+        CHANNEL.registerMessage(i++, Fire.class, Fire::encode, Fire::decode, Fire::handle);
+        CHANNEL.registerMessage(i++, Shoot.class, Shoot::encode, Shoot::decode, Shoot::handle);
+        CHANNEL.registerMessage(i++, Pos.class, Pos::encode, Pos::decode, Pos::handle);
     }
 
     /** To everyone within {@code range} of {@code at} in the caster's level. */
@@ -104,6 +107,66 @@ public final class GNet {
 
         static void handle(Ripple m, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.gojo.rework.client.GInfinity.ripple(m)));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** A held Purple let go: when (ticks into the cast), from where, which way, and onto what (the nuke's target). */
+    public record Fire(int caster, int move, int at, Vec3 from, Vec3 dir, Vec3 target) {
+        static void encode(Fire m, FriendlyByteBuf b) {
+            b.writeVarInt(m.caster);
+            b.writeVarInt(m.move);
+            b.writeVarInt(m.at);
+            vec(b, m.from);
+            vec(b, m.dir);
+            vec(b, m.target);
+        }
+
+        static Fire decode(FriendlyByteBuf b) {
+            return new Fire(b.readVarInt(), b.readVarInt(), b.readVarInt(), vec(b), vec(b), vec(b));
+        }
+
+        static void handle(Fire m, Supplier<NetworkEvent.Context> ctx) {
+            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.gojo.rework.client.GCasts.fired(m)));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** Client to server: he has aimed; let the Purple go. */
+    public record Shoot() {
+        static void encode(Shoot m, FriendlyByteBuf b) {
+        }
+
+        static Shoot decode(FriendlyByteBuf b) {
+            return new Shoot();
+        }
+
+        static void handle(Shoot m, Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            ctx.get().enqueueWork(() -> {
+                if (p != null) {
+                    com.gojo.rework.server.GRites.shoot(p);
+                }
+            });
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** Where a steered technique (Maximum Blue) is, this tick. */
+    public record Pos(int caster, int move, int at, Vec3 pos) {
+        static void encode(Pos m, FriendlyByteBuf b) {
+            b.writeVarInt(m.caster);
+            b.writeVarInt(m.move);
+            b.writeVarInt(m.at);
+            vec(b, m.pos);
+        }
+
+        static Pos decode(FriendlyByteBuf b) {
+            return new Pos(b.readVarInt(), b.readVarInt(), b.readVarInt(), vec(b));
+        }
+
+        static void handle(Pos m, Supplier<NetworkEvent.Context> ctx) {
+            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.gojo.rework.client.GCasts.pos(m)));
             ctx.get().setPacketHandled(true);
         }
     }

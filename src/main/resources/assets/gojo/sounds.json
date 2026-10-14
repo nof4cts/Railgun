@@ -1,188 +1,349 @@
 {
- "shockwave": {
-  "sounds": [
-   {
-    "name": "gojo:shockwave",
-    "stream": false
-   }
-  ]
- },
- "rumble": {
-  "sounds": [
-   {
-    "name": "gojo:rumble",
-    "stream": true
-   }
-  ]
- },
- "blast_crack": {
-  "sounds": [
-   {
-    "name": "gojo:blast_crack",
-    "stream": false
-   }
-  ]
- },
- "blue_charge": {
-  "subtitle": "subtitles.gojo.blue_charge",
-  "sounds": [
-   {
-    "name": "gojo:blue_charge",
-    "stream": false
-   }
-  ]
- },
- "blue_crush": {
-  "subtitle": "subtitles.gojo.blue_crush",
-  "sounds": [
-   {
-    "name": "gojo:blue_crush",
-    "stream": false
-   }
-  ]
- },
- "blue_drag": {
-  "subtitle": "subtitles.gojo.blue_drag",
-  "sounds": [
-   {
-    "name": "gojo:blue_drag",
-    "stream": true
-   }
-  ]
- },
- "chant": {
-  "subtitle": "subtitles.gojo.chant",
-  "sounds": [
-   {
-    "name": "gojo:chant",
-    "stream": false
-   }
-  ]
- },
- "domain_open": {
-  "subtitle": "subtitles.gojo.domain_open",
-  "sounds": [
-   {
-    "name": "gojo:domain_open",
-    "stream": false
-   }
-  ]
- },
- "domain_sign": {
-  "subtitle": "subtitles.gojo.domain_sign",
-  "sounds": [
-   {
-    "name": "gojo:domain_sign",
-    "stream": false
-   }
-  ]
- },
- "domain_void": {
-  "subtitle": "subtitles.gojo.domain_void",
-  "sounds": [
-   {
-    "name": "gojo:domain_void",
-    "stream": true
-   }
-  ]
- },
- "infinity_on": {
-  "subtitle": "subtitles.gojo.infinity_on",
-  "sounds": [
-   {
-    "name": "gojo:infinity_on",
-    "stream": false
-   }
-  ]
- },
- "infinity_ripple": {
-  "subtitle": "subtitles.gojo.infinity_ripple",
-  "sounds": [
-   {
-    "name": "gojo:infinity_ripple",
-    "stream": false
-   }
-  ]
- },
- "maxred_fire": {
-  "subtitle": "subtitles.gojo.maxred_fire",
-  "sounds": [
-   {
-    "name": "gojo:maxred_fire",
-    "stream": true
-   }
-  ]
- },
- "nuke_blast": {
-  "subtitle": "subtitles.gojo.nuke_blast",
-  "sounds": [
-   {
-    "name": "gojo:nuke_blast",
-    "stream": true
-   }
-  ]
- },
- "nuke_charge": {
-  "subtitle": "subtitles.gojo.nuke_charge",
-  "sounds": [
-   {
-    "name": "gojo:nuke_charge",
-    "stream": false
-   }
-  ]
- },
- "purple_big": {
-  "subtitle": "subtitles.gojo.purple_big",
-  "sounds": [
-   {
-    "name": "gojo:purple_big",
-    "stream": true
-   }
-  ]
- },
- "purple_fire": {
-  "subtitle": "subtitles.gojo.purple_fire",
-  "sounds": [
-   {
-    "name": "gojo:purple_fire",
-    "stream": false
-   }
-  ]
- },
- "purple_merge": {
-  "subtitle": "subtitles.gojo.purple_merge",
-  "sounds": [
-   {
-    "name": "gojo:purple_merge",
-    "stream": false
-   }
-  ]
- },
- "red_charge": {
-  "subtitle": "subtitles.gojo.red_charge",
-  "sounds": [
-   {
-    "name": "gojo:red_charge",
-    "stream": false
-   }
-  ]
- },
- "red_fire": {
-  "subtitle": "subtitles.gojo.red_fire",
-  "sounds": [
-   {
-    "name": "gojo:red_fire",
-    "stream": false
-   }
-  ]
- },
- "red_impact": {
-  "subtitle": "subtitles.gojo.red_impact",
-  "sounds": [
-   {
-    "name": "gojo:red_impact",
-    "stream": false
-   }
-  ]
- }
+  "shockwave": {
+    "sounds": [
+      {
+        "name": "gojo:shockwave",
+        "stream": false
+      }
+    ]
+  },
+  "rumble": {
+    "sounds": [
+      {
+        "name": "gojo:rumble",
+        "stream": true
+      }
+    ]
+  },
+  "blast_crack": {
+    "sounds": [
+      {
+        "name": "gojo:blast_crack",
+        "stream": false
+      }
+    ]
+  },
+  "blue_charge": {
+    "subtitle": "subtitles.gojo.blue_charge",
+    "sounds": [
+      {
+        "name": "gojo:blue_charge",
+        "stream": false
+      }
+    ]
+  },
+  "blue_crush": {
+    "subtitle": "subtitles.gojo.blue_crush",
+    "sounds": [
+      {
+        "name": "gojo:blue_crush",
+        "stream": false
+      }
+    ]
+  },
+  "blue_drag": {
+    "subtitle": "subtitles.gojo.blue_drag",
+    "sounds": [
+      {
+        "name": "gojo:blue_drag",
+        "stream": true
+      }
+    ]
+  },
+  "chant": {
+    "subtitle": "subtitles.gojo.chant",
+    "sounds": [
+      {
+        "name": "gojo:chant",
+        "stream": false
+      }
+    ]
+  },
+  "domain_open": {
+    "subtitle": "subtitles.gojo.domain_open",
+    "sounds": [
+      {
+        "name": "gojo:domain_open",
+        "stream": false
+      }
+    ]
+  },
+  "domain_sign": {
+    "subtitle": "subtitles.gojo.domain_sign",
+    "sounds": [
+      {
+        "name": "gojo:domain_sign",
+        "stream": false
+      }
+    ]
+  },
+  "domain_void": {
+    "subtitle": "subtitles.gojo.domain_void",
+    "sounds": [
+      {
+        "name": "gojo:domain_void",
+        "stream": true
+      }
+    ]
+  },
+  "infinity_on": {
+    "subtitle": "subtitles.gojo.infinity_on",
+    "sounds": [
+      {
+        "name": "gojo:infinity_on",
+        "stream": false
+      }
+    ]
+  },
+  "infinity_ripple": {
+    "subtitle": "subtitles.gojo.infinity_ripple",
+    "sounds": [
+      {
+        "name": "gojo:infinity_ripple",
+        "stream": false
+      }
+    ]
+  },
+  "maxred_fire": {
+    "subtitle": "subtitles.gojo.maxred_fire",
+    "sounds": [
+      {
+        "name": "gojo:maxred_fire",
+        "stream": true
+      }
+    ]
+  },
+  "nuke_blast": {
+    "subtitle": "subtitles.gojo.nuke_blast",
+    "sounds": [
+      {
+        "name": "gojo:nuke_blast",
+        "stream": true
+      }
+    ]
+  },
+  "nuke_charge": {
+    "subtitle": "subtitles.gojo.nuke_charge",
+    "sounds": [
+      {
+        "name": "gojo:nuke_charge",
+        "stream": false
+      }
+    ]
+  },
+  "purple_big": {
+    "subtitle": "subtitles.gojo.purple_big",
+    "sounds": [
+      {
+        "name": "gojo:purple_big",
+        "stream": true
+      }
+    ]
+  },
+  "purple_fire": {
+    "subtitle": "subtitles.gojo.purple_fire",
+    "sounds": [
+      {
+        "name": "gojo:purple_fire",
+        "stream": false
+      }
+    ]
+  },
+  "purple_merge": {
+    "subtitle": "subtitles.gojo.purple_merge",
+    "sounds": [
+      {
+        "name": "gojo:purple_merge",
+        "stream": false
+      }
+    ]
+  },
+  "red_charge": {
+    "subtitle": "subtitles.gojo.red_charge",
+    "sounds": [
+      {
+        "name": "gojo:red_charge",
+        "stream": false
+      }
+    ]
+  },
+  "red_fire": {
+    "subtitle": "subtitles.gojo.red_fire",
+    "sounds": [
+      {
+        "name": "gojo:red_fire",
+        "stream": false
+      }
+    ]
+  },
+  "red_impact": {
+    "subtitle": "subtitles.gojo.red_impact",
+    "sounds": [
+      {
+        "name": "gojo:red_impact",
+        "stream": false
+      }
+    ]
+  },
+  "voice_blue": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_blue",
+        "stream": false
+      }
+    ]
+  },
+  "voice_blue_full": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_blue_full",
+        "stream": false
+      }
+    ]
+  },
+  "voice_honki": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_honki",
+        "stream": false
+      }
+    ]
+  },
+  "voice_kyoshiki": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_kyoshiki",
+        "stream": false
+      }
+    ]
+  },
+  "voice_max_blue": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_max_blue",
+        "stream": false
+      }
+    ]
+  },
+  "voice_max_red": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_max_red",
+        "stream": false
+      }
+    ]
+  },
+  "voice_murasaki": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_murasaki",
+        "stream": false
+      }
+    ]
+  },
+  "voice_muryokusho": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_muryokusho",
+        "stream": false
+      }
+    ]
+  },
+  "voice_red": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_red",
+        "stream": false
+      }
+    ]
+  },
+  "voice_red_full": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_red_full",
+        "stream": false
+      }
+    ]
+  },
+  "voice_ryoiki": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_ryoiki",
+        "stream": false
+      }
+    ]
+  },
+  "voice_strongest": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_strongest",
+        "stream": false
+      }
+    ]
+  },
+  "voice_taunt": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_taunt",
+        "stream": false
+      }
+    ]
+  },
+  "voice_tenjo": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_tenjo",
+        "stream": false
+      }
+    ]
+  },
+  "voice_toji": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_toji",
+        "stream": true
+      }
+    ]
+  },
+  "voice_toji_kyoshiki": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_toji_kyoshiki",
+        "stream": false
+      }
+    ]
+  },
+  "voice_toji_murasaki": {
+    "subtitle": "subtitles.gojo.voice",
+    "sounds": [
+      {
+        "name": "gojo:voice_toji_murasaki",
+        "stream": false
+      }
+    ]
+  },
+  "music_toji": {
+    "sounds": [
+      {
+        "name": "gojo:music_toji",
+        "stream": true
+      }
+    ]
+  }
 }

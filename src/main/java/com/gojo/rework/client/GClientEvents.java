@@ -127,6 +127,24 @@ public final class GClientEvents {
             }
         }
 
+        /** Holding a finished Purple: attack or use lets it go where he is looking (instead of swinging or placing). */
+        @SubscribeEvent
+        public static void onClick(net.minecraftforge.client.event.InputEvent.InteractionKeyMappingTriggered e) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null) {
+                return;
+            }
+            GCasts.Play p = GCasts.of(mc.player);
+            if (p != null && p.mine && p.aiming(0) && !GDirector.active() && (e.isAttack() || e.isUseItem())) {
+                e.setCanceled(true);
+                e.setSwingHand(false);
+                com.gojo.rework.net.GNet.CHANNEL.sendToServer(new com.gojo.rework.net.GNet.Shoot());
+            } else if (GDirector.active()) {
+                e.setCanceled(true);
+                e.setSwingHand(false);
+            }
+        }
+
         @SubscribeEvent
         public static void onHand(RenderHandEvent e) {
             if (GDirector.active()) {

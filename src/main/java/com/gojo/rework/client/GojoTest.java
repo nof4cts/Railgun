@@ -43,14 +43,14 @@ public final class GojoTest {
     private static final Step[] ORDER = {
             new Step(null, "infinity", 6, 0, CameraType.THIRD_PERSON_FRONT, 50, new int[]{2, 6, 12, 20, 34, 44}),
             new Step(GMove.RED, "red", 20, 4, CameraType.THIRD_PERSON_BACK, 0, new int[]{4, 10, 14, 16, 18, 20, 23, 30, 44}),
-            new Step(GMove.MAX_BLUE, "max_blue", 14, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 20, 30, 44, 60, 80, 99, 104}),
-            new Step(GMove.MAX_RED, "max_red", 18, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 20, 27, 28, 29, 31, 35, 42, 56}),
-            new Step(GMove.PURPLE, "purple", 26, 0, null, 0, new int[]{10, 22, 28, 34, 40, 46, 52, 55, 57, 62, 75}),
+            new Step(GMove.MAX_BLUE, "max_blue", 14, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 20, 36, 50, 80, 100, 130, 159, 162}),
+            new Step(GMove.MAX_RED, "max_red", 18, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 30, 40, 41, 43, 48, 60}),
+            new Step(GMove.PURPLE, "purple", 26, 0, null, 0, new int[]{10, 30, 58, 64, 80, 110, 116, 130, 142, 150, 165, 171, 173, 180, 200}),
             new Step(GMove.IMAGINARY, "imaginary", 30, 0, null, 0,
-                    new int[]{8, 20, 40, 62, 84, 100, 110, 120, 130, 134, 135, 137, 146, 160, 176}),
+                    new int[]{10, 60, 100, 150, 170, 215, 245, 270, 300, 340, 420, 520, 600, 620, 650, 680, 692, 700, 720, 740, 749, 751, 760, 790}),
             new Step(GMove.PURPLE_200, "purple_200", 30, 0, null, 0,
-                    new int[]{20, 48, 70, 92, 112, 124, 138, 150, 151, 153, 162, 180, 200}),
-            new Step(GMove.NUKE, "nuke", 40, 16, null, 0, new int[]{10, 38, 52, 68, 78, 92, 104, 112, 113, 124, 140, 148, 154, 156, 170, 200, 230}),
+                    new int[]{20, 48, 90, 120, 140, 160, 186, 200, 218, 230, 245, 251, 253, 262, 290}),
+            new Step(GMove.NUKE, "nuke", 40, 16, null, 0, new int[]{10, 40, 64, 72, 100, 114, 130, 145, 158, 172, 185, 193, 200, 208, 209, 212, 230, 260, 300}),
             new Step(GMove.DOMAIN, "domain", 8, 0, null, 0, new int[]{4, 12, 24, 40, 49, 56, 70, 81, 90, 105, 120, 135, 150}),
             new Step(null, "domain_inside", 8, 0, CameraType.THIRD_PERSON_BACK, 80, new int[]{10, 40, 70}),
             new Step(GMove.DOMAIN_02, "domain_02", 10, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{2, 6, 8, 10, 14, 30}),
@@ -70,8 +70,19 @@ public final class GojoTest {
         return s.getPlayerList().getPlayers().get(0);
     }
 
+    /** Ticks after the cast at which the test lets a held Purple go (he aims for 20 ticks). */
+    private static int shootAt(GMove m) {
+        return com.gojo.rework.common.GBeats.ready(m) + 20;
+    }
+
     private static int waitFor(Step s) {
-        return s.hold > 0 ? s.hold : s.move.length + 30;
+        if (s.hold > 0) {
+            return s.hold;
+        }
+        if (com.gojo.rework.common.GBeats.aims(s.move)) {
+            return shootAt(s.move) + com.gojo.rework.common.GBeats.after(s.move) + 20;
+        }
+        return s.move.length + 30;
     }
 
     static void tick() {
@@ -147,6 +158,22 @@ public final class GojoTest {
                         p.serverLevel().addFreshEntity(a);
                     }
                 }
+            });
+        }
+        if (s.move != null && com.gojo.rework.common.GBeats.aims(s.move) && now == castAt + shootAt(s.move)) {
+            server.execute(() -> {
+                ServerPlayer p = player(server);
+                // turn a little while aiming, as a player would
+                p.connection.teleport(p.getX(), p.getY(), p.getZ(), p.getYRot() + 8, p.getXRot() + (s.move == GMove.NUKE ? 30 : 2));
+                GRites.shoot(p);
+                Gojo2.LOGGER.info("[gojotest] shoot {}", s.move);
+            });
+        }
+        if (s.move == GMove.MAX_BLUE && now == castAt + 90) {
+            // steer it: he looks off to the side and the Blue follows
+            server.execute(() -> {
+                ServerPlayer p = player(server);
+                p.connection.teleport(p.getX(), p.getY(), p.getZ(), p.getYRot() + 35, p.getXRot());
             });
         }
         if ("infinity".equals(s.label) && now == castAt + 20) {

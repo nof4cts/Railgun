@@ -76,6 +76,7 @@ public final class Techniques {
    }
 
    public static boolean blue(ServerLevel level, ServerPlayer player) {
+      com.gojo.rework.server.GRites.voice(player, "blue");
       Vec3 center = rayEnd(level, player, 12.0);
       Cine.shoot(level, player, (byte)0, fingertip(player), center);
       return true;
@@ -286,6 +287,7 @@ public final class Techniques {
    }
 
    public static boolean reverseCursedTechnique(ServerLevel level, ServerPlayer player) {
+      com.gojo.rework.server.GRites.voice(player, "strongest");
       player.heal(player.getMaxHealth());
       player.getFoodData().setFoodLevel(20);
       player.getFoodData().setSaturation(20.0F);

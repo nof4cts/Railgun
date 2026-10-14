@@ -22,6 +22,13 @@ public final class GCasts {
         public final GNet.Cast msg;
         public final boolean mine;
         int lastBeat = -1;
+        /** The cutscene was skipped: it does not come back to follow the shot. */
+        public boolean skipped;
+        /** A held Purple once let go: when (ticks into the cast), from where, which way, onto what. */
+        public int fireAt = -1;
+        public Vec3 fireFrom, fireDir, target;
+        /** Maximum Blue, steered: its last two positions from the server. */
+        Vec3 posPrev, posNow;
 
         Play(GNet.Cast msg) {
             this.msg = msg;
@@ -44,13 +51,32 @@ public final class GCasts {
             return mc.level == null ? null : mc.level.getEntity(msg.caster());
         }
 
-        /** Which way it goes: for the Purples, from where he fires it in the air down at what he aimed at. */
         public Vec3 dir() {
-            GMove m = move();
-            if (m == GMove.PURPLE || m == GMove.IMAGINARY || m == GMove.PURPLE_200) {
-                return GBeats.purpleDir(m, msg.origin(), msg.dir(), msg.point());
-            }
             return msg.dir();
+        }
+
+        /** Which way a Purple points: its line once fired; before that, his gaze (once he can aim), else ahead. */
+        public Vec3 aimDir(float partial) {
+            if (fireAt >= 0) {
+                return fireDir;
+            }
+            Entity c = caster();
+            if (c != null && time(partial) >= GBeats.ready(move())) {
+                return c.getViewVector(partial);
+            }
+            return flat();
+        }
+
+        public boolean aiming(float partial) {
+            return GBeats.aims(move()) && fireAt < 0 && time(partial) >= GBeats.ready(move());
+        }
+
+        /** Where a steered technique is, between the server's last two positions. */
+        public Vec3 pos(float partial) {
+            if (posNow == null) {
+                return null;
+            }
+            return posPrev == null ? posNow : posPrev.lerp(posNow, partial);
         }
 
         public Vec3 flat() {
@@ -76,6 +102,9 @@ public final class GCasts {
         }
 
         public int end() {
+            if (GBeats.aims(move())) {
+                return (fireAt < 0 ? GBeats.ready(move()) + GBeats.AIM_MAX : fireAt) + GBeats.after(move());
+            }
             return switch (move()) {
                 case DOMAIN -> GBeats.DV_HOLD;
                 case DOMAIN_02 -> GBeats.D2_OPEN + GBeats.D2_STUN;
@@ -113,13 +142,44 @@ public final class GCasts {
         }
         Play best = null;
         for (Play p : ACTIVE) {
-            if (p.msg.caster() == e.getId() && p.time(0) < p.move().length + 2) {
+            if (p.msg.caster() == e.getId() && p.time(0) < p.end() + 2) {
                 if (best == null || p.msg.start() > best.msg.start()) {
                     best = p;
                 }
             }
         }
         return best;
+    }
+
+    /** A held Purple has been let go. */
+    public static void fired(GNet.Fire m) {
+        for (Play p : ACTIVE) {
+            if (p.msg.caster() == m.caster() && p.move().ordinal() == m.move() && p.fireAt < 0) {
+                p.fireAt = m.at();
+                p.fireFrom = m.from();
+                p.fireDir = m.dir();
+                p.target = m.target();
+                GFx.fired(p);
+                if (p.caster() instanceof AbstractClientPlayer pl) {
+                    GAnims.fire(pl, p.move());
+                }
+                if (p.mine && !p.skipped && !com.jjk.mod.client.JjkPrefs.skipCutscenes()) {
+                    // the cutscene picks up again to follow the shot
+                    com.gojo.rework.client.cam.GDirector.play(p);
+                }
+                return;
+            }
+        }
+    }
+
+    public static void pos(GNet.Pos m) {
+        for (Play p : ACTIVE) {
+            if (p.msg.caster() == m.caster() && p.move().ordinal() == m.move()) {
+                p.posPrev = p.posNow == null ? m.pos() : p.posNow;
+                p.posNow = m.pos();
+                return;
+            }
+        }
     }
 
     public static List<Play> all() {

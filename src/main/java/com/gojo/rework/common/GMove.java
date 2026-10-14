@@ -3,12 +3,12 @@ package com.gojo.rework.common;
 /** Gojo's reworked techniques: whether each plays a cutscene, and how long it runs (ticks). Sent by ordinal. */
 public enum GMove {
     RED("red", "Reversal: Red", "", false, 60),
-    MAX_BLUE("max_blue", "Maximum Output: Blue", "", false, 112),
-    MAX_RED("max_red", "Maximum Output: Red", "", false, 84),
-    PURPLE("purple", "Hollow Purple", "虚式「茈」", true, 100),
-    IMAGINARY("imaginary", "Imaginary Technique: Purple", "虚式「茈」", true, 200),
-    PURPLE_200("purple_200", "200% Hollow Purple", "虚式「茈」", true, 236),
-    NUKE("nuke", "Hollow Nuke", "", true, 270),
+    MAX_BLUE("max_blue", "Maximum Output: Blue", "", false, 176),
+    MAX_RED("max_red", "Maximum Output: Red", "", false, 96),
+    PURPLE("purple", "Hollow Purple", "虚式「茈」", true, 150 + 100 + 70),
+    IMAGINARY("imaginary", "Imaginary Technique: Purple", "虚式「茈」", true, 728 + 100 + 80),
+    PURPLE_200("purple_200", "200% Hollow Purple", "虚式「茈」", true, 230 + 100 + 90),
+    NUKE("nuke", "Hollow Nuke", "", true, 172 + 100 + 130),
     DOMAIN("domain", "Domain Expansion: Unlimited Void", "無量空処", true, 156),
     DOMAIN_02("domain_02", "0.2-Second Domain", "無量空処", false, 44);
 

@@ -28,11 +28,21 @@ public final class GAnims {
 
     @SuppressWarnings("unchecked")
     static void play(AbstractClientPlayer p, GMove m) {
+        play(p, "g_" + m.key);
+    }
+
+    /** The release of a held Purple. */
+    static void fire(AbstractClientPlayer p, GMove m) {
+        play(p, "g_" + m.key + "_fire");
+    }
+
+    @SuppressWarnings("unchecked")
+    static void play(AbstractClientPlayer p, String name) {
         Object o = PlayerAnimationAccess.getPlayerAssociatedData(p).get(LAYER);
         if (!(o instanceof ModifierLayer<?> l)) {
             return;
         }
-        KeyframeAnimation anim = PlayerAnimationRegistry.getAnimation(Gojo2.id("g_" + m.key));
+        KeyframeAnimation anim = PlayerAnimationRegistry.getAnimation(Gojo2.id(name));
         if (anim == null) {
             return;
         }

@@ -206,6 +206,20 @@ public final class GFx {
     static void begin(GCasts.Play c) {
     }
 
+    /** How far this player is from where it happens, as 1 (on top of it) .. 0 (out of reach). */
+    static float near(GCasts.Play c, Vec3 at, double reach) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            return 0;
+        }
+        return c.mine ? 1 : (float) Mth.clamp(1 - mc.player.position().distanceTo(at) / reach, 0, 1);
+    }
+
+    /** An anime impact frame (the original technique's ink-and-speed-lines shader). */
+    static void impact(int style, int hold, int fade) {
+        com.gojo.mod.cine.client.Impact.hit(style, hold, fade, 0.5F, 0.5F);
+    }
+
     static void beat(GCasts.Play c, int t) {
         Minecraft mc = Minecraft.getInstance();
         ClientLevel l = mc.level;
@@ -217,24 +231,67 @@ public final class GFx {
                 int at = GBeats.arrive(GBeats.RED_FIRE, GBeats.RED_SPEED, c.msg.origin().distanceTo(c.msg.point()));
                 if (t == at) {
                     debris(l, c.msg.point(), 6, 60);
+                    if (near(c, c.msg.point(), 90) > 0.2F) {
+                        impact(2, 2, 4);
+                    }
                 }
             }
             case MAX_BLUE -> {
-                if (t >= GBeats.MB_LAUNCH && t < GBeats.MB_END && t % 2 == 0) {
-                    debris(l, GRites.maxBlueAt(c.msg.origin(), c.dir(), t), 4, 10);
+                Vec3 o = c.pos(0);
+                if (o != null && t >= GBeats.MB_LAUNCH && t < GBeats.MB_END && t % 2 == 0) {
+                    debris(l, o, 4, 10);
+                }
+                if (t == GBeats.MB_END && o != null && near(c, o, 90) > 0.2F) {
+                    impact(3, 2, 5);
                 }
             }
             case MAX_RED -> {
+                if (t == GBeats.MR_FIRE && near(c, c.msg.origin(), 120) > 0.2F) {
+                    impact(2, 2, 6);
+                }
                 if (t > GBeats.MR_FIRE && t <= GBeats.MR_FIRE + GBeats.MR_TRAVEL) {
                     double d = GBeats.MR_LENGTH * (t - GBeats.MR_FIRE) / (double) GBeats.MR_TRAVEL;
                     debris(l, c.msg.origin().add(c.dir().scale(d)), 5, 16);
                 }
             }
-            case NUKE -> {
-                if (t == GBeats.NK_BLAST) {
-                    debris(l, c.msg.point(), 20, 160);
+            case IMAGINARY -> {
+                // out of the drops cutaway, the Purple simply there
+                if (t == GBeats.IM_MERGE && near(c, c.msg.origin(), 120) > 0.2F) {
+                    impact(1, 2, 6);
                 }
             }
+            case NUKE -> {
+                if (t == GBeats.NK_MERGE && near(c, c.msg.origin(), 300) > 0.15F) {
+                    impact(1, 2, 4);
+                }
+                if (c.fireAt >= 0 && t == c.fireAt + GBeats.NK_DROP) {
+                    debris(l, c.target, 20, 160);
+                    if (near(c, c.target, 320) > 0.1F) {
+                        impact(0, 2, 2);
+                    }
+                }
+                if (c.fireAt >= 0 && t == c.fireAt + GBeats.NK_DROP + 2 && near(c, c.target, 320) > 0.1F) {
+                    impact(1, 3, 12);
+                }
+            }
+            default -> {
+            }
+        }
+    }
+
+    /** A held Purple let go: the impact frames of its release. */
+    static void fired(GCasts.Play c) {
+        if (near(c, c.fireFrom, 160) < 0.15F) {
+            return;
+        }
+        switch (c.move()) {
+            case PURPLE -> impact(1, 2, 5);
+            case IMAGINARY -> impact(1, 3, 8);
+            case PURPLE_200 -> {
+                impact(0, 1, 1);
+                impact(1, 4, 10);
+            }
+            case NUKE -> impact(1, 2, 3);
             default -> {
             }
         }
@@ -266,49 +323,36 @@ public final class GFx {
         }
         for (GCasts.Play c : GCasts.all()) {
             float t = c.time(partial);
-            double d = mc.player.position().distanceTo(c.msg.origin());
-            float near = (float) Mth.clamp(1 - d / 160, 0, 1);
-            if (near <= 0 && !c.mine) {
+            float near = near(c, c.msg.origin(), 160);
+            if (near <= 0) {
                 continue;
             }
+            float since = c.fireAt >= 0 ? t - c.fireAt : -1;
             switch (c.move()) {
                 case RED -> {
                     int at = GBeats.arrive(GBeats.RED_FIRE, GBeats.RED_SPEED, c.msg.origin().distanceTo(c.msg.point()));
-                    look.flash(0.6F * near * hit(t, at, 4), 0xFFE0D0);
                     look.shake(0.9F * near * hit(t, at, 14));
                 }
-                case MAX_BLUE -> {
-                    look.shake(0.35F * near * window(t, GBeats.MB_LAUNCH, GBeats.MB_LAUNCH + 4, GBeats.MB_END - 4, GBeats.MB_END));
-                    look.flash(0.6F * near * hit(t, GBeats.MB_END, 4), 0xDDF1FF);
-                }
-                case MAX_RED -> {
-                    impactFrames(look, t, GBeats.MR_FIRE, near);
-                    look.flash(0.8F * near * hit(t, GBeats.MR_FIRE + 2, 5), 0xFFD6C8);
-                    look.shake(1.4F * near * hit(t, GBeats.MR_FIRE, 18));
-                }
-                case PURPLE -> {
-                    impactFrames(look, t, GBeats.HP_FIRE, near);
-                    look.shake(1.0F * near * hit(t, GBeats.HP_FIRE, 14));
-                }
-                case IMAGINARY -> {
-                    impactFrames(look, t, GBeats.IM_FIRE, near);
-                    look.flash(0.7F * near * hit(t, GBeats.IM_FIRE + 2, 6), 0xF6EAFF);
-                    look.shake(1.5F * near * hit(t, GBeats.IM_FIRE, 24));
-                    look.vignette(0.6F * window(t, 4, 20, GBeats.IM_FIRE, GBeats.IM_FIRE + 30));
-                }
-                case PURPLE_200 -> {
-                    impactFrames(look, t, GBeats.P2_FIRE, near);
-                    look.flash(0.9F * near * hit(t, GBeats.P2_FIRE + 2, 8), 0xF6EAFF);
-                    look.shake(2.0F * near * hit(t, GBeats.P2_FIRE, 30));
-                    look.vignette(0.7F * window(t, 4, 20, GBeats.P2_FIRE, GBeats.P2_FIRE + 30));
+                case MAX_BLUE -> look.shake(0.35F * near * window(t, GBeats.MB_LAUNCH, GBeats.MB_LAUNCH + 4, GBeats.MB_END - 4, GBeats.MB_END));
+                case MAX_RED -> look.shake(1.4F * near * hit(t, GBeats.MR_FIRE, 18));
+                case PURPLE, IMAGINARY, PURPLE_200 -> {
+                    float big = c.move() == GMove.PURPLE_200 ? 2.0F : c.move() == GMove.IMAGINARY ? 1.5F : 1.0F;
+                    if (since >= 0) {
+                        look.shake(big * near * hit(since, 0, 22));
+                    }
+                    int[] b = GBeats.purpleBeats(c.move());
+                    look.shake(0.25F * big * near * window(t, b[4], b[6], b[7], b[7] + 4));
+                    look.vignette(0.5F * window(t, 4, 20, b[7], b[7] + 10));
                 }
                 case NUKE -> {
-                    float far = (float) Mth.clamp(1 - mc.player.position().distanceTo(c.msg.point()) / 300, 0, 1);
-                    impactFrames(look, t, GBeats.NK_MERGE, Math.max(near, far));
-                    impactFrames(look, t, GBeats.NK_BLAST, far);
-                    look.flash(0.75F * far * window(t, GBeats.NK_BLAST, GBeats.NK_BLAST + 1, GBeats.NK_BLAST + 4, GBeats.NK_BLAST + 18), 0xFFF0FF);
-                    look.shake(2.4F * far * hit(t, GBeats.NK_BLAST, 50));
-                    look.shake(0.4F * far * window(t, GBeats.NK_JOIN, GBeats.NK_MERGE, GBeats.NK_LAUNCH, GBeats.NK_BLAST));
+                    Vec3 g = c.target != null ? c.target : c.msg.point();
+                    float far = near(c, g, 320);
+                    look.shake(0.4F * far * window(t, GBeats.NK_JOIN, GBeats.NK_MERGE, GBeats.NK_MERGE + 6, GBeats.NK_READY));
+                    if (since >= 0) {
+                        float blast = since - GBeats.NK_DROP;
+                        look.flash(0.55F * far * window(blast, 0, 1, 4, 16), 0xFFF0FF);
+                        look.shake(2.4F * far * hit(blast, 0, 50));
+                    }
                 }
                 case DOMAIN_02 -> {
                     float dd = (float) mc.player.position().distanceTo(c.msg.origin());
@@ -319,18 +363,6 @@ public final class GFx {
                 default -> {
                 }
             }
-        }
-    }
-
-    /** The two frames of an impact: blacked out for a tick, then burnt white for a tick. */
-    static void impactFrames(Look look, float t, int at, float k) {
-        if (k < 0.15F) {
-            return;
-        }
-        if (t >= at && t < at + 1) {
-            look.flash(0.92F * k, 0x000000);
-        } else if (t >= at + 1 && t < at + 2) {
-            look.flash(k, 0xFFFFFF);
         }
     }
 
@@ -348,9 +380,7 @@ public final class GFx {
                 case RED -> drawRed(ink, c, t, partial);
                 case MAX_BLUE -> drawMaxBlue(ink, c, t, partial);
                 case MAX_RED -> drawMaxRed(ink, c, t, partial);
-                case PURPLE -> drawHanami(ink, c, t, partial);
-                case IMAGINARY -> drawChanted(ink, c, t, partial, false);
-                case PURPLE_200 -> drawChanted(ink, c, t, partial, true);
+                case PURPLE, IMAGINARY, PURPLE_200 -> drawPurple(ink, c, t, partial);
                 case NUKE -> drawNuke(ink, c, t, partial);
                 case DOMAIN -> GVoid.drawDomain(ink, c, t, partial);
                 case DOMAIN_02 -> GVoid.drawFlash(ink, c, t, partial);
@@ -394,7 +424,10 @@ public final class GFx {
         if (t > GBeats.MB_END + 30) {
             return;
         }
-        Vec3 o = GRites.maxBlueAt(c.msg.origin(), c.dir(), t);
+        Vec3 o = c.pos(partial);
+        if (o == null) {
+            o = hand(c, partial, true).add(0, 0.9, 0);
+        }
         double r;
         float k = 1;
         if (t < GBeats.MB_LAUNCH) {
@@ -403,6 +436,8 @@ public final class GFx {
             // it forms above his raised hand, then drifts out in front
             Vec3 hand = hand(c, partial, true).add(0, 0.9, 0);
             o = hand.lerp(o, smooth(span(t, GBeats.MB_LAUNCH - 10, GBeats.MB_LAUNCH)));
+            // the light round him bends into it as it gathers
+            ink.ring(o, ink.cam().subtract(o), r * (3.5 - 2.5 * u), 0.08, a(BLUE_CORE, 0.5F * u), 64);
         } else if (t < GBeats.MB_END) {
             r = GBeats.MB_RADIUS * (1 + 0.05 * Math.sin(t * 0.8));
         } else {
@@ -430,9 +465,8 @@ public final class GFx {
             for (int i = 0; i < 3; i++) {
                 ink.arc(g, UP, r * (1.6 + i * 0.6), 0.25, t * 0.3 + i, t * 0.3 + i + 3.6, a(BLUE, 0.35F), 32, true);
             }
-            // the trench behind it glows faintly blue for a moment
-            Vec3 from = GRites.maxBlueAt(c.msg.origin(), c.dir(), GBeats.MB_LAUNCH);
-            ink.beam(ground(from).add(0, 0.3, 0), ground(o).add(0, 0.3, 0), r * 0.9, a(BLUE, 0.12F));
+            // a thread of blue from his hand to it: he is steering it
+            ink.beam(hand(c, partial, true), o, 0.06, a(BLUE_CORE, 0.45F));
         }
     }
 
@@ -475,147 +509,165 @@ public final class GFx {
         }
     }
 
-    // ---- Hollow Purple (Hanami)
+    // ---- the Purples
 
-    static void drawHanami(Ink ink, GCasts.Play c, float t, float partial) {
-        Vec3 dir = c.dir();
-        if (t < GBeats.HP_FIRE + 1) {
-            // as it is choreographed: he squares up, Red blooms at his left and Blue at his right, each as big as he
-            // is, then both are pulled into one point before his outstretched hand and become Purple, which he holds
-            // there, crackling, before it goes
-            Vec3 chest = c.feet(partial).add(0, 1.3, 0);
-            Vec3 r = c.right();
-            Vec3 centre = c.eye(partial).add(dir.scale(2.4)).add(0, -0.3, 0);
-            float m = smooth(span(t, GBeats.HP_MERGE - 5, GBeats.HP_MERGE));
-            float rk = smooth(span(t, GBeats.HP_BLUE, GBeats.HP_BLUE + 7)), bk = smooth(span(t, GBeats.HP_RED, GBeats.HP_RED + 7));
-            Vec3 rp = chest.add(r.scale(-2.6)).add(dir.scale(0.6)).lerp(centre, m), bp = chest.add(r.scale(2.6)).add(dir.scale(0.6)).lerp(centre, m);
-            if (t < GBeats.HP_MERGE + 1) {
-                redOrb(ink, rp, 1.0 * rk * (1 - 0.4 * m), t, rk, c.msg.seed());
-                blueOrb(ink, bp, 1.1 * bk * (1 - 0.4 * m), t, bk, c.msg.seed());
-                if (m > 0.2F) {
-                    lightning(ink, rp.lerp(bp, 0.5), 0.6, t, m, c.msg.seed() + 5, 4, rp.distanceTo(bp) * 0.6);
+    /**
+     * Every Purple, risen into the air: Red appears at his left as he names it, Blue at his right as he names it; the two
+     * are drawn together before him and pressed into one; it is held there, crackling and swelling, pointed wherever he
+     * looks, until he lets it go; then it erases everything down its line.
+     */
+    static void drawPurple(Ink ink, GCasts.Play c, float t, float partial) {
+        GMove m = c.move();
+        int[] b = GBeats.purpleBeats(m);
+        double scale = m == GMove.PURPLE_200 ? 2.0 : m == GMove.IMAGINARY ? 1.4 : 1.0;
+        double radius = m == GMove.PURPLE_200 ? GBeats.P2_RADIUS : m == GMove.IMAGINARY ? GBeats.IM_RADIUS : GBeats.HP_RADIUS;
+        long seed = c.msg.seed();
+        Vec3 eye = c.eye(partial);
+        Vec3 aim = c.aimDir(partial);
+        Vec3 f = c.flat(), r = c.right();
+        Vec3 centre = eye.add(aim.scale(GBeats.purpleAhead(m))).add(0, -0.2, 0);
+        boolean toji = m == GMove.IMAGINARY;
+        if (m == GMove.PURPLE_200) {
+            // the incantation: each word sends a ring of light out through the air around him
+            int shift = m == GMove.PURPLE_200 ? GBeats.P2_SHIFT : 0;
+            for (int i = 0; i < GBeats.CHANT.length; i++) {
+                float w = t - (GBeats.CHANT[i] + shift);
+                if (w >= 0 && w < 30) {
+                    float k = w / 30F;
+                    ink.ring(c.feet(partial).add(0, 0.2, 0), UP, 1.5 + 14 * k * scale, 0.1 + 0.3 * (1 - k), a(i % 2 == 0 ? BLUE_CORE : RED_CORE, 0.7F * (1 - k)), 96);
+                    ink.ring(eye, f, 0.8 + 3 * k, 0.05, a(WHITE, 0.6F * (1 - k)), 64);
                 }
             }
-            if (t >= GBeats.HP_MERGE - 1) {
-                float pk = span(t, GBeats.HP_MERGE - 1, GBeats.HP_MERGE + 5);
-                double size = 0.5 + 1.3 * smooth(span(t, GBeats.HP_MERGE, GBeats.HP_FIRE - 2));
-                purpleOrb(ink, centre, size * pk, t, pk, c.msg.seed());
-                // a thread of violet from his fingertips to it
-                Vec3 h = hand(c, partial, true).add(dir.scale(0.4));
-                GShade.ribbon(new Vec3[]{h, centre}, new float[]{0.04F, 0.12F}, GShade.PUR_B, 0.8F * pk, 1);
+        }
+        if (c.fireAt < 0 || t < c.fireAt + 2) {
+            // the two colours, each blooming at its side as it is named, then drawn in
+            float join = smooth(span(t, b[4], b[6]));
+            float rk = smooth(span(t, b[1], b[1] + 8)), bk = smooth(span(t, b[3], b[3] + 8));
+            Vec3 side = eye.add(f.scale(0.9)).add(0, 0.3, 0);
+            Vec3 rp = side.add(r.scale(-2.6 * scale)).lerp(centre, join);
+            Vec3 bp = side.add(r.scale(2.6 * scale)).lerp(centre, join);
+            // as each is named, a pulse of its colour gathers where it will appear
+            float nr = window(t, b[0], b[0] + 6, b[1] - 4, b[1]), nb = window(t, b[2], b[2] + 6, b[3] - 4, b[3]);
+            if (nr > 0.01F && !toji) {
+                ink.ring(rp, ink.cam().subtract(rp), 1.4 * scale * (1.4 - 0.4 * nr), 0.05, a(RED, 0.6F * nr), 48);
+                GShade.glow(rp, 0.8 * scale, GShade.RED_A, 0.5F * nr, 0);
+            }
+            if (nb > 0.01F && !toji) {
+                ink.ring(bp, ink.cam().subtract(bp), 1.4 * scale * (1.4 - 0.4 * nb), 0.05, a(BLUE, 0.6F * nb), 48);
+                GShade.glow(bp, 0.8 * scale, GShade.BLUE_A, 0.5F * nb, 0);
+            }
+            if (t < b[6] + 1 && !toji) {
+                double shrink = 1 - 0.45 * join;
+                redOrb(ink, rp, 1.0 * scale * rk * shrink, t, rk, seed);
+                blueOrb(ink, bp, 1.1 * scale * bk * shrink, t, bk, seed);
+                if (join > 0.05F) {
+                    // they pull at each other: a crackling bridge, tighter as they close
+                    lightning(ink, rp.lerp(bp, 0.5), 0.4 * scale, t, join, seed + 5, 5, rp.distanceTo(bp) * 0.55 + 0.5);
+                    Vec3 hl = hand(c, partial, false), hr = hand(c, partial, true);
+                    GShade.ribbon(new Vec3[]{hr, rp}, new float[]{0.03F, 0.1F}, GShade.RED_A, 0.6F * join, 1);
+                    GShade.ribbon(new Vec3[]{hl, bp}, new float[]{0.03F, 0.1F}, GShade.BLUE_A, 0.6F * join, 1);
+                }
+            }
+            if (t >= b[6] - 1) {
+                float pk = span(t, b[6] - 1, b[6] + 6);
+                // it swells while it is held, breathing
+                double size = radius * (0.35 + 0.25 * smooth(span(t, b[6], b[7] + 20))) * (1 + 0.04 * Math.sin(t * 0.5));
+                purpleOrb(ink, centre, size * pk, t, pk, seed);
+                // the air is sucked into it
+                for (int i = 0; i < 3; i++) {
+                    float u = ((t * 0.05F + i / 3F) % 1F);
+                    ink.ring(centre, ink.cam().subtract(centre), size * (4 - 3 * u), 0.05 * scale, a(MAGENTA, 0.4F * u * pk), 64);
+                }
+                if (toji) {
+                    halo(ink, centre, size * pk, t, pk, seed);
+                }
+                Vec3 h = hand(c, partial, true);
+                GShade.ribbon(new Vec3[]{h, centre}, new float[]{0.04F, (float) (0.12 * scale)}, GShade.PUR_B, 0.7F * pk, 1);
+                if (c.aiming(partial)) {
+                    // the aim: a ring and a four-pointed star down its line
+                    Vec3 tip = centre.add(aim.scale(size * 1.6));
+                    GShade.glow(tip, 1.2 * scale, GShade.MAGENTA, 0.7F, 2);
+                    GShade.glow(tip, 3.0 * scale, GShade.WHITE, 0.5F, 4);
+                }
             }
         }
-        flight(ink, c, t, GBeats.HP_FIRE, GBeats.HP_SPEED, GBeats.HP_RANGE, GBeats.HP_RADIUS, purpleStart(c, partial, 2.2));
+        if (c.fireAt >= 0) {
+            flight(ink, c, t - c.fireAt, m == GMove.PURPLE_200 ? GBeats.P2_SPEED : m == GMove.IMAGINARY ? GBeats.IM_SPEED : GBeats.HP_SPEED,
+                    m == GMove.PURPLE_200 ? GBeats.P2_RANGE : m == GMove.IMAGINARY ? GBeats.IM_RANGE : GBeats.HP_RANGE, radius, c.fireFrom, c.fireDir, t);
+            if (m == GMove.PURPLE_200) {
+                // twice the strength: a beam of white rides inside the wake
+                float age = t - c.fireAt;
+                float fade = 1 - span(age, 30, 70);
+                Vec3 to = c.fireFrom.add(c.fireDir.scale(Math.min(GBeats.P2_RANGE, age * GBeats.P2_SPEED)));
+                ink.beam(c.fireFrom, to, radius * 0.25, a(VIOLET_CORE, 0.35F * fade));
+                GShade.ribbon(new Vec3[]{c.fireFrom, to}, new float[]{(float) (radius * 0.6), (float) (radius * 0.9)}, GShade.PUR_A, 0.4F * fade, 1);
+            }
+        }
     }
 
-    static Vec3 purpleStart(GCasts.Play c, float partial, double ahead) {
-        return GBeats.purpleStart(c.move(), c.msg.origin(), c.msg.dir());
+    /**
+     * The Purple of the Toji fight, held: a white-hot core, rings of pink light standing round it facing the eye, a
+     * thin pillar of light straight through it, and violet crackle at its edge.
+     */
+    static void halo(Ink ink, Vec3 centre, double size, float t, float k, long seed) {
+        if (k <= 0.01F) {
+            return;
+        }
+        Vec3 toCam = ink.cam().subtract(centre);
+        GShade.glow(centre, size * 1.3, GShade.WHITE, 0.85F * k, 0);
+        GShade.glow(centre, size * 2.6, GShade.MAGENTA, 0.45F * k, 2);
+        // the rings: one tight round the core, two wider, breathing slowly out of step
+        double[] rr = {1.35, 2.3, 3.6};
+        float[] al = {0.9F, 0.75F, 0.55F};
+        for (int i = 0; i < rr.length; i++) {
+            double r = size * rr[i] * (1 + 0.03 * Math.sin(t * 0.25 + i * 1.9));
+            ink.ring(centre, toCam, r, size * (0.06 - 0.012 * i), a(MAGENTA, al[i] * k), 96);
+            ink.ring(centre, toCam, r, size * 0.02, a(WHITE, al[i] * 0.7F * k), 96);
+        }
+        // the pillar
+        double hgt = size * 9 * k;
+        ink.beam(centre.add(0, -hgt, 0), centre.add(0, hgt, 0), size * 0.045, a(WHITE, 0.55F * k));
+        GShade.ribbon(new Vec3[]{centre.add(0, -hgt, 0), centre, centre.add(0, hgt, 0)}, new float[]{0.0F, (float) (size * 0.25), 0.0F},
+                GShade.PUR_A, 0.45F * k, 1);
+        lightning(ink, centre, size * 1.1, t, k, seed + 9, 4, size * 2.4);
     }
 
     /** The sphere in flight, the erased wake behind it, and the shock where it left. */
-    static void flight(Ink ink, GCasts.Play c, float t, int fire, double speed, double range, double radius, Vec3 from) {
-        if (t < fire) {
+    static void flight(Ink ink, GCasts.Play c, float age, double speed, double range, double radius, Vec3 from, Vec3 dir, float t) {
+        if (age < 0) {
             return;
         }
-        float age = t - fire;
         double d = Math.min(range, age * speed);
-        Vec3 pos = from.add(c.dir().scale(d));
+        Vec3 pos = from.add(dir.scale(d));
         float gone = span(age, (float) (range / speed), (float) (range / speed) + 8);
         if (gone < 1) {
             purpleOrb(ink, pos, radius * (1 - 0.5 * gone), t, 1 - gone, c.msg.seed());
-            // a ring of distorted air around it, facing its way
-            ink.ring(pos, c.dir(), radius * 1.5, radius * 0.08, a(MAGENTA, 0.6F * (1 - gone)), 64);
-            ink.ring(pos.subtract(c.dir().scale(radius)), c.dir(), radius * 1.2, radius * 0.05, a(WHITE, 0.5F * (1 - gone)), 64);
+            ink.ring(pos, dir, radius * 1.5, radius * 0.08, a(MAGENTA, 0.6F * (1 - gone)), 64);
+            ink.ring(pos.subtract(dir.scale(radius)), dir, radius * 1.2, radius * 0.05, a(WHITE, 0.5F * (1 - gone)), 64);
+            // rings of distorted air peeling off behind it
+            for (int i = 1; i <= 3; i++) {
+                Vec3 q = pos.subtract(dir.scale(radius * (1.5 + i * 1.6)));
+                ink.ring(q, dir, radius * (1.0 + 0.25 * i), radius * 0.03, a(PURPLE, 0.35F * (1 - gone) / i), 48);
+            }
         }
-        // the wake: everything it touched is simply gone; the hollow glows violet and fades
         float wake = 1 - span(age, (float) (range / speed), (float) (range / speed) + 30);
         if (wake > 0.01F) {
             ink.ribbon(new Vec3[]{from, from.lerp(pos, 0.5), pos}, new double[]{radius * 0.3, radius * 0.75, radius * 0.9},
-                    new int[]{a(PURPLE, 0.1F * wake), a(PURPLE, 0.3F * wake), a(VIOLET_CORE, 0.5F * wake)});
+                    new int[]{a(PURPLE, 0.1F * wake), a(PURPLE, 0.3F * wake), a(VIOLET_CORE, 0.45F * wake)});
         }
-        // where it left: a shock that blows outward
         burst(ink, from, radius * 0.18, age, c.msg.seed(), VIOLET_CORE, PURPLE, DARK_VIOLET);
-    }
-
-    // ---- Imaginary Technique: Purple (Toji) and 200%
-
-    static void drawChanted(Ink ink, GCasts.Play c, float t, float partial, boolean p200) {
-        int red = p200 ? GBeats.P2_RED : GBeats.IM_RED, blue = p200 ? GBeats.P2_BLUE : GBeats.IM_BLUE;
-        int merge = p200 ? GBeats.P2_MERGE : GBeats.IM_MERGE, fire = p200 ? GBeats.P2_FIRE : GBeats.IM_FIRE;
-        double radius = p200 ? GBeats.P2_RADIUS : GBeats.IM_RADIUS;
-        double scale = p200 ? 1.6 : 1.0;
-        Vec3 eye = c.eye(partial);
-        Vec3 dir = c.dir();
-        Vec3 r = c.right();
-        // the incantation: each word sends a ring of light out through the air around him
-        int shift = p200 ? GBeats.P2_SHIFT : 0;
-        for (int i = 0; i < GBeats.CHANT.length; i++) {
-            float w = t - (GBeats.CHANT[i] + shift);
-            if (w >= 0 && w < 30) {
-                float k = w / 30F;
-                ink.ring(c.feet(partial).add(0, 0.2, 0), UP, 1.5 + 14 * k * scale, 0.1 + 0.3 * (1 - k), a(i % 2 == 0 ? BLUE_CORE : RED_CORE, 0.7F * (1 - k)), 96);
-                ink.ring(eye, dir, 0.8 + 3 * k, 0.05, a(WHITE, 0.6F * (1 - k)), 64);
-            }
-        }
-        if (t < fire + 1) {
-            Vec3 centre = eye.add(dir.scale(2.2 * scale)).add(0, -0.2, 0);
-            float m = smooth(span(t, merge - 10, merge));
-            Vec3 rp = eye.add(r.scale(-2.8 * scale)).add(dir.scale(1.2)).add(0, 0.8, 0).lerp(centre, m);
-            Vec3 bp = eye.add(r.scale(2.8 * scale)).add(dir.scale(1.2)).add(0, 0.8, 0).lerp(centre, m);
-            float rk = span(t, red, red + 8), bk = span(t, blue, blue + 8);
-            if (t < merge + 2) {
-                redOrb(ink, rp, 1.3 * scale * rk, t, rk, c.msg.seed());
-                blueOrb(ink, bp, 1.4 * scale * bk, t, bk, c.msg.seed());
-                if (m > 0.3F) {
-                    // the two pull at each other: a crackling bridge
-                    lightning(ink, rp.lerp(bp, 0.5), rp.distanceTo(bp) * 0.25, t, m, c.msg.seed() + 7, 6, rp.distanceTo(bp) * 0.6);
-                }
-            }
-            if (t >= merge - 1) {
-                float pk = span(t, merge - 1, merge + 10);
-                double grow = radius * (0.25 + 0.75 * smooth(span(t, merge, fire - 4)));
-                purpleOrb(ink, centre, grow * pk, t, pk, c.msg.seed());
-                // the air is sucked into it before it goes
-                for (int i = 0; i < 3; i++) {
-                    float u = ((t * 0.05F + i / 3F) % 1F);
-                    ink.ring(centre, ink.cam().subtract(centre), grow * (4 - 3 * u), 0.08 * scale, a(MAGENTA, 0.5F * u * pk), 64);
-                }
-                if (p200) {
-                    ink.flare(centre, grow * 6, grow * 0.06, a(WHITE, 0.8F * pk), t * 0.01);
-                    ink.flare(centre, grow * 4, grow * 0.05, a(MAGENTA, 0.6F * pk), t * 0.01 + 0.4);
-                }
-            }
-        }
-        // the aim: a ring of light and a four-pointed star at his fingertip, pointed down the line it will go
-        float aim = window(t, fire - 14, fire - 8, fire, fire + 3);
-        if (aim > 0.01F) {
-            Vec3 tip = hand(c, partial, true).add(dir.scale(0.6)).add(0, 0.25, 0);
-            GShade.glow(tip, 1.6 * scale * (1.4 - 0.4 * aim), GShade.MAGENTA, 0.8F * aim, 2);
-            GShade.glow(tip, 0.9 * scale, GShade.PUR_B, 0.9F * aim, 2);
-            GShade.glow(tip, 4.0 * scale, GShade.WHITE, 0.7F * aim, 4);
-            ink.ring(tip, dir, 2.4 * scale * (1.5 - 0.5 * aim), 0.03, a(MAGENTA, 0.6F * aim), 64);
-        }
-        flight(ink, c, t, fire, p200 ? GBeats.P2_SPEED : GBeats.IM_SPEED, p200 ? GBeats.P2_RANGE : GBeats.IM_RANGE, radius,
-                purpleStart(c, partial, 4.0));
-        if (p200 && t >= fire) {
-            // twice the strength: a beam of white rides inside the wake
-            float age = t - fire;
-            float f = 1 - span(age, 30, 70);
-            Vec3 from = purpleStart(c, partial, 4.0);
-            Vec3 to = from.add(dir.scale(Math.min(GBeats.P2_RANGE, age * GBeats.P2_SPEED)));
-            ink.beam(from, to, radius * 0.35, a(WHITE, 0.6F * f));
-            ink.beam(from, to, radius * 1.1, a(MAGENTA, 0.25F * f));
-        }
     }
 
     // ---- Hollow Nuke
 
     static void drawNuke(Ink ink, GCasts.Play c, float t, float partial) {
         Vec3 o = c.msg.origin(), d = c.msg.dir();
-        Vec3 g = c.msg.point();
-        Vec3 T = g;
         long seed = c.msg.seed();
-        // Blue: shot out of his right hand and swung into an orbit round him, a trail behind it
+        // as he names it, Blue gathers in his right hand; then it is shot out and swung into an orbit round him
+        float nb = window(t, GBeats.NK_V_BLUE, GBeats.NK_V_BLUE + 8, GBeats.NK_BLUE - 2, GBeats.NK_BLUE + 2);
+        if (nb > 0.01F) {
+            blueOrb(ink, hand(c, partial, true).add(0, 0.2, 0), 0.4 * nb, t, nb, seed);
+        }
         if (t >= GBeats.NK_BLUE && t < GBeats.NK_MERGE + 1) {
             float bk = span(t, GBeats.NK_BLUE, GBeats.NK_BLUE + 4);
             Vec3 bp = GBeats.nukeBlue(o, d, t);
@@ -628,7 +680,11 @@ public final class GFx {
             }
             GShade.ribbon(tail, w, GShade.BLUE_A, 0.8F * bk, 1);
         }
-        // Red: fired up out of his left hand into the sky, where it hangs, burning
+        // as he names it, Red gathers in his left; then it is fired up into the sky, where it hangs, burning
+        float nr = window(t, GBeats.NK_V_RED, GBeats.NK_V_RED + 8, GBeats.NK_RED - 2, GBeats.NK_RED + 2);
+        if (nr > 0.01F) {
+            redOrb(ink, hand(c, partial, false).add(0, 0.2, 0), 0.35 * nr, t, nr, seed);
+        }
         if (t >= GBeats.NK_RED && t < GBeats.NK_MERGE + 1) {
             float rk = span(t, GBeats.NK_RED, GBeats.NK_RED + 3);
             Vec3 rp = GBeats.nukeRed(o, d, t);
@@ -639,43 +695,107 @@ public final class GFx {
                 GShade.ribbon(new Vec3[]{from, rp}, new float[]{0.1F, 0.7F}, GShade.RED_A, 0.7F * (1 - span(t, GBeats.NK_RED_STOP, GBeats.NK_RED_STOP + 4)), 1);
             }
         }
-        // as Blue comes in, the two pull at each other: lightning between them
         if (t >= GBeats.NK_JOIN && t < GBeats.NK_MERGE) {
             Vec3 bp = GBeats.nukeBlue(o, d, t), rp = GBeats.nukeRed(o, d, t);
             lightning(ink, bp.lerp(rp, 0.5), 0.8, t, span(t, GBeats.NK_JOIN, GBeats.NK_MERGE), seed + 9, 6, bp.distanceTo(rp) * 0.6 + 2);
         }
-        // the Purple: born in the sky, swelling, then hurled down at the target
-        if (t >= GBeats.NK_MERGE - 1 && t < GBeats.NK_BLAST + 1) {
+        int fire = c.fireAt;
+        Vec3 target = c.target != null ? c.target : c.msg.point();
+        if (t >= GBeats.NK_MERGE - 1 && (fire < 0 || t < fire + GBeats.NK_DROP + 1)) {
             float pk = span(t, GBeats.NK_MERGE - 1, GBeats.NK_MERGE + 4);
-            double size = 2.5 + 7.5 * smooth(span(t, GBeats.NK_MERGE, GBeats.NK_LAUNCH));
-            Vec3 pp = GBeats.nukePurple(o, d, g, t);
+            double size = 2.5 + 7.5 * smooth(span(t, GBeats.NK_MERGE, GBeats.NK_READY + 10));
+            Vec3 pp = GBeats.nukePurple(o, d, target, t, fire);
             purpleOrb(ink, pp, size * pk, t, pk, seed);
             lightning(ink, pp, size, t, pk, seed + 11, 10, size * 3);
-            if (t >= GBeats.NK_LAUNCH) {
+            if (fire >= 0) {
                 Vec3 sky = GBeats.nukeRedPoint(o, d);
                 GShade.ribbon(new Vec3[]{sky, pp}, new float[]{(float) (size * 0.3), (float) (size * 0.9)}, GShade.PUR_A, 0.6F, 1);
+            } else if (c.mine && c.aiming(partial)) {
+                // the aim: a line of violet from it down to where he is looking
+                Vec3 where = lookedAt(c, partial);
+                if (where != null) {
+                    GShade.ribbon(new Vec3[]{pp, pp.lerp(where, 0.5), where}, new float[]{0.3F, 0.2F, 0.1F}, GShade.MAGENTA, 0.6F, 1);
+                    ink.ring(where.add(0, 0.2, 0), UP, GBeats.NK_CRATER * (0.9 + 0.1 * Math.sin(t * 0.3)), 0.25, a(MAGENTA, 0.7F), 96);
+                    ink.ring(where.add(0, 0.2, 0), UP, GBeats.NK_CRATER * 0.3, 0.15, a(VIOLET_CORE, 0.6F), 64);
+                }
             }
         }
-        if (t >= GBeats.NK_BLAST) {
-            float age = t - GBeats.NK_BLAST;
-            float k = Mth.clamp(age / 110F, 0, 1);
-            double R = GBeats.NK_CRATER * 1.6;
-            // the detonation: a white sun that swells into a violet dome, a pillar, rings racing over the land
-            float core = (float) Math.exp(-age / 5.0);
-            ink.glow(T, R * (1.0 + 1.5 * (1 - core)), a(VIOLET_CORE, 0.6F * core));
-            GShade.orb(g.add(0, R * 0.3, 0), R * 0.55 * (1 - k * 0.7), 2, GShade.PUR_A, GShade.PUR_B, 1.0F * (1 - k), c.msg.seed());
-            ink.sphere(true, g, R * (0.4 + 0.9 * Math.sqrt(Math.min(1, age / 16F))), a(PURPLE, 0.45F * (1 - k) * (1 - k)), a(MAGENTA, 0.55F * (1 - k)), 1.2);
-            ink.sphere(false, g.add(0, R * 0.2, 0), R * (0.6 + 0.9 * k), a(DARK_VIOLET, 0.45F * window(age, 6, 20, 60, 110)), a(NIGHT, 0), 0.7);
-            ink.beam(g, g.add(0, R * 5 * Math.sqrt(Math.min(1, age / 20F)), 0), R * 0.5 * (1 - k), a(VIOLET_CORE, 0.7F * (1 - k)));
-            ink.beam(g, g.add(0, R * 5 * Math.sqrt(Math.min(1, age / 20F)), 0), R * 1.4 * (1 - k), a(MAGENTA, 0.25F * (1 - k)));
-            float sk = Mth.clamp(age / 30F, 0, 1);
-            if (sk < 1) {
-                ink.ring(g.add(0, 0.5, 0), UP, R * (0.5 + 4.5 * Math.sqrt(sk)), 1 + R * 0.04, a(WHITE, 0.95F * (1 - sk)), 160);
-                ink.ring(g.add(0, 1.5, 0), UP, R * (0.4 + 3.6 * Math.sqrt(sk)), R * 0.15, a(MAGENTA, 0.4F * (1 - sk)), 160);
-                ink.ring(g.add(0, R * 0.8, 0), UP, R * (0.3 + 3.0 * Math.sqrt(sk)), R * 0.08, a(PURPLE, 0.4F * (1 - sk)), 160);
-            }
-            lightning(ink, g.add(0, R * 0.5, 0), R * 0.8, t, 1 - k, c.msg.seed() + 21, 16, R * 2.5);
-            burst(ink, g, R * 0.4, age, c.msg.seed(), VIOLET_CORE, PURPLE, DARK_VIOLET);
+        if (fire >= 0 && t >= fire + GBeats.NK_DROP) {
+            nukeBlast(ink, target, t - fire - GBeats.NK_DROP, t, seed);
         }
+    }
+
+    /** Where the local player's gaze meets the land (for aiming the nuke). */
+    static Vec3 lookedAt(GCasts.Play c, float partial) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) {
+            return null;
+        }
+        Vec3 eye = mc.player.getEyePosition(partial), look = mc.player.getViewVector(partial);
+        net.minecraft.world.phys.BlockHitResult h = mc.level.clip(new net.minecraft.world.level.ClipContext(eye, eye.add(look.scale(GBeats.NK_RANGE)),
+                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, mc.player));
+        return ground(h.getLocation());
+    }
+
+    /**
+     * The detonation: a violet sun at the heart, a churning fireball of billows that climbs into a mushroom column,
+     * shock rings racing out over the land, lightning, flung debris, and the dark cloud left behind.
+     */
+    static void nukeBlast(Ink ink, Vec3 g, float age, float t, long seed) {
+        if (age > 160) {
+            return;
+        }
+        double R = GBeats.NK_CRATER * 1.6;
+        float k = Mth.clamp(age / 140F, 0, 1);
+        float core = (float) Math.exp(-age / 6.0);
+        // the heart: the imaginary mass, swelling and fading
+        GShade.orb(g.add(0, R * 0.25, 0), R * (0.25 + 0.35 * Math.sqrt(Math.min(1, age / 10F))) * (1 - k * 0.8), 2, GShade.PUR_A, GShade.PUR_B, 1.0F * (1 - k), seed);
+        ink.glow(g.add(0, R * 0.3, 0), R * (1.0 + 1.0 * (1 - core)), a(VIOLET_CORE, 0.45F * core));
+        // shock rings over the land
+        for (int i = 0; i < 3; i++) {
+            float sk = Mth.clamp((age - i * 5) / 32F, 0, 1);
+            if (sk > 0 && sk < 1) {
+                ink.ring(g.add(0, 0.5 + i, 0), UP, R * (0.5 + 4.5 * Math.sqrt(sk)), 0.6 + R * 0.03, a(i == 0 ? WHITE : MAGENTA, 0.85F * (1 - sk)), 160);
+            }
+        }
+        // a dome of pressure, a thin shell racing out
+        float dk = Mth.clamp(age / 18F, 0, 1);
+        if (dk < 1) {
+            ink.sphere(true, g, R * (0.4 + 2.2 * Math.sqrt(dk)), a(PURPLE, 0.0F), a(VIOLET_CORE, 0.45F * (1 - dk)), 3.0);
+        }
+        // the fireball: billows rolling outward and climbing into a column, cooling to smoke
+        Random rnd = new Random(seed);
+        float grow = (float) (1 - Math.exp(-age / 8.0));
+        for (int i = 0; i < 60; i++) {
+            double th = rnd.nextDouble() * Math.PI * 2, ph = Math.acos(rnd.nextDouble() * 1.6 - 0.6);
+            double speed = 0.6 + rnd.nextDouble() * 0.6;
+            boolean climb = i % 3 == 0;
+            double rad = R * (0.3 + 0.8 * grow * speed);
+            double lift = climb ? R * (0.4 + 3.6 * Math.pow(k, 0.7) * speed) : R * 0.5 * grow;
+            double roll = age * 0.02 * (rnd.nextBoolean() ? 1 : -1);
+            Vec3 dir = new Vec3(Math.cos(th + roll) * Math.sin(ph), Math.cos(ph), Math.sin(th + roll) * Math.sin(ph));
+            Vec3 p = g.add(dir.x * rad * (climb ? 0.3 : 1), Math.max(0, dir.y) * rad * 0.5 + lift, dir.z * rad * (climb ? 0.3 : 1));
+            double size = R * (0.25 + 0.2 * rnd.nextDouble()) * (0.5 + grow) * (1 + 0.6 * k);
+            float heat = (float) Math.exp(-age / (12.0 + 16 * rnd.nextDouble()));
+            float life = 1 - Mth.clamp((age - 50 - rnd.nextFloat() * 60) / 40F, 0, 1);
+            if (life <= 0.01F) {
+                continue;
+            }
+            int hot = heat > 0.6F ? VIOLET_CORE : heat > 0.3F ? MAGENTA : PURPLE;
+            ink.glow(p, size * 1.1, a(hot, (0.06F + 0.2F * heat) * life));
+            float smoke = (1 - heat) * life * Mth.clamp((age - 8) / 14F, 0, 1);
+            if (smoke > 0.02F) {
+                ink.sphere(false, p.add(0, size * 0.4, 0), size * 1.1, a(DARK_VIOLET, 0.6F * smoke), a(NIGHT, 0.0F), 0.8);
+            }
+        }
+        // the column of light standing on it, thinning away
+        float col = 1 - span(age, 6, 70);
+        if (col > 0.01F) {
+            Vec3 top = g.add(0, R * 4 * Math.sqrt(Math.min(1, age / 20F)), 0);
+            GShade.ribbon(new Vec3[]{g, top}, new float[]{(float) (R * 0.5), (float) (R * 0.2)}, GShade.PUR_B, 0.6F * col, 1);
+            GShade.ribbon(new Vec3[]{g, top}, new float[]{(float) (R * 1.2), (float) (R * 0.6)}, GShade.MAGENTA, 0.3F * col, 1);
+        }
+        lightning(ink, g.add(0, R * 0.4, 0), R * 0.5, t, 1 - k, seed + 21, 14, R * 2.2);
+        burst(ink, g, R * 0.3, age, seed, VIOLET_CORE, PURPLE, DARK_VIOLET);
     }
 }
