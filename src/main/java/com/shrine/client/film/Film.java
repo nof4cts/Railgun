@@ -160,7 +160,7 @@ public final class Film {
             {2.3F, 3.6F, "Fuga (Open)"},
             {5.3F, 7.1F, "Those are..."},
             {8.8F, 11.9F, "Fire aspect?!"},
-            {12.2F, 16.1F, "I thought your enchantments were erasing and corrupting..."},
+            {12.2F, 16.1F, "I thought your enchantments were Dismantle and Cleave..."},
             {16.3F, 19.6F, "Arm yourself!"},
             {19.9F, 22.9F, "Let's have a contest of firepower."},
     };
