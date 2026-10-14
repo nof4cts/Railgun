@@ -13,7 +13,7 @@ public final class CutsceneOverlay {
       if (com.shrine.client.film.Film.draw(g, partial)) {
          return;
       }
-      if (Cutscene.active()) {
+      if (Cutscene.running()) {
          Minecraft mc = Minecraft.getInstance();
          Font font = mc.font;
          int w = g.guiWidth();

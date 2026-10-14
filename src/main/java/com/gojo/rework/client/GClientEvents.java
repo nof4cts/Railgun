@@ -82,6 +82,10 @@ public final class GClientEvents {
             view.mulPose(com.mojang.math.Axis.XP.rotationDegrees(cam.getXRot()));
             view.mulPose(com.mojang.math.Axis.YP.rotationDegrees(cam.getYRot() + 180.0F));
             INK.end(view);
+            // the orbs, arcs and glows, in the original technique's shaders
+            Minecraft mc = Minecraft.getInstance();
+            float time = mc.level == null ? 0 : (mc.level.getGameTime() % 100000L) + e.getPartialTick();
+            com.gojo.rework.client.fx.GShade.flush(e.getPoseStack().last().pose(), e.getProjectionMatrix(), pos, time);
         }
 
         @SubscribeEvent(priority = EventPriority.LOW)

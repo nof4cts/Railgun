@@ -1,6 +1,7 @@
 package com.gojo.rework.client;
 
 import com.gojo.rework.client.fx.Ink;
+import com.gojo.rework.client.fx.GShade;
 import com.gojo.rework.client.fx.Look;
 import com.gojo.rework.common.GBeats;
 import com.gojo.rework.common.GMove;
@@ -84,9 +85,8 @@ public final class GFx {
         if (r <= 0.02 || k <= 0.01F) {
             return;
         }
-        ink.glow(c, r * 3.2, a(BLUE, 0.35F * k));
-        ink.sphere(true, c, r, a(BLUE_CORE, 0.85F * k), a(DEEP_BLUE, 0.9F * k), 1.2);
-        ink.glow(c, r * 0.9, a(WHITE, 0.9F * k));
+        // the body: the original orb shader's inward spiral
+        com.gojo.rework.client.fx.GShade.orb(c, r, 0, com.gojo.rework.client.fx.GShade.BLUE_A, com.gojo.rework.client.fx.GShade.BLUE_B, 1.3F * k, seed);
         Random rnd = new Random(seed);
         // spiral arms falling inward
         for (int s = 0; s < 6; s++) {
@@ -114,7 +114,7 @@ public final class GFx {
             Vec3 p = c.add(d.scale(r * (4.5 - 3.5 * u)));
             ink.beam(p, p.add(c.subtract(p).normalize().scale(r * 0.6)), r * 0.04, a(BLUE_CORE, k * (float) u * 0.8F));
         }
-        ink.ring(c, ink.cam().subtract(c), r * 1.15, r * 0.06, a(BLUE_CORE, 0.6F * k), 48);
+        com.gojo.rework.client.fx.GShade.glow(c, r * 1.25, com.gojo.rework.client.fx.GShade.BLUE_B, 0.6F * k, 2);
     }
 
     /** Red: a blazing point that bursts with long straight rays. */
@@ -122,16 +122,17 @@ public final class GFx {
         if (r <= 0.02 || k <= 0.01F) {
             return;
         }
-        ink.glow(c, r * 4.0, a(RED, 0.4F * k));
-        ink.sphere(true, c, r, a(RED_CORE, 0.95F * k), a(RED, 0.85F * k), 1.4);
-        ink.glow(c, r * 1.1, a(WHITE, 0.9F * k));
+        // the body: the original orb shader's turbulent white-hot core; long straight rays bursting out of it
+        com.gojo.rework.client.fx.GShade.orb(c, r, 1, com.gojo.rework.client.fx.GShade.RED_A, com.gojo.rework.client.fx.GShade.RED_B, 1.5F * k, seed);
         Random rnd = new Random(seed ^ 0x5EED);
-        for (int i = 0; i < 9; i++) {
-            double ang = rnd.nextDouble() * Math.PI * 2 + t * 0.02 * (rnd.nextBoolean() ? 1 : -1);
-            double len = r * (5 + 6 * rnd.nextDouble()) * (0.7 + 0.3 * Math.sin(t * 0.5 + i));
-            ink.flare(c, len, r * 0.09, a(i % 3 == 0 ? WHITE : RED, 0.85F * k), ang);
+        for (int i = 0; i < 8; i++) {
+            Vec3 d = new Vec3(rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5, rnd.nextDouble() - 0.5).normalize();
+            double len = r * (4 + 6 * rnd.nextDouble()) * (0.7 + 0.3 * Math.sin(t * 0.5 + i));
+            com.gojo.rework.client.fx.GShade.ribbon(new Vec3[]{c.add(d.scale(r * 0.8)), c.add(d.scale(r + len))}, new float[]{(float) (r * 0.1), 0.01F},
+                    com.gojo.rework.client.fx.GShade.RED_A, 0.9F * k, 1);
         }
-        ink.ring(c, ink.cam().subtract(c), r * 1.6 + Math.sin(t * 0.6) * r * 0.2, r * 0.08, a(RED, 0.7F * k), 40);
+        com.gojo.rework.client.fx.GShade.glow(c, r * 3.5, com.gojo.rework.client.fx.GShade.RED_B, 0.5F * k, 4);
+        com.gojo.rework.client.fx.GShade.glow(c, r * 1.7 + Math.sin(t * 0.6) * r * 0.2, com.gojo.rework.client.fx.GShade.RED_A, 0.7F * k, 2);
     }
 
     /** Purple: a violet mass with a white heart, its shell churning, lightning crawling over it. */
@@ -139,15 +140,11 @@ public final class GFx {
         if (r <= 0.02 || k <= 0.01F) {
             return;
         }
-        ink.glow(c, r * 3.0, a(PURPLE, 0.4F * k));
-        ink.glow(c, r * 1.8, a(MAGENTA, 0.25F * k));
-        ink.sphere(false, c, r * 1.02, a(DARK_VIOLET, 0.55F * k), a(DARK_VIOLET, 0.0F), 0.8);
-        ink.sphere(true, c, r, a(VIOLET_CORE, 0.95F * k), a(PURPLE, 0.9F * k), 1.1);
-        ink.glow(c, r * 0.85, a(WHITE, k));
-        Vec3 view = ink.cam().subtract(c);
-        ink.ring(c, view, r * 1.08, r * 0.08, a(WHITE, 0.8F * k), 64);
-        ink.ring(c, view, r * (1.35 + 0.1 * Math.sin(t * 0.7)), r * 0.05, a(MAGENTA, 0.6F * k), 64);
-        lightning(ink, c, r, t, k, seed, 7, r * 1.9);
+        // the body: the original orb shader's inky violet mass, white veins, blazing shell
+        com.gojo.rework.client.fx.GShade.orb(c, r, 2, com.gojo.rework.client.fx.GShade.PUR_A, com.gojo.rework.client.fx.GShade.PUR_B, 1.0F * k, seed);
+        com.gojo.rework.client.fx.GShade.glow(c, r * 1.15, com.gojo.rework.client.fx.GShade.PUR_B, 0.7F * k, 2);
+        com.gojo.rework.client.fx.GShade.glow(c, r * (1.45 + 0.1 * Math.sin(t * 0.7)), com.gojo.rework.client.fx.GShade.MAGENTA, 0.45F * k, 2);
+        lightning(ink, c, r, t, k, seed, 7, r * 2.0);
     }
 
     /** Jagged bolts of light crawling over and off a sphere, re-struck every couple of ticks. */
@@ -159,19 +156,18 @@ public final class GFx {
             Vec3 side = Ink.basis(d)[0];
             int n = 7;
             Vec3[] pts = new Vec3[n];
-            double[] w = new double[n];
-            int[] cols = new int[n];
+            float[] w = new float[n];
             double len = reach * (0.6 + rnd.nextDouble() * 0.6);
             for (int i = 0; i < n; i++) {
                 double u = i / (double) (n - 1);
                 Vec3 p = c.add(d.scale(r * 0.9 + (len - r * 0.9) * u));
-                Vec3 j = side.scale((rnd.nextDouble() - 0.5) * r * 0.45 * Math.sin(Math.PI * u))
-                        .add(Ink.basis(d)[1].scale((rnd.nextDouble() - 0.5) * r * 0.45 * Math.sin(Math.PI * u)));
+                Vec3 j = side.scale((rnd.nextDouble() - 0.5) * r * 0.5 * Math.sin(Math.PI * u))
+                        .add(Ink.basis(d)[1].scale((rnd.nextDouble() - 0.5) * r * 0.5 * Math.sin(Math.PI * u)));
                 pts[i] = p.add(j);
-                w[i] = r * 0.05 * (1 - u * 0.8);
-                cols[i] = a(i < 2 ? WHITE : (rnd.nextBoolean() ? MAGENTA : VIOLET_CORE), k * (float) (1 - u * 0.6));
+                w[i] = (float) (r * 0.09 * (1 - u * 0.7));
             }
-            ink.ribbon(pts, w, cols);
+            // the crackling-arc shader of the original technique
+            com.gojo.rework.client.fx.GShade.ribbon(pts, w, rnd.nextBoolean() ? com.gojo.rework.client.fx.GShade.MAGENTA : com.gojo.rework.client.fx.GShade.PUR_B, k, 3);
         }
     }
 
@@ -182,8 +178,8 @@ public final class GFx {
         }
         float core = (float) Math.exp(-age / 2.5);
         float k = age / 60F;
-        ink.glow(g, big * (1.5 + 2 * (1 - core)), a(WHITE, 0.95F * core));
-        ink.sphere(true, g, big * (0.4 + 1.1 * Math.sqrt(Math.min(1, age / 10F))), a(hot, 0.8F * (1 - k) * (1 - k)), a(mid, 0.6F * (1 - k)), 1.3);
+        ink.glow(g, big * (1.0 + 1.2 * (1 - core)), a(hot, 0.55F * core));
+        ink.sphere(true, g, big * (0.4 + 1.1 * Math.sqrt(Math.min(1, age / 10F))), a(mid, 0.35F * (1 - k) * (1 - k)), a(mid, 0.5F * (1 - k)), 1.3);
         float sk = Mth.clamp(age / 12F, 0, 1);
         if (sk < 1) {
             ink.ring(g.add(0, 0.3, 0), UP, big * (0.5 + 3.5 * Math.sqrt(sk)), big * 0.06 + 0.3, a(WHITE, 0.9F * (1 - sk)), 96);
@@ -191,7 +187,7 @@ public final class GFx {
         }
         Random rnd = new Random(seed);
         for (int i = 0; i < 14; i++) {
-            ink.flare(g, big * (2 + 3 * rnd.nextDouble()) * core, big * 0.04, a(i % 2 == 0 ? WHITE : hot, core), rnd.nextDouble() * Math.PI);
+            ink.flare(g, big * (2 + 3 * rnd.nextDouble()) * core, big * 0.03, a(mid, 0.7F * core), rnd.nextDouble() * Math.PI);
         }
         for (int i = 0; i < 26; i++) {
             double th = rnd.nextDouble() * Math.PI * 2;
@@ -483,20 +479,29 @@ public final class GFx {
     static void drawHanami(Ink ink, GCasts.Play c, float t, float partial) {
         Vec3 dir = c.dir();
         if (t < GBeats.HP_FIRE + 1) {
-            Vec3 l = hand(c, partial, false), r = hand(c, partial, true);
-            Vec3 centre = c.eye(partial).add(dir.scale(1.2)).add(0, -0.35, 0);
-            float m = smooth(span(t, GBeats.HP_MERGE - 6, GBeats.HP_MERGE));
-            float bk = span(t, GBeats.HP_BLUE, GBeats.HP_BLUE + 6), rk = span(t, GBeats.HP_RED, GBeats.HP_RED + 6);
-            // Blue in the left hand, Red in the right, then both drawn into one point before him
-            Vec3 bp = l.add(c.right().scale(-0.25)).lerp(centre, m), rp = r.add(c.right().scale(0.25)).lerp(centre, m);
-            if (t < GBeats.HP_MERGE + 2) {
-                blueOrb(ink, bp, 0.35 * bk, t, bk, c.msg.seed());
-                redOrb(ink, rp, 0.3 * rk, t, rk, c.msg.seed());
+            // as it is choreographed: he squares up, Red blooms at his left and Blue at his right, each as big as he
+            // is, then both are pulled into one point before his outstretched hand and become Purple, which he holds
+            // there, crackling, before it goes
+            Vec3 chest = c.feet(partial).add(0, 1.3, 0);
+            Vec3 r = c.right();
+            Vec3 centre = c.eye(partial).add(dir.scale(2.4)).add(0, -0.3, 0);
+            float m = smooth(span(t, GBeats.HP_MERGE - 5, GBeats.HP_MERGE));
+            float rk = smooth(span(t, GBeats.HP_BLUE, GBeats.HP_BLUE + 7)), bk = smooth(span(t, GBeats.HP_RED, GBeats.HP_RED + 7));
+            Vec3 rp = chest.add(r.scale(-2.6)).add(dir.scale(0.6)).lerp(centre, m), bp = chest.add(r.scale(2.6)).add(dir.scale(0.6)).lerp(centre, m);
+            if (t < GBeats.HP_MERGE + 1) {
+                redOrb(ink, rp, 1.0 * rk * (1 - 0.4 * m), t, rk, c.msg.seed());
+                blueOrb(ink, bp, 1.1 * bk * (1 - 0.4 * m), t, bk, c.msg.seed());
+                if (m > 0.2F) {
+                    lightning(ink, rp.lerp(bp, 0.5), 0.6, t, m, c.msg.seed() + 5, 4, rp.distanceTo(bp) * 0.6);
+                }
             }
             if (t >= GBeats.HP_MERGE - 1) {
-                float pk = span(t, GBeats.HP_MERGE - 1, GBeats.HP_MERGE + 6);
-                purpleOrb(ink, centre, 0.25 + 0.75 * pk, t, pk, c.msg.seed());
-                lightning(ink, centre, 0.6, t, pk, c.msg.seed() + 3, 5, 3.5);
+                float pk = span(t, GBeats.HP_MERGE - 1, GBeats.HP_MERGE + 5);
+                double size = 0.5 + 1.3 * smooth(span(t, GBeats.HP_MERGE, GBeats.HP_FIRE - 2));
+                purpleOrb(ink, centre, size * pk, t, pk, c.msg.seed());
+                // a thread of violet from his fingertips to it
+                Vec3 h = hand(c, partial, true).add(dir.scale(0.4));
+                GShade.ribbon(new Vec3[]{h, centre}, new float[]{0.04F, 0.12F}, GShade.PUR_B, 0.8F * pk, 1);
             }
         }
         flight(ink, c, t, GBeats.HP_FIRE, GBeats.HP_SPEED, GBeats.HP_RANGE, GBeats.HP_RADIUS, purpleStart(c, partial, 2.2));
@@ -559,12 +564,12 @@ public final class GFx {
         if (t < fire + 1) {
             Vec3 centre = eye.add(dir.scale(2.2 * scale)).add(0, -0.2, 0);
             float m = smooth(span(t, merge - 10, merge));
-            Vec3 rp = eye.add(r.scale(2.4 * scale)).add(dir.scale(1.2)).add(0, 0.6, 0).lerp(centre, m);
-            Vec3 bp = eye.add(r.scale(-2.4 * scale)).add(dir.scale(1.2)).add(0, 0.6, 0).lerp(centre, m);
+            Vec3 rp = eye.add(r.scale(-2.8 * scale)).add(dir.scale(1.2)).add(0, 0.8, 0).lerp(centre, m);
+            Vec3 bp = eye.add(r.scale(2.8 * scale)).add(dir.scale(1.2)).add(0, 0.8, 0).lerp(centre, m);
             float rk = span(t, red, red + 8), bk = span(t, blue, blue + 8);
             if (t < merge + 2) {
-                redOrb(ink, rp, 0.8 * scale * rk, t, rk, c.msg.seed());
-                blueOrb(ink, bp, 0.9 * scale * bk, t, bk, c.msg.seed());
+                redOrb(ink, rp, 1.3 * scale * rk, t, rk, c.msg.seed());
+                blueOrb(ink, bp, 1.4 * scale * bk, t, bk, c.msg.seed());
                 if (m > 0.3F) {
                     // the two pull at each other: a crackling bridge
                     lightning(ink, rp.lerp(bp, 0.5), rp.distanceTo(bp) * 0.25, t, m, c.msg.seed() + 7, 6, rp.distanceTo(bp) * 0.6);
@@ -584,6 +589,15 @@ public final class GFx {
                     ink.flare(centre, grow * 4, grow * 0.05, a(MAGENTA, 0.6F * pk), t * 0.01 + 0.4);
                 }
             }
+        }
+        // the aim: a ring of light and a four-pointed star at his fingertip, pointed down the line it will go
+        float aim = window(t, fire - 14, fire - 8, fire, fire + 3);
+        if (aim > 0.01F) {
+            Vec3 tip = hand(c, partial, true).add(dir.scale(0.6)).add(0, 0.25, 0);
+            GShade.glow(tip, 1.6 * scale * (1.4 - 0.4 * aim), GShade.MAGENTA, 0.8F * aim, 2);
+            GShade.glow(tip, 0.9 * scale, GShade.PUR_B, 0.9F * aim, 2);
+            GShade.glow(tip, 4.0 * scale, GShade.WHITE, 0.7F * aim, 4);
+            ink.ring(tip, dir, 2.4 * scale * (1.5 - 0.5 * aim), 0.03, a(MAGENTA, 0.6F * aim), 64);
         }
         flight(ink, c, t, fire, p200 ? GBeats.P2_SPEED : GBeats.IM_SPEED, p200 ? GBeats.P2_RANGE : GBeats.IM_RANGE, radius,
                 purpleStart(c, partial, 4.0));

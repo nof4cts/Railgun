@@ -72,13 +72,18 @@ anim('g_max_red', 84, [(0, STAND, None), (8, brace, SETTLE), (26, brace_b, BREAT
                        (60, kick, None), (84, STAND, GLIDE)])
 
 # ---- Hollow Purple (Hanami) - Blue in the left, Red in the right, pressed together, flicked
-left_out = P(STAND, left_arm=[-58, 0, -54], head=[0, -18, 0], torso=[0, -6, 0])
-both_out = P(left_out, right_arm=[-58, 0, 54], head=[0, 0, 0], torso=[0, 0, 0])
-together = P(right_arm=[-86, -34, 0], left_arm=[-86, 34, 0], torso=[10, 0, 0], head=[6, 0, 0], right_leg=[-10, 0, 4], left_leg=[10, 0, -4], pos=[0, -2, 0])
-wind = P(together, right_arm=[-70, -20, 10], left_arm=[-80, 30, 0], torso=[8, -14, 0])
-flk = P(right_arm=[-104, 10, 2], left_arm=[10, 0, -18], torso=[-2, 16, 0], head=[-4, -10, 0], right_leg=[12, 0, 4], left_leg=[-16, 0, -4], pos=[0, -1, 0])
-anim('g_purple', 72, [(0, STAND, None), (4, left_out, SETTLE), (10, both_out, SETTLE), (18, both_out, None), (22, together, SNAP), (27, wind, SETTLE),
-                      (30, flk, SNAP), (36, P(flk, right_arm=[-98, 10, 2]), SETTLE), (52, flk, None), (72, STAND, GLIDE)])
+# choreographed as the stick-figure animation does it: he squares up and spreads both hands out to his sides (Red
+# blooms at the left, Blue at the right), draws them in, thrusts his right hand out at the target and holds it there
+# while the Purple grows in front of it, then drives it forward with a lean.
+squat = P(STAND, right_leg=[-14, 0, 8], left_leg=[14, 0, -8], torso=[6, 0, 0], pos=[0, -2, 0])
+spread = P(squat, left_arm=[-24, 0, -78], right_arm=[-24, 0, 78], head=[-4, 0, 0])
+spread_b = P(spread, left_arm=[-28, 0, -82], right_arm=[-28, 0, 82])
+pull = P(squat, right_arm=[-70, -30, 10], left_arm=[-70, 30, -10], torso=[10, 0, 0], head=[4, 0, 0])
+aim = P(squat, right_arm=[-90, 4, 0], left_arm=[-30, 30, -12], torso=[2, -14, 0], head=[0, 12, 0], right_leg=[-18, 0, 6], left_leg=[18, 0, -6])
+aim_b = P(aim, right_arm=[-92, 4, 0])
+drive = P(right_arm=[-96, 8, 0], left_arm=[20, 0, -22], torso=[16, -6, 0], head=[-8, 4, 0], right_leg=[22, 0, 4], left_leg=[-28, 0, -4], pos=[0, -3, 0])
+anim('g_purple', 72, [(0, STAND, None), (3, spread, SETTLE), (14, spread_b, BREATH), (18, pull, IN), (21, aim, SNAP), (29, aim_b, BREATH),
+                      (31, drive, SNAP), (38, P(drive, torso=[12, -6, 0]), SETTLE), (54, drive, None), (72, STAND, GLIDE)])
 
 
 # ---- the Purples spoken in full (Toji's, and the 200%)
@@ -88,12 +93,14 @@ def chanted(name, length, shift, red, blue, merge, fire):
     keys = [(0, STAND, None), (10, floatp, GLIDE), (16 + shift, pray, SETTLE)]
     for i, c in enumerate([14, 36, 58, 80]):
         keys.append((c + shift + 2, P(pray, head=[6 + 4 * (i % 2), (-1) ** i * 6, 0], right_arm=[-74 - i * 2, -42, 0], left_arm=[-74 - i * 2, 42, 0]), BREATH))
-    open_r = P(floatp, right_arm=[-36, 0, 72], left_arm=[-60, 30, 0], head=[0, -16, 0])
-    open_b = P(open_r, left_arm=[-36, 0, -72], head=[0, 16, 0])
+    # Red forms at his left, Blue at his right: each hand opens toward its colour
+    open_r = P(floatp, left_arm=[-36, 0, -72], right_arm=[-60, -30, 0], head=[0, 16, 0])
+    open_b = P(open_r, right_arm=[-36, 0, 72], head=[0, -10, 0])
     press = P(floatp, right_arm=[-90, -30, 0], left_arm=[-90, 30, 0], torso=[8, 0, 0], head=[4, 0, 0])
-    back = P(press, right_arm=[-40, -10, 30], left_arm=[-70, 30, -10], torso=[4, -20, 0], head=[0, 14, 0])
-    shot = P(floatp, right_arm=[-102, 8, 0], left_arm=[0, 0, -24], torso=[-4, 16, 0], head=[-6, -8, 0])
-    keys += [(red, open_r, SETTLE), (blue, open_b, SETTLE), (merge, press, SNAP), (fire - 6, back, IN), (fire, shot, SNAP),
+    # the aim: his right arm straight out at the target, the left pulled back, held while the ring forms at his fingertip
+    back = P(floatp, right_arm=[-90, 2, 0], left_arm=[-20, 20, -30], torso=[0, -16, 0], head=[0, 14, 0])
+    shot = P(floatp, right_arm=[-96, 6, 0], left_arm=[10, 0, -30], torso=[10, -4, 0], head=[-6, 2, 0])
+    keys += [(red, open_r, SETTLE), (blue, open_b, SETTLE), (merge, press, SNAP), (fire - 14, back, SNAP), (fire, shot, SNAP),
              (fire + 10, P(shot, right_arm=[-96, 8, 0]), SETTLE), (length - 24, shot, None), (length, STAND, GLIDE)]
     keys.sort(key=lambda k: k[0])
     anim(name, length, keys)

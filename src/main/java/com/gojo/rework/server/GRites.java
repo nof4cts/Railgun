@@ -528,11 +528,51 @@ public final class GRites {
         if (t == GBeats.DV_VOID) {
             sound(c.level, c.p.position(), Gojo2.DOMAIN_VOID.get(), 8.0F, 1.0F);
         }
+        if (t == GBeats.DV_FLASH1) {
+            // whoever is inside now is shut in with him
+            for (LivingEntity e : around(c, c.feet, GBeats.DV_RADIUS)) {
+                if (e.position().distanceTo(c.feet) <= GBeats.DV_RADIUS) {
+                    c.hit.add(e.getId());
+                }
+            }
+        }
         if (t >= GBeats.DV_FLASH1 && t < GBeats.DV_HOLD) {
+            barrier(c, c.feet, GBeats.DV_RADIUS);
             hold(c, c.feet, GBeats.DV_RADIUS, t % 10 == 0, t >= GBeats.DV_VOID && t % 40 == 0 ? 2 : 0);
             if (t % 20 == 0) {
                 c.p.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 30, 2, false, false));
                 c.p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 30, 1, false, false));
+            }
+        }
+    }
+
+    /**
+     * The domain is closed: nobody shut in can leave, nobody outside can enter (both are thrown back from the
+     * boundary), and nothing thrown passes through it. Only Gojo moves freely.
+     */
+    static void barrier(Cast c, Vec3 centre, double radius) {
+        for (Entity e : c.level.getEntities(c.p, new AABB(centre, centre).inflate(radius + 4))) {
+            if (e == c.p) {
+                continue;
+            }
+            Vec3 off = e.position().subtract(centre);
+            double d = off.length();
+            Vec3 dir = d < 1e-4 ? c.flat() : off.scale(1 / d);
+            if (e instanceof LivingEntity) {
+                boolean in = c.hit.contains(e.getId());
+                if (in && d > radius - 1.0) {
+                    Vec3 back = centre.add(dir.scale(radius - 1.6));
+                    e.teleportTo(back.x, Math.max(back.y, centre.y), back.z);
+                    e.setDeltaMovement(dir.scale(-0.4));
+                    e.hurtMarked = true;
+                } else if (!in && d < radius + 0.6) {
+                    Vec3 out = centre.add(dir.scale(radius + 1.2));
+                    e.teleportTo(out.x, Math.max(out.y, e.getY()), out.z);
+                    e.setDeltaMovement(dir.scale(0.8).add(0, 0.2, 0));
+                    e.hurtMarked = true;
+                }
+            } else if (e instanceof Projectile && Math.abs(d - radius) < 1.5) {
+                e.discard();
             }
         }
     }

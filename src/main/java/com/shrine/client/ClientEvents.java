@@ -95,7 +95,7 @@ public final class ClientEvents {
 
       @SubscribeEvent
       public static void onMovementInput(MovementInputUpdateEvent event) {
-         if (Cutscene.active()) {
+         if (Cutscene.running()) {
             Input in = event.getInput();
             in.forwardImpulse = 0.0F;
             in.leftImpulse = 0.0F;
@@ -107,14 +107,14 @@ public final class ClientEvents {
 
       @SubscribeEvent
       public static void onRenderHand(RenderHandEvent event) {
-         if (Cutscene.active()) {
+         if (Cutscene.running()) {
             event.setCanceled(true);
          }
       }
 
       @SubscribeEvent
       public static void onOverlay(Pre event) {
-         if (Cutscene.active()) {
+         if (Cutscene.running()) {
             event.setCanceled(true);
          }
       }

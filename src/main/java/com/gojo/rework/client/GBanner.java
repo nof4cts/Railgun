@@ -123,12 +123,14 @@ public final class GBanner {
         // him, large in the panel (clipped to its inner band)
         Entity e = p.caster();
         if (e instanceof LivingEntity le && k > 0.05F) {
-            int top = cy - (int) (bandH * 0.42), bottom = cy + (int) (bandH * 0.42);
-            g.enableScissor(0, top, w, bottom);
-            int scale = (int) (bandH * 0.95);
-            int px = (int) (cx - w * 0.06 + slide), py = cy + (int) (scale * 1.42);
-            InventoryScreen.renderEntityInInventoryFollowsMouse(g, px, py, scale, px - w * 0.25F, py - scale * 1.9F, le);
-            g.disableScissor();
+            // the whole of him, standing in the panel. Drawn as the third-person body (the cutscene camera counts as
+            // first person, which would leave only his arms)
+            net.minecraft.client.CameraType was = mc.options.getCameraType();
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+            int scale = (int) (bandH * 0.43);
+            int px = (int) (cx - w * 0.04 + slide), py = cy + (int) (bandH * 0.41);
+            InventoryScreen.renderEntityInInventoryFollowsMouse(g, px, py, scale, px - w * 0.12F, py - scale * 2.2F, le);
+            mc.options.setCameraType(was);
         }
         // the white edges of the panel, drawn over him
         g.pose().pushPose();

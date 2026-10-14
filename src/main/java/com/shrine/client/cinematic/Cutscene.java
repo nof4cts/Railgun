@@ -28,7 +28,13 @@ public final class Cutscene {
    private Cutscene() {
    }
 
+   /** Any cutscene is playing: Sukuna's, or Gojo's (other HUDs ask here to hide themselves). */
    public static boolean active() {
+      return active != null || com.gojo.rework.client.cam.GDirector.active();
+   }
+
+   /** Sukuna's own cutscene is playing. */
+   public static boolean running() {
       return active != null;
    }
 
