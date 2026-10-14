@@ -14,9 +14,19 @@ sc.cycles.denoiser = 'OPENIMAGEDENOISE'
 sc.render.use_persistent_data = True
 sc.render.image_settings.file_format = 'PNG'
 sc.render.image_settings.color_mode = 'RGB'
+# the ending without the arrow's explosion: the blast's fireball, shell and burning blobs (and their light) are left
+# out, so the shot after the release shows only the golem down on the ground, burning
+for o in bpy.data.objects:
+    if o.name.startswith(('VFX_blast', 'VFX_blob')) or o.name == 'L_blast':
+        if o.animation_data:
+            o.animation_data_clear()
+        o.hide_render = True
+        o.hide_viewport = True
+FROM = 2323
 frames = list(range(sc.frame_start, sc.frame_end + 1, 2))
-for i, f in enumerate(frames):
-    if i % jobs != job:
+todo = [(i, f) for i, f in enumerate(frames) if f >= FROM]
+for k, (i, f) in enumerate(todo):
+    if k % jobs != job:
         continue
     sc.frame_set(f)
     sc.render.filepath = f"{out}/f{i:05d}.png"

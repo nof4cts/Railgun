@@ -41,9 +41,9 @@ jobs:
           sudo apt-get update -qq; sudo apt-get install -y -qq ffmpeg > /dev/null
           mkdir -p /tmp/out/logs && cp frames/log*.txt /tmp/out/logs/ 2>/dev/null || true
           ls frames | wc -l
-          ffmpeg -v error -framerate 30 -i frames/f%05d.png -c:v libx264 -profile:v baseline -level 4.0 -pix_fmt yuv420p -crf 20 -g 30 -bf 0 -movflags +faststart open.mp4
+          ffmpeg -v error -framerate 30 -start_number 1161 -i frames/f%05d.png -c:v libx264 -profile:v baseline -level 4.0 -pix_fmt yuv420p -crf 20 -g 30 -bf 0 -movflags +faststart open.mp4
           mkdir -p /tmp/out/stills && cp open.mp4 /tmp/out/ || true
           for f in frames/f*0.png; do n=$(basename $f .png); [ $((10#${n#f} % 60)) -eq 0 ] && ffmpeg -v error -i $f -q:v 4 /tmp/out/stills/$n.jpg; done
           ls frames | wc -l > /tmp/out/COUNT
-          cd /tmp/out && git init -q -b open-render-out && git config user.name ci && git config user.email ci@users.noreply.github.com
-          git add -A && git commit -q -m "render" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" open-render-out
+          cd /tmp/out && git init -q -b open-render-out2 && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "render" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" open-render-out2
