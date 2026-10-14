@@ -1,0 +1,43 @@
+00:01.030  cycles           | WARNING CUEW initialization failed: Error opening the library
+/home/runner/work/Railgun/Railgun/tools/toji_inserts.py:109: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w.use_nodes = True
+/home/runner/work/Railgun/Railgun/tools/toji_inserts.py:59: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+02:38.483  render           | Saved: '/home/runner/work/Railgun/Railgun/out/sky_f0019.png'
+[render] sky 19 157.6s
+05:08.960  render           | Saved: '/home/runner/work/Railgun/Railgun/out/sky_f0039.png'
+[render] sky 39 150.5s
+07:21.074  render           | Saved: '/home/runner/work/Railgun/Railgun/out/sky_f0059.png'
+[render] sky 59 132.1s
+09:17.399  render           | Saved: '/home/runner/work/Railgun/Railgun/out/sky_f0079.png'
+[render] sky 79 116.3s
+09:34.367  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0003.png'
+[render] leaves 3 14.7s
+09:48.981  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0023.png'
+[render] leaves 23 14.6s
+10:03.288  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0043.png'
+[render] leaves 43 14.3s
+10:17.638  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0063.png'
+[render] leaves 63 14.3s
+10:32.218  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0083.png'
+[render] leaves 83 14.6s
+10:46.615  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0103.png'
+[render] leaves 103 14.4s
+11:01.152  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0123.png'
+[render] leaves 123 14.5s
+11:15.450  render           | Saved: '/home/runner/work/Railgun/Railgun/out/leaves_f0143.png'
+[render] leaves 143 14.3s
+11:36.827  render           | Saved: '/home/runner/work/Railgun/Railgun/out/drops_f0013.png'
+[render] drops 13 20.4s
+11:57.653  render           | Saved: '/home/runner/work/Railgun/Railgun/out/drops_f0033.png'
+[render] drops 33 20.8s
+12:18.386  render           | Saved: '/home/runner/work/Railgun/Railgun/out/drops_f0053.png'
+[render] drops 53 20.7s
+12:39.284  render           | Saved: '/home/runner/work/Railgun/Railgun/out/drops_f0073.png'
+[render] drops 73 20.9s
+13:00.541  render           | Saved: '/home/runner/work/Railgun/Railgun/out/drops_f0093.png'
+[render] drops 93 21.3s
+13:23.608  render           | Saved: '/home/runner/work/Railgun/Railgun/out/drops_f0113.png'
+[render] drops 113 23.1s
+13:48.777  render           | Saved: '/home/runner/work/Railgun/Railgun/out/drops_f0133.png'
+[render] drops 133 25.2s
