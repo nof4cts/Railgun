@@ -194,7 +194,7 @@ public final class Techniques {
                   look,
                   point,
                   seed,
-                  size,
+                  move == Move.FUGA ? size * 0.1F : size, // Open: the fireball is drawn at a tenth of the blast it leaves
                   move == Move.DOMAIN ? (Integer)ShrineConfig.SERVER.domainSeconds.get() : (target == null ? -1 : target.getId()),
                   (float)((Integer)ShrineConfig.SERVER.cutsceneRadius.get()).intValue(),
                   film

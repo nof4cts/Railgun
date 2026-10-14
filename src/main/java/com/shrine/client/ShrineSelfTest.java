@@ -64,7 +64,7 @@ public final class ShrineSelfTest {
         Techniques.testReset(p);
         Energy.set(p, Energy.MAX);
         Techniques.cast(p, m, film);
-        System.out.println("[selftest] cast " + m + (film ? " (film)" : ""));
+        com.shrine.ShrineMod.LOGGER.info("[selftest] cast " + m + (film ? " (film)" : ""));
     }
 
     private static void report(ServerPlayer p, String what) {
@@ -72,7 +72,7 @@ public final class ShrineSelfTest {
         List<LivingEntity> near = l.getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(120), e -> e != p && e.isAlive());
         long maho = near.stream().filter(e -> e instanceof com.mahoraga.mod.MahoragaEntity).count();
         String golems = near.stream().filter(e -> e instanceof IronGolem).map(e -> String.format("%.0f", e.getHealth())).toList().toString();
-        System.out.println("[selftest] " + what + ": mahoraga alive " + maho + ", golem health " + golems);
+        com.shrine.ShrineMod.LOGGER.info("[selftest] " + what + ": mahoraga alive " + maho + ", golem health " + golems);
     }
 
     private static int countBlocks(ServerLevel l, BlockPos c, int r) {
@@ -89,6 +89,8 @@ public final class ShrineSelfTest {
     private static void arena(ServerPlayer p, int x0) {
         ServerLevel l = p.serverLevel();
         l.getEntitiesOfClass(Mob.class, new AABB(x0 - 150, -64, -150, x0 + 150, 320, 200)).forEach(Mob::discard);
+        l.getChunk(x0 >> 4, 0);
+        l.getChunk(x0 >> 4, 2);
         double y = l.getHeight(Heightmap.Types.MOTION_BLOCKING, x0, 0);
         p.teleportTo(l, x0 + 0.5, y, 0.5, 0.0F, 3.0F);
         for (int i = -1; i <= 1; i++) {
@@ -167,14 +169,14 @@ public final class ShrineSelfTest {
         // 4. The domain levels everything in its reach
         step(t, null, back, p -> {
             arena(p, 1200);
-            System.out.println("[selftest] blocks standing in the domain's reach before: " + countBlocks(p.serverLevel(), p.blockPosition(), 30));
+            com.shrine.ShrineMod.LOGGER.info("[selftest] blocks standing in the domain's reach before: " + countBlocks(p.serverLevel(), p.blockPosition(), 30));
             cast(p, Move.DOMAIN, false);
         });
         for (int k : new int[]{60, 100, 150}) {
             step(t + k, String.format("5_domain_t%03d", k), back, null);
         }
         step(t + 200, "5_domain_after", back, p ->
-                System.out.println("[selftest] blocks standing in the domain's reach after: " + countBlocks(p.serverLevel(), p.blockPosition(), 30)));
+                com.shrine.ShrineMod.LOGGER.info("[selftest] blocks standing in the domain's reach after: " + countBlocks(p.serverLevel(), p.blockPosition(), 30)));
         step(t + 230, "END", back, null);
     }
 
@@ -187,7 +189,7 @@ public final class ShrineSelfTest {
         if (mc.level == null || mc.player == null) {
             if (!worldRequested && mc.screen instanceof TitleScreen) {
                 worldRequested = true;
-                System.out.println("[selftest] creating a flat world");
+                com.shrine.ShrineMod.LOGGER.info("[selftest] creating a flat world");
                 LevelSettings settings = new LevelSettings("shrine_selftest", GameType.CREATIVE, false, Difficulty.EASY, true,
                         new GameRules(), WorldDataConfiguration.DEFAULT);
                 mc.createWorldOpenFlows().createFreshLevel("shrine_selftest", settings, new WorldOptions(1033L, false, false),
@@ -209,7 +211,7 @@ public final class ShrineSelfTest {
                 level.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
                 level.getGameRules().getRule(GameRules.RULE_DOMOBSPAWNING).set(false, server);
                 Sorcerers.choose(p, Sorcerer.SUKUNA);
-                System.out.println("[selftest] Sukuna chosen");
+                com.shrine.ShrineMod.LOGGER.info("[selftest] Sukuna chosen");
             });
         }
         while (next < SCRIPT.size() && SCRIPT.get(next).at() <= tick) {
@@ -223,7 +225,7 @@ public final class ShrineSelfTest {
             }
             if ("END".equals(s.shot())) {
                 done = true;
-                System.out.println("[selftest] finished; stopping");
+                com.shrine.ShrineMod.LOGGER.info("[selftest] finished; stopping");
                 mc.stop();
                 return;
             }
@@ -241,7 +243,7 @@ public final class ShrineSelfTest {
         Minecraft mc = Minecraft.getInstance();
         new File(mc.gameDirectory, "screenshots/shrine").mkdirs();
         Screenshot.grab(mc.gameDirectory, "shrine/" + pendingShot + ".png", mc.getMainRenderTarget(), msg -> {});
-        System.out.println("[selftest] shot " + pendingShot + " film=" + com.shrine.client.film.Film.playing());
+        com.shrine.ShrineMod.LOGGER.info("[selftest] shot " + pendingShot + " film=" + com.shrine.client.film.Film.playing());
         pendingShot = null;
     }
 }

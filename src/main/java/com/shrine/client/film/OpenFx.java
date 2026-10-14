@@ -235,7 +235,8 @@ public final class OpenFx {
         }
         // 89 on: the blast blooms out of the target, then the bonfires burn down (frames 2323-2905)
         if (t >= 89.0F && t - 89.0F < BLAST.frames - 1.001F) {
-            float r = Math.max(4.0F, m.size);
+            // the cast carries the fireball's size: a tenth of the blast radius
+            float r = Math.max(4.0F, m.size * 10.0F);
             out.add(new Shot(BLAST, t - 89.0F, basis(m.point, flat, new Vec3(0, 1, 0), r / BLAST_R)));
         }
         return out;
