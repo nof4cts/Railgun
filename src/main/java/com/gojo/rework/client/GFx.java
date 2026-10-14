@@ -527,6 +527,14 @@ public final class GFx {
         Vec3 f = c.flat(), r = c.right();
         Vec3 centre = eye.add(aim.scale(GBeats.purpleAhead(m))).add(0, -0.2, 0);
         boolean toji = m == GMove.IMAGINARY;
+        // held while he aims: drawn off to his right and a little low, out of the line of sight, smaller in his own eyes
+        float hold = c.fireAt < 0 ? smooth(span(t, b[7], b[7] + 6)) : 0;
+        if (hold > 0) {
+            Vec3 side = new Vec3(-aim.z, 0, aim.x);
+            side = side.lengthSqr() < 1e-6 ? r : side.normalize();
+            centre = centre.add(side.scale(1.6 * scale * hold)).add(0, -0.7 * scale * hold, 0);
+        }
+        double heldScale = 1 - (c.mine ? 0.35 : 0.0) * hold;
         if (m == GMove.PURPLE_200) {
             // the incantation: each word sends a ring of light out through the air around him
             int shift = m == GMove.PURPLE_200 ? GBeats.P2_SHIFT : 0;
@@ -571,7 +579,7 @@ public final class GFx {
             if (t >= b[6] - 1) {
                 float pk = span(t, b[6] - 1, b[6] + 6);
                 // it swells while it is held, breathing
-                double size = radius * (0.35 + 0.25 * smooth(span(t, b[6], b[7] + 20))) * (1 + 0.04 * Math.sin(t * 0.5));
+                double size = radius * (0.35 + 0.25 * smooth(span(t, b[6], b[7] + 20))) * (1 + 0.04 * Math.sin(t * 0.5)) * heldScale;
                 purpleOrb(ink, centre, size * pk, t, pk, seed);
                 // the air is sucked into it
                 for (int i = 0; i < 3; i++) {

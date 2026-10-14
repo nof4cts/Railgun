@@ -45,12 +45,12 @@ public final class GojoTest {
             new Step(GMove.RED, "red", 20, 4, CameraType.THIRD_PERSON_BACK, 0, new int[]{4, 10, 14, 16, 18, 20, 23, 30, 44}),
             new Step(GMove.MAX_BLUE, "max_blue", 14, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 20, 36, 50, 80, 100, 130, 159, 162}),
             new Step(GMove.MAX_RED, "max_red", 18, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{8, 30, 40, 41, 43, 48, 60}),
-            new Step(GMove.PURPLE, "purple", 26, 0, null, 0, new int[]{10, 30, 58, 64, 80, 110, 116, 130, 142, 150, 165, 171, 173, 180, 200}),
+            new Step(GMove.PURPLE, "purple", 26, 0, null, 0, new int[]{10, 30, 58, 64, 80, 110, 116, 130, 142, 152, 165, 180, 189, 191, 195, 210}),
             new Step(GMove.IMAGINARY, "imaginary", 30, 0, null, 0,
-                    new int[]{10, 60, 100, 150, 170, 215, 245, 270, 300, 340, 420, 520, 600, 620, 650, 680, 692, 700, 720, 740, 749, 751, 760, 790}),
+                    new int[]{10, 60, 100, 150, 170, 215, 245, 270, 300, 340, 420, 520, 600, 620, 650, 680, 692, 700, 720, 740, 755, 767, 769, 780, 805}),
             new Step(GMove.PURPLE_200, "purple_200", 30, 0, null, 0,
-                    new int[]{20, 48, 90, 120, 140, 160, 186, 200, 218, 230, 245, 251, 253, 262, 290}),
-            new Step(GMove.NUKE, "nuke", 40, 16, null, 0, new int[]{10, 40, 64, 72, 100, 114, 130, 145, 158, 172, 185, 193, 200, 208, 209, 212, 230, 260, 300}),
+                    new int[]{20, 48, 90, 120, 140, 160, 186, 200, 218, 232, 255, 269, 271, 280, 305}),
+            new Step(GMove.NUKE, "nuke", 40, 16, null, 0, new int[]{10, 40, 64, 72, 100, 114, 130, 145, 158, 175, 200, 211, 215, 226, 227, 229, 245, 270, 320}),
             new Step(GMove.DOMAIN, "domain", 8, 0, null, 0, new int[]{4, 12, 24, 40, 49, 56, 70, 81, 90, 105, 120, 135, 150}),
             new Step(null, "domain_inside", 8, 0, CameraType.THIRD_PERSON_BACK, 80, new int[]{10, 40, 70}),
             new Step(GMove.DOMAIN_02, "domain_02", 10, 0, CameraType.THIRD_PERSON_BACK, 0, new int[]{2, 6, 8, 10, 14, 30}),
@@ -163,8 +163,18 @@ public final class GojoTest {
         if (s.move != null && com.gojo.rework.common.GBeats.aims(s.move) && now == castAt + shootAt(s.move)) {
             server.execute(() -> {
                 ServerPlayer p = player(server);
-                // turn a little while aiming, as a player would
-                p.connection.teleport(p.getX(), p.getY(), p.getZ(), p.getYRot() + 8, p.getXRot() + (s.move == GMove.NUKE ? 30 : 2));
+                // aim, as a player would: at the middle golem
+                IronGolem g = p.serverLevel().getEntitiesOfClass(IronGolem.class, p.getBoundingBox().inflate(120), LivingEntity::isAlive).stream()
+                        .min(java.util.Comparator.comparingDouble(e -> Math.abs(e.getX() - p.getX()))).orElse(null);
+                if (g != null) {
+                    Vec3 d = g.position().add(0, 1.2, 0).subtract(p.getEyePosition()).normalize();
+                    float yaw = (float) (Math.toDegrees(Math.atan2(-d.x, d.z)));
+                    float pitch = (float) (-Math.toDegrees(Math.asin(d.y)));
+                    p.connection.teleport(p.getX(), p.getY(), p.getZ(), yaw, pitch);
+                    p.setYRot(yaw);
+                    p.setXRot(pitch);
+                    p.setYHeadRot(yaw);
+                }
                 GRites.shoot(p);
                 Gojo2.LOGGER.info("[gojotest] shoot {}", s.move);
             });
