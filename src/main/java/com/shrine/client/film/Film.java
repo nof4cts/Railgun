@@ -139,11 +139,40 @@ public final class Film {
             RenderSystem.enableBlend();
             g.blit(TEX, x, y, dw, dh, 0.0F, 0.0F, W, H, W, H);
         }
+        // the film's dialogue, as subtitles under the picture
+        String line = subtitle(sec);
+        if (line != null) {
+            var font = Minecraft.getInstance().font;
+            int tw = font.width(line);
+            int ty = sh - Math.max(26, (sh - Math.round(H * Math.min(sw / (float) W, sh / (float) H))) / 2 + 22);
+            g.fill(sw / 2 - tw / 2 - 6, ty - 4, sw / 2 + tw / 2 + 6, ty + 12, 0xA0000000);
+            g.drawString(font, line, sw / 2 - tw / 2, ty, 0xFFFFFFFF, false);
+        }
         if (sec > 1.0F) {
             String hint = "HOLD SHIFT TO SKIP";
             g.drawString(Minecraft.getInstance().font, hint, sw - Minecraft.getInstance().font.width(hint) - 8, sh - 12, 0x66FFFFFF, false);
         }
         return true;
+    }
+
+    /** The film's lines, by shot (seconds into the film). */
+    private static final Object[][] LINES = {
+            {2.3F, 3.6F, "Fuga (Open)"},
+            {5.3F, 7.1F, "Those are..."},
+            {8.8F, 11.9F, "Fire aspect?!"},
+            {12.2F, 16.1F, "I thought your enchantments were erasing and corrupting..."},
+            {16.3F, 19.6F, "Arm yourself!"},
+            {19.9F, 22.9F, "Let's have a contest of firepower."},
+    };
+
+    @Nullable
+    private static String subtitle(float sec) {
+        for (Object[] l : LINES) {
+            if (sec >= (Float) l[0] && sec < (Float) l[1]) {
+                return (String) l[2];
+            }
+        }
+        return null;
     }
 
     /** Decodes the film ahead of the clock on its own thread. */

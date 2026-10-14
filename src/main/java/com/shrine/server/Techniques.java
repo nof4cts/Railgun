@@ -200,7 +200,12 @@ public final class Techniques {
                   film
                );
                double reach = move == Move.WORLD_SLASH ? (double)Math.max(512.0F, size) : 512.0;
-               Net.CHANNEL.send(PacketDistributor.NEAR.with(() -> new TargetPoint(eye.x, eye.y, eye.z, reach, level.dimension())), msg);
+               if (film) {
+                  // Open's film plays for everyone on the server (in the caster's world, where the blast lands)
+                  Net.CHANNEL.send(PacketDistributor.DIMENSION.with(() -> level.dimension()), msg);
+               } else {
+                  Net.CHANNEL.send(PacketDistributor.NEAR.with(() -> new TargetPoint(eye.x, eye.y, eye.z, reach, level.dimension())), msg);
+               }
                sendCooldowns(p);
             } else {
                p.playNotifySound((SoundEvent)ModSounds.DENY.get(), SoundSource.PLAYERS, 0.6F, 1.0F);

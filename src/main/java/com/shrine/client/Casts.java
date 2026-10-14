@@ -42,7 +42,8 @@ public final class Casts {
          } else if (msg.move.cutscene) {
             boolean mine = caster == mc.player;
             boolean near = mc.player.getEyePosition().distanceTo(msg.origin) < (double)msg.cutsceneRadius;
-            if (mine || near) {
+            // Open's film is for the whole server (each player's "skip cutscenes" setting still applies)
+            if (mine || near || msg.move == Move.FUGA && msg.film) {
                Cutscene.start(msg);
             }
          }
@@ -167,6 +168,10 @@ public final class Casts {
 
             if (t == 89 && close) {
                ScreenFx.impact(m.point, m.size, 1.0F, 0.3F, 0.02F);
+            }
+            if (!m.film && close && (t == 89 || t == 93 || t == 99)) {
+               // the quick Open lands in a run of impact frames
+               ScreenFx.hit(t == 89 ? ScreenFx.Hit.ULTIMATE : ScreenFx.Hit.HEAVY, m.point, 0.5F, 0.5F, 1.0F, 0.42F, 0.04F);
             }
             break;
          case DOMAIN:
@@ -416,8 +421,27 @@ public final class Casts {
 
    private static void fugaFrame(Casts.Frame f, Casts.Active a, Entity caster, float t, float partial) {
       S2CCast m = a.msg;
-      if (!m.film || t < 0.0F) {
-         // the quick Open is drawn by OpenFx from the film's own fire; the film version hides its build-up behind the film
+      if (t < 0.0F) {
+         // the film version hides its build-up behind the film
+         return;
+      }
+      if (!m.film) {
+         // the quick Open: the film's fire (OpenFx) builds and flies the arrow; it lands as the true explosion
+         if (t >= 89.0F && t <= 249.0F) {
+            f.fuga = true;
+            f.fRadius = m.size;
+            f.fTarget = m.point;
+            Vec3[] b = basis(m.dir);
+            f.fDir = b[0];
+            f.fUp = b[2];
+            f.fHand = m.origin;
+            f.fBow = m.origin;
+            f.fFrom = m.origin;
+            f.fHandAmt = 0.0F;
+            f.fBowAmt = 0.0F;
+            f.fDraw = 0.0F;
+            f.fBlast = (t - 89.0F) / 20.0F;
+         }
          return;
       }
       if (!(t > 249.0F)) {

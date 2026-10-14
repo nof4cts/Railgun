@@ -180,6 +180,13 @@ public final class OpenFx {
             Entity caster = mc.level == null ? null : mc.level.getEntity(m.casterId);
             for (Shot s : shots(m, caster, t, partial)) {
                 drawn += emit(buf, s, cam);
+                if (s.seq == ARROW || (s.seq == DRAW && t > 62.0F)) {
+                    // flame streaming off the arrow
+                    drawn += trail(buf, s, cam, t + partial, s.seq == ARROW);
+                }
+            }
+            if (t >= 89.0F && t < 89.0F + PILLAR) {
+                drawn += pillar(buf, m, cam, t - 89.0F, camera);
             }
         }
         RenderSystem.enableBlend();
@@ -217,9 +224,10 @@ public final class OpenFx {
         if (t >= 30.0F && t < 49.0F) {
             out.add(new Shot(FISTS, Math.min((t - 30.0F) * 2.0F, FISTS.frames - 1.001F), hero));
         }
-        // 48-80: the arrow drawn out of the flame (frames 1675-1771)
+        // 48-80: the arrow drawn out of the flame (frames 1675-1771). The film's hero turns side-on to draw, so in
+        // his own frame the arrow lies along +x: that axis is turned to face the target.
         if (t >= 48.0F && t < 80.5F) {
-            out.add(new Shot(DRAW, Math.min(t - 48.0F, DRAW.frames - 1.001F), hero));
+            out.add(new Shot(DRAW, Math.min(t - 48.0F, DRAW.frames - 1.001F), alongX(feet, flat, HERO)));
         }
         // 80-89: it flies, growing as it goes (the film's arrow, 1.05 at the bow, 2.8 at the target)
         if (t >= 80.0F && t < 89.5F) {
@@ -232,15 +240,218 @@ public final class OpenFx {
             Vec3 up = Math.abs(dir.y) > 0.98 ? flat : new Vec3(0, 1, 0);
             float scale = HERO * Mth.lerp(k, 1.05F, 2.8F);
             float f = ((t - 80.0F) * 1.0F) % (ARROW.frames - 1.001F);
-            out.add(new Shot(ARROW, f, basis(at, dir, up, scale)));
-        }
-        // 89 on: the blast blooms out of the target, then the bonfires burn down (frames 2323-2905)
-        if (t >= 89.0F && t - 89.0F < BLAST.frames - 1.001F) {
-            // the cast carries the fireball's size: a tenth of the blast radius
-            float r = Math.max(4.0F, m.size * 10.0F);
-            out.add(new Shot(BLAST, t - 89.0F, basis(m.point, flat, new Vec3(0, 1, 0), r / BLAST_R)));
+            out.add(new Shot(ARROW, f, alongX(at, dir, scale)));
         }
         return out;
+    }
+
+    /** The film's arrow frame: its +x (the tip) along {@code fwd}, +z up. */
+    private static Matrix4f alongX(Vec3 origin, Vec3 fwd, float scale) {
+        Vec3 f = fwd.normalize();
+        Vec3 up = Math.abs(f.y) > 0.98 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
+        Vec3 side = up.cross(f).normalize();
+        Vec3 u = f.cross(side).normalize();
+        return new Matrix4f(
+                (float) f.x * scale, (float) f.y * scale, (float) f.z * scale, 0,
+                (float) side.x * scale, (float) side.y * scale, (float) side.z * scale, 0,
+                (float) u.x * scale, (float) u.y * scale, (float) u.z * scale, 0,
+                (float) origin.x, (float) origin.y, (float) origin.z, 1);
+    }
+
+    // ------------------------------------------------------------------------------------------------ living fire
+
+    /** How long the pillar of fire stands over the blast (ticks). */
+    private static final float PILLAR = 150.0F;
+
+    /** Tongues of flame streaming back off the arrow, fluttering, white at the root and red at the tips. */
+    private static int trail(BufferBuilder buf, Shot s, Vec3 cam, float t, boolean flying) {
+        Matrix4f M = s.M;
+        org.joml.Vector3f o = M.transformPosition(0, 0, 0, new org.joml.Vector3f());
+        org.joml.Vector3f fx = M.transformDirection(1, 0, 0, new org.joml.Vector3f());
+        float scale = fx.length();
+        org.joml.Vector3f f = new org.joml.Vector3f(fx).normalize();
+        org.joml.Vector3f side = M.transformDirection(0, 1, 0, new org.joml.Vector3f()).normalize();
+        org.joml.Vector3f up = M.transformDirection(0, 0, 1, new org.joml.Vector3f()).normalize();
+        int tris = 0;
+        int tongues = flying ? 14 : 9;
+        float len = (flying ? 2.6F : 1.4F) * scale;
+        for (int i = 0; i < tongues; i++) {
+            float a = (float) (i * 2.399963);
+            float rad = 0.12F * scale * (0.6F + 0.4F * noise(i * 3.1F, t * 0.2F, 0));
+            float baseX = 0.9F - 0.13F * (i % 6);
+            org.joml.Vector3f root = new org.joml.Vector3f(o).add(new org.joml.Vector3f(f).mul(baseX * scale))
+                    .add(new org.joml.Vector3f(side).mul((float) Math.cos(a) * rad)).add(new org.joml.Vector3f(up).mul((float) Math.sin(a) * rad));
+            int seg = 7;
+            org.joml.Vector3f prev = null;
+            float prevW = 0;
+            for (int k = 0; k <= seg; k++) {
+                float u = k / (float) seg;
+                float flutter = (float) Math.sin(t * 0.9F + i * 1.7F + u * 6.0F) * 0.22F * u * scale;
+                float lift = (float) Math.cos(t * 0.7F + i * 2.3F + u * 5.0F) * 0.16F * u * scale;
+                org.joml.Vector3f pnt = new org.joml.Vector3f(root).sub(new org.joml.Vector3f(f).mul(u * len * (0.7F + 0.3F * noise(i, t * 0.15F, 3))))
+                        .add(new org.joml.Vector3f(side).mul(flutter)).add(new org.joml.Vector3f(up).mul(lift + u * u * 0.25F * scale));
+                float wdt = 0.16F * scale * (1 - u) * (0.7F + 0.3F * (float) Math.sin(t + i));
+                if (prev != null) {
+                    tris += ribbon(buf, cam, prev, pnt, prevW, wdt, (k - 1) / (float) seg, u);
+                }
+                prev = pnt;
+                prevW = wdt;
+            }
+        }
+        return tris;
+    }
+
+    /** One camera-facing segment of a flame ribbon between {@code a} and {@code b}, coloured by its age along the ribbon. */
+    private static int ribbon(BufferBuilder buf, Vec3 cam, org.joml.Vector3f a, org.joml.Vector3f b, float wa, float wb, float ua, float ub) {
+        float dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+        float vx = (float) (a.x - cam.x), vy = (float) (a.y - cam.y), vz = (float) (a.z - cam.z);
+        // perpendicular to both the segment and the view
+        float px = dy * vz - dz * vy, py = dz * vx - dx * vz, pz = dx * vy - dy * vx;
+        float pl = (float) Math.sqrt(px * px + py * py + pz * pz);
+        if (pl < 1.0E-6F) {
+            return 0;
+        }
+        px /= pl;
+        py /= pl;
+        pz /= pl;
+        int ca = flame(ua), cb = flame(ub);
+        float ax = (float) (a.x - cam.x), ay = (float) (a.y - cam.y), az = (float) (a.z - cam.z);
+        float bx = (float) (b.x - cam.x), by = (float) (b.y - cam.y), bz = (float) (b.z - cam.z);
+        vtx(buf, ax - px * wa, ay - py * wa, az - pz * wa, ca);
+        vtx(buf, ax + px * wa, ay + py * wa, az + pz * wa, ca);
+        vtx(buf, bx + px * wb, by + py * wb, bz + pz * wb, cb);
+        vtx(buf, ax - px * wa, ay - py * wa, az - pz * wa, ca);
+        vtx(buf, bx + px * wb, by + py * wb, bz + pz * wb, cb);
+        vtx(buf, bx - px * wb, by - py * wb, bz - pz * wb, cb);
+        return 2;
+    }
+
+    /** Flame colour along a tongue: white-gold at the root, orange, deep red and thin at the tip. */
+    private static int flame(float u) {
+        float r = 1.0F, g = Mth.lerp(Mth.clamp(u * 1.4F, 0, 1), 0.95F, 0.18F), b = Mth.lerp(Mth.clamp(u * 3.0F, 0, 1), 0.7F, 0.0F);
+        float a = Mth.clamp(1.0F - u * u, 0, 1) * 0.9F;
+        return (int) (a * 255) << 24 | (int) (r * 255) << 16 | (int) (g * 255) << 8 | (int) (b * 255);
+    }
+
+    /**
+     * The blast's pillar: a ring of towering flame tongues climbing out of the impact, a churning core, a shock ring
+     * racing over the ground and embers thrown high, burning down over several seconds.
+     */
+    private static int pillar(BufferBuilder buf, S2CCast m, Vec3 cam, float t, Camera camera) {
+        float R = Math.max(6.0F, m.size * 10.0F);
+        Vec3 c = m.point;
+        int tris = 0;
+        float grow = 1 - (float) Math.pow(1 - Mth.clamp(t / 14.0F, 0, 1), 3);
+        float fade = 1 - Mth.clamp((t - 70.0F) / 80.0F, 0, 1);
+        float height = R * 1.35F * grow * (0.75F + 0.25F * fade);
+        float ringR = R * 0.32F * grow;
+        // the column: tall flame tongues all round, the tallest at the middle
+        int tongues = 40;
+        for (int i = 0; i < tongues; i++) {
+            float a = (float) (i * 2.399963);
+            float rr = ringR * (0.25F + 0.75F * ((i * 37 % 100) / 100.0F));
+            Vec3 base = c.add(Math.cos(a) * rr, 0, Math.sin(a) * rr);
+            float h = height * (0.55F + 0.45F * (1 - rr / Math.max(0.1F, ringR))) * (0.8F + 0.4F * noise(i * 1.3F, t * 0.12F, 7));
+            int seg = 9;
+            org.joml.Vector3f prev = null;
+            float prevW = 0;
+            for (int k = 0; k <= seg; k++) {
+                float u = k / (float) seg;
+                double sway = Math.sin(t * 0.21F + i * 1.9F + u * 4.0F) * R * 0.05 * u;
+                double twist = Math.cos(t * 0.17F + i * 2.7F + u * 3.0F) * R * 0.05 * u;
+                org.joml.Vector3f pnt = new org.joml.Vector3f((float) (base.x + sway + Math.cos(a) * u * R * 0.12), (float) (base.y + u * h),
+                        (float) (base.z + twist + Math.sin(a) * u * R * 0.12));
+                float wdt = R * 0.075F * (1 - u * 0.85F) * (0.7F + 0.3F * noise(i, u * 3 + t * 0.3F, 1)) * Math.max(0.15F, fade);
+                if (prev != null) {
+                    tris += ribbon(buf, cam, prev, pnt, prevW, wdt, Mth.clamp((k - 1) / (float) seg + (1 - fade) * 0.4F, 0, 1),
+                            Mth.clamp(u + (1 - fade) * 0.4F, 0, 1));
+                }
+                prev = pnt;
+                prevW = wdt;
+            }
+        }
+        // the core: a white-hot churning ball that swells and sinks away
+        float core = R * 0.42F * grow * (0.6F + 0.4F * fade);
+        if (core > 0.2F && fade > 0.05F) {
+            tris += ball(buf, cam, c.add(0, core * 0.55F, 0), core, t, fade);
+        }
+        // the shock ring over the ground
+        if (t < 30.0F) {
+            float k = t / 30.0F;
+            float rr = R * 1.7F * (1 - (float) Math.pow(1 - k, 2.2));
+            int n = 96;
+            float wdt = R * 0.12F * (1 - k);
+            int col = (int) ((1 - k) * 230) << 24 | 0xFFD9A0;
+            for (int i = 0; i < n; i++) {
+                double a0 = Math.PI * 2 * i / n, a1 = Math.PI * 2 * (i + 1) / n;
+                float y = (float) (c.y + 0.3 - cam.y);
+                float x0i = (float) (c.x + Math.cos(a0) * (rr - wdt) - cam.x), z0i = (float) (c.z + Math.sin(a0) * (rr - wdt) - cam.z);
+                float x0o = (float) (c.x + Math.cos(a0) * (rr + wdt) - cam.x), z0o = (float) (c.z + Math.sin(a0) * (rr + wdt) - cam.z);
+                float x1i = (float) (c.x + Math.cos(a1) * (rr - wdt) - cam.x), z1i = (float) (c.z + Math.sin(a1) * (rr - wdt) - cam.z);
+                float x1o = (float) (c.x + Math.cos(a1) * (rr + wdt) - cam.x), z1o = (float) (c.z + Math.sin(a1) * (rr + wdt) - cam.z);
+                int edge = col & 0x00FFFFFF;
+                vtx(buf, x0i, y, z0i, edge);
+                vtx(buf, x0o, y, z0o, col);
+                vtx(buf, x1o, y, z1o, col);
+                vtx(buf, x0i, y, z0i, edge);
+                vtx(buf, x1o, y, z1o, col);
+                vtx(buf, x1i, y, z1i, edge);
+                tris += 2;
+            }
+        }
+        // embers thrown up and raining back
+        for (int i = 0; i < 70; i++) {
+            float life = (t * 0.9F + i * 7.3F) % 60.0F;
+            float a = (float) (i * 2.399963);
+            float sp = R * (0.02F + 0.02F * ((i * 53 % 100) / 100.0F));
+            double x = c.x + Math.cos(a) * sp * life * 1.2, z = c.z + Math.sin(a) * sp * life * 1.2;
+            double y = c.y + R * 0.08 * life - 0.012 * R * life * life * 0.25 + 1;
+            float sz = R * 0.012F * (1 - life / 60.0F) * fade;
+            if (sz > 0.02F) {
+                org.joml.Vector3f p0 = new org.joml.Vector3f((float) x, (float) y, (float) z);
+                org.joml.Vector3f p1 = new org.joml.Vector3f((float) x, (float) (y - sz * 4), (float) z);
+                tris += ribbon(buf, cam, p0, p1, sz, sz * 0.4F, 0.1F, 0.6F);
+            }
+        }
+        return tris;
+    }
+
+    /** A churning ball of fire: a sphere whose surface boils, white-gold inside, orange to red at its rim. */
+    private static int ball(BufferBuilder buf, Vec3 cam, Vec3 c, float r, float t, float fade) {
+        int lat = 14, lon = 24;
+        int tris = 0;
+        float[][] px = new float[lat + 1][lon + 1], py = new float[lat + 1][lon + 1], pz = new float[lat + 1][lon + 1];
+        int[][] col = new int[lat + 1][lon + 1];
+        for (int i = 0; i <= lat; i++) {
+            double th = Math.PI * i / lat;
+            for (int j = 0; j <= lon; j++) {
+                double ph = Math.PI * 2 * j / lon;
+                float nx = (float) (Math.sin(th) * Math.cos(ph)), ny = (float) Math.cos(th), nz = (float) (Math.sin(th) * Math.sin(ph));
+                float boil = noise(nx * 2.2F + t * 0.08F, ny * 2.2F - t * 0.11F, nz * 2.2F);
+                float rr = r * (0.82F + 0.36F * boil);
+                px[i][j] = (float) (c.x + nx * rr - cam.x);
+                py[i][j] = (float) (c.y + ny * rr - cam.y);
+                pz[i][j] = (float) (c.z + nz * rr - cam.z);
+                // facing the camera: hotter
+                float vx = -px[i][j], vy = -py[i][j], vz = -pz[i][j];
+                float vl = (float) Math.sqrt(vx * vx + vy * vy + vz * vz) + 1e-4F;
+                float facing = Math.abs((nx * vx + ny * vy + nz * vz) / vl);
+                float heat = Mth.clamp(0.35F + 0.65F * facing * (0.6F + 0.4F * boil), 0, 1);
+                col[i][j] = ramp(0, heat, (0.55F + 0.45F * facing) * fade);
+            }
+        }
+        for (int i = 0; i < lat; i++) {
+            for (int j = 0; j < lon; j++) {
+                vtx(buf, px[i][j], py[i][j], pz[i][j], col[i][j]);
+                vtx(buf, px[i + 1][j], py[i + 1][j], pz[i + 1][j], col[i + 1][j]);
+                vtx(buf, px[i + 1][j + 1], py[i + 1][j + 1], pz[i + 1][j + 1], col[i + 1][j + 1]);
+                vtx(buf, px[i][j], py[i][j], pz[i][j], col[i][j]);
+                vtx(buf, px[i + 1][j + 1], py[i + 1][j + 1], pz[i + 1][j + 1], col[i + 1][j + 1]);
+                vtx(buf, px[i][j + 1], py[i][j + 1], pz[i][j + 1], col[i][j + 1]);
+                tris += 2;
+            }
+        }
+        return tris;
     }
 
     private static Vec3 right(Vec3 fwd) {
@@ -274,6 +485,8 @@ public final class OpenFx {
         // the film's own clock (60 fps) for its wobble and colour noise
         float sec = (q.start + s.frame * 3.0F) / 60.0F;
         int tris = 0;
+        boolean flowing = q == DRAW || q == ARROW;
+        float wob = flowing ? 2.6F : 1.0F;
         float[] w = new float[3];
         float[] nn = new float[3];
         for (int i = 0; i < q.parts.length; i++) {
@@ -301,10 +514,10 @@ public final class OpenFx {
                     float n0 = noise(px + tw * 0.31F, py + tw * 0.17F, pz + tw * 0.23F);
                     float n1 = noise(px + 17.3F + tw * 0.29F, py - 4.1F + tw * 0.21F, pz + 9.7F + tw * 0.19F);
                     float n2 = noise(px - 8.6F + tw * 0.27F, py + 13.2F + tw * 0.33F, pz - 2.9F + tw * 0.15F);
-                    float sw = (n0 - 0.5F) * p.swell;
-                    x += (n0 - 0.5F) * p.amp + nx * sw;
-                    y += (n1 - 0.5F) * p.amp + ny * sw;
-                    z += (n2 - 0.5F) * p.amp + nz * sw;
+                    float sw = (n0 - 0.5F) * p.swell * wob;
+                    x += (n0 - 0.5F) * p.amp * wob + nx * sw;
+                    y += (n1 - 0.5F) * p.amp * wob + ny * sw;
+                    z += (n2 - 0.5F) * p.amp * wob + nz * sw;
                 }
                 // part space -> anchor space (the baked 3x4) -> world (the shot)
                 float ax = L[0] * x + L[1] * y + L[2] * z + L[3];
@@ -315,7 +528,8 @@ public final class OpenFx {
                 wy[v] = (float) (wv.y - cam.y);
                 wz[v] = (float) (wv.z - cam.z);
                 // the material: scrolling noise through its colour ramp, transparent where the noise is thin
-                float heat = noise(x * 3.1F, y * 3.1F, z * 3.1F - sec * 1.6F);
+                // the arrow's fire runs back from its tip like a living flame; everything else simmers in place
+                float heat = flowing ? noise(x * 2.6F + sec * 7.5F, y * 3.4F, z * 3.4F - sec * 2.0F) : noise(x * 3.1F, y * 3.1F, z * 3.1F - sec * 1.6F);
                 float alpha = smooth(0.18F, 0.42F, heat);
                 if (p.curve && (p.u[v] < s0 - 0.01F || p.u[v] > s1 + 0.01F)) {
                     alpha = 0.0F;
