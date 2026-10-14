@@ -37,7 +37,7 @@ jobs:
           ls -la $MC/mods
           curl -sSfL -o $MC/mods/player-animation-lib-forge.jar "https://maven.kosmx.dev/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1+1.20/player-animation-lib-forge-1.0.2-rc1+1.20.jar"
           printf 'onboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nrenderDistance:6\nsimulationDistance:6\nmaxFps:60\nguiScale:2\nsoundCategory_master:0.0\nfov:0.0\n' > $MC/options.txt
-          timeout 2100 xvfb-run -a -s "-screen 0 1280x720x24" portablemc --main-dir $MC --work-dir $MC start forge:1.20.1-47.3.0 -u Dev --resolution 1280x720 --jvm "$JAVA_HOME/bin/java" --jvm-args="-Xmx3G -Dshrine.selftest=true" 2>&1 | tee play-log.txt | grep --line-buffered -E "selftest|Exception|ERROR|Caused" || true
+          timeout 2100 xvfb-run -a -s "-screen 0 1280x720x24" portablemc --main-dir $MC --work-dir $MC start forge:1.20.1-47.3.0 -u Dev --resolution 1280x720 --jvm "$JAVA_HOME/bin/java" --jvm-args="-Xmx3G -Dshrine.selftest=true -Dgojo.only=true" 2>&1 | tee play-log.txt | grep --line-buffered -E "selftest|gojotest|Exception|ERROR|Caused" || true
       - name: Publish
         if: always()
         run: |
@@ -46,6 +46,7 @@ jobs:
           cp build/out/jjk-1.0.0.jar /tmp/out/ 2>/dev/null || true
           cp mc/logs/latest.log /tmp/out/game-latest.log 2>/dev/null || true
           cp mc/screenshots/shrine/*.png /tmp/out/shots/ 2>/dev/null || true
+          cp mc/screenshots/gojo/*.png /tmp/out/shots/ 2>/dev/null || true
           echo "${{ steps.build.outcome }} ${{ github.sha }}" > /tmp/out/STATUS
           cd /tmp/out && git init -q -b sukuna-build && git config user.name ci && git config user.email ci@users.noreply.github.com
           git add -A && git commit -q -m "build ${{ github.sha }}" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" sukuna-build

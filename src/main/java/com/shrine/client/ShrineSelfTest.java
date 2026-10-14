@@ -203,7 +203,12 @@ public final class ShrineSelfTest {
         }
         tick++;
         if (tick == 60) {
-            build();
+            if (Boolean.getBoolean("gojo.only")) {
+                // only Gojo's rework is under test: go straight to it
+                SCRIPT.add(new Step(70, "END", null, null));
+            } else {
+                build();
+            }
             server.execute(() -> {
                 ServerPlayer p = server.getPlayerList().getPlayers().get(0);
                 ServerLevel level = p.serverLevel();
@@ -225,8 +230,8 @@ public final class ShrineSelfTest {
             }
             if ("END".equals(s.shot())) {
                 done = true;
-                com.shrine.ShrineMod.LOGGER.info("[selftest] finished; stopping");
-                mc.stop();
+                com.shrine.ShrineMod.LOGGER.info("[selftest] finished; Gojo next");
+                com.gojo.rework.client.GojoTest.begin();
                 return;
             }
             if (s.shot() != null) {

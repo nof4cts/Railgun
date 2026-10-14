@@ -38,6 +38,12 @@ tasks.register('patchedJar', Jar) {
     from({ configurations.bundled.collect { zipTree(it) } }) { exclude 'META-INF/**' }
     from(zipTree('libs/jjk-1.0.0.jar')) {
         exclude 'com/shrine/**'
+        // the Gojo rework replaces these classes (the rest of each package stays as it was)
+        exclude 'com/gojo/mod/GojoMod.class', 'com/gojo/mod/ModItems.class', 'com/gojo/mod/Techniques.class', 'com/gojo/mod/GojoEvents.class', 'com/gojo/mod/GojoEvents$*.class'
+        exclude 'com/jjk/mod/Sorcerer.class', 'com/jjk/mod/Balance.class', 'com/jjk/mod/Balance$*.class'
+        exclude 'com/jjk/mod/Dispatch.class', 'com/jjk/mod/Dispatch$*.class'
+        exclude 'com/jjk/mod/client/Keys.class', 'com/jjk/mod/client/Keys$*.class'
+        exclude 'assets/gojo/sounds.json', 'assets/gojo/lang/en_us.json'
         exclude 'META-INF/MANIFEST.MF'
     }
 }
