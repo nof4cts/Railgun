@@ -32,6 +32,8 @@ jobs:
           pip install -q portablemc
           MC=$PWD/mc; mkdir -p $MC/mods
           cp build/out/jjk-1.0.0.jar $MC/mods/
+          for v in 4.4.9 4.7.1 4.4.4; do curl -sSfL -o $MC/mods/geckolib.jar "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/software/bernie/geckolib/geckolib-forge-1.20.1/$v/geckolib-forge-1.20.1-$v.jar" && break; done
+          ls -la $MC/mods
           curl -sSfL -o $MC/mods/player-animation-lib-forge.jar "https://maven.kosmx.dev/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1+1.20/player-animation-lib-forge-1.0.2-rc1+1.20.jar"
           printf 'onboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nrenderDistance:6\nsimulationDistance:6\nmaxFps:60\nguiScale:2\nsoundCategory_master:0.0\nfov:0.0\n' > $MC/options.txt
           timeout 2100 xvfb-run -a -s "-screen 0 1280x720x24" portablemc --main-dir $MC --work-dir $MC start forge:1.20.1-47.3.0 -u Dev --resolution 1280x720 --jvm "$JAVA_HOME/bin/java" --jvm-args="-Xmx3G -Dshrine.selftest=true" 2>&1 | tee play-log.txt | grep --line-buffered -E "selftest|Exception|ERROR|Caused" || true
