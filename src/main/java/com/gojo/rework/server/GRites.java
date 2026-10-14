@@ -411,6 +411,7 @@ public final class GRites {
             c.fireDir = look;
             c.target = c.fireFrom.add(look.scale(80));
         }
+        Gojo2.LOGGER.info("[gojo] {} fired at t={} from {} dir {} target {}", c.move, t, c.fireFrom, c.fireDir, c.target);
         sound(c.level, c.fireFrom, c.move == GMove.PURPLE ? Gojo2.PURPLE_FIRE.get() : Gojo2.PURPLE_BIG.get(), 8.0F, 1.0F);
         GNet.near(c.p, c.fireFrom, c.move == GMove.NUKE ? 420 : 320, new GNet.Fire(c.p.getId(), c.move.ordinal(), t, c.fireFrom, c.fireDir, c.target));
     }
@@ -592,6 +593,12 @@ public final class GRites {
         Vec3 a = from.add(fd.scale(Math.max(0, d0))), z = from.add(fd.scale(d1));
         for (LivingEntity e : nearSegment(c, a, z, radius + 1)) {
             hurt(c, e, dmg, fd.scale(1.5));
+            if (Boolean.getBoolean("shrine.selftest")) {
+                Gojo2.LOGGER.info("[gojo] {} hits {} hp now {}", c.move, e.getType().getDescriptionId(), e.getHealth());
+            }
+        }
+        if (Boolean.getBoolean("shrine.selftest") && (t - fire) % 5 == 0) {
+            Gojo2.LOGGER.info("[gojo] {} at {} (t={})", c.move, z, t);
         }
         for (Entity e : c.level.getEntities((Entity) null, new AABB(a, z).inflate(radius + 1),
                 x -> x instanceof ItemEntity || (x instanceof Projectile pr && pr.getOwner() != c.p))) {
@@ -626,6 +633,7 @@ public final class GRites {
             Vec3 g = c.target;
             sound(c.level, g, Gojo2.NUKE_BLAST.get(), 40.0F, 1.0F);
             crater(c, g, GBeats.NK_CRATER, 3.0);
+            Gojo2.LOGGER.info("[gojo] nuke lands at {}: {} caught", g, around(c, g.add(0, 6, 0), GBeats.NK_REACH).size());
             for (LivingEntity e : around(c, g.add(0, 6, 0), GBeats.NK_REACH)) {
                 double d = e.position().distanceTo(g);
                 Vec3 away = e.position().subtract(g);
