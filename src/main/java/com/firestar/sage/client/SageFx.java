@@ -605,7 +605,7 @@ public final class SageFx {
         float core = (float) Math.exp(-age / 3.0);
         if (core > 0.02F) {
             ink.sphere(true, g.add(0, big * 0.2, 0), big * (0.35 + 0.5 * (1 - core)), Ink.alpha(Ink.WHITE, core), Ink.alpha(Ink.PALE, 0.8F * core), 1.2);
-            ink.glow(g.add(0, big * 0.3, 0), big * 3.0, Ink.alpha(Ink.PALE, 0.7F * core));
+            ink.glow(g.add(0, big * 0.3, 0), big * 2.2, Ink.alpha(Ink.PALE, 0.45F * core));
         }
         // the shock ring over the ground, fast, and a second, slower one of dust
         float sk = Mth.clamp(age / 14.0F, 0, 1);
@@ -635,13 +635,15 @@ public final class SageFx {
             if (life <= 0.01F) {
                 continue;
             }
-            int hot = heat > 0.6F ? Ink.WHITE : heat > 0.3F ? Ink.PALE : heat > 0.12F ? Ink.GOLD : Ink.EMBER;
-            ink.glow(p, size * 1.6, Ink.alpha(hot, (0.25F + 0.55F * heat) * life));
-            ink.glow(p, size * 0.8, Ink.alpha(Ink.PALE, 0.5F * heat * life));
+            // glows add up, so each billow is faint: the body of fire builds from many, with its colour cooling from
+            // white through gold to ember, and only the hottest hearts burn pale
+            int hot = heat > 0.75F ? Ink.PALE : heat > 0.35F ? Ink.GOLD : Ink.EMBER;
+            ink.glow(p, size * 1.15, Ink.alpha(hot, (0.08F + 0.22F * heat) * life));
+            ink.glow(p, size * 0.5, Ink.alpha(heat > 0.5F ? Ink.PALE : Ink.GOLD, 0.25F * heat * life));
             // smoke behind the fire as it cools
             float smoke = (1 - heat) * life * Mth.clamp((age - 6) / 12.0F, 0, 1);
             if (smoke > 0.02F) {
-                ink.sphere(false, p.add(0, size * 0.4, 0), size * 1.15, Ink.alpha(Ink.DUSK, 0.55F * smoke), Ink.alpha(Ink.VOID, 0.15F * smoke), 0.7);
+                ink.sphere(false, p.add(0, size * 0.4, 0), size * 1.15, Ink.alpha(Ink.DUSK, 0.7F * smoke), Ink.alpha(Ink.VOID, 0.25F * smoke), 0.7);
             }
         }
         // burning debris on long arcs
