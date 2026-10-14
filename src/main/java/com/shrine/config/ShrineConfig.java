@@ -33,7 +33,6 @@ public final class ShrineConfig {
       public final DoubleValue flash;
       public final BooleanValue impactFrames;
       public final IntValue volumeSteps;
-      public final BooleanValue openFilm;
 
       Client(Builder b) {
          b.push("rendering");
@@ -46,10 +45,6 @@ public final class ShrineConfig {
          this.cameraShake = b.comment("Camera shake strength (0 disables).").defineInRange("cameraShake", 1.0, 0.0, 2.0);
          this.flash = b.comment("Flash strength (lower if bright flashes bother you).").defineInRange("flash", 1.0, 0.0, 1.0);
          this.impactFrames = b.comment("Impact frames (stark stylised frames on big hits). Contains rapid flashing.").define("impactFrames", true);
-         b.pop();
-         b.push("open");
-         this.openFilm = b.comment("Open (Fuga) plays its film cutscene first (sneak while casting to skip it and fire the move straight away).")
-            .define("openFilm", true);
          b.pop();
       }
    }

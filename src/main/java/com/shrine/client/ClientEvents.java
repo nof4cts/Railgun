@@ -58,26 +58,6 @@ public final class ClientEvents {
          PostFx.render(event);
       }
 
-      /**
-       * Sneak + Open fires it without the film. Minecraft won't trigger a plain key binding while Shift is held, so the
-       * press is caught here straight from the keyboard.
-       */
-      @SubscribeEvent
-      public static void onKey(net.minecraftforge.client.event.InputEvent.Key event) {
-         net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-         if (event.getAction() != org.lwjgl.glfw.GLFW.GLFW_PRESS || mc.player == null || mc.screen != null || Cutscene.active()) {
-            return;
-         }
-         if (!com.jjk.mod.client.ClientSorcerers.mine(com.jjk.mod.Sorcerer.SUKUNA)) {
-            return;
-         }
-         net.minecraft.client.KeyMapping fuga = Keybinds.FUGA;
-         boolean shift = (event.getModifiers() & org.lwjgl.glfw.GLFW.GLFW_MOD_SHIFT) != 0 || mc.player.isShiftKeyDown();
-         if (shift && fuga.getKey().getType() == com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM && fuga.getKey().getValue() == event.getKey()) {
-            com.shrine.network.Net.CHANNEL.sendToServer(new com.shrine.network.C2SCast(com.shrine.common.Move.FUGA, false));
-         }
-      }
-
       @SubscribeEvent
       public static void onClientTick(ClientTickEvent event) {
          if (event.phase == Phase.END) {

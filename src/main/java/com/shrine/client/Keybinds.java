@@ -93,8 +93,8 @@ public final class Keybinds {
             }
 
             while (FUGA.consumeClick()) {
-               // Open: the film cutscene, or (sneaking, or with the film turned off) the move as it happens in the film
-               Net.CHANNEL.sendToServer(new C2SCast(Move.FUGA, ShrineConfig.CLIENT.openFilm.get() && !mc.player.isShiftKeyDown()));
+               // Open: the film cutscene, or with "skip cutscenes" on in the JJK menu, the move as it happens in the film
+               Net.CHANNEL.sendToServer(new C2SCast(Move.FUGA, !com.jjk.mod.client.JjkPrefs.skipCutscenes()));
             }
 
             while (DOMAIN.consumeClick()) {
