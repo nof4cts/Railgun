@@ -49,6 +49,8 @@ public final class GFilm {
         if (castStart != p.msg.start()) {
             stop();
             castStart = p.msg.start();
+            // the game's own music would play over the piano
+            Minecraft.getInstance().getMusicManager().stopPlaying();
             decoders = new Decoder[NAMES.length];
         }
         float t = p.time(0);

@@ -91,6 +91,20 @@ public final class GRites {
             return (int) (level.getGameTime() - start);
         }
 
+        private boolean opened;
+
+        /**
+         * True on the first tick this cast is run. (Its "tick 0" never runs: the world clock has already moved on by
+         * the time casts are ticked, so anything keyed to t == 0 was silently skipped.)
+         */
+        boolean opening() {
+            if (opened) {
+                return false;
+            }
+            opened = true;
+            return true;
+        }
+
         Vec3 flat() {
             Vec3 f = new Vec3(dir.x, 0, dir.z);
             return f.lengthSqr() < 1e-6 ? new Vec3(0, 0, 1) : f.normalize();
@@ -318,6 +332,9 @@ public final class GRites {
     /** Spoken (the player's own recorded voice), heard round him. */
     public static void voice(ServerPlayer p, String line) {
         var v = Gojo2.VOICE.get(line);
+        if (Boolean.getBoolean("shrine.selftest")) {
+            Gojo2.LOGGER.info("[gojo] voice {}", line);
+        }
         if (v != null) {
             p.serverLevel().playSound(null, p.getX(), p.getEyeY(), p.getZ(), v.get(), SoundSource.VOICE, 2.5F, 1.0F);
         }
@@ -383,8 +400,11 @@ public final class GRites {
      */
     static void toji(Cast c, int t) {
         Vec3 at = c.p.position();
-        if (t == 0) {
+        if (c.opening()) {
             c.level.playSound(null, at.x, at.y, at.z, Gojo2.MUSIC_TOJI.get(), SoundSource.RECORDS, 4.0F, 1.0F);
+            if (Boolean.getBoolean("shrine.selftest")) {
+                Gojo2.LOGGER.info("[gojo] piano starts");
+            }
         }
         if (t == GBeats.IM_V0) {
             voice(c.p, "toji");
@@ -446,7 +466,7 @@ public final class GRites {
     // ---- Reversal: Red
 
     static void red(Cast c, int t) {
-        if (t == 0) {
+        if (c.opening()) {
             voice(c.p, "red");
             sound(c.level, c.origin, Gojo2.RED_CHARGE.get(), 1.4F, 1.0F);
         }
@@ -501,7 +521,7 @@ public final class GRites {
 
     /** Maximum Blue goes where he looks: it is steered at a point ten blocks down his line of sight. */
     static void maxBlue(Cast c, int t) {
-        if (t == 0) {
+        if (c.opening()) {
             voice(c.p, "max_blue");
             sound(c.level, c.origin, Gojo2.BLUE_CHARGE.get(), 2.0F, 0.8F);
         }
@@ -557,7 +577,7 @@ public final class GRites {
     // ---- Maximum Output: Red
 
     static void maxRed(Cast c, int t) {
-        if (t == 0) {
+        if (c.opening()) {
             voice(c.p, "max_red");
             sound(c.level, c.origin, Gojo2.RED_CHARGE.get(), 2.0F, 0.75F);
         }
@@ -664,7 +684,7 @@ public final class GRites {
         } else if (c.held) {
             c.held = false;
         }
-        if (t == 0) {
+        if (c.opening()) {
             sound(c.level, c.p.position(), Gojo2.DOMAIN_SIGN.get(), 2.0F, 1.0F);
             voice(c.p, "ryoiki");
         }
@@ -751,7 +771,7 @@ public final class GRites {
     }
 
     static void domain02(Cast c, int t) {
-        if (t == 0) {
+        if (c.opening()) {
             sound(c.level, c.p.position(), Gojo2.DOMAIN_SIGN.get(), 2.0F, 1.2F);
             voice(c.p, "muryokusho");
         }
