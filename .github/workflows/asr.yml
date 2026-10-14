@@ -7,22 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - run: |
-          pip install -q faster-whisper
-          python3 - <<'PY'
-          from faster_whisper import WhisperModel
-          m = WhisperModel("medium", device="cpu", compute_type="int8")
-          out = []
-          for f in ["v1.mp3", "v2.mp3"]:
-              segs, info = m.transcribe(f, language="ja", word_timestamps=True, vad_filter=False)
-              out.append("== " + f)
-              for s in segs:
-                  out.append(f"{s.start:.2f}-{s.end:.2f} {s.text}")
-                  for w in s.words:
-                      out.append(f"   {w.start:.2f}-{w.end:.2f} {w.word}")
-          open("result.txt", "w").write("\n".join(out))
-          PY
-          cat result.txt
-      - run: |
-          mkdir /tmp/o && cp result.txt /tmp/o/ && cd /tmp/o && git init -q -b voice-asr-out && git config user.name ci && git config user.email ci@users.noreply.github.com
+          pip install faster-whisper > pip.txt 2>&1 || true
+          python3 asr.py > log.txt 2>&1 || true
+      - if: always()
+        run: |
+          mkdir -p /tmp/o && cp result.txt log.txt pip.txt /tmp/o/ 2>/dev/null || true
+          cd /tmp/o && git init -q -b voice-asr-out && git config user.name ci && git config user.email ci@users.noreply.github.com
           git add -A && git commit -qm out && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" voice-asr-out
