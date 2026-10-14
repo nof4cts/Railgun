@@ -63,10 +63,14 @@ public final class ScytheLayer extends RenderLayer<AbstractClientPlayer, PlayerM
         ps.popPose();
     }
 
-    /** From the arm's pivot to the grip in the fist; the shaft runs along z. */
+    /**
+     * From the arm's pivot to the grip in the fist; the shaft runs along z (its head toward -z). Tipped 42 degrees up
+     * the arm so that in the reaper's stance (arm raised 38 degrees) the shaft stands upright through the fist, butt
+     * below the hand, the blade over the head reaching forward.
+     */
     static void hand(PoseStack ps, float grow) {
         ps.translate(-0.0625F, 0.62F, -0.02F);
-        ps.mulPose(Axis.XP.rotationDegrees(-8));
+        ps.mulPose(Axis.XP.rotationDegrees(-42));
         if (grow != 1.0F) {
             ps.scale(grow, grow, grow);
         }
