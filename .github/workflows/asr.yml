@@ -2,6 +2,8 @@ name: Transcribe voice lines
 on:
   push:
     branches: [voice-asr]
+permissions:
+  contents: write
 jobs:
   asr:
     runs-on: ubuntu-latest
