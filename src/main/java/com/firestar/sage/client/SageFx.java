@@ -228,8 +228,8 @@ public final class SageFx {
             }
             switch (c.rite()) {
                 case MANTLE -> {
-                    look.dark(0.45F * window(t, 4, 30, SBeats.MANTLE_IGNITE - 2, SBeats.MANTLE_IGNITE + 2));
-                    look.flash(0.85F * hit(t, SBeats.MANTLE_IGNITE, 6), 0xFFF4D0);
+                    impactFrames(look, t, SBeats.MANTLE_IGNITE, 1);
+                    look.flash(0.85F * hit(t, SBeats.MANTLE_IGNITE + 2, 6), 0xFFF4D0);
                     look.shake(0.7F * hit(t, SBeats.MANTLE_IGNITE, 10));
                     look.gold(0.5F * hit(t, SBeats.MANTLE_IGNITE, 20));
                 }
@@ -240,8 +240,8 @@ public final class SageFx {
                 }
                 case STARFALL -> {
                     float k = (float) Math.max(0, 1 - d / 140);
-                    look.dark(0.5F * window(t, SBeats.STAR_CALL, SBeats.STAR_APPEAR, SBeats.STAR_IMPACT, SBeats.STAR_IMPACT + 20));
-                    look.flash(k * 1.0F * hit(t, SBeats.STAR_IMPACT, 8), 0xFFE9B0);
+                    impactFrames(look, t, SBeats.STAR_IMPACT, k);
+                    look.flash(k * 1.0F * hit(t, SBeats.STAR_IMPACT + 2, 8), 0xFFE9B0);
                     look.flash(k * 0.8F * hit(t, SBeats.STAR_SECOND, 7), 0xFFE9B0);
                     look.shake(k * 1.6F * hit(t, SBeats.STAR_IMPACT, 30));
                     look.shake(k * 1.1F * hit(t, SBeats.STAR_SECOND, 22));
@@ -250,16 +250,16 @@ public final class SageFx {
                 case THORNWOOD -> look.shake(0.45F * window(t, SBeats.THORN_ERUPT, SBeats.THORN_ERUPT + 2, SBeats.THORN_ERUPT + SBeats.THORN_SPREAD,
                         SBeats.THORN_ERUPT + SBeats.THORN_SPREAD + 8));
                 case COLOSSUS -> {
-                    look.dark(0.3F * window(t, SBeats.COL_RISE, SBeats.COL_FORMED, SBeats.COL_CUT + 10, SBeats.COL_CUT + 40));
-                    look.flash(0.9F * hit(t, SBeats.COL_CUT, 6), 0xFFF1C8);
+                    impactFrames(look, t, SBeats.COL_CUT, 1);
+                    look.flash(0.9F * hit(t, SBeats.COL_CUT + 2, 6), 0xFFF1C8);
                     look.shake(1.5F * hit(t, SBeats.COL_CUT, 26));
                     look.shake(0.3F * span(t, SBeats.COL_RISE, SBeats.COL_FORMED) * (1 - span(t, SBeats.COL_FORMED, SBeats.COL_FORMED + 10)));
                 }
                 case ECLIPSE -> {
                     float cover = window(t, SBeats.ECL_RISE, SBeats.ECL_TOTAL, SBeats.ECL_RING_END, SBeats.ECL_DAWN + 20);
-                    look.dark(0.82F * cover);
                     look.vignette(0.8F * cover);
-                    look.flash(1.0F * hit(t, SBeats.ECL_RING, 10), 0xFFF6DA);
+                    impactFrames(look, t, SBeats.ECL_RING, 1);
+                    look.flash(1.0F * hit(t, SBeats.ECL_RING + 2, 10), 0xFFF6DA);
                     look.shake(1.2F * hit(t, SBeats.ECL_RING, 30));
                     look.gold(0.35F * window(t, SBeats.ECL_RING, SBeats.ECL_RING + 4, SBeats.ECL_RING_END, SBeats.ECL_DAWN));
                 }
@@ -269,6 +269,43 @@ public final class SageFx {
         }
     }
 
+    /** The two frames of an impact: the picture blacked out for a tick, then burnt white for a tick. */
+    static void impactFrames(Look look, float t, int at, float k) {
+        if (k < 0.2F) {
+            return;
+        }
+        if (t >= at && t < at + 1) {
+            look.flash(0.92F * k, 0x000000);
+        } else if (t >= at + 1 && t < at + 2) {
+            look.flash(1.0F * k, 0xFFFFFF);
+        }
+    }
+
+    /** How dark the world is made right now (the eclipse, the gathering of the heavens): 0..1. */
+    static float veil(float partial) {
+        Minecraft mc = Minecraft.getInstance();
+        float v = 0;
+        if (mc.player == null) {
+            return 0;
+        }
+        for (SageCasts.Play c : SageCasts.all()) {
+            float t = c.time(partial);
+            double d = mc.player.position().distanceTo(c.msg.point());
+            if (!c.mine && d > 120) {
+                continue;
+            }
+            v = Math.max(v, switch (c.rite()) {
+                case MANTLE -> 0.5F * window(t, 4, 30, SBeats.MANTLE_IGNITE - 1, SBeats.MANTLE_IGNITE + 3);
+                case STARFALL -> 0.6F * window(t, SBeats.STAR_CALL, SBeats.STAR_APPEAR, SBeats.STAR_IMPACT, SBeats.STAR_IMPACT + 30);
+                case COLOSSUS -> 0.45F * window(t, SBeats.COL_RISE, SBeats.COL_FORMED, SBeats.COL_CUT + 10, SBeats.COL_CUT + 40);
+                case ECLIPSE -> 0.88F * window(t, SBeats.ECL_RISE, SBeats.ECL_TOTAL, SBeats.ECL_RING, SBeats.ECL_DAWN + 20)
+                        + 0.0F;
+                default -> 0F;
+            });
+        }
+        return Mth.clamp(v, 0, 0.92F);
+    }
+
     // ------------------------------------------------------------------------------------------------ the world
 
     /** Every frame, after the world: paint every sage and every rite. */
@@ -276,6 +313,10 @@ public final class SageFx {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {
             return;
+        }
+        float veil = veil(partial);
+        if (veil > 0.01F) {
+            ink.veil(Ink.alpha(0xFF05030A, veil));
         }
         for (Player p : mc.level.players()) {
             float m = SageForms.mantle(p, partial);
@@ -526,7 +567,7 @@ public final class SageFx {
             Vec3 to = Rites.starPoint(c.msg.point(), flat, which).add(0, R * 0.6, 0);
             if (t >= appear && t < impact + 1) {
                 float k = span(t, appear, impact);
-                float fall = k * k * k;
+                float fall = k * k;
                 Vec3 p = from.lerp(to, fall);
                 Vec3 dir = to.subtract(from).normalize();
                 // the star: a burning ball with a corona and a long torn tail
@@ -541,19 +582,82 @@ public final class SageFx {
                             new int[]{Ink.alpha(Ink.PALE, 0.8F), Ink.alpha(Ink.EMBER, 0.5F), Ink.alpha(Ink.EMBER, 0)});
                 }
             }
-            float boom = hit(t, impact, 30);
-            if (t >= impact && boom > 0.01F) {
+            if (t >= impact && t < impact + 90) {
                 Vec3 g = Rites.starPoint(c.msg.point(), flat, which);
                 float k = span(t, impact, impact + 40);
                 double big = (which == 0 ? SBeats.STAR_CRATER : 8) * 2.6;
-                ink.sphere(true, g, big * (0.3 + 0.7 * Math.sqrt(k)), Ink.alpha(Ink.PALE, 0.9F * (1 - k)), Ink.alpha(Ink.EMBER, 0.6F * (1 - k)), 1.4);
-                ink.ring(g.add(0, 0.5, 0), UP, big * (0.4 + 2.4 * k), big * 0.12 * (1 - k), Ink.alpha(Ink.PALE, 0.95F * (1 - k)), 96);
-                ink.ring(g.add(0, 0.5, 0), UP, big * (0.2 + 1.5 * k), big * 0.06 * (1 - k), Ink.alpha(Ink.GOLD, 0.9F * (1 - k)), 80);
-                ink.beam(g, g.add(0, big * 4 * Math.sqrt(k), 0), big * 0.5 * (1 - k), Ink.alpha(Ink.GOLD, 0.7F * (1 - k)));
-                // the dust dome, dark, swelling and settling
-                ink.sphere(false, g.add(0, -big * 0.2, 0), big * (0.5 + 0.8 * k), Ink.alpha(Ink.DUSK, 0.45F * window(t, impact + 2, impact + 8, impact + 20, impact + 60)),
-                        Ink.alpha(Ink.VOID, 0), 0.6);
+                blast(ink, g, big, t - impact, c.msg.seed() + which * 977L);
             }
+        }
+    }
+
+    /**
+     * A great impact, {@code age} ticks old: a white-hot core that blinks out, a churning fireball of billows that
+     * swells, rolls and climbs into a column, a shock ring racing over the ground, burning debris thrown out on long
+     * arcs, and the dark smoke that is left.
+     */
+    static void blast(Ink ink, Vec3 g, double big, float age, long seed) {
+        if (age < 0 || age > 90) {
+            return;
+        }
+        float k = age / 90.0F;
+        // the core: blinding for a few ticks, then gone
+        float core = (float) Math.exp(-age / 3.0);
+        if (core > 0.02F) {
+            ink.sphere(true, g.add(0, big * 0.2, 0), big * (0.35 + 0.5 * (1 - core)), Ink.alpha(Ink.WHITE, core), Ink.alpha(Ink.PALE, 0.8F * core), 1.2);
+            ink.glow(g.add(0, big * 0.3, 0), big * 3.0, Ink.alpha(Ink.PALE, 0.7F * core));
+        }
+        // the shock ring over the ground, fast, and a second, slower one of dust
+        float sk = Mth.clamp(age / 14.0F, 0, 1);
+        if (sk < 1) {
+            ink.ring(g.add(0, 0.4, 0), UP, big * (0.5 + 4.5 * Math.sqrt(sk)), big * 0.05 + 0.4, Ink.alpha(Ink.WHITE, 0.95F * (1 - sk)), 128);
+            ink.ring(g.add(0, 0.6, 0), UP, big * (0.4 + 3.6 * Math.sqrt(sk)), big * 0.16, Ink.alpha(Ink.GOLD, 0.5F * (1 - sk)), 128);
+        }
+        float dk = Mth.clamp(age / 50.0F, 0, 1);
+        ink.ring(g.add(0, 1.2, 0), UP, big * (0.6 + 3.0 * Math.sqrt(dk)), big * 0.5 * (1 - dk) + 0.2, Ink.alpha(Ink.DUSK, 0.45F * (1 - dk)), 96);
+        // the fireball: billows on a rolling, rising, swelling body
+        java.util.Random r = new java.util.Random(seed);
+        int n = 46;
+        float grow = (float) (1 - Math.exp(-age / 7.0));
+        for (int i = 0; i < n; i++) {
+            double th = r.nextDouble() * Math.PI * 2, ph = Math.acos(r.nextDouble() * 1.6 - 0.6);
+            double speed = 0.6 + r.nextDouble() * 0.6;
+            double rad = big * (0.4 + 1.1 * grow * speed);
+            // the column: a share of the billows climbs, the rest roll outward and settle
+            boolean climb = i % 3 == 0;
+            double lift = climb ? big * (0.5 + 4.2 * Math.pow(k, 0.7) * speed) : big * 0.6 * grow;
+            double roll = age * 0.03 * (r.nextBoolean() ? 1 : -1);
+            Vec3 dir = new Vec3(Math.cos(th + roll) * Math.sin(ph), Math.cos(ph), Math.sin(th + roll) * Math.sin(ph));
+            Vec3 p = g.add(dir.x * rad * (climb ? 0.35 : 1), Math.max(0, dir.y) * rad * 0.6 + lift, dir.z * rad * (climb ? 0.35 : 1));
+            double size = big * (0.45 + 0.35 * r.nextDouble()) * (0.5 + grow) * (1 + 0.6 * k);
+            float heat = (float) Math.exp(-age / (10.0 + 14 * r.nextDouble()));
+            float life = 1 - Mth.clamp((age - 30 - r.nextFloat() * 30) / 30.0F, 0, 1);
+            if (life <= 0.01F) {
+                continue;
+            }
+            int hot = heat > 0.6F ? Ink.WHITE : heat > 0.3F ? Ink.PALE : heat > 0.12F ? Ink.GOLD : Ink.EMBER;
+            ink.glow(p, size * 1.6, Ink.alpha(hot, (0.25F + 0.55F * heat) * life));
+            ink.glow(p, size * 0.8, Ink.alpha(Ink.PALE, 0.5F * heat * life));
+            // smoke behind the fire as it cools
+            float smoke = (1 - heat) * life * Mth.clamp((age - 6) / 12.0F, 0, 1);
+            if (smoke > 0.02F) {
+                ink.sphere(false, p.add(0, size * 0.4, 0), size * 1.15, Ink.alpha(Ink.DUSK, 0.55F * smoke), Ink.alpha(Ink.VOID, 0.15F * smoke), 0.7);
+            }
+        }
+        // burning debris on long arcs
+        for (int i = 0; i < 28; i++) {
+            double th = r.nextDouble() * Math.PI * 2;
+            double v = big * (0.25 + 0.35 * r.nextDouble()), up = big * (0.35 + 0.4 * r.nextDouble());
+            double tt = age / 20.0;
+            Vec3 p = g.add(Math.cos(th) * v * tt * 4, up * tt * 4 - 9.8 * tt * tt * 1.4, Math.sin(th) * v * tt * 4);
+            Vec3 pv = g.add(Math.cos(th) * v * (tt - 0.08) * 4, up * (tt - 0.08) * 4 - 9.8 * (tt - 0.08) * (tt - 0.08) * 1.4,
+                    Math.sin(th) * v * (tt - 0.08) * 4);
+            if (p.y < g.y - 1 || age < 1) {
+                continue;
+            }
+            float f = 1 - k;
+            ink.ribbon(new Vec3[]{pv, p.lerp(pv, 0.4), p}, new double[]{0.05, 0.25, 0.45}, new int[]{Ink.alpha(Ink.EMBER, 0), Ink.alpha(Ink.GOLD, 0.6F * f),
+                    Ink.alpha(Ink.PALE, 0.95F * f)});
         }
     }
 
@@ -642,6 +746,26 @@ public final class SageFx {
         Vec3 face = base.add(0, 12.8 * S, 0).add(f.scale(1.02 * S));
         ink.beam(face.add(r.scale(0.55 * S)), face.add(r.scale(0.15 * S)), 0.18 * S, Ink.alpha(Ink.WHITE, fade * rise));
         ink.beam(face.add(r.scale(-0.55 * S)), face.add(r.scale(-0.15 * S)), 0.18 * S, Ink.alpha(Ink.WHITE, fade * rise));
+        // the wheel behind its shoulders: a great ring with twelve spokes, turning slowly
+        Vec3 hub = base.add(0, 11.4 * S, 0).subtract(f.scale(1.4 * S));
+        double turn = t * 0.012;
+        ink.ring(hub, f, 6.2 * S, 0.1 * S, Ink.alpha(Ink.GOLD, 0.85F * fade * rise), 96);
+        ink.ring(hub, f, 5.4 * S, 0.04 * S, Ink.alpha(Ink.PALE, 0.7F * fade * rise), 96);
+        for (int k = 0; k < 12; k++) {
+            double a = turn + Math.PI * 2 * k / 12;
+            Vec3 d = r.scale(Math.cos(a)).add(UP.scale(Math.sin(a)));
+            ink.beam(hub.add(d.scale(1.6 * S)), hub.add(d.scale(5.4 * S)), 0.05 * S, Ink.alpha(Ink.PALE, 0.55F * fade * rise));
+            ink.glow(hub.add(d.scale(6.2 * S)), 0.5 * S, Ink.alpha(Ink.WHITE, 0.8F * fade * rise));
+        }
+        // light rising off the giant like heat: motes climbing from its body into the sky
+        java.util.Random mr = new java.util.Random(c.msg.seed() ^ 0x5A5A);
+        for (int k = 0; k < 70; k++) {
+            double ox = (mr.nextDouble() - 0.5) * 7 * S, oz = (mr.nextDouble() - 0.5) * 3 * S;
+            double speed = 0.15 + mr.nextDouble() * 0.25, phase = mr.nextDouble() * 16 * S;
+            double y = (phase + t * speed) % (16 * S);
+            float a = (float) (1 - y / (16 * S));
+            ink.glow(base.add(r.scale(ox)).add(f.scale(oz)).add(0, y, 0), 0.25 * S * (0.5 + a), Ink.alpha(Ink.PALE, 0.7F * a * fade * rise));
+        }
         // the crown of light
         ink.arc(base.add(0, 14.2 * S, 0).subtract(f.scale(0.6 * S)), UP.scale(0.8).add(f.scale(-0.6)).normalize(), 2.4 * S, 0.12 * S, 0, Math.PI * 2,
                 Ink.alpha(Ink.GOLD, 0.8F * fade * rise), 48, true);
@@ -664,6 +788,10 @@ public final class SageFx {
             Vec3 b = a.add(f.scale(SBeats.COL_LENGTH * cut));
             ink.beam(a.add(0, 0.3, 0), b.add(0, 0.3, 0), 3.5 * glow, Ink.alpha(Ink.PALE, 0.9F * glow));
             ink.beam(a.add(0, 0.3, 0), b.add(0, 0.3, 0), 9 * glow, Ink.alpha(Ink.GOLD, 0.35F * glow));
+            // where the edge leaves the land, it bursts
+            if (t >= SBeats.COL_CUT + 8) {
+                blast(ink, a.add(f.scale(SBeats.COL_LENGTH)), 16, t - SBeats.COL_CUT - 8, c.msg.seed());
+            }
             float wall = hit(t, SBeats.COL_CUT, 14);
             for (int k = 0; k < 12; k++) {
                 Vec3 p = a.add(f.scale(SBeats.COL_LENGTH * cut * k / 12.0));
@@ -703,14 +831,16 @@ public final class SageFx {
             Vec3 toCam = cam.subtract(sun).normalize();
             float total = smooth(span(t, SBeats.ECL_COVER, SBeats.ECL_TOTAL));
             double R = 26;
-            ink.glow(sun, R * (2.2 + 0.8 * total), Ink.alpha(Ink.GOLD, 0.35F * cover));
-            ink.glow(sun, R * (1.35 + 0.2 * total), Ink.alpha(Ink.PALE, 0.55F * cover));
+            double rs = R * (0.2 + 0.8 * total);
+            ink.corona(sun, rs, rs * 1.25, Ink.alpha(Ink.WHITE, 0.9F * cover));
+            ink.corona(sun, rs, rs * (1.9 + 0.5 * total), Ink.alpha(Ink.PALE, 0.5F * cover));
+            ink.corona(sun, rs, rs * (3.4 + 0.8 * total), Ink.alpha(Ink.GOLD, 0.28F * cover));
             for (int k = 0; k < 24; k++) {
                 double a = Math.PI * 2 * k / 24 + t * 0.004;
                 Vec3[] bb = Ink.basis(toCam);
                 Vec3 d = bb[0].scale(Math.cos(a)).add(bb[1].scale(Math.sin(a)));
                 double len = R * (1.6 + 1.2 * Ink.noise(k * 1.7, t * 0.03, 0)) * (0.6 + 0.4 * total);
-                ink.ribbon(new Vec3[]{sun.add(d.scale(R * 0.98)), sun.add(d.scale(R + len * 0.5)), sun.add(d.scale(R + len))},
+                ink.ribbon(new Vec3[]{sun.add(d.scale(rs * 0.98)), sun.add(d.scale(rs + len * 0.5)), sun.add(d.scale(rs + len))},
                         new double[]{R * 0.08, R * 0.05, 0}, new int[]{Ink.alpha(Ink.PALE, 0.8F * cover), Ink.alpha(Ink.GOLD, 0.45F * cover), 0});
             }
             ink.disc(false, sun.add(toCam.scale(0.5)), toCam, R * (0.2 + 0.8 * total), Ink.alpha(Ink.VOID, 0.99F * cover), Ink.alpha(Ink.VOID, 0.99F * cover));

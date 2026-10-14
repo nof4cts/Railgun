@@ -121,7 +121,8 @@ public final class SageClientEvents {
 
         @SubscribeEvent
         public static void onStage(RenderLevelStageEvent e) {
-            if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+            // after the clouds and the weather, so nothing in the sky is drawn over the rites
+            if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) {
                 return;
             }
             Minecraft mc = Minecraft.getInstance();
@@ -198,6 +199,14 @@ public final class SageClientEvents {
             ps.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-12));
             StaffLayer.draw(ps.last().pose(), e.getMultiBufferSource(), m);
             ps.popPose();
+        }
+
+        /** No name over his head while a cutscene films him. */
+        @SubscribeEvent
+        public static void onNameTag(net.minecraftforge.client.event.RenderNameTagEvent e) {
+            if (Director.active() && e.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+                e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+            }
         }
 
         @SubscribeEvent

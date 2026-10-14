@@ -31,6 +31,7 @@ public final class SageTest {
     private static boolean on, done;
     private static int index = -1;
     private static long castAt;
+    private static boolean cast;
     private static int wait;
     private static final List<int[]> SHOTS = new ArrayList<>();
     private static final List<IronGolem> GOLEMS = new ArrayList<>();
@@ -123,6 +124,7 @@ public final class SageTest {
                 Rites.testReset(p);
             });
             castAt = now + (keep ? 1 : 6);
+            cast = false;
             SHOTS.clear();
             for (int b : s.beats) {
                 SHOTS.add(new int[]{b, 0});
@@ -131,7 +133,8 @@ public final class SageTest {
             SageMod.LOGGER.info("[sagetest] {}", s.label);
         }
         Step s = ORDER[index];
-        if (s.move != null && now == castAt) {
+        if (s.move != null && !cast && now >= castAt) {
+            cast = true;
             server.execute(() -> {
                 ServerPlayer p = player(server);
                 Rites.ask(p, s.move == SMove.UNMANTLE ? SMove.MANTLE : s.move);

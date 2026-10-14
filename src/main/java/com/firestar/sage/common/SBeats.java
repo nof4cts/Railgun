@@ -32,7 +32,7 @@ public final class SBeats {
     public static final int STAR_APPEAR = 34;
     public static final int STAR_IMPACT = 96;
     public static final int STAR_SECOND = 116;
-    public static final double STAR_HEIGHT = 110.0;
+    public static final double STAR_HEIGHT = 95.0;
     public static final double STAR_RANGE = 90.0;
     public static final int STAR_CRATER = 14;
 

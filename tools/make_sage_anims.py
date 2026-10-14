@@ -92,7 +92,7 @@ w0 = P(right_arm=[34, 8, 10], left_arm=[-30, 30, -10], torso=[-6, 26, 0], head=[
 h0 = P(right_arm=[-16, 10, 2], left_arm=[30, -10, -16], torso=[18, -20, 0], head=[-10, 18, 0], right_leg=[26, 0, 4], left_leg=[-38, 0, -4],
        pos=[0, -3, 0])
 o0 = P(h0, right_arm=[-22, 12, 2], torso=[20, -24, 0])
-anim('staff_0', 16, [(0, calm, None), (2, w0, SETTLE), (4, h0, SNAP), (7, o0, SETTLE), (16, calm, GLIDE)])
+anim('staff_0', 16, [(0, calm, None), (1, w0, SETTLE), (3, w0, None), (4, h0, SNAP), (8, o0, SETTLE), (16, calm, GLIDE)])
 
 # 1: the sweep - the upright staff swings across the body right to left like a closing gate
 w1 = P(right_arm=[-62, 74, 44], left_arm=[-20, 20, -20], torso=[0, 44, 0], head=[0, -30, 0], right_leg=[-6, 0, 8], left_leg=[8, 0, -6],
@@ -100,7 +100,7 @@ w1 = P(right_arm=[-62, 74, 44], left_arm=[-20, 20, -20], torso=[0, 44, 0], head=
 h1 = P(right_arm=[-64, -66, -14], left_arm=[-10, -20, -30], torso=[6, -40, 0], head=[0, 26, 0], right_leg=[-22, 0, 6], left_leg=[18, 0, -6],
        pos=[0, -2, 0])
 o1 = P(h1, right_arm=[-60, -76, -18], torso=[6, -46, 0])
-anim('staff_1', 16, [(0, calm, None), (2, w1, SETTLE), (4, h1, SNAP), (7, o1, SETTLE), (16, calm, GLIDE)])
+anim('staff_1', 16, [(0, calm, None), (1, w1, SETTLE), (3, w1, None), (4, h1, SNAP), (8, o1, SETTLE), (16, calm, GLIDE)])
 
 # 2: the overhead chop - both hands, staff laid back over the shoulder, brought down through the target
 w2 = P(right_arm=[-172, 0, 10], left_arm=[-166, 0, -12], torso=[-14, 0, 0], head=[-12, 0, 0], right_leg=[-10, 0, 4], left_leg=[8, 0, -4],
@@ -108,7 +108,7 @@ w2 = P(right_arm=[-172, 0, 10], left_arm=[-166, 0, -12], torso=[-14, 0, 0], head
 h2 = P(right_arm=[-22, 0, 4], left_arm=[-30, 0, -6], torso=[26, 0, 0], head=[-14, 0, 0], right_leg=[22, 0, 4], left_leg=[-30, 0, -4],
        pos=[0, -3, 0])
 o2 = P(h2, right_arm=[-16, 0, 4], left_arm=[-24, 0, -6], torso=[30, 0, 0])
-anim('staff_2', 16, [(0, calm, None), (2, w2, SETTLE), (4, h2, SNAP), (7, o2, SETTLE), (16, calm, GLIDE)])
+anim('staff_2', 16, [(0, calm, None), (1, w2, SETTLE), (3, w2, None), (4, h2, SNAP), (8, o2, SETTLE), (16, calm, GLIDE)])
 
 # ------------------------------------------------------------------------------------------------ Null Orbs (70)
 point = P(CALM, left_arm=[-92, 4, -4], head=[2, 8, 0], torso=[2, 8, 0])

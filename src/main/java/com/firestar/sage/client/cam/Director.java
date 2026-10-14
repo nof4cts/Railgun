@@ -185,8 +185,10 @@ public final class Director {
         Vec3 ft = feet(partial);
         Vec3 head = ft.add(0, 1.62, 0);
         if (t < SBeats.MANTLE_GATHER + 10) {
+            // low in front, a slow push in on him as the dark gathers
             float u = ease(span(t, 0, SBeats.MANTLE_GATHER + 10));
-            return new Shot(head.add(f.scale(1.6 - 0.3 * u)).add(r.scale(0.35)).subtract(0, 0.25, 0), head, 38 - 4 * u, -3);
+            Vec3 pos = ft.add(f.scale(5.2 - 1.2 * u)).add(r.scale(1.6)).add(0, 0.7, 0);
+            return new Shot(pos, ft.add(0, 1.3, 0), 50 - 4 * u, -3);
         }
         if (t < SBeats.MANTLE_HALO) {
             float u = ease(span(t, SBeats.MANTLE_GATHER + 10, SBeats.MANTLE_HALO));
@@ -196,8 +198,9 @@ public final class Director {
         }
         if (t < SBeats.MANTLE_IGNITE) {
             float u = ease(span(t, SBeats.MANTLE_HALO, SBeats.MANTLE_IGNITE));
-            Vec3 pos = head.subtract(f.scale(2.2 - 0.8 * u)).add(r.scale(0.9)).add(0, 0.6, 0);
-            return new Shot(pos, head.add(0, 0.5, 0), 46 - 6 * u, 2);
+            // in front and below, looking up at the face and the halo closing over it
+            Vec3 pos = ft.add(f.scale(4.2 - 0.8 * u)).add(r.scale(-1.3)).add(0, 0.5, 0);
+            return new Shot(pos, head.add(0, 0.35 + 0.2 * u, 0), 44 - 6 * u, 2);
         }
         float u = ease(span(t, SBeats.MANTLE_IGNITE, 128));
         Vec3 pos = ft.add(f.scale(9 + 4 * u)).add(r.scale(-3)).add(0, 1.0 + 2 * u, 0);
@@ -243,8 +246,10 @@ public final class Director {
         }
         if (t < SBeats.COL_CUT - 4) {
             float u = ease(span(t, SBeats.COL_FORMED, SBeats.COL_CUT - 4));
-            Vec3 pos = ft.subtract(f.scale(30 - 6 * u)).add(r.scale(14)).add(0, 26 + 8 * u, 0);
-            return new Shot(pos, ft.add(f.scale(20)).add(0, 18 - 10 * u, 0), 66, 3 * u);
+            // side on, far enough to hold the whole giant and the blade it lifts
+            Vec3 chest = ft.subtract(f.scale(6)).add(0, 22, 0);
+            Vec3 pos = ft.add(r.scale(52 - 6 * u)).add(f.scale(10 + 6 * u)).add(0, 14 + 6 * u, 0);
+            return new Shot(above(pos, 2), chest.add(f.scale(4 * u)).add(0, 4 - 6 * u, 0), 70, 3 * u);
         }
         float u = ease(span(t, SBeats.COL_CUT - 4, 150));
         Vec3 pos = ft.add(r.scale(-22)).add(f.scale(12 + 30 * u)).add(0, 12 + 10 * u, 0);

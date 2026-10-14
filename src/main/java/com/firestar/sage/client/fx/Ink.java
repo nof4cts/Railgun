@@ -114,6 +114,30 @@ public final class Ink {
 
     // ------------------------------------------------------------------------------------------------ shapes
 
+    /**
+     * Darkens everything already drawn (the world) by laying a sheet of {@code col} right in front of the eye. Call it
+     * before any other shape, so every glow drawn after it burns against the dark.
+     */
+    public void veil(int col) {
+        if ((col >>> 24) == 0) {
+            return;
+        }
+        Vec3 c = cam.subtract(cb.scale(0.12));
+        Vec3 r = cr.scale(3), u = cu.scale(3);
+        quad(false, c.subtract(r).subtract(u), col, c.add(r).subtract(u), col, c.add(r).add(u), col, c.subtract(r).add(u), col);
+    }
+
+    /** A ring of light facing the eye: full {@code col} at radius {@code r0}, fading to nothing at {@code r1}. */
+    public void corona(Vec3 c, double r0, double r1, int col) {
+        int n = 48;
+        int edge = col & 0xFFFFFF;
+        for (int i = 0; i < n; i++) {
+            double a0 = Math.PI * 2 * i / n, a1 = Math.PI * 2 * (i + 1) / n;
+            Vec3 d0 = cr.scale(Math.cos(a0)).add(cu.scale(Math.sin(a0))), d1 = cr.scale(Math.cos(a1)).add(cu.scale(Math.sin(a1)));
+            quad(true, c.add(d0.scale(r0)), col, c.add(d1.scale(r0)), col, c.add(d1.scale(r1)), edge, c.add(d0.scale(r1)), edge);
+        }
+    }
+
     /** A soft round glow facing the camera: full colour at the centre, nothing at radius {@code r}. */
     public void glow(Vec3 c, double r, int col) {
         if (r <= 0 || (col >>> 24) == 0) {

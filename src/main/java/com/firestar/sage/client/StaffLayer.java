@@ -42,12 +42,12 @@ public final class StaffLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         VertexConsumer glow = buf.getBuffer(RenderType.lightning());
         float head = -2.0F, butt = 0.55F;
         float top = butt + (head - butt) * k;
-        rod(dark, m, 0.045F, butt, top, 0xFF0A0710);
+        rod(dark, m, 0.066F, butt, top, 0xFF0A0710);
         if (k > 0.9F) {
             for (float z : new float[]{0.0F, -0.9F, -1.7F}) {
-                rod(glow, m, 0.06F, z + 0.05F, z - 0.05F, 0xE0F2C14E);
+                rod(glow, m, 0.085F, z + 0.06F, z - 0.06F, 0xF0F2C14E);
             }
-            rod(glow, m, 0.058F, butt + 0.02F, butt - 0.08F, 0xE0F2C14E);
+            rod(glow, m, 0.08F, butt + 0.02F, butt - 0.1F, 0xF0F2C14E);
             // the head: a gold crescent around a black orb
             sphere(dark, m, 0, 0, head - 0.18F, 0.13F, 0xFF050308);
             for (int i = 0; i < 18; i++) {
@@ -98,5 +98,10 @@ public final class StaffLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         vc.vertex(m, bx, by, bz).color(r, g, b, a).endVertex();
         vc.vertex(m, cx, cy, cz).color(r, g, b, a).endVertex();
         vc.vertex(m, dx, dy, dz).color(r, g, b, a).endVertex();
+        // and the back face, so it shows from every side whatever the render type culls
+        vc.vertex(m, ax, ay, az).color(r, g, b, a).endVertex();
+        vc.vertex(m, dx, dy, dz).color(r, g, b, a).endVertex();
+        vc.vertex(m, cx, cy, cz).color(r, g, b, a).endVertex();
+        vc.vertex(m, bx, by, bz).color(r, g, b, a).endVertex();
     }
 }

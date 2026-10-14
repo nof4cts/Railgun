@@ -466,7 +466,7 @@ public final class Rites {
         Vec3 eye = c.p.getEyePosition();
         Vec3 look = c.p.getLookAngle();
         double reach = c.step == 0 ? 4.6 : 3.8;
-        float base = c.step == 2 ? 12.0F : c.step == 1 ? 8.0F : 7.0F;
+        float base = c.step == 2 ? 16.0F : c.step == 1 ? 12.0F : 10.0F;
         if (Sage.form(c.p) != Sage.ASCENDED) {
             base *= 0.5F;
         }
@@ -539,7 +539,7 @@ public final class Rites {
                 c.orbLive.set(i, false);
                 c.orbs.set(i, at);
                 for (LivingEntity e : around(c, at, SBeats.ORBS_ERASE + 0.8)) {
-                    hit(c, e, 9.0F, away(c.p.position(), e.position(), c.flat).scale(0.5).add(0, 0.25, 0));
+                    hit(c, e, 12.0F, away(c.p.position(), e.position(), c.flat).scale(0.5).add(0, 0.25, 0));
                 }
                 erase(c.level, at, SBeats.ORBS_ERASE);
                 sound(c, at, SageMod.ORB_ERASE.get(), 1.6F, 0.8F + c.level.random.nextFloat() * 0.3F);
@@ -567,10 +567,10 @@ public final class Rites {
             e.fallDistance = 0;
         }
         if (t == SBeats.PULL_BURST) {
-            hit(c, e, 18.0F, c.flat.scale(2.2).add(0, 1.3, 0));
+            hit(c, e, 28.0F, c.flat.scale(2.2).add(0, 1.3, 0));
             for (LivingEntity o : around(c, dest, 3.5)) {
                 if (o != e) {
-                    hit(c, o, 8.0F, away(c.p.position(), o.position(), c.flat).scale(1.4).add(0, 0.6, 0));
+                    hit(c, o, 12.0F, away(c.p.position(), o.position(), c.flat).scale(1.4).add(0, 0.6, 0));
                 }
             }
             sound(c, dest, SageMod.PULL_BURST.get(), 2.0F, 1.0F);
@@ -590,7 +590,7 @@ public final class Rites {
                 tf = tf.lengthSqr() < 1e-4 ? c.flat : tf.normalize();
                 at = c.target.position().subtract(tf.scale(c.target.getBbWidth() * 0.5 + 1.2));
                 face = tf;
-                hit(c, c.target, 16.0F, tf.scale(1.4).add(0, 0.5, 0));
+                hit(c, c.target, 26.0F, tf.scale(1.4).add(0, 0.5, 0));
             } else {
                 at = c.point;
                 face = c.flat;
@@ -613,10 +613,11 @@ public final class Rites {
         return fallback;
     }
 
-    /** Where a star falls from: high above and behind the point, along the sage's line of sight. */
+    /** Where a star falls from: high above and beyond the point, along the sage's line of sight. */
     public static Vec3 starFrom(Vec3 point, Vec3 flat, int which) {
         Vec3 side = new Vec3(-flat.z, 0, flat.x);
-        return point.add(flat.scale(-46 + which * 20)).add(side.scale(which == 0 ? 18 : -26)).add(0, SBeats.STAR_HEIGHT, 0);
+        // from far beyond the target, so the star comes down over it toward the sage, in front of his eyes
+        return point.add(flat.scale(78 - which * 14)).add(side.scale(which == 0 ? 24 : -30)).add(0, SBeats.STAR_HEIGHT, 0);
     }
 
     public static Vec3 starPoint(Vec3 point, Vec3 flat, int which) {
@@ -642,7 +643,7 @@ public final class Rites {
                 for (LivingEntity e : around(c, p, r * 1.7)) {
                     double d = e.position().distanceTo(p);
                     double k = Mth.clamp(1 - d / (r * 1.7), 0, 1);
-                    hit(c, e, (float) ((which == 0 ? 30 : 20) + (which == 0 ? 50 : 30) * k), away(p, e.position(), c.flat).scale(1.5 + 3 * k)
+                    hit(c, e, (float) ((which == 0 ? 60 : 36) + (which == 0 ? 90 : 50) * k), away(p, e.position(), c.flat).scale(1.5 + 3 * k)
                             .add(0, 1.0 + 1.6 * k, 0));
                     e.setSecondsOnFire(10);
                 }
@@ -687,7 +688,7 @@ public final class Rites {
                 sound(c, s, SageMod.THORN_ERUPT.get(), 2.6F, 0.85F + (i % 3) * 0.1F);
             }
             for (LivingEntity e : around(c, s.add(0, 1, 0), 2.6)) {
-                hit(c, e, 14.0F, new Vec3(0, 1.45, 0).add(away(s, e.position(), c.flat).scale(0.3)));
+                hit(c, e, 22.0F, new Vec3(0, 1.45, 0).add(away(s, e.position(), c.flat).scale(0.3)));
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 3, false, true));
             }
             if (terrain() && i % 2 == 0) {
@@ -716,7 +717,7 @@ public final class Rites {
                 double along = rel.dot(c.flat);
                 double across = Math.abs(rel.dot(side));
                 if (along > 1 && along < SBeats.COL_LENGTH && across < 5.5 + e.getBbWidth() * 0.5) {
-                    hit(c, e, 70.0F, side.scale(rel.dot(side) >= 0 ? 1.6 : -1.6).add(0, 1.2, 0));
+                    hit(c, e, 160.0F, side.scale(rel.dot(side) >= 0 ? 1.6 : -1.6).add(0, 1.2, 0));
                 }
             }
             trench(c.level, from, c.flat, SBeats.COL_LENGTH, 2.5, 7);
@@ -747,7 +748,7 @@ public final class Rites {
             for (LivingEntity e : c.level.getEntitiesOfClass(LivingEntity.class, new AABB(o, o).inflate(r1 + 2, 60, r1 + 2), e -> e != c.p && e.isAlive())) {
                 double d = Math.sqrt(e.distanceToSqr(o.x, e.getY(), o.z));
                 if (d >= r0 - 1 && d < r1 + 1) {
-                    hit(c, e, 45.0F, away(o, e.position(), c.flat).scale(1.2).add(0, 0.9, 0));
+                    hit(c, e, 110.0F, away(o, e.position(), c.flat).scale(1.2).add(0, 0.9, 0));
                     e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, true));
                     e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 160, 4, false, true));
                     e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 2, false, true));
