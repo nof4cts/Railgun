@@ -1,0 +1,37 @@
+00:00.746  blend            | Read blend: "/home/runner/work/Railgun/Railgun/fire_arrow_open.blend"
+00:00.806  cycles           | WARNING CUEW initialization failed: Error opening the library
+EGL Error (0x3009): EGL_BAD_MATCH: Arguments are inconsistent (for example, a valid context requires buffers not supplied by a valid surface).
+EGL Error (0x3009): EGL_BAD_MATCH: Arguments are inconsistent (for example, a valid context requires buffers not supplied by a valid surface).
+EGL Error (0x3009): EGL_BAD_MATCH: Arguments are inconsistent (for example, a valid context requires buffers not supplied by a valid surface).
+00:17.287  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01170.png'
+[render] job 9 frame 2341 -> 1170 in 16.4s
+00:32.493  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01190.png'
+[render] job 9 frame 2381 -> 1190 in 15.2s
+00:48.049  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01210.png'
+[render] job 9 frame 2421 -> 1210 in 15.6s
+01:03.625  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01230.png'
+[render] job 9 frame 2461 -> 1230 in 15.6s
+01:19.127  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01250.png'
+[render] job 9 frame 2501 -> 1250 in 15.5s
+01:34.213  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01270.png'
+[render] job 9 frame 2541 -> 1270 in 15.1s
+01:49.405  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01290.png'
+[render] job 9 frame 2581 -> 1290 in 15.2s
+02:04.247  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01310.png'
+[render] job 9 frame 2621 -> 1310 in 14.8s
+02:19.223  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01330.png'
+[render] job 9 frame 2661 -> 1330 in 15.0s
+02:35.671  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01350.png'
+[render] job 9 frame 2701 -> 1350 in 16.4s
+02:52.149  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01370.png'
+[render] job 9 frame 2741 -> 1370 in 16.5s
+03:08.623  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01390.png'
+[render] job 9 frame 2781 -> 1390 in 16.5s
+03:25.004  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01410.png'
+[render] job 9 frame 2821 -> 1410 in 16.4s
+03:41.286  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01430.png'
+[render] job 9 frame 2861 -> 1430 in 16.3s
+03:57.989  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01450.png'
+[render] job 9 frame 2901 -> 1450 in 16.7s
+04:02.364  render           | Saved: '/home/runner/work/Railgun/Railgun/out/f01470.png'
+[render] job 9 frame 2941 -> 1470 in 4.4s
