@@ -1,0 +1,708 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :downloadMcpConfig
+> Task :extractSrg UP-TO-DATE
+> Task :createSrgToMcp UP-TO-DATE
+> Task :downloadMCMeta UP-TO-DATE
+> Task :downloadAssets UP-TO-DATE
+> Task :extractNatives UP-TO-DATE
+> Task :makeSrcDirs
+> Task :prepareRuns
+> Task :prepareRunClient
+> Task :prepareRunClientCompile UP-TO-DATE
+
+> Task :runClient
+2026-10-14 05:25:53,240 main WARN Advanced terminal features are not available in this environment
+[05:25:53] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, 5, --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --gameDir, ., --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --width, 1280, --height, 720]
+[05:25:53] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.20.1 by Eclipse Adoptium; OS Linux arch amd64 version 6.17.0-1022-azure
+[05:25:53] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: Loading ImmediateWindowProvider fmlearlywindow
+[05:25:53] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.6
+[05:25:54] [main/INFO] [EARLYDISPLAY/]: Trying GL version 4.5
+[05:25:59] [main/INFO] [EARLYDISPLAY/]: Requested GL version 4.5 got version 4.5
+[05:25:59] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=CLIENT
+[05:25:59] [pool-2-thread-1/INFO] [EARLYDISPLAY/]: GL info: llvmpipe (LLVM 20.1.2, 256 bits) GL version 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4, Mesa
+[05:25:59] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.0/d7ebc62120f202109e300e084ca1a31a7b946a62/javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[05:25:59] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.0/1bf3e845ea0ce750096da8c71c8364b188ab74d4/lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[05:25:59] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.0/6093682e943ddccbabf70539319d7f2fe64db2e7/mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[05:25:59] [main/WARN] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Mod file /home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.0/3b6be96aba3e323f3c918e8ef6a96312d82d76ad/fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
+[05:25:59] [main/INFO] [ne.mi.fm.lo.mo.JarInJarDependencyLocator/]: No dependencies to load found. Skipping!
+[05:26:00] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgeclientuserdev' with arguments [--version, MOD_DEV, --gameDir, ., --assetsDir, /home/runner/.gradle/caches/forge_gradle/assets, --assetIndex, 5, --width, 1280, --height, 720]
+[05:26:00] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using /home/runner/work/Railgun/Railgun/build/createSrgToMcp/output.srg
+[05:26:03] [Datafixer Bootstrap/INFO] [mojang/DataFixerBuilder]: 188 Datafixer optimizations took 125 milliseconds
+[05:26:04] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.0_mapped_official_1.20.1/forge-1.20.1-47.3.0_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
+[05:26:04] [Render thread/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.0_mapped_official_1.20.1/forge-1.20.1-47.3.0_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
+[05:26:04] [Render thread/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[05:26:05] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Dev
+[05:26:05] [Render thread/INFO] [minecraft/Minecraft]: Backend library: LWJGL version 3.3.1 build 7
+[05:26:05] [modloading-worker-0/INFO] [ne.mi.co.ForgeMod/FORGEMOD]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
+[05:26:05] [modloading-worker-0/INFO] [ne.mi.co.MinecraftForge/FORGE]: MinecraftForge v47.3.0 Initialized
+[05:26:06] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fightingstyles]
+[05:26:06] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
+com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
+	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:69) ~[text2speech-1.17.9.jar:?] {}
+	at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
+	at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
+	at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+	at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A,re:mixin,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+	at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
+Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
+libflite.so: cannot open shared object file: No such file or directory
+libflite.so: cannot open shared object file: No such file or directory
+Native library (linux-x86-64/libflite.so) not found in resource path (/home/runner/work/Railgun/Railgun/build/classes/java/main:/home/runner/work/Railgun/Railgun/build/resources/main:/home/runner/.gradle/caches/forge_gradle/deobf_dependencies/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1+1.20_mapped_official_1.20.1/player-animation-lib-forge-1.0.2-rc1+1.20_mapped_official_1.20.1.jar:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.0_mapped_official_1.20.1/forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:/home/runner/.gradle/caches/forge_gradle/minecraft_repo/versions/1.20.1/client-extra.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlearlydisplay/1.20.1-47.3.0/91e33682894f35862e9ce29d633e3258120952f0/fmlearlydisplay-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.0/d7ebc62120f202109e300e084ca1a31a7b946a62/javafmllanguage-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.0/1bf3e845ea0ce750096da8c71c8364b188ab74d4/lowcodelanguage-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.0/6093682e943ddccbabf70539319d7f2fe64db2e7/mclanguage-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.0/3b6be96aba3e323f3c918e8ef6a96312d82d76ad/fmlcore-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlloader/1.20.1-47.3.0/547850469c8a336b4c60cb8619f6cd421e9e5f55/fmlloader-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.3.19/376cc9c8ea60720cf027c01fc033de915699801c/JarJarSelector-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.3.19/83feaa9b770e6ac0e96ee4fc23fa89325c5fe2/JarJarMetadata-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/31.1-jre/60458f877d055d0c9114d9e1a2efb737b4bc282c/guava-31.1-jre.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/ca.weblite/java-objc-bridge/1.1/1227f9e0666314f9de41477e3ec277e542ed7f7b/java-objc-bridge-1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgespi/7.0.1/3b4972a0cdb135853dba219be61a79b22cff1309/forgespi-7.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mergetool/1.1.5/f3da18e12c696d35a47c82cbb2cc8b5aa15e1154/mergetool-1.1.5-api.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/24.0.1/13c5c75c4206580aa4d683bffee658caae6c9f43/annotations-24.0.1.jar:/home/runner/.gradle/caches/forge_gradle/mcp_repo/net/minecraft/mapping/1.20.1/mapping-1.20.1-mapping.zip:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/accesstransformers/8.0.4/272d240aa73f42195b2a68e2ebd8b701ecf41f63/accesstransformers-8.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus/6.0.5/699143dd438431d06b57416944f7cedbe52e1475/eventbus-6.0.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/modlauncher/10.0.9/6d9443f56f50bb85cea383686ff9c867391458b/modlauncher-10.0.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/bootstraplauncher/1.1.2/c546e00443d8432cda6baa1c860346980742628/bootstraplauncher-1.1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/securejarhandler/2.1.10/51e6a22c6c716beb11e244bf5b8be480f51dd6b5/securejarhandler-2.1.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/coremods/5.1.6/62fab3c3d59d37f8e15af311cb638c6f6123423/coremods-5.1.6.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.openjdk.nashorn/nashorn-core/15.3/43977e804697048fc8d81d333a36c17d07a5b3dd/nashorn-core-15.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-commons/9.7/e86dda4696d3c185fcc95d8d311904e7ce38a53f/asm-commons-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-util/9.7/c0655519f24d92af2202cb681cd7c1569df6ead6/asm-util-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-analysis/9.7/e4a258b7eb96107106c0599f0061cfc1832fe07a/asm-analysis-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-tree/9.7/e446a17b175bfb733b87c5c2560ccb4e57d69f1a/asm-tree-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm/9.7/73d7b3086e14beb604ced229c302feff6449723/asm-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4/4.9.1/e92af8ab33e428461927b484e90bb155a4f3a052/antlr4-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4-runtime/4.9.1/428664f05d2b7f7b7610204b5aa7c1763f62011a/antlr4-runtime-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/unsafe/0.2.0/54d7a0a5e8fdb71b973025caa46f341ae5904f39/unsafe-0.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/toml/3.6.4/51d6cefb2b55ee55ee26b16391212fb2c7dfb4f4/toml-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/core/3.6.4/510f174abbf1c947494db50ef2445683bd52c230/core-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-artifact/3.8.5/4433f50c07debefaed0553bd0068f4f48d449313/maven-artifact-3.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.jodah/typetools/0.6.3/a01aaa6ddaea9ec07ec4f209487b7a46a526283a/typetools-0.6.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecrell/terminalconsoleappender/1.2.0/96d02cd3b384ff015a8fef4223bcb4ccf1717c95/terminalconsoleappender-1.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-reader/3.12.1/4382ab1382c7b6f379377ed5f665dc2f6e1218bc/jline-reader-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal/3.12.1/c777448314e050d980a6b697c140f3bfe9eb7416/jline-terminal-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarFileSystems/0.3.19/2464eb7d6b9ddb9db36a82cf8a95193e5c6fe020/JarJarFileSystems-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.github.oshi/oshi-core/6.2.2/54f5efc19bca95d709d9a37d19ffcbba3d21c1a6/oshi-core-6.2.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10/dd9b193aef96e973d5a11ab13cd17430c2e4306b/gson-2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.ibm.icu/icu4j/71.1/9e7d3304c23f9ba5cb71915f7cce23231a57a445/icu4j-71.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/4.0.43/2ff9d747a77570a07a60d32ac77eb6162ad2a2d9/authlib-4.0.43.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/blocklist/1.0.10/5c685c5ffa94c4cd39496c7184c1d122e515ecef/blocklist-1.0.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/brigadier/1.1.8/5244ce82c3337bba4a196a3ce858bfaecc74404a/brigadier-1.1.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/datafixerupper/6.0.8/3ba4a30557a9b057760af4011f909ba619fc5125/datafixerupper-6.0.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/logging/1.1.1/832b8e6674a9b325a5175a3a6267dfaf34c85139/logging-1.1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/patchy/2.2.10/da05971b07cbb379d002cf7eaec6a2048211fefc/patchy-2.2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/text2speech/1.17.9/3cad216e3a7f0c19b4b394388bc9ffc446f13b14/text2speech-1.17.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.13/e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada/httpclient-4.5.13.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.15/49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d/commons-codec-1.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.11.0/a2503f302b11ebde7ebc3df41daebe0e4eea3689/commons-io-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler/4.1.82.Final/644041d1fa96a5d3130a29e8978630d716d76e38/netty-handler-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.82.Final/b77200379acb345a9ffdece1c605e591ac3e4e0a/netty-codec-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/476409d6255001ca53a55f65b01c13822f8dc93a/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/c7350a71920f3ae9142945e25fed4846cce53374/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-classes-epoll/4.1.82.Final/e7c7dd18deac93105797f30057c912651ea76521/netty-transport-classes-epoll-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-unix-common/4.1.82.Final/3e895b35ca1b8a0eca56cacff4c2dde5d2c6abce/netty-transport-native-unix-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.82.Final/e431a218d91acb6476ccad5f5aafde50aa3945ca/netty-transport-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.82.Final/a544270cf1ae8b8077082f5036436a9a9971ea71/netty-buffer-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.82.Final/38f665ae8dcd29032eea31245ba7806bed2e0fa8/netty-resolver-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.82.Final/22d148e85c3f5ebdacc0ce1f5aabb1d420f73f3/netty-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/it.unimi.dsi/fastutil/8.5.9/bb7ea75ecdb216654237830b3a96d87ad91f8cc5/fastutil-8.5.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/5.12.1/97406a297c852f4a41e688a176ec675f72e8329/jna-platform-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.12.1/b1e93a735caea94f503e95e6fe79bf9cdc1e985d/jna-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.sf.jopt-simple/jopt-simple/5.0.4/4fdac2fbe92dfad86aa6e9301736f6b4342a3f5c/jopt-simple-5.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.21/4ec95b60d4e86b5c95a0e919cb172a0af98011ef/commons-compress-1.21.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.12.0/c6842c86792ff03b9f1d1fe2aab8dc23aa6c6f0e/commons-lang3-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.15/7f2e0c573eaa7a74bac2e89b359e1f73d92a0a1d/httpcore-4.4.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.19.0/3b6eeb4de4c49c0fe38a4ee27188ff5fee44d0bb/log4j-core-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j2-impl/2.19.0/5c04bfdd63ce9dceb2e284b81e96b6a70010ee10/log4j-slf4j2-impl-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.19.0/ea1b37f38c327596b216542bc636cfdc0b8036fa/log4j-api-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.joml/joml/1.10.5/22566d58af70ad3d72308bab63b8339906deb649/joml-1.10.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/cbac1b8d30cb4795149c1ef540f912671a8616d0/lwjgl-glfw-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/81716978214ecbda15050ca394b06ef61501a49e/lwjgl-glfw-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/a817bcf213db49f710603677457567c37d53e103/lwjgl-jemalloc-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/33dbb017b6ed6b25f993ad9d56741a49e7937718/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/2623a6b8ae1dfcd880738656a9f0243d2e6840bd/lwjgl-openal-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/f906b6439f6daa66001182ea7727e3467a93681b/lwjgl-openal-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/831a5533a21a5f4f81bbc51bb13e9899319b5411/lwjgl-opengl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/ab9ab6fde3743e3550fa5d46d785ecb45b047d99/lwjgl-opengl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/b119297cf8ed01f247abe8685857f8e7fcf5980f/lwjgl-stb-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/3ee7aec8686e52867677110415566a5342a80230/lwjgl-stb-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/ff1914111ef2e3e0110ef2dabc8d8cdaad82347/lwjgl-tinyfd-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/a35110b9471bea8cde826ab297550ee8c22f5035/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/ae58664f88e18a9bb2c77b063833ca7aaec484cb/lwjgl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/1de885aba434f934201b99f2f1afb142036ac189/lwjgl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.machinezoo.noexception/noexception/1.7.1/b65330c98e38a1f915fa54a6e5eca496505e3f0a/noexception-1.7.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.7.30/e606eac955f55ecf1d8edcccba04eb8ac98088dd/slf4j-simple-1.7.30.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/2.0.1/f48d81adce2abf5ad3cfe463df517952749e03bc/slf4j-api-2.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/srgutils/0.4.11/fbad1341ffdb47d276bbdc40ecb06da49e053e74/srgutils-0.4.11.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.codehaus.plexus/plexus-utils/3.3.0/cf43b5391de623b36fe066a21127baef82c64022/plexus-utils-3.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.12.0/d5692f0526415fcc6de94bb5bfbd3afd9dd3b3e5/checker-qual-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.11.0/c5a0ace696d3f8b1c1d8cc036d8c03cc0cbe6b69/error_prone_annotations-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/ST4/4.3/92f2c1ad8d84abcbeead6cf7f2c53a04166293c2/ST4-4.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.5.2/cd9cd41361c155f3af0f653009dcecb08d8b4afd/antlr-runtime-3.5.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.abego.treelayout/org.abego.treelayout.core/1.0.3/457216e8e6578099ae63667bb1e4439235892028/org.abego.treelayout.core-1.0.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.glassfish/javax.json/1.0.4/3178f73569fd7a1e5ffc464e680f7a8cc784b85a/javax.json-1.0.4.jar)
+	at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:307) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+	at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+	at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
+	... 21 more
+	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
+		at com.sun.jna.Native.open(Native Method) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:197) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
+		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
+		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
+		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A,re:mixin,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
+		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
+		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
+	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
+		at com.sun.jna.Native.open(Native Method) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:210) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
+		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
+		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
+		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A,re:mixin,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
+		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
+		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
+	Suppressed: java.io.IOException: Native library (linux-x86-64/libflite.so) not found in resource path (/home/runner/work/Railgun/Railgun/build/classes/java/main:/home/runner/work/Railgun/Railgun/build/resources/main:/home/runner/.gradle/caches/forge_gradle/deobf_dependencies/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1+1.20_mapped_official_1.20.1/player-animation-lib-forge-1.0.2-rc1+1.20_mapped_official_1.20.1.jar:/home/runner/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.20.1-47.3.0_mapped_official_1.20.1/forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:/home/runner/.gradle/caches/forge_gradle/minecraft_repo/versions/1.20.1/client-extra.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlearlydisplay/1.20.1-47.3.0/91e33682894f35862e9ce29d633e3258120952f0/fmlearlydisplay-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/javafmllanguage/1.20.1-47.3.0/d7ebc62120f202109e300e084ca1a31a7b946a62/javafmllanguage-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/lowcodelanguage/1.20.1-47.3.0/1bf3e845ea0ce750096da8c71c8364b188ab74d4/lowcodelanguage-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mclanguage/1.20.1-47.3.0/6093682e943ddccbabf70539319d7f2fe64db2e7/mclanguage-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlcore/1.20.1-47.3.0/3b6be96aba3e323f3c918e8ef6a96312d82d76ad/fmlcore-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/fmlloader/1.20.1-47.3.0/547850469c8a336b4c60cb8619f6cd421e9e5f55/fmlloader-1.20.1-47.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarSelector/0.3.19/376cc9c8ea60720cf027c01fc033de915699801c/JarJarSelector-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarMetadata/0.3.19/83feaa9b770e6ac0e96ee4fc23fa89325c5fe2/JarJarMetadata-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/31.1-jre/60458f877d055d0c9114d9e1a2efb737b4bc282c/guava-31.1-jre.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/ca.weblite/java-objc-bridge/1.1/1227f9e0666314f9de41477e3ec277e542ed7f7b/java-objc-bridge-1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/forgespi/7.0.1/3b4972a0cdb135853dba219be61a79b22cff1309/forgespi-7.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/mergetool/1.1.5/f3da18e12c696d35a47c82cbb2cc8b5aa15e1154/mergetool-1.1.5-api.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/24.0.1/13c5c75c4206580aa4d683bffee658caae6c9f43/annotations-24.0.1.jar:/home/runner/.gradle/caches/forge_gradle/mcp_repo/net/minecraft/mapping/1.20.1/mapping-1.20.1-mapping.zip:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/accesstransformers/8.0.4/272d240aa73f42195b2a68e2ebd8b701ecf41f63/accesstransformers-8.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/eventbus/6.0.5/699143dd438431d06b57416944f7cedbe52e1475/eventbus-6.0.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/modlauncher/10.0.9/6d9443f56f50bb85cea383686ff9c867391458b/modlauncher-10.0.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/bootstraplauncher/1.1.2/c546e00443d8432cda6baa1c860346980742628/bootstraplauncher-1.1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/cpw.mods/securejarhandler/2.1.10/51e6a22c6c716beb11e244bf5b8be480f51dd6b5/securejarhandler-2.1.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/coremods/5.1.6/62fab3c3d59d37f8e15af311cb638c6f6123423/coremods-5.1.6.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.openjdk.nashorn/nashorn-core/15.3/43977e804697048fc8d81d333a36c17d07a5b3dd/nashorn-core-15.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-commons/9.7/e86dda4696d3c185fcc95d8d311904e7ce38a53f/asm-commons-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-util/9.7/c0655519f24d92af2202cb681cd7c1569df6ead6/asm-util-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-analysis/9.7/e4a258b7eb96107106c0599f0061cfc1832fe07a/asm-analysis-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm-tree/9.7/e446a17b175bfb733b87c5c2560ccb4e57d69f1a/asm-tree-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm/9.7/73d7b3086e14beb604ced229c302feff6449723/asm-9.7.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4/4.9.1/e92af8ab33e428461927b484e90bb155a4f3a052/antlr4-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr4-runtime/4.9.1/428664f05d2b7f7b7610204b5aa7c1763f62011a/antlr4-runtime-4.9.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/unsafe/0.2.0/54d7a0a5e8fdb71b973025caa46f341ae5904f39/unsafe-0.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/toml/3.6.4/51d6cefb2b55ee55ee26b16391212fb2c7dfb4f4/toml-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.electronwill.night-config/core/3.6.4/510f174abbf1c947494db50ef2445683bd52c230/core-3.6.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.maven/maven-artifact/3.8.5/4433f50c07debefaed0553bd0068f4f48d449313/maven-artifact-3.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.jodah/typetools/0.6.3/a01aaa6ddaea9ec07ec4f209487b7a46a526283a/typetools-0.6.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecrell/terminalconsoleappender/1.2.0/96d02cd3b384ff015a8fef4223bcb4ccf1717c95/terminalconsoleappender-1.2.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-reader/3.12.1/4382ab1382c7b6f379377ed5f665dc2f6e1218bc/jline-reader-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.jline/jline-terminal/3.12.1/c777448314e050d980a6b697c140f3bfe9eb7416/jline-terminal-3.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/JarJarFileSystems/0.3.19/2464eb7d6b9ddb9db36a82cf8a95193e5c6fe020/JarJarFileSystems-0.3.19.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.github.oshi/oshi-core/6.2.2/54f5efc19bca95d709d9a37d19ffcbba3d21c1a6/oshi-core-6.2.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10/dd9b193aef96e973d5a11ab13cd17430c2e4306b/gson-2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.ibm.icu/icu4j/71.1/9e7d3304c23f9ba5cb71915f7cce23231a57a445/icu4j-71.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/authlib/4.0.43/2ff9d747a77570a07a60d32ac77eb6162ad2a2d9/authlib-4.0.43.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/blocklist/1.0.10/5c685c5ffa94c4cd39496c7184c1d122e515ecef/blocklist-1.0.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/brigadier/1.1.8/5244ce82c3337bba4a196a3ce858bfaecc74404a/brigadier-1.1.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/datafixerupper/6.0.8/3ba4a30557a9b057760af4011f909ba619fc5125/datafixerupper-6.0.8.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/logging/1.1.1/832b8e6674a9b325a5175a3a6267dfaf34c85139/logging-1.1.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/patchy/2.2.10/da05971b07cbb379d002cf7eaec6a2048211fefc/patchy-2.2.10.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.mojang/text2speech/1.17.9/3cad216e3a7f0c19b4b394388bc9ffc446f13b14/text2speech-1.17.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpclient/4.5.13/e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada/httpclient-4.5.13.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-codec/commons-codec/1.15/49d94806b6e3dc933dacbd8acb0fdbab8ebd1e5d/commons-codec-1.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.11.0/a2503f302b11ebde7ebc3df41daebe0e4eea3689/commons-io-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/commons-logging/commons-logging/1.2/4bfc12adfe4842bf07b657f0369c4cb522955686/commons-logging-1.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-handler/4.1.82.Final/644041d1fa96a5d3130a29e8978630d716d76e38/netty-handler-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-codec/4.1.82.Final/b77200379acb345a9ffdece1c605e591ac3e4e0a/netty-codec-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/476409d6255001ca53a55f65b01c13822f8dc93a/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-epoll/4.1.82.Final/c7350a71920f3ae9142945e25fed4846cce53374/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-classes-epoll/4.1.82.Final/e7c7dd18deac93105797f30057c912651ea76521/netty-transport-classes-epoll-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport-native-unix-common/4.1.82.Final/3e895b35ca1b8a0eca56cacff4c2dde5d2c6abce/netty-transport-native-unix-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-transport/4.1.82.Final/e431a218d91acb6476ccad5f5aafde50aa3945ca/netty-transport-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-buffer/4.1.82.Final/a544270cf1ae8b8077082f5036436a9a9971ea71/netty-buffer-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-resolver/4.1.82.Final/38f665ae8dcd29032eea31245ba7806bed2e0fa8/netty-resolver-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/io.netty/netty-common/4.1.82.Final/22d148e85c3f5ebdacc0ce1f5aabb1d420f73f3/netty-common-4.1.82.Final.jar:/home/runner/.gradle/caches/modules-2/files-2.1/it.unimi.dsi/fastutil/8.5.9/bb7ea75ecdb216654237830b3a96d87ad91f8cc5/fastutil-8.5.9.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/5.12.1/97406a297c852f4a41e688a176ec675f72e8329/jna-platform-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/5.12.1/b1e93a735caea94f503e95e6fe79bf9cdc1e985d/jna-5.12.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.sf.jopt-simple/jopt-simple/5.0.4/4fdac2fbe92dfad86aa6e9301736f6b4342a3f5c/jopt-simple-5.0.4.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.21/4ec95b60d4e86b5c95a0e919cb172a0af98011ef/commons-compress-1.21.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.12.0/c6842c86792ff03b9f1d1fe2aab8dc23aa6c6f0e/commons-lang3-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.httpcomponents/httpcore/4.4.15/7f2e0c573eaa7a74bac2e89b359e1f73d92a0a1d/httpcore-4.4.15.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-core/2.19.0/3b6eeb4de4c49c0fe38a4ee27188ff5fee44d0bb/log4j-core-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-slf4j2-impl/2.19.0/5c04bfdd63ce9dceb2e284b81e96b6a70010ee10/log4j-slf4j2-impl-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.19.0/ea1b37f38c327596b216542bc636cfdc0b8036fa/log4j-api-2.19.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.joml/joml/1.10.5/22566d58af70ad3d72308bab63b8339906deb649/joml-1.10.5.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/cbac1b8d30cb4795149c1ef540f912671a8616d0/lwjgl-glfw-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.3.1/81716978214ecbda15050ca394b06ef61501a49e/lwjgl-glfw-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/a817bcf213db49f710603677457567c37d53e103/lwjgl-jemalloc-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.3.1/33dbb017b6ed6b25f993ad9d56741a49e7937718/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/2623a6b8ae1dfcd880738656a9f0243d2e6840bd/lwjgl-openal-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.3.1/f906b6439f6daa66001182ea7727e3467a93681b/lwjgl-openal-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/831a5533a21a5f4f81bbc51bb13e9899319b5411/lwjgl-opengl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.3.1/ab9ab6fde3743e3550fa5d46d785ecb45b047d99/lwjgl-opengl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/b119297cf8ed01f247abe8685857f8e7fcf5980f/lwjgl-stb-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-stb/3.3.1/3ee7aec8686e52867677110415566a5342a80230/lwjgl-stb-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/ff1914111ef2e3e0110ef2dabc8d8cdaad82347/lwjgl-tinyfd-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-tinyfd/3.3.1/a35110b9471bea8cde826ab297550ee8c22f5035/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/ae58664f88e18a9bb2c77b063833ca7aaec484cb/lwjgl-3.3.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.3.1/1de885aba434f934201b99f2f1afb142036ac189/lwjgl-3.3.1-natives-linux.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.machinezoo.noexception/noexception/1.7.1/b65330c98e38a1f915fa54a6e5eca496505e3f0a/noexception-1.7.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.7.30/e606eac955f55ecf1d8edcccba04eb8ac98088dd/slf4j-simple-1.7.30.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/2.0.1/f48d81adce2abf5ad3cfe463df517952749e03bc/slf4j-api-2.0.1.jar:/home/runner/.gradle/caches/modules-2/files-2.1/net.minecraftforge/srgutils/0.4.11/fbad1341ffdb47d276bbdc40ecb06da49e053e74/srgutils-0.4.11.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.codehaus.plexus/plexus-utils/3.3.0/cf43b5391de623b36fe066a21127baef82c64022/plexus-utils-3.3.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.12.0/d5692f0526415fcc6de94bb5bfbd3afd9dd3b3e5/checker-qual-3.12.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.11.0/c5a0ace696d3f8b1c1d8cc036d8c03cc0cbe6b69/error_prone_annotations-2.11.0.jar:/home/runner/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/ST4/4.3/92f2c1ad8d84abcbeead6cf7f2c53a04166293c2/ST4-4.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.5.2/cd9cd41361c155f3af0f653009dcecb08d8b4afd/antlr-runtime-3.5.2.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.abego.treelayout/org.abego.treelayout.core/1.0.3/457216e8e6578099ae63667bb1e4439235892028/org.abego.treelayout.core-1.0.3.jar:/home/runner/.gradle/caches/modules-2/files-2.1/org.glassfish/javax.json/1.0.4/3178f73569fd7a1e5ffc464e680f7a8cc784b85a/javax.json-1.0.4.jar)
+		at com.sun.jna.Native.extractFromResourcePath(Native.java:1145) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:281) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar:5.12.1 (b0)] {}
+		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar:?] {}
+		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar:?] {}
+		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar:?] {}
+		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A,re:mixin,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
+		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
+		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
+		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
+[05:26:06] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Railgun/Railgun/run/config/madeinheaven-client.toml is not correct. Correcting
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.cutscenes was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.titleCards was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.impactFrames was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.flash was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.shake was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.bloom was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.aberration was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.grain was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key universe was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key universe.galaxyRadius was corrected from null to its default, 22. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key universe.galaxyBlocks was corrected from null to its default, 2600. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key universe.sunStreaks was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Railgun/Railgun/run/config/silverinstinct-client.toml is not correct. Correcting
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.cutscenes was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.titleCards was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.impactFrames was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.flash was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.shake was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.bloom was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.aberration was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.grain was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key aura was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key aura.auraDetail was corrected from null to its default, 18. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Railgun/Railgun/run/config/santoryu-client.toml is not correct. Correcting
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.cutscenes was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.titleCards was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.impactFrames was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.flash was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.shake was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.bloom was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.aberration was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cinema.grain was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Railgun/Railgun/run/config/requiem-client.toml is not correct. Correcting
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.cutscenes was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.impactFrames was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.bloom was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.shake was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.flash was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.distortion was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.embers was corrected from null to its default, 1600. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Railgun/Railgun/run/config/celestial-client.toml is not correct. Correcting
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.cutscenes was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.shake was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.flash was corrected from null to its default, 1.0. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Railgun/Railgun/run/config/fightingstyles-client.toml is not correct. Correcting
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key cutscenes was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Railgun/Railgun/run/config/forge-client.toml is not correct. Correcting
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.alwaysSetupTerrainOffThread was corrected from null to its default, false. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.experimentalForgeLightPipelineEnabled was corrected from null to its default, false. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.showLoadWarnings was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.useCombinedDepthStencilAttachment was corrected from null to its default, false. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.compressLanIPv6Addresses was corrected from null to its default, true. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.calculateAllNormals was corrected from null to its default, false. 
+[05:26:06] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key client.stabilizeDirectionGetNearest was corrected from null to its default, true. 
+[05:26:07] [Worker-Main-1/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
+[05:26:07] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[05:26:08] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.3.0 Target: 47.4.10
+[05:26:09] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
+[05:26:09] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+[05:26:09] [Render thread/ERROR] [minecraft/SoundEngine]: Error starting SoundSystem. Turning off sounds & music
+java.lang.IllegalStateException: Failed to open OpenAL device
+	at com.mojang.blaze3d.audio.Library.openDeviceOrFallback(Library.java:283) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+	at com.mojang.blaze3d.audio.Library.init(Library.java:153) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+	at net.minecraft.client.sounds.SoundEngine.loadLibrary(SoundEngine.java:104) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+	at net.minecraft.client.sounds.SoundEngine.reload(SoundEngine.java:96) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+	at net.minecraft.client.sounds.SoundManager.apply(SoundManager.java:125) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+	at net.minecraft.client.sounds.SoundManager.apply(SoundManager.java:40) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+	at net.minecraft.server.packs.resources.SimplePreparableReloadListener.lambda$reload$1(SimplePreparableReloadListener.java:13) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading}
+	at java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?] {}
+	at java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?] {}
+	at net.minecraft.server.packs.resources.SimpleReloadInstance.lambda$new$3(SimpleReloadInstance.java:69) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading}
+	at net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:156) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,re:mixin,pl:accesstransformer:B}
+	at net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,re:mixin}
+	at net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:130) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,re:mixin,pl:accesstransformer:B}
+	at net.minecraft.util.thread.BlockableEventLoop.runAllTasks(BlockableEventLoop.java:115) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,re:mixin,pl:accesstransformer:B}
+	at net.minecraft.client.Minecraft.runTick(Minecraft.java:1106) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A,re:mixin,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+	at net.minecraft.client.Minecraft.run(Minecraft.java:718) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A,re:mixin,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+	at net.minecraft.client.main.Main.main(Main.java:218) ~[forge-1.20.1-47.3.0_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.3.0.jar:?] {}
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x512x4 minecraft:textures/atlas/blocks.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:aura could not find uniform named viewMatrix in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:aura could not find uniform named view in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:aura could not find uniform named speed in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:aura could not find uniform named bloomColor in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:warp could not find uniform named Time in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:bloom_down could not find uniform named Res in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:bloom_down could not find uniform named First in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:bloom_up could not find uniform named Res in the specified shader program.
+[05:26:10] [Render thread/WARN] [minecraft/ShaderInstance]: Shader requiem:composite could not find uniform named Res in the specified shader program.
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/particles.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[05:26:10] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[05:26:10] [Render thread/INFO] [SilverInstinct/]: Made in Heaven effect shaders compiled
+[05:26:10] [Render thread/INFO] [Santoryu/]: Santoryu effect shaders compiled
+[05:26:10] [Render thread/INFO] [MadeInHeaven/]: Made in Heaven effect shaders compiled
+[05:26:10] [Realms Notification Availability checker #1/INFO] [mojang/RealmsClient]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: 0
+[05:26:11] [Render thread/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
+[05:26:11] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
+[05:26:12] [Server thread/INFO] [minecraft/IntegratedServer]: Starting integrated minecraft server version 1.20.1
+[05:26:12] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./saves/styles_selftest/serverconfig/madeinheaven-server.toml is not correct. Correcting
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key stand was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key stand.damage was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key stand.cooldowns was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key stand.invulnerableInCinematic was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key timeAcceleration was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key timeAcceleration.seconds was corrected from null to its default, 36. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key timeAcceleration.radius was corrected from null to its default, 48. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key timeAcceleration.universeReset was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key timeAcceleration.speedUpWorld was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./saves/styles_selftest/serverconfig/silverinstinct-server.toml is not correct. Correcting
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.damage was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.cooldowns was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.invulnerableInCinematic was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.omenDodge was corrected from null to its default, 0.35. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.zenithDodge was corrected from null to its default, 0.7. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.counters was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.zenithSeconds was corrected from null to its default, 120. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key instinct.zenithCooldownSeconds was corrected from null to its default, 600. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./saves/styles_selftest/serverconfig/santoryu-server.toml is not correct. Correcting
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key techniques was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key techniques.damage was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key techniques.cooldowns was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key techniques.cutBlocks was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key techniques.maxBlocksPerTick was corrected from null to its default, 600. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key techniques.invulnerableInCinematic was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./saves/styles_selftest/serverconfig/requiem-server.toml is not correct. Correcting
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.damage was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.cooldowns was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.invulnerableInCinematic was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key requiem.flight was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./saves/styles_selftest/serverconfig/celestial-server.toml is not correct. Correcting
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.damage was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.cooldowns was corrected from null to its default, 1.0. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.terrain was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.blocksPerTick was corrected from null to its default, 9000. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.flight was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key celestial_sage.invulnerableInCinematic was corrected from null to its default, true. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./saves/styles_selftest/serverconfig/forge-server.toml is not correct. Correcting
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
+[05:26:12] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
+[05:26:12] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[05:26:13] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[05:26:13] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[05:26:13] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 9%
+[05:26:14] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 56%
+[05:26:14] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[05:26:14] [Render thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 1915 ms
+[05:26:14] [Server thread/INFO] [minecraft/IntegratedServer]: Changing view distance to 6, from 10
+[05:26:14] [Server thread/INFO] [minecraft/IntegratedServer]: Changing simulation distance to 6, from 0
+[05:26:14] [Render thread/WARN] [io.ne.ut.in.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
+[05:26:15] [Netty Local Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[05:26:15] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:fbc9a6a6] logged in with entity id 1 at (-5.5, -60.0, 9.5)
+[05:26:15] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[05:26:16] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Press N to choose a fighting style.
+[05:26:16] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[05:26:22] [Render thread/INFO] [FightingStyles/]: [selftest] shot 00_switcher
+[05:26:25] [Render thread/INFO] [FightingStyles/]: [selftest] shot 01_heaven_summoned
+[05:26:26] [Render thread/INFO] [FightingStyles/]: [selftest] shot 02_heaven_barrage
+[05:26:29] [Render thread/INFO] [FightingStyles/]: [selftest] shot 03_swords_ready
+[05:26:30] [Render thread/INFO] [FightingStyles/]: [selftest] shot 04_swords_cut
+[05:26:40] [Render thread/INFO] [FightingStyles/]: [selftest] shot 05_instinct_awake
+[05:26:40] [Render thread/INFO] [FightingStyles/]: [selftest] mayfly=true form=1
+[05:26:41] [Render thread/INFO] [FightingStyles/]: [selftest] shot 06_instinct_hover
+[05:26:43] [Render thread/INFO] [FightingStyles/]: [selftest] shot 07_instinct_fly_front
+[05:26:43] [Render thread/INFO] [FightingStyles/]: [selftest] shot 08_instinct_fly_back
+[05:26:45] [Server thread/INFO] [FightingStyles/]: [selftest] zenith 360: health before=20.0 after=20.0 attackers countered=7/8
+[05:26:45] [Render thread/INFO] [FightingStyles/]: [selftest] shot 09a_zenith_counters
+[05:26:47] [Server thread/INFO] [FightingStyles/]: [selftest] after leaving Instinct: mayfly=false flying=false
+[05:26:49] [Render thread/INFO] [FightingStyles/]: [selftest] shot 09_none
+[05:26:49] [Render thread/INFO] [FightingStyles/]: [selftest] switcher test finished; Requiem Rose next
+[05:26:49] [Render thread/INFO] [RequiemRose/]: [rosetest] begin
+[05:26:50] [Render thread/INFO] [RequiemRose/]: [rosetest] ascend
+[05:26:50] [Server thread/INFO] [RequiemRose/]: [rosetest] cast ASCEND form=0
+[05:26:51] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t6: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-2.5224880433017125, -59.268852763884524, 1.8088893950345193) fov=70 scythe=0.0 aura=0.0
+[05:26:51] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t24: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-1.4095837273804248, -58.29199175502823, 2.312351001548909) fov=70 scythe=0.0 aura=0.0
+[05:26:52] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t40: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-1.6002283967542759, -58.334752421230085, 2.1171348823712703) fov=70 scythe=0.0 aura=0.0
+[05:26:53] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t56: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-0.21018497112673273, -59.40169550200464, 4.912280036003777) fov=70 scythe=0.0 aura=0.0
+[05:26:53] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t72: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-1.6209157820983302, -57.804558980457244, -1.4635909075940807) fov=70 scythe=0.0 aura=0.0
+[05:26:54] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t88: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-0.819794490962388, -58.37999999523163, 3.4704452515399797) fov=70 scythe=0.0 aura=0.0
+[05:26:55] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t96: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-1.4497595663234764, -58.37999999523163, 1.8951710140829292) fov=70 scythe=0.0 aura=0.0
+[05:26:55] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t98: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-3.2511403801604706, -59.42342433744206, 5.32783599973029) fov=70 scythe=0.0 aura=0.19
+[05:26:55] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t99: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.3085974388085617, -59.351248592621104, 5.554039687976537) fov=70 scythe=0.7049096 aura=0.6
+[05:26:55] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t100: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-4.012075448139744, -58.848565199802266, 7.744597797070023) fov=70 scythe=0.85308295 aura=1.0
+[05:26:55] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t102: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-4.170903651337377, -58.73824879671694, 8.23812113201967) fov=70 scythe=0.8963353 aura=1.0
+[05:26:55] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t106: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-4.2859062405754065, -58.656814573319586, 8.603451547363369) fov=70 scythe=0.91292167 aura=1.0
+[05:26:56] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t116: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-4.351105482190717, -58.60846096384122, 8.822984249935795) fov=70 scythe=0.9385575 aura=1.0
+[05:26:56] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t130: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-2.5216801635144757, -59.54661659199993, 6.661632006727231) fov=70 scythe=1.0 aura=1.0
+[05:26:57] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r00_ascend t146: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-2.2066330802336904, -58.89841780156754, 3.1742291780301652) fov=70 scythe=1.0 aura=1.0
+[05:26:58] [Render thread/INFO] [RequiemRose/]: [rosetest] stance
+[05:26:59] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r01_stance t10: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-0.4225743055343627, -58.79811406135559, 4.193561553955078) fov=70 scythe=1.0 aura=1.0
+[05:27:00] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r01_stance t24: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-0.4225743055343627, -58.79811406135559, 4.193561553955078) fov=70 scythe=1.0 aura=1.0
+[05:27:00] [Render thread/INFO] [RequiemRose/]: [rosetest] stance_back
+[05:27:01] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r02_stance_back t12: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=1.0 aura=1.0
+[05:27:01] [Render thread/INFO] [RequiemRose/]: [rosetest] first_person
+[05:27:02] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r03_first_person t12: aura=false shapes=true drawn=0p/0s; glow=true warp=true grade=true; cam=(-1.9, -58.38000011444092, 0.5) fov=70 scythe=1.0 aura=1.0
+[05:27:02] [Render thread/INFO] [RequiemRose/]: [rosetest] reap_0
+[05:27:02] [Server thread/INFO] [RequiemRose/]: [rosetest] cast REAP form=1
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r04_reap_0 t2: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r04_reap_0 t3: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r04_reap_0 t4: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r04_reap_0 t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] reap_1
+[05:27:03] [Server thread/INFO] [RequiemRose/]: [rosetest] cast REAP form=1
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r05_reap_1 t3: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r05_reap_1 t4: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r05_reap_1 t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:03] [Render thread/INFO] [RequiemRose/]: [rosetest] reap_2
+[05:27:04] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r06_reap_2 t3: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:04] [Server thread/INFO] [RequiemRose/]: [rosetest] cast REAP form=1
+[05:27:04] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r06_reap_2 t4: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:04] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r06_reap_2 t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:04] [Render thread/INFO] [RequiemRose/]: [rosetest] reap_3
+[05:27:04] [Server thread/INFO] [RequiemRose/]: [rosetest] cast REAP form=1
+[05:27:04] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r07_reap_3 t3: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:04] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r07_reap_3 t4: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:04] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r07_reap_3 t5: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:05] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r07_reap_3 t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:05] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r07_reap_3 t9: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:05] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r07_reap_3 t14: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-6.14, -57.064, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:05] [Render thread/INFO] [RequiemRose/]: [rosetest] tether
+[05:27:05] [Server thread/INFO] [RequiemRose/]: [rosetest] cast TETHER form=1
+[05:27:06] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:06] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t8: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:06] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t11: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:06] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t14: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:06] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t17: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:07] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t20: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:07] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t24: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:07] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t25: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:07] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r08_tether t28: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-10.0, -55.96, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:08] [Render thread/INFO] [RequiemRose/]: [rosetest] crescent
+[05:27:09] [Server thread/INFO] [RequiemRose/]: [rosetest] cast CRESCENT form=1
+[05:27:09] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:09] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t10: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=0.0 aura=1.0
+[05:27:09] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t14: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=0.0 aura=1.0
+[05:27:10] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t18: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=0.0 aura=1.0
+[05:27:10] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t22: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=0.0 aura=1.0
+[05:27:10] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t26: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=0.0 aura=1.0
+[05:27:10] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t30: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=0.0 aura=1.0
+[05:27:10] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r09_crescent t34: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.5, -56.199999999999996, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:12] [Render thread/INFO] [RequiemRose/]: [rosetest] step
+[05:27:12] [Server thread/INFO] [RequiemRose/]: [rosetest] cast STEP form=1
+[05:27:12] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r10_step t2: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.0, -56.44, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:12] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r10_step t3: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.0, -56.44, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:12] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r10_step t4: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.0, -56.44, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:12] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r10_step t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.0, -56.44, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:12] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r10_step t7: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.0, -56.44, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:13] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r10_step t10: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-9.0, -56.44, -3.0) fov=70 scythe=1.0 aura=1.0
+[05:27:14] [Render thread/INFO] [RequiemRose/]: [rosetest] ray
+[05:27:14] [Server thread/INFO] [RequiemRose/]: [rosetest] cast RAY form=1
+[05:27:15] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t8: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-5.0227517197051466, -58.668445410153495, 4.234331676604981) fov=70 scythe=1.0 aura=1.0
+[05:27:16] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t30: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-4.221904016539615, -57.91785973117305, 4.722084930605018) fov=70 scythe=1.0 aura=1.0
+[05:27:17] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t55: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.263797132075982, -59.69371205378385, 4.17208241120842) fov=70 scythe=1.0 aura=1.0
+[05:27:18] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t80: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(1.1047062604900555, -58.36795857667923, -3.187290411848014) fov=70 scythe=1.0 aura=1.0
+[05:27:19] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t90: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-0.2797452150723996, -58.10250347971916, -1.6238385136441829) fov=70 scythe=1.0 aura=1.0
+[05:27:19] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t94: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-1.7493202796051448, -57.93252338174697, -1.908918827016005) fov=70 scythe=1.0 aura=1.0
+[05:27:19] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t95: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-1.7298165369628922, -57.92740794124677, -1.9775564651949922) fov=70 scythe=1.0 aura=1.0
+[05:27:19] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t96: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-1.649104694731506, -57.91793015544765, -2.252178452134246) fov=70 scythe=1.0 aura=1.0
+[05:27:19] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t100: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-1.4675831286678223, -57.90374029163907, -2.9055901081083353) fov=70 scythe=1.0 aura=1.0
+[05:27:20] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t110: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-1.3691296584962818, -57.88128735378104, -3.2583720424184306) fov=70 scythe=1.0 aura=1.0
+[05:27:20] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t122: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-11.788880746263757, -56.06590662931901, 8.32563417361868) fov=70 scythe=1.0 aura=1.0
+[05:27:20] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 30 advancements
+[05:27:21] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t130: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-11.712951569959506, -55.70157657672675, 8.40452494607307) fov=70 scythe=1.0 aura=1.0
+[05:27:21] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r11_ray t136: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-11.714775588754842, -55.46530351659014, 8.434766198083405) fov=70 scythe=1.0 aura=1.0
+[05:27:23] [Render thread/INFO] [RequiemRose/]: [rosetest] requiem
+[05:27:23] [Server thread/INFO] [RequiemRose/]: [rosetest] cast REQUIEM form=1
+[05:27:23] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t8: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-2.874882402006867, -58.069241340192995, 4.713041771672206) fov=70 scythe=1.0 aura=1.0
+[05:27:23] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t12: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-5.399202388127634, -56.46531041897218, 10.182125188373812) fov=70 scythe=1.0 aura=1.0
+[05:27:24] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t14: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-5.426521904942881, -56.467183057973095, 10.139200652338602) fov=70 scythe=1.0 aura=1.0
+[05:27:24] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t20: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-5.776694012607565, -56.514891034807476, 9.42658862585883) fov=70 scythe=1.0 aura=1.0
+[05:27:24] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t28: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-5.235728390720738, -56.8741971056488, 3.1654843480603017) fov=70 scythe=1.0 aura=1.0
+[05:27:25] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t36: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(2.617376389830673, -57.37010596929241, 0.7475720743800371) fov=70 scythe=1.0 aura=1.0
+[05:27:25] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t44: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(4.755189820481572, -57.516455266499776, 2.3613712979229575) fov=70 scythe=1.0 aura=1.0
+[05:27:26] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t52: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(2.3982080832637407, -58.2, 0.5712964628176338) fov=70 scythe=1.0 aura=1.0
+[05:27:26] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t57: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-7.091359807430482, -57.479562019669395, 6.2964571604083215) fov=70 scythe=1.0 aura=1.0
+[05:27:26] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t58: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-7.091998890391768, -57.46995799422891, 6.294753398482872) fov=70 scythe=1.0 aura=1.0
+[05:27:26] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t59: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-7.1194498651233316, -57.43888681237964, 6.336981959321647) fov=70 scythe=1.0 aura=1.0
+[05:27:26] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t61: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-7.196981680307391, -57.36306572531134, 6.4674537636973515) fov=70 scythe=1.0 aura=1.0
+[05:27:26] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r12_requiem t66: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-7.80803656637669, -56.78033238181422, 7.551421172501941) fov=70 scythe=1.0 aura=1.0
+[05:27:28] [Render thread/INFO] [RequiemRose/]: [rosetest] rift
+[05:27:35] [Render thread/INFO] [RequiemRose/]: [rosetest] last_bloom
+[05:27:35] [Server thread/INFO] [RequiemRose/]: [rosetest] cast LAST_BLOOM form=1
+[05:27:36] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t10: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.464725599029948, -59.766870810881414, 3.3805680967846508) fov=70 scythe=1.0 aura=1.0
+[05:27:37] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t30: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.4712037680728214, -48.547407526656905, 4.993500247483561) fov=70 scythe=1.0 aura=1.0
+[05:27:38] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t50: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.5798116893724568, -48.509058165993466, 4.684984761750024) fov=70 scythe=1.0 aura=1.0
+[05:27:39] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t70: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-5.951640282702541, -55.672841496714966, 19.89792616286793) fov=70 scythe=1.0 aura=1.0
+[05:27:40] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t90: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(5.212732129144016, -59.033894330515984, 8.081307151590003) fov=70 scythe=1.0 aura=1.0
+[05:27:41] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t110: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-5.873059316080174, -59.0366930963413, 10.729527549725958) fov=70 scythe=1.0 aura=1.0
+[05:27:41] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t124: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(3.501758412906951, -52.0, 7.034215145367889) fov=70 scythe=1.0 aura=1.0
+[05:27:42] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t128: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-43.89587689086845, -49.98510972249514, 26.599873730770934) fov=70 scythe=1.0 aura=1.0
+[05:27:42] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t130: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-43.93104547290533, -49.96543038082525, 26.60961027241716) fov=70 scythe=1.0 aura=1.0
+[05:27:42] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t134: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-44.830643102640195, -49.37987056785811, 26.797731345417567) fov=70 scythe=1.0 aura=1.0
+[05:27:42] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t135: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-45.89164818889412, -48.673193193517726, 27.017495112856015) fov=70 scythe=1.0 aura=1.0
+[05:27:42] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t136: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-47.76482708420709, -47.4171371550967, 27.406279077931526) fov=70 scythe=1.0 aura=1.0
+[05:27:42] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t138: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-49.10882118583084, -46.5215517245979, 27.67807198445932) fov=70 scythe=1.0 aura=1.0
+[05:27:42] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t144: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-49.857430362089374, -46.03527807409134, 27.803772587030778) fov=70 scythe=1.0 aura=1.0
+[05:27:43] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t155: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-1.6548405932115544, -43.61236320033997, -10.261105194365399) fov=70 scythe=1.0 aura=1.0
+[05:27:44] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t170: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-1.141236728800924, -37.75004686661814, -14.762619789867912) fov=70 scythe=1.0 aura=1.0
+[05:27:45] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t190: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-2.865402492783028, -46.931805751281075, -5.32791056073718) fov=70 scythe=1.0 aura=1.0
+[05:27:45] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r14_last_bloom t205: aura=true shapes=true drawn=1p/0s; glow=true warp=true grade=true; cam=(-3.522610663429257, -58.40115231092236, 2.981321545094507) fov=70 scythe=1.0 aura=1.0
+[05:27:47] [Render thread/INFO] [RequiemRose/]: [rosetest] release
+[05:27:47] [Server thread/INFO] [RequiemRose/]: [rosetest] cast RELEASE form=1
+[05:27:47] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t2: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=1.0 aura=0.8
+[05:27:47] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t6: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=0.7056 aura=0.39999998
+[05:27:47] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t8: aura=true shapes=true drawn=1p/1s; glow=true warp=true grade=true; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=0.49787137 aura=0.19999999
+[05:27:48] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t10: aura=true shapes=true drawn=0p/1s; glow=true warp=false grade=false; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=0.35129803 aura=0.0
+[05:27:48] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t11: aura=true shapes=true drawn=0p/1s; glow=true warp=false grade=false; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=0.29509035 aura=0.0
+[05:27:48] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t12: aura=true shapes=true drawn=0p/1s; glow=true warp=false grade=false; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=0.2478759 aura=0.0
+[05:27:48] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t14: aura=true shapes=true drawn=0p/1s; glow=true warp=false grade=false; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=0.17490123 aura=0.0
+[05:27:48] [Render thread/INFO] [RequiemRose/]: [rosetest] shot r15_release t18: aura=true shapes=true drawn=0p/1s; glow=true warp=false grade=false; cam=(-3.377424621582031, -57.96188619732857, -3.193561553955078) fov=70 scythe=0.08707832 aura=0.0
+[05:27:49] [Server thread/INFO] [RequiemRose/]: [rosetest] finished; form=0 
+[05:27:49] [Render thread/INFO] [RequiemRose/]: [rosetest] finished; Celestial Sage next
+[05:27:49] [Render thread/INFO] [CelestialSage/]: [sagetest] begin
+[05:27:50] [Render thread/INFO] [CelestialSage/]: [sagetest] mantle
+[05:27:50] [Server thread/INFO] [CelestialSage/]: [sagetest] cast MANTLE form=0
+[05:27:51] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t4 cam=(-2.1860792574480787, -59.20887533128261, 5.894084507222811) director=true mantle=0.0
+[05:27:51] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t16 cam=(-2.4801198924609023, -59.29997948311647, 5.109950098124156) director=true mantle=0.0
+[05:27:52] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t30 cam=(-6.088111733711057, -57.7279005458551, 5.77787036499277) director=true mantle=0.28
+[05:27:53] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t46 cam=(-8.551861180954793, -57.18162417516809, -1.787185697323252) director=true mantle=0.6
+[05:27:53] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t60 cam=(-0.387142149727443, -56.485429206043726, -5.733153656422999) director=true mantle=0.88
+[05:27:54] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t72 cam=(0.3309371655754543, -59.1, 4.34690711020248) director=true mantle=1.0
+[05:27:55] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t86 cam=(0.13289892090316857, -59.1, 3.8187875801985243) director=true mantle=1.0
+[05:27:55] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t94 cam=(0.052442412674723826, -59.1, 3.604229763946014) director=true mantle=1.0
+[05:27:55] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t97 cam=(3.4698256267442242, -58.9988500168547, 7.8758112775203495) director=true mantle=1.0
+[05:27:55] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t100 cam=(3.4915625971493642, -58.967895336449146, 7.933778457612605) director=true mantle=1.0
+[05:27:56] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t106 cam=(3.7366034417568676, -58.61894699931145, 8.58724241807154) director=true mantle=1.0
+[05:27:56] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s00_mantle t118 cam=(4.635054616507888, -57.33951485157013, 10.983191811211224) director=true mantle=1.0
+[05:27:58] [Server thread/INFO] [CelestialSage/]: [sagetest] after mantle: golems [96 96 100] form=1 player hp=20.0 y=-60.0
+[05:27:58] [Render thread/INFO] [CelestialSage/]: [sagetest] mantled_front
+[05:27:59] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s01_mantled_front t14 cam=(-1.1031997203826904, -58.798114001750946, 4.224799156188965) director=false mantle=0.9999999
+[05:28:00] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s01_mantled_front t26 cam=(-1.1031997203826904, -58.798114001750946, 4.224799156188965) director=false mantle=0.9999999
+[05:28:00] [Server thread/INFO] [CelestialSage/]: [sagetest] after mantled_front: golems [96 96 100] form=1 player hp=20.0 y=-60.0
+[05:28:00] [Render thread/INFO] [CelestialSage/]: [sagetest] mantled_back
+[05:28:01] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s02_mantled_back t12 cam=(-3.8967998027801514, -57.96188619732857, -3.224799871444702) director=false mantle=0.9999999
+[05:28:01] [Server thread/INFO] [CelestialSage/]: [sagetest] after mantled_back: golems [96 96 100] form=1 player hp=20.0 y=-60.0
+[05:28:01] [Render thread/INFO] [CelestialSage/]: [sagetest] first_person
+[05:28:02] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s03_first_person t12 cam=(-2.5, -58.38000011444092, 0.5) director=false mantle=0.9999999
+[05:28:02] [Server thread/INFO] [CelestialSage/]: [sagetest] after first_person: golems [96 96 100] form=1 player hp=20.0 y=-60.0
+[05:28:02] [Render thread/INFO] [CelestialSage/]: [sagetest] staff_0
+[05:28:03] [Server thread/INFO] [CelestialSage/]: [sagetest] cast STAFF form=1
+[05:28:03] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s04_staff_0 t2 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:03] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s04_staff_0 t4 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:03] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s04_staff_0 t6 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:03] [Server thread/INFO] [CelestialSage/]: [sagetest] after staff_0: golems [100 90 100] form=1 player hp=20.0 y=-60.0
+[05:28:03] [Render thread/INFO] [CelestialSage/]: [sagetest] staff_1
+[05:28:03] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s05_staff_1 t2 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:03] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s05_staff_1 t4 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:03] [Server thread/INFO] [CelestialSage/]: [sagetest] cast STAFF form=1
+[05:28:03] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s05_staff_1 t6 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:04] [Server thread/INFO] [CelestialSage/]: [sagetest] after staff_1: golems [100 78 100] form=1 player hp=20.0 y=-60.0
+[05:28:04] [Render thread/INFO] [CelestialSage/]: [sagetest] staff_2
+[05:28:04] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s06_staff_2 t2 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:04] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s06_staff_2 t4 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:04] [Server thread/INFO] [CelestialSage/]: [sagetest] cast STAFF form=1
+[05:28:04] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s06_staff_2 t6 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:04] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s06_staff_2 t10 cam=(-2.7593705081939697, -57.96188622713089, -3.0376651287078857) director=false mantle=0.9999999
+[05:28:05] [Server thread/INFO] [CelestialSage/]: [sagetest] after staff_2: golems [100 62 100] form=1 player hp=20.0 y=-60.0
+[05:28:05] [Render thread/INFO] [CelestialSage/]: [sagetest] pull
+[05:28:05] [Server thread/INFO] [CelestialSage/]: [sagetest] cast PULL form=1
+[05:28:06] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t4 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:06] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t8 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:06] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t12 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:06] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t16 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:06] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t19 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:06] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t21 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:07] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t24 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:07] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s07_pull t30 cam=(-3.3335251212120056, -57.96188619732857, -3.389784097671509) director=false mantle=0.9999999
+[05:28:09] [Server thread/INFO] [CelestialSage/]: [sagetest] after pull: golems [100 72 100] form=1 player hp=20.0 y=-60.0
+[05:28:09] [Render thread/INFO] [CelestialSage/]: [sagetest] orbs
+[05:28:09] [Server thread/INFO] [CelestialSage/]: [sagetest] cast ORBS form=1
+[05:28:10] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s08_orbs t6 cam=(-3.2331159710884094, -57.96188625693321, -3.4099514484405518) director=false mantle=0.9999999
+[05:28:10] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s08_orbs t10 cam=(-3.2331159710884094, -57.96188625693321, -3.4099514484405518) director=false mantle=0.9999999
+[05:28:10] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s08_orbs t16 cam=(-3.2331159710884094, -57.96188625693321, -3.4099514484405518) director=false mantle=0.9999999
+[05:28:10] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s08_orbs t22 cam=(-3.2331159710884094, -57.96188625693321, -3.4099514484405518) director=false mantle=0.9999999
+[05:28:11] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s08_orbs t30 cam=(-3.2331159710884094, -57.96188625693321, -3.4099514484405518) director=false mantle=0.9999999
+[05:28:11] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s08_orbs t40 cam=(-3.2331159710884094, -57.96188625693321, -3.4099514484405518) director=false mantle=0.9999999
+[05:28:12] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s08_orbs t50 cam=(-3.2331159710884094, -57.96188625693321, -3.4099514484405518) director=false mantle=0.9999999
+[05:28:14] [Server thread/INFO] [CelestialSage/]: [sagetest] after orbs: golems [dead dead dead] form=1 player hp=20.0 y=-60.0
+[05:28:14] [Render thread/INFO] [CelestialSage/]: [sagetest] mirror
+[05:28:15] [Server thread/INFO] [CelestialSage/]: [sagetest] cast MIRROR form=1
+[05:28:15] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s09_mirror t2 cam=(-3.757981777191162, -57.96188619732857, -3.2739453315734863) director=false mantle=0.9999999
+[05:28:15] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s09_mirror t4 cam=(-3.757981777191162, -57.96188619732857, -3.2739453315734863) director=false mantle=0.9999999
+[05:28:15] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s09_mirror t7 cam=(-3.757981777191162, -57.96188619732857, -3.2739453315734863) director=false mantle=0.9999999
+[05:28:15] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s09_mirror t9 cam=(-3.757981777191162, -57.96188619732857, -3.2739453315734863) director=false mantle=0.9999999
+[05:28:15] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s09_mirror t11 cam=(0.4999999999999998, -57.96188625693321, 15.378087413311004) director=false mantle=0.9999999
+[05:28:15] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s09_mirror t13 cam=(0.4999999999999998, -57.96188625693321, 15.378087413311004) director=false mantle=0.9999999
+[05:28:15] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s09_mirror t18 cam=(0.4999999999999998, -57.96188625693321, 15.378087413311004) director=false mantle=0.9999999
+[05:28:17] [Server thread/INFO] [CelestialSage/]: [sagetest] after mirror: golems [100 74 100] form=1 player hp=20.0 y=-60.0
+[05:28:17] [Render thread/INFO] [CelestialSage/]: [sagetest] starfall
+[05:28:17] [Server thread/INFO] [CelestialSage/]: [sagetest] cast STARFALL form=1
+[05:28:18] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t8 cam=(-0.9218868944210736, -59.374940655753015, 2.6701518439961838) director=true mantle=0.9999999
+[05:28:18] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t20 cam=(-0.9218868944210736, -59.39999449997813, 2.6701518439961838) director=true mantle=0.9999999
+[05:28:19] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t34 cam=(-4.3026828056775965, -58.77769079489664, -2.2754455550173507) director=true mantle=0.9999999
+[05:28:20] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t50 cam=(-4.37001011434456, -58.816076942788854, -2.3039929535272567) director=true mantle=0.9999999
+[05:28:21] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t70 cam=(-40.59628491807594, -54.0, -45.61782408919008) director=true mantle=0.9999999
+[05:28:22] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t86 cam=(-40.59628491807594, -54.0, -45.61782408919008) director=true mantle=0.9999999
+[05:28:22] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t94 cam=(-55.080481941954204, -38.29035154105289, -68.24747719720081) director=true mantle=0.9999999
+[05:28:22] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t96 cam=(-54.92414888879871, -38.239560639014826, -68.20799312453119) director=true mantle=0.9999999
+[05:28:22] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t97 cam=(-54.83829054697273, -38.18872819216738, -68.21813994240951) director=true mantle=0.9999999
+[05:28:22] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t99 cam=(-54.70601151081997, -38.052002156875716, -68.2999805129193) director=true mantle=0.9999999
+[05:28:23] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t104 cam=(-54.478249064216314, -37.013420695499526, -69.27181364407804) director=true mantle=0.9999999
+[05:28:23] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t112 cam=(-54.95694428956666, -33.87978293671282, -72.64118984149518) director=true mantle=0.9999999
+[05:28:23] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t117 cam=(-55.584807218624135, -31.084327600980853, -75.76770165486171) director=true mantle=0.9999999
+[05:28:24] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t120 cam=(-55.93767603779602, -29.433631409339785, -77.63564461201848) director=true mantle=0.9999999
+[05:28:24] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t132 cam=(-57.254746096384956, -22.70211105784738, -85.30725287507734) director=true mantle=0.9999999
+[05:28:25] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s10_starfall t146 cam=(-57.85316023663848, -20.013279865470924, -88.3477671318767) director=true mantle=0.9999999
+[05:28:27] [Server thread/INFO] [CelestialSage/]: [sagetest] after starfall: golems [dead dead dead] form=1 player hp=20.0 y=-60.0
+[05:28:27] [Render thread/INFO] [CelestialSage/]: [sagetest] thornwood
+[05:28:27] [Server thread/INFO] [CelestialSage/]: [sagetest] cast THORNWOOD form=1
+[05:28:27] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t6 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:27] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t12 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:28] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t15 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:28] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t18 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:28] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t22 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:28] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t28 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:29] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t38 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:29] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s11_thornwood t52 cam=(-3.6430951356887817, -57.961886167526245, -3.310317277908325) director=false mantle=0.9999999
+[05:28:32] [Server thread/INFO] [CelestialSage/]: [sagetest] after thornwood: golems [78 56 56] form=1 player hp=20.0 y=-60.0
+[05:28:32] [Render thread/INFO] [CelestialSage/]: [sagetest] colossus
+[05:28:32] [Server thread/INFO] [CelestialSage/]: [sagetest] cast COLOSSUS form=1
+[05:28:33] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t6 cam=(-5.571732564979095, -58.95089391991496, 11.250091118183462) director=true mantle=0.9999999
+[05:28:33] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t20 cam=(-5.571732564979095, -58.87598657250305, 11.250091118183462) director=true mantle=0.9999999
+[05:28:34] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t36 cam=(-5.571732564979095, -57.89100718490403, 11.250091118183462) director=true mantle=0.9999999
+[05:28:35] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t52 cam=(-5.571732564979095, -57.03102254867554, 11.250091118183462) director=true mantle=0.9999999
+[05:28:35] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t64 cam=(-51.50231914590367, -45.77328014373779, 20.091609248173576) director=true mantle=0.9999999
+[05:28:36] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t76 cam=(-48.18526864196421, -42.93125343322754, 22.361284084584703) director=true mantle=0.9999999
+[05:28:37] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t90 cam=(-44.83711372326309, -40.06257247924805, 24.652245249054182) director=true mantle=0.9999999
+[05:28:37] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t97 cam=(21.140068413759483, -48.14673221827268, 8.590121898279149) director=true mantle=0.9999999
+[05:28:37] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t99 cam=(21.327596341125144, -48.03660452490828, 8.854230138142249) director=true mantle=0.9999999
+[05:28:37] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t101 cam=(21.485003901670776, -47.90354172938273, 9.194417550617343) director=true mantle=0.9999999
+[05:28:37] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t106 cam=(21.97157687207168, -47.293359467544015, 10.824738190454454) director=true mantle=0.9999999
+[05:28:38] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t116 cam=(23.23516409762161, -44.85293357598496, 17.628955766386024) director=true mantle=0.9999999
+[05:28:39] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t130 cam=(25.63986657775573, -40.30375823798718, 30.822769009010898) director=true mantle=0.9999999
+[05:28:40] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s12_colossus t146 cam=(26.85033652075951, -38.022286097715835, 37.65909604466844) director=true mantle=0.9999999
+[05:28:41] [Server thread/INFO] [CelestialSage/]: [sagetest] after colossus: golems [dead dead dead] form=1 player hp=20.0 y=-60.0
+[05:28:41] [Render thread/INFO] [CelestialSage/]: [sagetest] eclipse
+[05:28:42] [Server thread/INFO] [CelestialSage/]: [sagetest] cast ECLIPSE form=1
+[05:28:42] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t8 cam=(-3.4083580350745164, -59.84942247234285, 5.808002042210945) director=true mantle=0.9999999
+[05:28:43] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t24 cam=(-3.4083580350745164, -56.63637876012386, 5.808002042210945) director=true mantle=0.9999999
+[05:28:44] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t40 cam=(-6.099528391414733, -54.31789797196118, -4.927624124295941) director=true mantle=0.9999999
+[05:28:45] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t60 cam=(-6.287693289727658, -54.44004386648354, -4.93243874252318) director=true mantle=0.9999999
+[05:28:46] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t84 cam=(-6.304251135058149, -54.45658552175548, -4.825007320653592) director=true mantle=0.9999999
+[05:28:47] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t104 cam=(-6.161483870985202, -54.48893374633614, -4.748710374596599) director=true mantle=0.9999999
+[05:28:48] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t120 cam=(-6.144309364953472, -54.51648755567111, -4.756007945154249) director=true mantle=0.9999999
+[05:28:48] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t138 cam=(-35.33135985532874, -4.969444274902344, -33.41218813522135) director=true mantle=0.9999999
+[05:28:49] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t142 cam=(-35.37331187029059, -4.8025360107421875, -33.6080359968592) director=true mantle=0.9999999
+[05:28:49] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t148 cam=(-35.54784040243291, -4.108161926269531, -34.42280114809085) director=true mantle=0.9999999
+[05:28:50] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t160 cam=(-36.37369943529864, -0.8224258422851562, -38.27822324755698) director=true mantle=0.9999999
+[05:28:50] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t176 cam=(-38.32856505430287, 6.95513916015625, -47.40427480001458) director=true mantle=0.9999999
+[05:28:51] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t190 cam=(-40.1859075195852, 14.344703674316406, -56.07505141194827) director=true mantle=0.9999999
+[05:28:52] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t204 cam=(-41.31022951066187, 18.817886352539062, -61.323811404644864) director=true mantle=0.9999999
+[05:28:52] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s13_eclipse t218 cam=(-41.60665259659021, 19.997230529785156, -62.70762640308889) director=true mantle=0.9999999
+[05:28:55] [Server thread/INFO] [CelestialSage/]: [sagetest] after eclipse: golems [dead dead dead] form=1 player hp=20.0 y=-60.0
+[05:28:55] [Render thread/INFO] [CelestialSage/]: [sagetest] starfall_nocut
+[05:28:55] [Server thread/INFO] [CelestialSage/]: [sagetest] cast STARFALL form=1
+[05:28:56] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s14_starfall_nocut t8 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.9999999
+[05:28:57] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s14_starfall_nocut t40 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.9999999
+[05:29:00] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s14_starfall_nocut t90 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.9999999
+[05:29:00] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s14_starfall_nocut t97 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.9999999
+[05:29:00] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s14_starfall_nocut t100 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.9999999
+[05:29:01] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s14_starfall_nocut t118 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.9999999
+[05:29:02] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s14_starfall_nocut t130 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.9999999
+[05:29:04] [Server thread/INFO] [CelestialSage/]: [sagetest] after starfall_nocut: golems [dead dead dead] form=1 player hp=20.0 y=-60.0
+[05:29:04] [Render thread/INFO] [CelestialSage/]: [sagetest] unmantle
+[05:29:05] [Server thread/INFO] [CelestialSage/]: [sagetest] cast UNMANTLE form=1
+[05:29:05] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s15_unmantle t2 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.8
+[05:29:05] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s15_unmantle t8 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.19999999
+[05:29:05] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s15_unmantle t14 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.0
+[05:29:06] [Render thread/INFO] [CelestialSage/]: [sagetest] shot s15_unmantle t20 cam=(-3.153993546962738, -57.96188619732857, -3.423961639404297) director=false mantle=0.0
+[05:29:07] [Server thread/INFO] [CelestialSage/]: [sagetest] after unmantle: golems [dead dead dead] form=0 player hp=20.0 y=-60.0
+[05:29:07] [Render thread/INFO] [CelestialSage/]: [sagetest] finished; stopping
+[05:29:07] [Render thread/INFO] [minecraft/Minecraft]: Stopping!
+[05:29:07] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: Dev lost connection: Disconnected
+[05:29:07] [Server thread/INFO] [minecraft/MinecraftServer]: Dev left the game
+[05:29:07] [Server thread/INFO] [minecraft/ServerGamePacketListenerImpl]: Stopping singleplayer server as player logged out
+[05:29:07] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[05:29:07] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[05:29:07] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[05:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[styles_selftest]'/minecraft:overworld
+[05:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[styles_selftest]'/minecraft:the_end
+[05:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[styles_selftest]'/minecraft:the_nether
+[05:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (styles_selftest): All chunks are saved
+[05:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[05:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[05:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 3m 23s
+10 actionable tasks: 3 executed, 7 up-to-date
