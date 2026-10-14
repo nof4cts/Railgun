@@ -361,7 +361,7 @@ public final class GDirector {
         // the Purple is simply there in front of his hand: in front and to the side, it big in the frame, him behind it
         float u = ease(span(t, GBeats.IM_FILM_DROPS[1], GBeats.IM_READY));
         Vec3 centre = eyeP.add(f.scale(GBeats.purpleAhead(GMove.IMAGINARY))).add(0, -0.2, 0);
-        Vec3 pos = centre.add(f.scale(6.5 - 1.5 * u)).add(r.scale(3.2)).add(0, 0.6, 0);
+        Vec3 pos = centre.add(f.scale(13 - 2.5 * u)).add(r.scale(6.5)).add(0, 1.2, 0);
         return new Shot(pos.add(drift(t, 0.05)), centre.lerp(eyeP, 0.35), 64 - 4 * u, 0);
     }
 
