@@ -291,7 +291,7 @@ public final class Techniques {
       player.getFoodData().setSaturation(20.0F);
       player.clearFire();
 
-      for (MobEffectInstance effect : new ArrayList(player.getActiveEffects())) {
+      for (MobEffectInstance effect : new ArrayList<>(player.getActiveEffects())) {
          if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
             player.removeEffect(effect.getEffect());
          }

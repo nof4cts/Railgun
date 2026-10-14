@@ -11,6 +11,7 @@ minecraft {
 repositories {
     flatDir { dirs 'libs' }
     maven { url = 'https://maven.kosmx.dev/' }
+    maven { url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
     mavenCentral()
 }
 configurations { bundled }
@@ -18,6 +19,8 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     compileOnly fg.deobf("local:jjk:1.0.0")
     compileOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}")
+    // GeckoLib: only for compiling the JJK key handler, which touches Geto's (GeckoLib) dragons
+    compileOnly fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.4.9")
     // pure-Java H.264 decoder for the Open cutscene (BSD-2-Clause), bundled into the jar
     implementation 'org.jcodec:jcodec:0.2.5'
     bundled 'org.jcodec:jcodec:0.2.5'

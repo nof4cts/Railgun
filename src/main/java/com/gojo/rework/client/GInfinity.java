@@ -22,7 +22,7 @@ public final class GInfinity {
 
     private GInfinity() {}
 
-    static void state(GNet.Inf m) {
+    public static void state(GNet.Inf m) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {
             return;
@@ -34,7 +34,7 @@ public final class GInfinity {
         }
     }
 
-    static void ripple(GNet.Ripple m) {
+    public static void ripple(GNet.Ripple m) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null) {
             RIPPLES.add(new Object[]{m.at(), m.normal(), mc.level.getGameTime()});
