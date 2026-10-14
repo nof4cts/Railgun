@@ -32,7 +32,7 @@ public final class Casts {
         if (caster instanceof AbstractClientPlayer p) {
             PlayerAnims.play(p, cast.move);
         }
-        if (cast.mine && cast.move.cinematic && ZConfig.CLIENT.cutscenes.get()) {
+        if (cast.mine && cast.move.cinematic && ZConfig.CLIENT.cutscenes.get() && com.firestar.styles.client.ClientStyles.cutscenes()) {
             Director.play(Films.of(cast));
         }
     }

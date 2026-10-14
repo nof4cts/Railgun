@@ -14,7 +14,10 @@ public enum Style {
             new String[]{"Hold a katana", "Z / X  Choose technique", "R  Cut"}),
     ROSE("Requiem Rose", "Divine Reaper", "冥薔薇", 0xFF6FAE,
             "A reaper's grace in rose and black: ascend, call the energy scythe, and cut through flesh, air and sky.",
-            new String[]{"G  Ascend (sneak+G release)", "LMB  Reap chain", "E R T Y Z X H  Techniques"});
+            new String[]{"G  Ascend (sneak+G release)", "LMB  Reap chain", "E R T Y Z X H  Techniques"}),
+    SAGE("Celestial Sage", "Sage God", "天仙", 0xF2C14E,
+            "A mortal who takes up the heavens: nine black orbs, a staff of night, falling stars, a giant of light, and the eclipse.",
+            new String[]{"G  Heaven's Mantle (G again: let go)", "LMB  Staff rite", "E R T Y Z X H  Rites"});
 
     public final String title;
     public final String kind;

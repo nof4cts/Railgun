@@ -103,8 +103,8 @@ public final class RoseTest {
                 done = true;
                 Lens.observe(null);
                 server.execute(() -> RoseMod.LOGGER.info("[rosetest] finished; form={} ", Reaper.form(player(server))));
-                RoseMod.LOGGER.info("[rosetest] finished; stopping");
-                mc.stop();
+                RoseMod.LOGGER.info("[rosetest] finished; Celestial Sage next");
+                com.firestar.sage.client.SageTest.begin();
                 return;
             }
             Step s = ORDER[index];

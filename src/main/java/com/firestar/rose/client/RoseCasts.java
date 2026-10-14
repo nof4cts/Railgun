@@ -28,7 +28,7 @@ public final class RoseCasts {
             RoseAnims.play(p, c.move == RMove.REAP ? "reap_" + (c.seed & 3) : c.move.key);
         }
         RoseChoreo.begin(c);
-        if (c.mine && c.move.cinematic && RoseConfig.CLIENT.cutscenes.get()) {
+        if (c.mine && c.move.cinematic && RoseConfig.CLIENT.cutscenes.get() && com.firestar.styles.client.ClientStyles.cutscenes()) {
             Lens.play(c, Reels.of(c));
         }
     }

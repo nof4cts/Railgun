@@ -12,9 +12,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 
-/** Pick a style: three tall cards and "none", each with its kanji, what it does and its keys. Click or press 1-5. */
+/**
+ * Pick a style: a tall card for each style and "none", each with its kanji, what it does and its keys. Click or press 1-6. Under
+ * the cards, the switch that turns every style's cutscenes on or off (or press C).
+ */
 public final class StyleScreen extends Screen {
-    private static final Style[] ORDER = {Style.HEAVEN, Style.INSTINCT, Style.SWORDS, Style.ROSE, Style.NONE};
+    private static final Style[] ORDER = {Style.HEAVEN, Style.INSTINCT, Style.SWORDS, Style.ROSE, Style.SAGE, Style.NONE};
     private final long opened = System.currentTimeMillis();
     private final float[] hover = new float[ORDER.length];
 
@@ -27,14 +30,65 @@ public final class StyleScreen extends Screen {
         return false;
     }
 
-    private int[] card(int i) {
+    private static final int GAP = 8;
+    private net.minecraft.client.gui.components.Button cutsceneButton;
+
+    /** All the cards in one row when the window is wide enough, otherwise two rows of three. */
+    private int cols() {
         int n = ORDER.length;
-        int gap = 8;
-        int cw = Mth.clamp((width - 40 - gap * (n - 1)) / n, 80, 150);
-        int ch = Mth.clamp(height - 90, 120, 230);
-        int total = cw * n + gap * (n - 1);
+        return (width - 24 - GAP * (n - 1)) / n >= 92 ? n : (n + 1) / 2;
+    }
+
+    private int rows() {
+        return (ORDER.length + cols() - 1) / cols();
+    }
+
+    private int cardH() {
+        int r = rows();
+        return Mth.clamp((height - 72 - GAP * (r - 1)) / r, 80, 230);
+    }
+
+    private int top() {
+        int block = rows() * cardH() + (rows() - 1) * GAP;
+        return Math.max(30, height / 2 - block / 2 - 6);
+    }
+
+    private int bottom() {
+        return top() + rows() * cardH() + (rows() - 1) * GAP;
+    }
+
+    private int[] card(int i) {
+        int c = cols();
+        int cw = Mth.clamp((width - 24 - GAP * (c - 1)) / c, 70, 150);
+        int ch = cardH();
+        int row = i / c, col = i % c;
+        int inRow = Math.min(c, ORDER.length - row * c);
+        int total = cw * inRow + GAP * (inRow - 1);
         int x0 = width / 2 - total / 2;
-        return new int[]{x0 + i * (cw + gap), height / 2 - ch / 2 + 10, cw, ch};
+        return new int[]{x0 + col * (cw + GAP), top() + row * (ch + GAP), cw, ch};
+    }
+
+    private static Component cutsceneLabel() {
+        boolean on = com.firestar.styles.StylesPrefs.cutscenes();
+        return Component.literal("Cutscenes: ").append(Component.literal(on ? "ON" : "OFF")
+                .withStyle(on ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.RED));
+    }
+
+    @Override
+    protected void init() {
+        int bw = 130;
+        cutsceneButton = addRenderableWidget(net.minecraft.client.gui.components.Button.builder(cutsceneLabel(), b -> toggleCutscenes())
+                .bounds(width / 2 - bw / 2, bottom() + 8, bw, 16)
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.literal(
+                        "Turn off to skip every style's cutscenes: the big techniques still happen in full, seen from your own camera.")))
+                .build());
+    }
+
+    private void toggleCutscenes() {
+        com.firestar.styles.StylesPrefs.setCutscenes(!com.firestar.styles.StylesPrefs.cutscenes());
+        if (cutsceneButton != null) {
+            cutsceneButton.setMessage(cutsceneLabel());
+        }
     }
 
     @Override
@@ -43,7 +97,7 @@ public final class StyleScreen extends Screen {
         g.fill(0, 0, width, height, (int) (0xB0 * in) << 24);
         Font font = this.font;
         String title = "CHOOSE YOUR STYLE";
-        g.drawString(font, title, width / 2 - font.width(title) / 2, card(0)[1] - 22, 0xFFF0F0F0, true);
+        g.drawString(font, title, width / 2 - font.width(title) / 2, top() - 20, 0xFFF0F0F0, true);
         Style mine = ClientStyles.mine();
         for (int i = 0; i < ORDER.length; i++) {
             Style s = ORDER[i];
@@ -91,9 +145,12 @@ public final class StyleScreen extends Screen {
             }
             String num = "[" + (i + 1) + "]";
             g.drawString(font, num, x + w - font.width(num) - 4, y + 5, 0xFF707080, false);
+            if (s == mine && s != Style.NONE) {
+                g.drawString(font, "●", x + 4, y + 5, 0xFF000000 | col, false);
+            }
         }
-        String hint = "Click a card, or press 1-5.   Esc to close.";
-        g.drawString(font, hint, width / 2 - font.width(hint) / 2, card(0)[1] + card(0)[3] + 14, 0xFF9AA3B0, false);
+        String hint = "Click a card, or press 1-" + ORDER.length + ".   C: cutscenes.   Esc to close.";
+        g.drawString(font, hint, width / 2 - font.width(hint) / 2, bottom() + 28, 0xFF9AA3B0, false);
         super.render(g, mx, my, partial);
     }
 
@@ -117,7 +174,12 @@ public final class StyleScreen extends Screen {
 
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
-        if (key >= org.lwjgl.glfw.GLFW.GLFW_KEY_1 && key <= org.lwjgl.glfw.GLFW.GLFW_KEY_5) {
+        if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_C) {
+            toggleCutscenes();
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            return true;
+        }
+        if (key >= org.lwjgl.glfw.GLFW.GLFW_KEY_1 && key < org.lwjgl.glfw.GLFW.GLFW_KEY_1 + ORDER.length) {
             pick(ORDER[key - org.lwjgl.glfw.GLFW.GLFW_KEY_1]);
             return true;
         }

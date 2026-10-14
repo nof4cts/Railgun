@@ -41,7 +41,7 @@ public final class Casts {
         if (cast.mine && cast.move == Move.AWAKEN_ZENITH) {
             ZenithTheme.begin(cast.move.length + 40);
         }
-        if (cast.mine && cast.move.cinematic && ZConfig.CLIENT.cutscenes.get()) {
+        if (cast.mine && cast.move.cinematic && ZConfig.CLIENT.cutscenes.get() && com.firestar.styles.client.ClientStyles.cutscenes()) {
             Director.play(Films.of(cast));
         }
     }

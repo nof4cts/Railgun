@@ -80,6 +80,12 @@ public final class Styles {
                     com.firestar.rose.server.Reaper.setForm(p, com.firestar.rose.server.Reaper.MORTAL);
                 }
             }
+            case SAGE -> {
+                com.firestar.sage.server.Rites.cancel(p);
+                if (com.firestar.sage.server.Sage.form(p) != com.firestar.sage.server.Sage.MORTAL) {
+                    com.firestar.sage.server.Sage.setForm(p, com.firestar.sage.server.Sage.MORTAL);
+                }
+            }
             case SWORDS -> {
                 // the three blades go back in their sheaths: out of the hotbar and inventory
                 Item[] blades = {ModItems.WADO.get(), ModItems.KITETSU.get(), ModItems.ENMA.get()};

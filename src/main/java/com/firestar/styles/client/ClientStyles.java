@@ -28,6 +28,11 @@ public final class ClientStyles {
         return mine() == s;
     }
 
+    /** Whether the big techniques of every style play their cutscenes (the style menu's switch). */
+    public static boolean cutscenes() {
+        return com.firestar.styles.StylesPrefs.cutscenes();
+    }
+
     public static void clear() {
         STYLES.clear();
     }

@@ -34,7 +34,7 @@ public final class Casts {
             PlayerAnims.play(p, cast.move);
         }
         Choreo.begin(cast);
-        if (cast.watching && cast.move.cinematic && (ZConfig.CLIENT.cutscenes.get() || cast.move == Move.UNIVERSE_RESET)) {
+        if (cast.watching && cast.move.cinematic && ((ZConfig.CLIENT.cutscenes.get() && com.firestar.styles.client.ClientStyles.cutscenes()) || cast.move == Move.UNIVERSE_RESET)) {
             Director.play(Films.of(cast));
         }
     }
