@@ -126,10 +126,12 @@ public final class GCasts {
             GAnims.play(pl, m.gmove());
         }
         GFx.begin(p);
-        if (p.mine && m.gmove() == GMove.IMAGINARY) {
+        boolean watch = p.mine || m.gmove() == GMove.IMAGINARY;
+        if (m.gmove() == GMove.IMAGINARY) {
+            // the track, for everyone, wherever they are in the world
             GBanner.tojiStart = m.start();
+            playTrack(m.start());
         }
-        boolean watch = p.mine;
         if (m.gmove() == GMove.DOMAIN && mc.player != null && mc.player.position().distanceTo(m.origin()) < GBeats.DV_RADIUS + 4) {
             // everyone the domain swallows sees it open
             watch = true;
@@ -167,7 +169,7 @@ public final class GCasts {
                 if (p.caster() instanceof AbstractClientPlayer pl) {
                     GAnims.fire(pl, p.move());
                 }
-                if (p.mine && !p.skipped && !com.jjk.mod.client.JjkPrefs.skipCutscenes()) {
+                if ((p.mine || p.move() == GMove.IMAGINARY) && !p.skipped && !com.jjk.mod.client.JjkPrefs.skipCutscenes()) {
                     // the cutscene picks up again to follow the shot
                     com.gojo.rework.client.cam.GDirector.play(p);
                 }
@@ -184,6 +186,22 @@ public final class GCasts {
                 return;
             }
         }
+    }
+
+    @Nullable
+    private static net.minecraft.client.resources.sounds.SoundInstance track;
+
+    /** The Toji track, heard the same by everyone (not from a place in the world). */
+    static void playTrack(long start) {
+        Minecraft mc = Minecraft.getInstance();
+        if (track != null) {
+            mc.getSoundManager().stop(track);
+        }
+        mc.getMusicManager().stopPlaying();
+        track = new net.minecraft.client.resources.sounds.SimpleSoundInstance(com.gojo.rework.Gojo2.TOJI_MIX.get().getLocation(),
+                net.minecraft.sounds.SoundSource.MASTER, 1.0F, 1.0F, net.minecraft.util.RandomSource.create(), false, 0,
+                net.minecraft.client.resources.sounds.SoundInstance.Attenuation.NONE, 0.0, 0.0, 0.0, true);
+        mc.getSoundManager().play(track);
     }
 
     public static List<Play> all() {

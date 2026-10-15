@@ -35,6 +35,11 @@ public final class GNet {
         CHANNEL.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(at.x, at.y, at.z, range, p.level().dimension())), msg);
     }
 
+    /** To everyone in the caster's world (the Toji cutscene is everyone's). */
+    public static void world(ServerPlayer p, Object msg) {
+        CHANNEL.send(PacketDistributor.DIMENSION.with(() -> p.level().dimension()), msg);
+    }
+
     public static void to(ServerPlayer p, Object msg) {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), msg);
     }

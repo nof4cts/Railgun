@@ -171,7 +171,13 @@ public final class GRites {
             case PURPLE_200, IMAGINARY -> 320;
             default -> 200;
         };
-        GNet.near(p, eye, range, new GNet.Cast(m.ordinal(), p.getId(), c.start, eye, dir, point, c.seed, m.cinematic));
+        GNet.Cast msg = new GNet.Cast(m.ordinal(), p.getId(), c.start, eye, dir, point, c.seed, m.cinematic);
+        if (m == GMove.IMAGINARY) {
+            // everyone in the world watches it (and hears the track)
+            GNet.world(p, msg);
+        } else {
+            GNet.near(p, eye, range, msg);
+        }
         return true;
     }
 
@@ -400,13 +406,8 @@ public final class GRites {
      */
     static void toji(Cast c, int t) {
         Vec3 at = c.p.position();
-        if (c.opening()) {
-            // the player's own soundtrack: his piano with his voice over it, "Hollow... Purple" included
-            c.level.playSound(null, at.x, at.y, at.z, Gojo2.TOJI_MIX.get(), SoundSource.VOICE, 4.0F, 1.0F);
-            if (Boolean.getBoolean("shrine.selftest")) {
-                Gojo2.LOGGER.info("[gojo] toji track starts");
-            }
-        }
+        // the soundtrack (his piano with his voice over it) is played by every client in the world, full volume
+
         if (t == GBeats.IM_MERGE) {
             sound(c.level, at, Gojo2.PURPLE_MERGE.get(), 4.0F, 0.85F);
         }
@@ -448,7 +449,12 @@ public final class GRites {
         }
         Gojo2.LOGGER.info("[gojo] {} fired at t={} from {} dir {} target {}", c.move, t, c.fireFrom, c.fireDir, c.target);
         sound(c.level, c.fireFrom, c.move == GMove.PURPLE ? Gojo2.PURPLE_FIRE.get() : Gojo2.PURPLE_BIG.get(), 8.0F, 1.0F);
-        GNet.near(c.p, c.fireFrom, c.move == GMove.NUKE ? 420 : 320, new GNet.Fire(c.p.getId(), c.move.ordinal(), t, c.fireFrom, c.fireDir, c.target));
+        GNet.Fire fire = new GNet.Fire(c.p.getId(), c.move.ordinal(), t, c.fireFrom, c.fireDir, c.target);
+        if (c.move == GMove.IMAGINARY) {
+            GNet.world(c.p, fire);
+        } else {
+            GNet.near(c.p, c.fireFrom, c.move == GMove.NUKE ? 420 : 320, fire);
+        }
     }
 
     static void chant(Cast c, int t) {
