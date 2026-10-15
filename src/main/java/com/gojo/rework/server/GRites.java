@@ -693,15 +693,14 @@ public final class GRites {
             sound(c.level, c.p.position(), Gojo2.DOMAIN_SIGN.get(), 2.0F, 1.0F);
             voice(c.p, "ryoiki");
         }
-        if (t == GBeats.DV_FLASH1 - 2) {
-            // "Unlimited Void" as the domain opens over everything
-            voice(c.p, "muryokusho");
-        }
         if (t == GBeats.DV_BANNER) {
             sound(c.level, c.p.position(), Gojo2.DOMAIN_OPEN.get(), 6.0F, 1.0F);
         }
         if (t == GBeats.DV_VOID) {
             sound(c.level, c.p.position(), Gojo2.DOMAIN_VOID.get(), 8.0F, 1.0F);
+        }
+        if (t == GBeats.DV_FLASH1) {
+            clearDomain(c);
         }
         if (t == GBeats.DV_FLASH1) {
             // whoever is inside now is shut in with him
@@ -817,6 +816,38 @@ public final class GRites {
     }
 
     /** A crater: a bowl erased under the point, its floor and lip left scorched. */
+    /**
+     * The domain swallows the place: every block inside its sphere from the ground he stands on upward is gone,
+     * spreading out from him (the ground itself is left, so no one inside falls).
+     */
+    static void clearDomain(Cast c) {
+        BlockPos centre = BlockPos.containing(c.feet);
+        int R = (int) Math.ceil(GBeats.DV_RADIUS);
+        double r2 = GBeats.DV_RADIUS * GBeats.DV_RADIUS;
+        List<BlockPos> inside = new ArrayList<>();
+        for (int x = -R; x <= R; x++) {
+            for (int y = 0; y <= R; y++) {
+                for (int z = -R; z <= R; z++) {
+                    if (x * x + y * y + z * z <= r2) {
+                        BlockPos p = centre.offset(x, y, z);
+                        if (!c.level.getBlockState(p).isAir()) {
+                            inside.add(p);
+                        }
+                    }
+                }
+            }
+        }
+        inside.sort(java.util.Comparator.comparingDouble(p -> p.distSqr(centre)));
+        Carver.Batch b = Carver.batch(c.level);
+        for (BlockPos p : inside) {
+            b.erase(p);
+        }
+        b.go();
+        if (Boolean.getBoolean("shrine.selftest")) {
+            Gojo2.LOGGER.info("[gojo] domain clears {} blocks", inside.size());
+        }
+    }
+
     static void crater(Cast c, Vec3 o, double r, double scorch) {
         Carver.Batch b = Carver.batch(c.level);
         BlockPos centre = BlockPos.containing(o);
