@@ -1,0 +1,566 @@
+[01:44:40] [main/INFO]: ModLauncher running: args [--username, Dev, --version, forge-1.20.1-47.3.0, --gameDir, /home/runner/work/Railgun/Railgun/mc, --assetsDir, /home/runner/work/Railgun/Railgun/mc/assets, --assetIndex, 5, --uuid, 90587697a64c50158fc39f5618d5690b, --accessToken, ❄❄❄❄❄❄❄❄, --clientId, , --xuid, , --userType, , --versionType, release, --width, 1280, --height, 720, --launchTarget, forgeclient, --fml.forgeVersion, 47.3.0, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
+[01:44:40] [main/INFO]: ModLauncher 10.0.9+10.0.9+main.dcd20f30 starting: java version 17.0.20.1 by Eclipse Adoptium; OS Linux arch amd64 version 6.17.0-1022-azure
+[01:44:40] [main/WARN]: Configuration file /home/runner/work/Railgun/Railgun/mc/config/fml.toml is not correct. Correcting
+[01:44:40] [main/INFO]: Incorrect key [earlyWindowSkipGLVersions] was corrected from null to []
+[01:44:40] [main/INFO]: Incorrect key [earlyWindowSquir] was corrected from null to false
+[01:44:40] [main/INFO]: Incorrect key [earlyWindowShowCPU] was corrected from null to false
+[01:44:40] [main/INFO]: Loading ImmediateWindowProvider fmlearlywindow
+[01:44:40] [main/INFO]: Trying GL version 4.6
+[01:44:43] [main/INFO]: Trying GL version 4.5
+[01:44:45] [main/INFO]: Requested GL version 4.5 got version 4.5
+[01:44:45] [main/INFO]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/runner/work/Railgun/Railgun/mc/libraries/org/spongepowered/mixin/0.8.5/mixin-0.8.5.jar%2388!/ Service=ModLauncher Env=CLIENT
+[01:44:45] [pool-2-thread-1/INFO]: GL info: llvmpipe (LLVM 20.1.2, 256 bits) GL version 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4, Mesa
+[01:44:45] [main/INFO]: Found mod file geckolib.jar of type MOD with provider {mods folder locator at /home/runner/work/Railgun/Railgun/mc/mods}
+[01:44:45] [main/INFO]: Found mod file jjk-1.0.0.jar of type MOD with provider {mods folder locator at /home/runner/work/Railgun/Railgun/mc/mods}
+[01:44:45] [main/INFO]: Found mod file player-animation-lib-forge.jar of type MOD with provider {mods folder locator at /home/runner/work/Railgun/Railgun/mc/mods}
+[01:44:45] [main/WARN]: Mod file /home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/fmlcore/1.20.1-47.3.0/fmlcore-1.20.1-47.3.0.jar is missing mods.toml file
+[01:44:45] [main/WARN]: Mod file /home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/javafmllanguage/1.20.1-47.3.0/javafmllanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[01:44:45] [main/WARN]: Mod file /home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/lowcodelanguage/1.20.1-47.3.0/lowcodelanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[01:44:45] [main/WARN]: Mod file /home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/mclanguage/1.20.1-47.3.0/mclanguage-1.20.1-47.3.0.jar is missing mods.toml file
+[01:44:45] [main/INFO]: Found mod file fmlcore-1.20.1-47.3.0.jar of type LIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@c20be82
+[01:44:45] [main/INFO]: Found mod file javafmllanguage-1.20.1-47.3.0.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@c20be82
+[01:44:45] [main/INFO]: Found mod file lowcodelanguage-1.20.1-47.3.0.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@c20be82
+[01:44:45] [main/INFO]: Found mod file mclanguage-1.20.1-47.3.0.jar of type LANGPROVIDER with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@c20be82
+[01:44:45] [main/INFO]: Found mod file client-1.20.1-20230612.114412-srg.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@c20be82
+[01:44:45] [main/INFO]: Found mod file forge-1.20.1-47.3.0-universal.jar of type MOD with provider net.minecraftforge.fml.loading.moddiscovery.MinecraftLocator@c20be82
+[01:44:45] [main/INFO]: Found 1 dependencies adding them to mods collection
+[01:44:45] [main/INFO]: Found mod file mclib-20.jar of type GAMELIBRARY with provider net.minecraftforge.fml.loading.moddiscovery.JarInJarDependencyLocator@1d01dfa5
+[01:44:47] [main/INFO]: Compatibility level set to JAVA_17
+[01:44:47] [main/INFO]: Launching target 'forgeclient' with arguments [--version, forge-1.20.1-47.3.0, --gameDir, /home/runner/work/Railgun/Railgun/mc, --assetsDir, /home/runner/work/Railgun/Railgun/mc/assets, --uuid, 90587697a64c50158fc39f5618d5690b, --username, Dev, --assetIndex, 5, --accessToken, ❄❄❄❄❄❄❄❄, --clientId, , --xuid, , --userType, , --versionType, release, --width, 1280, --height, 720]
+[01:44:51] [Datafixer Bootstrap/INFO]: 188 Datafixer optimizations took 209 milliseconds
+[01:44:53] [main/WARN]: Unrecognized user type: 
+[01:44:53] [Render thread/WARN]: Assets URL 'union:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraft/client/1.20.1-20230612.114412/client-1.20.1-20230612.114412-srg.jar%23152!/assets/.mcassetsroot' uses unexpected schema
+[01:44:53] [Render thread/WARN]: Assets URL 'union:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraft/client/1.20.1-20230612.114412/client-1.20.1-20230612.114412-srg.jar%23152!/data/.mcassetsroot' uses unexpected schema
+[01:44:53] [Render thread/INFO]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[01:44:53] [Render thread/ERROR]: Failed to verify authentication
+com.mojang.authlib.exceptions.InvalidCredentialsException: Status: 401
+	at com.mojang.authlib.exceptions.MinecraftClientHttpException.toAuthenticationException(MinecraftClientHttpException.java:56) ~[authlib-4.0.43.jar%2399!/:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilUserApiService.fetchProperties(YggdrasilUserApiService.java:156) ~[authlib-4.0.43.jar%2399!/:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilUserApiService.<init>(YggdrasilUserApiService.java:55) ~[authlib-4.0.43.jar%2399!/:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.createUserApiService(YggdrasilAuthenticationService.java:124) ~[authlib-4.0.43.jar%2399!/:?]
+	at net.minecraft.client.Minecraft.m_193585_(Minecraft.java:649) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.Minecraft.<init>(Minecraft.java:413) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+Caused by: com.mojang.authlib.exceptions.MinecraftClientHttpException: Status: 401
+	at com.mojang.authlib.minecraft.client.MinecraftClient.readInputStream(MinecraftClient.java:85) ~[authlib-4.0.43.jar%2399!/:?]
+	at com.mojang.authlib.minecraft.client.MinecraftClient.get(MinecraftClient.java:48) ~[authlib-4.0.43.jar%2399!/:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilUserApiService.fetchProperties(YggdrasilUserApiService.java:129) ~[authlib-4.0.43.jar%2399!/:?]
+	... 20 more
+[01:44:53] [Render thread/INFO]: Setting user: Dev
+[01:44:54] [Render thread/INFO]: Backend library: LWJGL version 3.3.1 build 7
+[01:44:54] [modloading-worker-0/INFO]: Forge mod loading, version 47.3.0, for MC 1.20.1 with MCP 20230612.114412
+[01:44:54] [modloading-worker-0/INFO]: MinecraftForge v47.3.0 Initialized
+[01:44:56] [Render thread/ERROR]: Error while loading the narrator
+com.mojang.text2speech.Narrator$InitializeException: Failed to load library flite
+	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:69) ~[text2speech-1.17.9.jar%23105!/:?]
+	at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar%23105!/:?]
+	at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar%23105!/:?]
+	at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
+libflite.so: cannot open shared object file: No such file or directory
+libflite.so: cannot open shared object file: No such file or directory
+Native library (linux-x86-64/libflite.so) not found in resource path (/home/runner/work/Railgun/Railgun/mc/libraries/cpw/mods/securejarhandler/2.1.10/securejarhandler-2.1.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm/9.7/asm-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-util/9.7/asm-util-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-analysis/9.7/asm-analysis-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/accesstransformers/8.0.4/accesstransformers-8.0.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/antlr/antlr4-runtime/4.9.1/antlr4-runtime-4.9.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/eventbus/6.0.5/eventbus-6.0.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/forgespi/7.0.1/forgespi-7.0.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/coremods/5.1.6/coremods-5.1.6.jar:/home/runner/work/Railgun/Railgun/mc/libraries/cpw/mods/modlauncher/10.0.9/modlauncher-10.0.9.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/unsafe/0.2.0/unsafe-0.2.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/mergetool/1.1.5/mergetool-1.1.5-api.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/electronwill/night-config/core/3.6.4/core-3.6.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/electronwill/night-config/toml/3.6.4/toml-3.6.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/maven/maven-artifact/3.8.5/maven-artifact-3.8.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/jodah/typetools/0.6.3/typetools-0.6.3.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecrell/terminalconsoleappender/1.2.0/terminalconsoleappender-1.2.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/jline/jline-reader/3.12.1/jline-reader-3.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/jline/jline-terminal/3.12.1/jline-terminal-3.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/spongepowered/mixin/0.8.5/mixin-0.8.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/openjdk/nashorn/nashorn-core/15.3/nashorn-core-15.3.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/JarJarSelector/0.3.19/JarJarSelector-0.3.19.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/JarJarMetadata/0.3.19/JarJarMetadata-0.3.19.jar:/home/runner/work/Railgun/Railgun/mc/libraries/cpw/mods/bootstraplauncher/1.1.2/bootstraplauncher-1.1.2.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/JarJarFileSystems/0.3.19/JarJarFileSystems-0.3.19.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/fmlloader/1.20.1-47.3.0/fmlloader-1.20.1-47.3.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/fmlearlydisplay/1.20.1-47.3.0/fmlearlydisplay-1.20.1-47.3.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/github/oshi/oshi-core/6.2.2/oshi-core-6.2.2.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/google/code/gson/gson/2.10/gson-2.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/ibm/icu/icu4j/71.1/icu4j-71.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/authlib/4.0.43/authlib-4.0.43.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/brigadier/1.1.8/brigadier-1.1.8.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/datafixerupper/6.0.8/datafixerupper-6.0.8.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/logging/1.1.1/logging-1.1.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/patchy/2.2.10/patchy-2.2.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/text2speech/1.17.9/text2speech-1.17.9.jar:/home/runner/work/Railgun/Railgun/mc/libraries/commons-codec/commons-codec/1.15/commons-codec-1.15.jar:/home/runner/work/Railgun/Railgun/mc/libraries/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-buffer/4.1.82.Final/netty-buffer-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-codec/4.1.82.Final/netty-codec-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-common/4.1.82.Final/netty-common-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-handler/4.1.82.Final/netty-handler-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-resolver/4.1.82.Final/netty-resolver-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-classes-epoll/4.1.82.Final/netty-transport-classes-epoll-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-native-unix-common/4.1.82.Final/netty-transport-native-unix-common-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport/4.1.82.Final/netty-transport-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/it/unimi/dsi/fastutil/8.5.9/fastutil-8.5.9.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/java/dev/jna/jna-platform/5.12.1/jna-platform-5.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/httpcomponents/httpcore/4.4.15/httpcore-4.4.15.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/logging/log4j/log4j-api/2.19.0/log4j-api-2.19.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/logging/log4j/log4j-core/2.19.0/log4j-core-2.19.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.19.0/log4j-slf4j2-impl-2.19.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/joml/joml/1.10.5/joml-1.10.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/slf4j/slf4j-api/2.0.1/slf4j-api-2.0.1.jar:/home/runner/work/Railgun/Railgun/mc/versions/forge-1.20.1-47.3.0/forge-1.20.1-47.3.0.jar)
+	at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:307) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+	at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+	at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+	at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar%23105!/:?]
+	... 20 more
+	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
+		at com.sun.jna.Native.open(Native Method) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:197) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar%23105!/:?]
+		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar%23105!/:?]
+		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar%23105!/:?]
+		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0.jar:?]
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
+		at com.sun.jna.Native.open(Native Method) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:210) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar%23105!/:?]
+		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar%23105!/:?]
+		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar%23105!/:?]
+		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0.jar:?]
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+	Suppressed: java.io.IOException: Native library (linux-x86-64/libflite.so) not found in resource path (/home/runner/work/Railgun/Railgun/mc/libraries/cpw/mods/securejarhandler/2.1.10/securejarhandler-2.1.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm/9.7/asm-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-util/9.7/asm-util-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/ow2/asm/asm-analysis/9.7/asm-analysis-9.7.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/accesstransformers/8.0.4/accesstransformers-8.0.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/antlr/antlr4-runtime/4.9.1/antlr4-runtime-4.9.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/eventbus/6.0.5/eventbus-6.0.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/forgespi/7.0.1/forgespi-7.0.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/coremods/5.1.6/coremods-5.1.6.jar:/home/runner/work/Railgun/Railgun/mc/libraries/cpw/mods/modlauncher/10.0.9/modlauncher-10.0.9.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/unsafe/0.2.0/unsafe-0.2.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/mergetool/1.1.5/mergetool-1.1.5-api.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/electronwill/night-config/core/3.6.4/core-3.6.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/electronwill/night-config/toml/3.6.4/toml-3.6.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/maven/maven-artifact/3.8.5/maven-artifact-3.8.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/jodah/typetools/0.6.3/typetools-0.6.3.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecrell/terminalconsoleappender/1.2.0/terminalconsoleappender-1.2.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/jline/jline-reader/3.12.1/jline-reader-3.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/jline/jline-terminal/3.12.1/jline-terminal-3.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/spongepowered/mixin/0.8.5/mixin-0.8.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/openjdk/nashorn/nashorn-core/15.3/nashorn-core-15.3.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/JarJarSelector/0.3.19/JarJarSelector-0.3.19.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/JarJarMetadata/0.3.19/JarJarMetadata-0.3.19.jar:/home/runner/work/Railgun/Railgun/mc/libraries/cpw/mods/bootstraplauncher/1.1.2/bootstraplauncher-1.1.2.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/JarJarFileSystems/0.3.19/JarJarFileSystems-0.3.19.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/fmlloader/1.20.1-47.3.0/fmlloader-1.20.1-47.3.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/minecraftforge/fmlearlydisplay/1.20.1-47.3.0/fmlearlydisplay-1.20.1-47.3.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/github/oshi/oshi-core/6.2.2/oshi-core-6.2.2.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/google/code/gson/gson/2.10/gson-2.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/google/guava/guava/31.1-jre/guava-31.1-jre.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/ibm/icu/icu4j/71.1/icu4j-71.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/authlib/4.0.43/authlib-4.0.43.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/blocklist/1.0.10/blocklist-1.0.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/brigadier/1.1.8/brigadier-1.1.8.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/datafixerupper/6.0.8/datafixerupper-6.0.8.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/logging/1.1.1/logging-1.1.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/patchy/2.2.10/patchy-2.2.10.jar:/home/runner/work/Railgun/Railgun/mc/libraries/com/mojang/text2speech/1.17.9/text2speech-1.17.9.jar:/home/runner/work/Railgun/Railgun/mc/libraries/commons-codec/commons-codec/1.15/commons-codec-1.15.jar:/home/runner/work/Railgun/Railgun/mc/libraries/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-buffer/4.1.82.Final/netty-buffer-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-codec/4.1.82.Final/netty-codec-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-common/4.1.82.Final/netty-common-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-handler/4.1.82.Final/netty-handler-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-resolver/4.1.82.Final/netty-resolver-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-classes-epoll/4.1.82.Final/netty-transport-classes-epoll-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-aarch_64.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-native-epoll/4.1.82.Final/netty-transport-native-epoll-4.1.82.Final-linux-x86_64.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport-native-unix-common/4.1.82.Final/netty-transport-native-unix-common-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/io/netty/netty-transport/4.1.82.Final/netty-transport-4.1.82.Final.jar:/home/runner/work/Railgun/Railgun/mc/libraries/it/unimi/dsi/fastutil/8.5.9/fastutil-8.5.9.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/java/dev/jna/jna-platform/5.12.1/jna-platform-5.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/java/dev/jna/jna/5.12.1/jna-5.12.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/httpcomponents/httpcore/4.4.15/httpcore-4.4.15.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/logging/log4j/log4j-api/2.19.0/log4j-api-2.19.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/logging/log4j/log4j-core/2.19.0/log4j-core-2.19.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.19.0/log4j-slf4j2-impl-2.19.0.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/joml/joml/1.10.5/joml-1.10.5.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-natives-linux.jar:/home/runner/work/Railgun/Railgun/mc/libraries/org/slf4j/slf4j-api/2.0.1/slf4j-api-2.0.1.jar:/home/runner/work/Railgun/Railgun/mc/versions/forge-1.20.1-47.3.0/forge-1.20.1-47.3.0.jar)
+		at com.sun.jna.Native.extractFromResourcePath(Native.java:1145) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.loadLibrary(NativeLibrary.java:281) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:467) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.sun.jna.NativeLibrary.getInstance(NativeLibrary.java:409) ~[jna-5.12.1.jar%23121!/:5.12.1 (b0)]
+		at com.mojang.text2speech.NarratorLinux$FliteLibrary.loadNative(NarratorLinux.java:67) ~[text2speech-1.17.9.jar%23105!/:?]
+		at com.mojang.text2speech.NarratorLinux.<init>(NarratorLinux.java:18) ~[text2speech-1.17.9.jar%23105!/:?]
+		at com.mojang.text2speech.Narrator.getNarrator(Narrator.java:41) ~[text2speech-1.17.9.jar%23105!/:?]
+		at net.minecraft.client.GameNarrator.<init>(GameNarrator.java:19) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+		at net.minecraft.client.Minecraft.<init>(Minecraft.java:553) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+		at net.minecraft.client.main.Main.main(Main.java:182) ~[forge-1.20.1-47.3.0.jar:?]
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+		at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+		at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+		at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.3.0.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+		at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+[01:44:56] [Render thread/INFO]: Reloading ResourceManager: vanilla, mod_resources
+[01:44:56] [modloading-worker-0/WARN]: Configuration file /home/runner/work/Railgun/Railgun/mc/config/jjk-gojo-client.toml is not correct. Correcting
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.screenShake was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.screenFlash was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.fovKick was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.particleDensity was corrected from null to its default, 1.0. 
+[01:44:56] [modloading-worker-0/WARN]: Configuration file /home/runner/work/Railgun/Railgun/mc/config/jjk-ryu-client.toml is not correct. Correcting
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects was corrected from null to its default, SimpleCommentedConfig:{}. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.screenShake was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.screenFlash was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.fovKick was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key effects.particleDensity was corrected from null to its default, 1.0. 
+[01:44:56] [modloading-worker-0/WARN]: Configuration file /home/runner/work/Railgun/Railgun/mc/config/forge-client.toml is not correct. Correcting
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client was corrected from null to its default, SimpleCommentedConfig:{}. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client.alwaysSetupTerrainOffThread was corrected from null to its default, false. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client.experimentalForgeLightPipelineEnabled was corrected from null to its default, false. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client.showLoadWarnings was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client.useCombinedDepthStencilAttachment was corrected from null to its default, false. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client.compressLanIPv6Addresses was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client.calculateAllNormals was corrected from null to its default, false. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key client.stabilizeDirectionGetNearest was corrected from null to its default, true. 
+[01:44:56] [modloading-worker-0/WARN]: Configuration file /home/runner/work/Railgun/Railgun/mc/config/jjk-shrine-client.toml is not correct. Correcting
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key rendering was corrected from null to its default, SimpleCommentedConfig:{}. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key rendering.bloom was corrected from null to its default, 1.0. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key rendering.aberration was corrected from null to its default, 1.0. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key rendering.filmGrain was corrected from null to its default, 1.0. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key rendering.volumeSteps was corrected from null to its default, 48. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key comfort was corrected from null to its default, SimpleCommentedConfig:{}. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key comfort.cameraShake was corrected from null to its default, 1.0. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key comfort.flash was corrected from null to its default, 1.0. 
+[01:44:56] [modloading-worker-0/WARN]: Incorrect key comfort.impactFrames was corrected from null to its default, true. 
+[01:44:56] [Forge Version Check/INFO]: [forge] Starting version check at https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json
+[01:44:57] [Worker-Main-2/INFO]: Found unifont_all_no_pua-15.0.06.hex, loading
+[01:44:57] [Forge Version Check/INFO]: [forge] Found status: OUTDATED Current: 47.3.0 Target: 47.4.10
+[01:45:01] [Render thread/WARN]: Missing sound for event: minecraft:item.goat_horn.play
+[01:45:01] [Render thread/WARN]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[01:45:01] [Render thread/ERROR]: Error starting SoundSystem. Turning off sounds & music
+java.lang.IllegalStateException: Failed to open OpenAL device
+	at com.mojang.blaze3d.audio.Library.m_193472_(Library.java:283) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at com.mojang.blaze3d.audio.Library.m_231084_(Library.java:153) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.sounds.SoundEngine.m_120323_(SoundEngine.java:104) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.sounds.SoundEngine.m_120239_(SoundEngine.java:96) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.sounds.SoundManager.m_5787_(SoundManager.java:125) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.sounds.SoundManager.m_5787_(SoundManager.java:40) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.server.packs.resources.SimplePreparableReloadListener.m_10789_(SimplePreparableReloadListener.java:13) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at java.util.concurrent.CompletableFuture$UniAccept.tryFire(CompletableFuture.java:718) ~[?:?]
+	at java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:482) ~[?:?]
+	at net.minecraft.server.packs.resources.SimpleReloadInstance.m_143940_(SimpleReloadInstance.java:69) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.util.thread.BlockableEventLoop.m_6367_(BlockableEventLoop.java:156) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.util.thread.ReentrantBlockableEventLoop.m_6367_(ReentrantBlockableEventLoop.java:23) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.util.thread.BlockableEventLoop.m_7245_(BlockableEventLoop.java:130) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.util.thread.BlockableEventLoop.m_18699_(BlockableEventLoop.java:115) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.Minecraft.m_91383_(Minecraft.java:1106) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.Minecraft.m_91374_(Minecraft.java:718) ~[client-1.20.1-20230612.114412-srg.jar%23152!/:?]
+	at net.minecraft.client.main.Main.main(Main.java:218) ~[forge-1.20.1-47.3.0.jar:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?]
+	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?]
+	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?]
+	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at net.minecraftforge.fml.loading.targets.CommonClientLaunchHandler.lambda$makeService$0(CommonClientLaunchHandler.java:25) ~[fmlloader-1.20.1-47.3.0.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?]
+	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?]
+[01:45:01] [Render thread/INFO]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[01:45:01] [Render thread/INFO]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[01:45:01] [Render thread/WARN]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[01:45:01] [Render thread/WARN]: Shader kashimo:impact could not find uniform named ModelViewMat in the specified shader program.
+[01:45:01] [Render thread/WARN]: Shader kashimo:impact could not find uniform named ProjMat in the specified shader program.
+[01:45:02] [Render thread/WARN]: Shader choso:impact could not find uniform named ModelViewMat in the specified shader program.
+[01:45:02] [Render thread/WARN]: Shader choso:impact could not find uniform named ProjMat in the specified shader program.
+[01:45:02] [Render thread/WARN]: Shader avatar:impact could not find uniform named ModelViewMat in the specified shader program.
+[01:45:02] [Render thread/WARN]: Shader avatar:impact could not find uniform named ProjMat in the specified shader program.
+[01:45:02] [Render thread/WARN]: Shader gojo:impact could not find uniform named ModelViewMat in the specified shader program.
+[01:45:02] [Render thread/WARN]: Shader gojo:impact could not find uniform named ProjMat in the specified shader program.
+[01:45:02] [Render thread/INFO]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[01:45:02] [Render thread/INFO]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[01:45:02] [Render thread/INFO]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[01:45:02] [Render thread/INFO]: Shrine effect shaders compiled
+[01:45:02] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: javax.ws.rs.BadRequestException: Invalid session
+[01:45:02] [Render thread/INFO]: Projection Sorcery effect shaders compiled
+[01:45:02] [Render thread/INFO]: Hakari effect shaders compiled
+[01:45:02] [Render thread/INFO]: [selftest] creating a flat world
+[01:45:04] [Render thread/INFO]: Loaded 7 recipes
+[01:45:04] [Render thread/INFO]: Loaded 1271 advancements
+[01:45:04] [Server thread/INFO]: Starting integrated minecraft server version 1.20.1
+[01:45:04] [Server thread/INFO]: Generating keypair
+[01:45:05] [Server thread/WARN]: Configuration file /home/runner/work/Railgun/Railgun/mc/saves/shrine_selftest/serverconfig/forge-server.toml is not correct. Correcting
+[01:45:05] [Server thread/WARN]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
+[01:45:05] [Server thread/WARN]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[01:45:05] [Server thread/WARN]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[01:45:05] [Server thread/WARN]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
+[01:45:05] [Server thread/WARN]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
+[01:45:05] [Server thread/WARN]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
+[01:45:05] [Server thread/WARN]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
+[01:45:05] [Server thread/WARN]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
+[01:45:05] [Server thread/WARN]: Configuration file /home/runner/work/Railgun/Railgun/mc/saves/shrine_selftest/serverconfig/jjk-shrine-server.toml is not correct. Correcting
+[01:45:05] [Server thread/WARN]: Incorrect key technique was corrected from null to its default, SimpleCommentedConfig:{}. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.hitDamage was corrected from null to its default, 16.0. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.cutBlocks was corrected from null to its default, true. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.cooldownScale was corrected from null to its default, 1.0. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.dismantleLength was corrected from null to its default, 48. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.openBlastRadius45 was corrected from null to its default, 45. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.fugaRange was corrected from null to its default, 220. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.domainRange was corrected from null to its default, 40. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.domainSeconds was corrected from null to its default, 14. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.worldSlashLength was corrected from null to its default, 1000. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.blocksPerTick was corrected from null to its default, 16000. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.cutsceneRadius was corrected from null to its default, 160. 
+[01:45:05] [Server thread/WARN]: Incorrect key technique.opOnly was corrected from null to its default, false. 
+[01:45:05] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[01:45:06] [Render thread/INFO]: Preparing spawn area: 0%
+[01:45:06] [Render thread/INFO]: Preparing spawn area: 0%
+[01:45:06] [Render thread/INFO]: Preparing spawn area: 1%
+[01:45:07] [Render thread/INFO]: Preparing spawn area: 18%
+[01:45:07] [Render thread/INFO]: Preparing spawn area: 67%
+[01:45:08] [Render thread/INFO]: Time elapsed: 2280 ms
+[01:45:08] [Server thread/INFO]: Successfully initialized permission handler forge:default_handler
+[01:45:08] [Server thread/INFO]: Changing view distance to 6, from 10
+[01:45:08] [Server thread/INFO]: Changing simulation distance to 6, from 0
+[01:45:08] [Render thread/WARN]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
+[01:45:09] [Netty Local Client IO #0/INFO]: Connected to a modded server.
+[01:45:09] [Server thread/INFO]: Dev[local:E:d8b7bb4b] logged in with entity id 1 at (7.5, -60.0, -0.5)
+[01:45:09] [Server thread/INFO]: Dev joined the game
+[01:45:09] [Render thread/INFO]: [System] [CHAT] Press M to choose your cursed technique.
+[01:45:09] [Render thread/INFO]: Loaded 2 advancements
+[01:45:12] [Server thread/INFO]: [selftest] Sukuna chosen
+[01:45:13] [Render thread/INFO]: [selftest] finished; Gojo next
+[01:45:13] [Render thread/INFO]: [gojotest] begin
+[01:45:14] [Server thread/INFO]: [gojotest] Gojo chosen: GOJO
+[01:45:14] [Render thread/INFO]: [gojotest] infinity
+[01:45:16] [Server thread/INFO]: [gojo] voice taunt
+[01:45:16] [Render thread/INFO]: [gojotest] shot g00_infinity t2 director=false cam=(260.5, -58.38000011444092, 4.5)
+[01:45:17] [Render thread/INFO]: [gojotest] shot g00_infinity t6 director=false cam=(260.5, -58.38000011444092, 4.5)
+[01:45:17] [Render thread/INFO]: [gojotest] shot g00_infinity t12 director=false cam=(260.5, -58.38000011444092, 4.5)
+[01:45:17] [Render thread/INFO]: [gojotest] shot g00_infinity t20 director=false cam=(260.5, -58.38000011444092, 4.5)
+[01:45:18] [Render thread/INFO]: [gojotest] shot g00_infinity t34 director=false cam=(260.5, -58.38000011444092, 4.5)
+[01:45:19] [Render thread/INFO]: [gojotest] shot g00_infinity t44 director=false cam=(260.5, -58.38000011444092, 4.5)
+[01:45:19] [Render thread/INFO]: [gojotest] red
+[01:45:19] [Server thread/INFO]: [gojotest] after infinity: golems alive 3 [100, 100, 100] player y=-60.0 hp=20.0
+[01:45:21] [Server thread/INFO]: [gojotest] cast RED ok=true
+[01:45:21] [Server thread/INFO]: [gojo] voice red
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t4 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t10 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t14 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t16 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t18 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t20 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t23 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:22] [Render thread/INFO]: [gojotest] shot g01_red t30 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:23] [Render thread/INFO]: [gojotest] shot g01_red t44 director=false cam=(520.5, -58.10097423195839, -3.4902563095092773)
+[01:45:25] [Render thread/INFO]: [gojotest] max_blue
+[01:45:25] [Server thread/INFO]: [gojotest] after red: golems alive 3 [71, 90, 71] player y=-60.0 hp=20.0
+[01:45:27] [Server thread/INFO]: [gojotest] cast MAX_BLUE ok=true
+[01:45:27] [Server thread/INFO]: [gojo] voice max_blue
+[01:45:28] [Render thread/INFO]: [gojotest] shot g02_max_blue t8 director=false cam=(780.5, -58.38000011444092, -3.5)
+[01:45:28] [Render thread/INFO]: [gojotest] shot g02_max_blue t20 director=false cam=(780.5, -58.38000011444092, -3.5)
+[01:45:29] [Render thread/INFO]: [gojotest] shot g02_max_blue t36 director=false cam=(780.5, -58.38000011444092, -3.5)
+[01:45:30] [Render thread/INFO]: [gojotest] shot g02_max_blue t50 director=false cam=(780.5, -58.38000011444092, -3.5)
+[01:45:31] [Render thread/INFO]: [gojotest] shot g02_max_blue t80 director=false cam=(780.5, -58.38000011444092, -3.5)
+[01:45:32] [Render thread/INFO]: [gojotest] shot g02_max_blue t100 director=false cam=(784.2587704658508, -58.38000011444092, -0.8680802583694458)
+[01:45:34] [Render thread/INFO]: [gojotest] shot g02_max_blue t130 director=false cam=(784.2587704658508, -58.38000011444092, -0.8680802583694458)
+[01:45:35] [Render thread/INFO]: [gojotest] shot g02_max_blue t159 director=false cam=(784.2587704658508, -58.38000011444092, -0.8680802583694458)
+[01:45:36] [Render thread/INFO]: [gojotest] shot g02_max_blue t162 director=false cam=(784.2587704658508, -58.38000011444092, -0.8680802583694458)
+[01:45:38] [Server thread/INFO]: [gojotest] after max_blue: golems alive 3 [15, 100, 100] player y=-60.0 hp=20.0
+[01:45:38] [Render thread/INFO]: [gojotest] max_red
+[01:45:40] [Server thread/INFO]: [gojotest] cast MAX_RED ok=true
+[01:45:40] [Server thread/INFO]: [gojo] voice max_red
+[01:45:40] [Render thread/INFO]: [gojotest] shot g03_max_red t8 director=false cam=(1040.5, -58.38000011444092, -3.5)
+[01:45:41] [Render thread/INFO]: [gojotest] shot g03_max_red t30 director=false cam=(1040.5, -58.38000011444092, -3.5)
+[01:45:42] [Render thread/INFO]: [gojotest] shot g03_max_red t40 director=false cam=(1040.5, -58.38000011444092, -3.5)
+[01:45:42] [Render thread/INFO]: [gojotest] shot g03_max_red t41 director=false cam=(1040.5, -58.405087782585134, -3.5)
+[01:45:42] [Render thread/INFO]: [gojotest] shot g03_max_red t43 director=false cam=(1040.5, -58.56085258608793, -3.5)
+[01:45:42] [Render thread/INFO]: [gojotest] shot g03_max_red t48 director=false cam=(1040.5, -60.38000011444092, -0.019615242844209124)
+[01:45:43] [Render thread/INFO]: [gojotest] shot g03_max_red t60 director=false cam=(1040.5, -60.38000011444092, -0.019615242844209124)
+[01:45:46] [Server thread/INFO]: [gojotest] after max_red: golems alive 3 [54, 54, 54] player y=-62.0 hp=20.0
+[01:45:46] [Render thread/INFO]: [gojotest] purple
+[01:45:48] [Server thread/INFO]: [gojotest] cast PURPLE ok=true
+[01:45:49] [Render thread/INFO]: [gojotest] shot g04_purple t10 director=true cam=(1302.1, -59.57405154434964, 5.0)
+[01:45:49] [Server thread/INFO]: [gojo] voice red_full
+[01:45:50] [Render thread/INFO]: [gojotest] shot g04_purple t30 director=true cam=(1301.2257034024024, -52.60952472042428, 2.611036137219202)
+[01:45:51] [Render thread/INFO]: [gojotest] shot g04_purple t58 director=true cam=(1304.6680117209344, -51.65088298911698, 4.317647662612713)
+[01:45:51] [Render thread/INFO]: [gojotest] shot g04_purple t64 director=true cam=(1304.6609868376083, -51.62470328793302, 4.105028280730434)
+[01:45:52] [Server thread/INFO]: [gojo] voice blue_full
+[01:45:52] [Render thread/INFO]: [gojotest] shot g04_purple t80 director=true cam=(1299.7815547395494, -52.60877559325686, 2.627427313951442)
+[01:45:54] [Render thread/INFO]: [gojotest] shot g04_purple t110 director=true cam=(1296.3397797786035, -51.62005251467175, 4.376445945719356)
+[01:45:54] [Render thread/INFO]: [gojotest] shot g04_purple t116 director=true cam=(1296.3377814323426, -51.58360009251263, 4.134072422185534)
+[01:45:55] [Render thread/INFO]: [gojotest] shot g04_purple t130 director=true cam=(1300.5285748718736, -52.80781369313283, 7.245282363632652)
+[01:45:55] [Render thread/INFO]: [gojotest] shot g04_purple t142 director=true cam=(1302.0489187178866, -52.13743500834445, 6.114529552208558)
+[01:45:56] [Render thread/INFO]: [gojotest] shot g04_purple t152 director=false cam=(1300.5, -53.576004569359704, -3.5)
+[01:45:56] [Render thread/INFO]: [gojotest] shot g04_purple t165 director=false cam=(1300.5, -52.314990138780196, -3.5)
+[01:45:57] [Server thread/INFO]: [gojo] voice kyoshiki
+[01:45:57] [Server thread/INFO]: [gojotest] shoot PURPLE
+[01:45:57] [Render thread/INFO]: [gojotest] shot g04_purple t180 director=false cam=(1300.5, -51.38870052226288, -3.3806376457214355)
+[01:45:57] [Server thread/INFO]: [gojo] voice murasaki
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE fired at t=191 from (1300.5, -53.025998113301526, 2.828382494965709) dir (0.0, -0.24246812402801243, 0.9701593729023786) target (1300.5, -72.42344803554252, 80.441132327156)
+[01:45:58] [Render thread/INFO]: [gojotest] shot g04_purple t189 director=false cam=(1300.5, -51.4680071606494, -3.3806376457214355)
+[01:45:58] [Render thread/INFO]: [gojotest] shot g04_purple t191 director=true cam=(1299.2887062921493, -50.30499596830178, -2.8489808050778747)
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE at (1300.5, -56.66301997372171, 17.38077308850139) (t=196)
+[01:45:58] [Render thread/INFO]: [gojotest] shot g04_purple t195 director=true cam=(1299.2471738115628, -50.676611320946876, -3.4678343260085116)
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE hits entity.minecraft.iron_golem hp now 10.0
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE at (1300.5, -60.3000418341419, 31.93316368203707) (t=201)
+[01:45:58] [Server thread/INFO]: [gojo] PURPLE at (1300.5, -63.937063694562084, 46.485554275572746) (t=206)
+[01:45:59] [Render thread/INFO]: [gojotest] shot g04_purple t210 director=true cam=(1326.5, -52.651371174689665, 33.33892070525991)
+[01:45:59] [Server thread/INFO]: [gojo] PURPLE at (1300.5, -67.57408555498228, 61.03794486910843) (t=211)
+[01:45:59] [Server thread/INFO]: [gojo] PURPLE at (1300.5, -71.21110741540247, 75.5903354626441) (t=216)
+[01:45:59] [Server thread/INFO]: [gojo] PURPLE at (1300.5, -74.84812927582264, 90.14272605617978) (t=221)
+[01:46:02] [Render thread/INFO]: [gojotest] imaginary
+[01:46:02] [Server thread/INFO]: [gojotest] after purple: golems alive 3 [10, 10, 10] player y=-56.4 hp=20.0
+[01:46:04] [Server thread/INFO]: [gojotest] cast IMAGINARY ok=true
+[01:46:05] [Render thread/INFO]: [gojotest] shot g05_imaginary t10 director=true cam=(1562.5, -59.67743709958158, 5.5)
+[01:46:10] [Render thread/INFO]: [gojotest] shot g05_imaginary t120 director=true cam=(1560.0667027002394, -57.276481702456465, 2.267864381688493)
+[01:46:15] [Render thread/INFO]: [gojotest] shot g05_imaginary t220 director=true cam=(1558.447146460414, -54.655832114785916, 0.9)
+[01:46:20] [Render thread/INFO]: [gojotest] shot g05_imaginary t320 director=true cam=(1560.366055318087, -46.24787317221829, 0.8769069144858327)
+[01:46:24] [Render thread/INFO]: [gojotest] shot g05_imaginary t400 director=true cam=(1560.5, -49.73883646143199, 3.5)
+[01:46:30] [Render thread/INFO]: [gojotest] shot g05_imaginary t520 director=true cam=(1551.6671375545798, -45.045282746791415, 2.2264243453692103)
+[01:46:37] [Render thread/INFO]: [gojotest] shot g05_imaginary t650 director=true cam=(1566.5, -59.6, 10.5)
+[01:46:40] [Render thread/INFO]: [gojotest] shot g05_imaginary t720 director=true cam=(1561.3, -43.938278905544934, 2.8565608978271486)
+[01:46:42] [Render thread/INFO]: [gojotest] shot g05_imaginary t750 director=true cam=(1561.3, -43.535008644444915, 2.353056764602661)
+[01:46:45] [Render thread/INFO]: [gojotest] shot g05_imaginary t820 director=true cam=(1560.5, -43.44219733128712, 3.5)
+[01:46:52] [Render thread/INFO]: [gojotest] shot g05_imaginary t950 director=true cam=(1560.708380215327, -42.48550934894413, 2.117912779215586)
+[01:47:02] [Render thread/INFO]: [gojotest] shot g05_imaginary t1150 director=true cam=(1559.7, -41.7982441759917, -3.2254510521888733)
+[01:47:07] [Render thread/INFO]: [gojotest] shot g05_imaginary t1250 director=true cam=(1558.279243053578, -42.37728368741795, 1.0184628531853888)
+[01:47:12] [Render thread/INFO]: [gojotest] shot g05_imaginary t1360 director=true cam=(1564.7840456072618, -39.902325018361005, -12.82842651009117)
+[01:47:18] [Render thread/INFO]: [gojotest] shot g05_imaginary t1480 director=true cam=(1559.3500000000001, -42.950399782394975, 3.8357610702514644)
+[01:47:21] [Render thread/INFO]: [gojotest] shot g05_imaginary t1530 director=true cam=(1560.5, -42.80015956130257, 3.5)
+[01:47:21] [Render thread/INFO]: [gojotest] shot g05_imaginary t1545 director=true cam=(1560.5, -42.874088064477675, 3.5)
+[01:47:22] [Render thread/INFO]: [gojotest] shot g05_imaginary t1560 director=true cam=(1560.5, -42.956988857927456, 3.5)
+[01:47:25] [Render thread/INFO]: [gojotest] shot g05_imaginary t1610 director=true cam=(1560.5, -42.95949829621607, 3.5)
+[01:47:26] [Render thread/INFO]: [gojotest] shot g05_imaginary t1638 director=true cam=(1560.5, -42.80176518746062, 3.5)
+[01:47:26] [Render thread/INFO]: [gojotest] shot g05_imaginary t1644 director=true cam=(1558.544689534982, -42.10341959337849, 6.423119766113555)
+[01:47:27] [Render thread/INFO]: [gojotest] shot g05_imaginary t1652 director=true cam=(1558.526843846307, -42.181639839463415, 5.888720450353183)
+[01:47:28] [Server thread/INFO]: [gojotest] shoot IMAGINARY
+[01:47:29] [Render thread/INFO]: [gojotest] shot g05_imaginary t1690 director=false cam=(1560.5, -40.37839241785392, -3.0063962936401367)
+[01:47:30] [Server thread/INFO]: [gojo] IMAGINARY fired at t=1716 from (1560.5, -43.325268532726106, 2.0779236825992866) dir (0.0, -0.4811755319624571, 0.8766242681107148) target (1560.5, -81.81931108972267, 72.20786513145647)
+[01:47:30] [Render thread/INFO]: [gojotest] shot g05_imaginary t1716 director=false cam=(1560.5, -40.535087627505504, -3.0063962936401367)
+[01:47:30] [Render thread/INFO]: [gojotest] shot g05_imaginary t1718 director=true cam=(1559.2704352087346, -39.69554541482508, -3.039059411185866)
+[01:47:30] [Server thread/INFO]: [gojo] IMAGINARY at (1560.5, -51.02407704412542, 16.103911972370724) (t=1721)
+[01:47:30] [Server thread/INFO]: [gojo] IMAGINARY hits entity.minecraft.iron_golem hp now 0.0
+[01:47:30] [Server thread/INFO]: [gojo] IMAGINARY hits entity.minecraft.iron_golem hp now 0.0
+[01:47:30] [Server thread/INFO]: [gojo] IMAGINARY hits entity.minecraft.iron_golem hp now 0.0
+[01:47:30] [Server thread/INFO]: [gojo] IMAGINARY at (1560.5, -58.72288555552473, 30.12990026214216) (t=1726)
+[01:47:30] [Render thread/INFO]: Loaded 30 advancements
+[01:47:31] [Server thread/INFO]: [gojo] IMAGINARY at (1560.5, -66.42169406692405, 44.1558885519136) (t=1731)
+[01:47:31] [Render thread/INFO]: [gojotest] shot g05_imaginary t1730 director=true cam=(1594.3, -45.052303157413796, 24.171577568259416)
+[01:47:31] [Server thread/INFO]: [gojo] IMAGINARY at (1560.5, -74.12050257832337, 58.18187684168503) (t=1736)
+[01:47:31] [Server thread/INFO]: [gojo] IMAGINARY at (1560.5, -81.81931108972267, 72.20786513145647) (t=1741)
+[01:47:31] [Server thread/INFO]: [gojo] IMAGINARY at (1560.5, -89.51811960112198, 86.23385342122792) (t=1746)
+[01:47:32] [Server thread/INFO]: [gojo] IMAGINARY at (1560.5, -97.2169281125213, 100.25984171099935) (t=1751)
+[01:47:32] [Render thread/INFO]: [gojotest] shot g05_imaginary t1760 director=true cam=(1594.3, -56.999999999999915, 59.935125377906466)
+[01:47:34] [Server thread/INFO]: [gojotest] after imaginary: golems alive 0 [] player y=-44.2 hp=20.0
+[01:47:34] [Render thread/INFO]: [gojotest] purple_200
+[01:47:36] [Server thread/INFO]: [gojotest] cast PURPLE_200 ok=true
+[01:47:36] [Server thread/INFO]: [gojo] voice tenjo
+[01:47:37] [Render thread/INFO]: [gojotest] shot g06_purple_200 t20 director=true cam=(1822.1, -59.57999699803527, 5.0)
+[01:47:38] [Render thread/INFO]: [gojotest] shot g06_purple_200 t48 director=true cam=(1817.2587483465672, -48.31138801315093, 1.1)
+[01:47:41] [Render thread/INFO]: [gojotest] shot g06_purple_200 t90 director=true cam=(1820.5, -46.29266174636031, 5.0)
+[01:47:41] [Server thread/INFO]: [gojo] voice max_red
+[01:47:42] [Render thread/INFO]: [gojotest] shot g06_purple_200 t120 director=true cam=(1821.2256161273313, -48.485497337177556, 2.34343907595007)
+[01:47:43] [Render thread/INFO]: [gojotest] shot g06_purple_200 t140 director=true cam=(1828.8851846196333, -47.7244618636419, 7.323051337247482)
+[01:47:43] [Server thread/INFO]: [gojo] voice max_blue
+[01:47:44] [Render thread/INFO]: [gojotest] shot g06_purple_200 t160 director=true cam=(1819.7708458441946, -48.541926497420306, 2.5752199336204566)
+[01:47:45] [Render thread/INFO]: [gojotest] shot g06_purple_200 t186 director=true cam=(1812.118924850057, -47.728233340538026, 7.350971130508264)
+[01:47:46] [Render thread/INFO]: [gojotest] shot g06_purple_200 t200 director=true cam=(1820.5526931125999, -48.986328467585864, 16.349852279916465)
+[01:47:47] [Render thread/INFO]: [gojotest] shot g06_purple_200 t218 director=true cam=(1824.1996581170663, -48.0188819527179, 12.218902212410812)
+[01:47:48] [Render thread/INFO]: [gojotest] shot g06_purple_200 t232 director=false cam=(1820.5, -49.23733058241189, -3.5)
+[01:47:48] [Server thread/INFO]: [gojo] voice kyoshiki
+[01:47:48] [Server thread/INFO]: [gojotest] shoot PURPLE_200
+[01:47:49] [Render thread/INFO]: [gojotest] shot g06_purple_200 t255 director=false cam=(1820.5, -47.1347422167198, -3.2816426753997803)
+[01:47:49] [Server thread/INFO]: [gojo] voice murasaki
+[01:47:49] [Server thread/INFO]: [gojo] PURPLE_200 fired at t=269 from (1820.5, -50.11150972218153, 5.699758089726512) dir (0.0, -0.32588168051710314, 0.9454105617684566) target (1820.5, -76.18204416354979, 81.33260303120305)
+[01:47:49] [Render thread/INFO]: [gojotest] shot g06_purple_200 t269 director=false cam=(1820.5, -47.0222901205561, -3.2816426753997803)
+[01:47:50] [Server thread/INFO]: [gojo] PURPLE_200 hits entity.minecraft.iron_golem hp now 0.0
+[01:47:50] [Server thread/INFO]: [gojo] PURPLE_200 hits entity.minecraft.iron_golem hp now 0.0
+[01:47:50] [Server thread/INFO]: [gojo] PURPLE_200 hits entity.minecraft.iron_golem hp now 0.0
+[01:47:50] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -55.977379971489384, 22.717148201558732) (t=274)
+[01:47:50] [Render thread/INFO]: [gojotest] shot g06_purple_200 t271 director=true cam=(1819.144141061749, -45.87318437757968, -4.009155449806844)
+[01:47:50] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -61.843250220797245, 39.734538313390956) (t=279)
+[01:47:50] [Render thread/INFO]: [gojotest] shot g06_purple_200 t280 director=true cam=(1819.1000241459633, -45.72060033245648, -4.699520742225162)
+[01:47:50] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -67.7091204701051, 56.75192842522317) (t=284)
+[01:47:50] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -73.57499071941295, 73.7693185370554) (t=289)
+[01:47:51] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -79.44086096872081, 90.78670864888761) (t=294)
+[01:47:51] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -85.30673121802867, 107.80409876071982) (t=299)
+[01:47:51] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -91.17260146733653, 124.82148887255205) (t=304)
+[01:47:51] [Render thread/INFO]: [gojotest] shot g06_purple_200 t305 director=true cam=(1859.5, -56.99999999990948, 73.2384079562654)
+[01:47:51] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -97.03847171664438, 141.83887898438428) (t=309)
+[01:47:52] [Server thread/INFO]: [gojo] PURPLE_200 at (1820.5, -102.90434196595224, 158.8562690962165) (t=314)
+[01:47:55] [Render thread/INFO]: [gojotest] nuke
+[01:47:55] [Server thread/INFO]: [gojotest] after purple_200: golems alive 0 [] player y=-52.4 hp=20.0
+[01:47:57] [Server thread/INFO]: [gojotest] cast NUKE ok=true
+[01:47:57] [Server thread/INFO]: [gojo] voice honki
+[01:47:57] [Render thread/INFO]: [gojotest] shot g07_nuke t10 director=true cam=(2079.0, -59.37712070881389, 4.5)
+[01:47:58] [Server thread/INFO]: [gojo] voice max_blue
+[01:47:59] [Render thread/INFO]: [gojotest] shot g07_nuke t40 director=true cam=(2079.7082904400936, -42.66190059932083, 2.78017383678935)
+[01:48:00] [Render thread/INFO]: [gojotest] shot g07_nuke t64 director=true cam=(2076.3657018753056, -41.501207728505904, 8.4942216016414)
+[01:48:01] [Render thread/INFO]: [gojotest] shot g07_nuke t72 director=true cam=(2071.8549132611797, -41.51709695642067, 3.0024938118355067)
+[01:48:01] [Server thread/INFO]: [gojo] voice max_red
+[01:48:02] [Render thread/INFO]: [gojotest] shot g07_nuke t100 director=true cam=(2081.3207937411403, -42.62199357736095, 2.66486849130845)
+[01:48:03] [Render thread/INFO]: [gojotest] shot g07_nuke t114 director=true cam=(2078.9, -43.80821546475173, -4.5)
+[01:48:03] [Render thread/INFO]: [gojotest] shot g07_nuke t130 director=true cam=(2078.9, -43.87137970304767, -4.5)
+[01:48:04] [Render thread/INFO]: [gojotest] shot g07_nuke t145 director=true cam=(2104.755434756017, -37.78414642088445, 0.7702341336339954)
+[01:48:05] [Render thread/INFO]: [gojotest] shot g07_nuke t158 director=true cam=(2107.8324245477224, -37.84254658759537, 0.7007520622042636)
+[01:48:06] [Render thread/INFO]: [gojotest] shot g07_nuke t175 director=false cam=(2080.5, -41.42516671483356, -3.3450467586517334)
+[01:48:07] [Server thread/INFO]: [gojo] voice kyoshiki
+[01:48:07] [Server thread/INFO]: [gojotest] shoot NUKE
+[01:48:07] [Render thread/INFO]: [gojotest] shot g07_nuke t200 director=false cam=(2080.5, -40.93470054977426, -3.2027475833892822)
+[01:48:07] [Server thread/INFO]: [gojo] voice murasaki
+[01:48:07] [Server thread/INFO]: [gojo] NUKE fired at t=212 from (2080.5, -33.37999999523163, 9.5) dir (0.0, -0.6514763578326126, 0.7586689364835979) target (2080.5, -60.0, 40.5)
+[01:48:08] [Render thread/INFO]: [gojotest] shot g07_nuke t211 director=false cam=(2080.5, -40.85194431749014, -3.2027475833892822)
+[01:48:08] [Render thread/INFO]: [gojotest] shot g07_nuke t215 director=true cam=(2079.1, -40.20762531304892, -3.5)
+[01:48:08] [Render thread/INFO]: [gojotest] shot g07_nuke t226 director=true cam=(2079.1, -40.300261473130846, -3.5)
+[01:48:08] [Render thread/INFO]: [gojotest] shot g07_nuke t227 director=true cam=(2079.1, -40.30300740450869, -3.5)
+[01:48:08] [Server thread/INFO]: [gojo] nuke lands at (2080.5, -60.0, 40.5): 3 caught
+[01:48:08] [Render thread/INFO]: [gojotest] shot g07_nuke t229 director=true cam=(2011.0553227640032, -30.297295314454548, -68.50800702716509)
+[01:48:09] [Render thread/INFO]: [gojotest] shot g07_nuke t245 director=true cam=(2009.182856856662, -27.690114273932778, -72.88867084964187)
+[01:48:11] [Render thread/INFO]: [gojotest] shot g07_nuke t270 director=true cam=(2010.5329704009512, -20.694478034088608, -83.55238117106022)
+[01:48:13] [Render thread/INFO]: [gojotest] shot g07_nuke t320 director=false cam=(2080.5, -41.57664252859921, -3.2027475833892822)
+[01:48:15] [Render thread/INFO]: [gojotest] domain
+[01:48:15] [Server thread/INFO]: [gojotest] after nuke: golems alive 0 [] player y=-46.7 hp=20.0
+[01:48:17] [Server thread/INFO]: [gojotest] cast DOMAIN ok=true
+[01:48:17] [Server thread/INFO]: [gojo] voice ryoiki
+[01:48:17] [Render thread/INFO]: [gojotest] shot g08_domain t4 director=true cam=(2340.2, -58.329525822401045, 2.1488745450973514)
+[01:48:17] [Render thread/INFO]: [gojotest] shot g08_domain t12 director=true cam=(2341.1, -58.279367185931186, 3.4892527032643557)
+[01:48:18] [Render thread/INFO]: [gojotest] shot g08_domain t24 director=true cam=(2341.1, -58.279999697829815, 3.367106571793556)
+[01:48:19] [Render thread/INFO]: [gojotest] shot g08_domain t40 director=true cam=(2341.1, -58.27999999522644, 3.078048288822174)
+[01:48:19] [Server thread/INFO]: [gojo] domain clears 168 blocks
+[01:48:19] [Render thread/INFO]: [gojotest] shot g08_domain t49 director=true cam=(2341.1, -58.27999999523161, 2.89650297164917)
+[01:48:20] [Render thread/INFO]: [gojotest] shot g08_domain t56 director=true cam=(2341.1, -58.27999999523163, 2.7515156865119934)
+[01:48:20] [Render thread/INFO]: [gojotest] shot g08_domain t70 director=true cam=(2341.1, -58.27999999523163, 2.547443151473999)
+[01:48:21] [Render thread/INFO]: [gojotest] shot g08_domain t81 director=true cam=(2339.3, -58.679999995231626, -3.007721494883299)
+[01:48:21] [Render thread/INFO]: [gojotest] shot g08_domain t90 director=true cam=(2339.3, -58.679999995231626, -3.39411062002182)
+[01:48:22] [Render thread/INFO]: [gojotest] shot g08_domain t105 director=true cam=(2339.3, -58.679999995231626, -4.494532942771912)
+[01:48:23] [Render thread/INFO]: [gojotest] shot g08_domain t120 director=true cam=(2344.7701169048805, -57.6, -7.422506018846071)
+[01:48:24] [Render thread/INFO]: [gojotest] shot g08_domain t135 director=true cam=(2349.16093527013, -57.6, -1.9470799428337613)
+[01:48:24] [Render thread/INFO]: [gojotest] shot g08_domain t150 director=true cam=(2348.553260008104, -57.6, 4.518084523982604)
+[01:48:26] [Render thread/INFO]: [gojotest] domain_inside
+[01:48:26] [Server thread/INFO]: [gojotest] after domain: golems alive 3 [96, 96, 96] player y=-60.0 hp=20.0
+[01:48:27] [Render thread/INFO]: [gojotest] shot g09_domain_inside t10 director=false cam=(2340.5, -58.38000011444092, -3.5)
+[01:48:28] [Render thread/INFO]: [gojotest] shot g09_domain_inside t40 director=false cam=(2340.5, -58.38000011444092, -3.5)
+[01:48:30] [Render thread/INFO]: [gojotest] shot g09_domain_inside t70 director=false cam=(2340.5, -58.38000011444092, -3.5)
+[01:48:30] [Server thread/INFO]: [gojotest] after domain_inside: golems alive 3 [92, 92, 92] player y=-60.0 hp=20.0
+[01:48:30] [Render thread/INFO]: [gojotest] domain_02
+[01:48:32] [Server thread/INFO]: [gojotest] cast DOMAIN_02 ok=true
+[01:48:32] [Server thread/INFO]: [gojo] voice muryokusho
+[01:48:32] [Render thread/INFO]: [gojotest] shot g10_domain_02 t2 director=false cam=(2860.5, -58.38000011444092, -3.5)
+[01:48:33] [Render thread/INFO]: [gojotest] shot g10_domain_02 t6 director=false cam=(2860.5, -58.38000011444092, -3.5)
+[01:48:33] [Render thread/INFO]: [gojotest] shot g10_domain_02 t8 director=false cam=(2860.5, -58.38000011444092, -3.5)
+[01:48:33] [Render thread/INFO]: [gojotest] shot g10_domain_02 t10 director=false cam=(2860.5, -58.38000011444092, -3.5)
+[01:48:33] [Render thread/INFO]: [gojotest] shot g10_domain_02 t14 director=false cam=(2860.5, -58.38000011444092, -3.5)
+[01:48:34] [Render thread/INFO]: [gojotest] shot g10_domain_02 t30 director=false cam=(2860.5, -58.38000011444092, -3.5)
+[01:48:36] [Render thread/INFO]: [gojotest] finished; stopping
+[01:48:36] [Server thread/INFO]: [gojotest] after domain_02: golems alive 3 [94, 94, 94] player y=-60.0 hp=20.0
+[01:48:36] [Render thread/INFO]: Stopping!
+[01:48:36] [Server thread/INFO]: Dev lost connection: Disconnected
+[01:48:36] [Server thread/INFO]: Dev left the game
+[01:48:36] [Server thread/INFO]: Stopping singleplayer server as player logged out
+[01:48:36] [Server thread/INFO]: Stopping server
+[01:48:36] [Server thread/INFO]: Saving players
+[01:48:36] [Server thread/INFO]: Saving worlds
+[01:48:37] [Server thread/INFO]: Saving chunks for level 'ServerLevel[shrine_selftest]'/minecraft:overworld
+[01:48:37] [Server thread/INFO]: Saving chunks for level 'ServerLevel[shrine_selftest]'/minecraft:the_nether
+[01:48:37] [Server thread/INFO]: Saving chunks for level 'ServerLevel[shrine_selftest]'/minecraft:the_end
+[01:48:37] [Server thread/INFO]: ThreadedAnvilChunkStorage (shrine_selftest): All chunks are saved
+[01:48:37] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[01:48:37] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[01:48:37] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
