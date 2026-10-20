@@ -196,7 +196,7 @@ public final class Gyro {
     /** The Golden Spin: perfect on a galloping horse; on foot it takes him a while, standing still, to find it. */
     static void goldenSpin(ServerPlayer p) {
         ServerLevel l = p.serverLevel();
-        if (Sbr.galloping(p)) {
+        if (Sbr.galloping(p) || p.getAbilities().instabuild) {
             reach(p);
             return;
         }
@@ -229,7 +229,7 @@ public final class Gyro {
 
     /** Ball Breaker: the Zeppeli ultimate throw. Its Spin, made visible, ages whatever it strikes. Needs the Golden Spin. */
     static void ballBreaker(ServerPlayer p) {
-        if (!golden(p) && !Sbr.galloping(p)) {
+        if (!golden(p) && !Sbr.galloping(p) && !p.getAbilities().instabuild) {
             Sbr.say(p, "Ball Breaker needs the Golden Spin", ChatFormatting.GRAY);
             return;
         }

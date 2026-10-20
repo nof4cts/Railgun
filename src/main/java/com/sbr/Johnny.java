@@ -280,7 +280,8 @@ public final class Johnny {
     /** ACT4 needs the Golden Spin: on a galloping horse it comes at once; on foot he has to spin it up first. */
     static void infiniteRotation(ServerPlayer p) {
         ServerLevel l = p.serverLevel();
-        if (Sbr.galloping(p) || act4(p)) {
+        // creative: every Act is open, no Golden Spin needed
+        if (Sbr.galloping(p) || act4(p) || p.getAbilities().instabuild) {
             fireRotation(p);
             return;
         }
@@ -322,7 +323,7 @@ public final class Johnny {
 
     /** ACT4: ORA ORA - a storm of blows in front of him, each laced with the infinite spin. Only while ACT4 is awake. */
     static void ora(ServerPlayer p) {
-        if (!act4(p) && !Sbr.galloping(p)) {
+        if (!act4(p) && !Sbr.galloping(p) && !p.getAbilities().instabuild) {
             Sbr.say(p, "ACT4 isn't awake - use Infinite Rotation first (or ride at a gallop)", ChatFormatting.GRAY);
             return;
         }
