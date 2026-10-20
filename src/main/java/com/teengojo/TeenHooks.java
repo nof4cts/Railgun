@@ -1,6 +1,9 @@
 package com.teengojo;
 
 import com.jjk.mod.Sorcerer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import net.minecraft.server.level.ServerPlayer;
 
 /** The three places the jar calls into Teen Gojo (patched into Balance.used and the selector screen). */
@@ -10,6 +13,9 @@ public final class TeenHooks {
     /** A key press: true if Teen Gojo took it (the jar's own handling is then skipped). */
     public static boolean key(ServerPlayer p, int slot) {
         try {
+            if (p != null && com.sbr.Sbr.key(p, slot)) {
+                return true;
+            }
             if (p != null && TeenGojo.is(p)) {
                 TeenGojo.key(p, slot);
                 return true;
@@ -19,6 +25,21 @@ public final class TeenHooks {
             TeenGojo.LOG.error("[teen gojo] key failed", t);
             return true;
         }
+    }
+
+    /** The selector's Stand tab with Johnny and Gyro added after Gold Experience Requiem. */
+    public static Sorcerer[] withStands(Sorcerer[] list) {
+        List<Sorcerer> out = new ArrayList<>(Arrays.asList(list));
+        for (String n : new String[]{"JOHNNY", "GYRO"}) {
+            try {
+                Sorcerer s = Sorcerer.valueOf(n);
+                if (!out.contains(s)) {
+                    out.add(s);
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        return out.toArray(new Sorcerer[0]);
     }
 
     /** The selector's list with Teen Gojo placed right after Gojo. */

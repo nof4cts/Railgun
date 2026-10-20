@@ -59,3 +59,36 @@ anim('tg_purple', 40, [(0, STAND, None), (5, spread, SETTLE), (12, P(spread, lef
 # 0.2-Second Domain: the hand sign at his face, index and middle crossed
 sign = P(right_arm=[-126, -34, -4], left_arm=[4, 0, -8], head=[8, 6, 0], torso=[2, 0, 0])
 anim('tg_sign', 26, [(0, STAND, None), (3, sign, SNAP), (16, P(sign, right_arm=[-128, -36, -4]), None), (26, STAND, GLIDE)])
+
+# ---- Steel Ball Run (assets/sbr/player_animation): Johnny and Gyro
+OUT = os.path.join(os.path.dirname(os.path.dirname(OUT)), 'sbr', 'player_animation') if len(sys.argv) < 3 else sys.argv[2]
+os.makedirs(OUT, exist_ok=True)
+# Johnny: index finger levelled, the nail fired with a flick of the wrist
+aim1 = P(right_arm=[-90, 2, 0], left_arm=[6, 0, -10], torso=[0, -10, 0], head=[0, 8, 0])
+anim('sb_point', 14, [(0, STAND, None), (2, aim1, SNAP), (5, P(aim1, right_arm=[-98, 4, 0]), SNAP), (9, aim1, SETTLE), (14, STAND, GLIDE)])
+# Finger Cutter: the hand swept across, nails out
+cut0 = P(right_arm=[-80, 50, 30], torso=[0, 20, 0], head=[0, -10, 0])
+cut1 = P(right_arm=[-86, -60, -10], torso=[4, -24, 0], head=[0, 14, 0], right_leg=[8, 0, 3], left_leg=[-8, 0, -3])
+anim('sb_cutter', 16, [(0, STAND, None), (2, cut0, SNAP), (6, cut1, SNAP), (10, cut1, None), (16, STAND, GLIDE)])
+# ORA ORA: alternating straight punches, fast
+jab_r = P(right_arm=[-90, -4, 0], left_arm=[-50, 20, -6], torso=[6, -12, 0], head=[0, 10, 0])
+jab_l = P(left_arm=[-90, 4, 0], right_arm=[-50, -20, 6], torso=[6, 12, 0], head=[0, -10, 0])
+keys = [(0, STAND, None)]
+for i in range(1, 30, 2):
+    keys.append((i, jab_r if (i // 2) % 2 else jab_l, SNAP))
+keys.append((34, STAND, GLIDE))
+anim('sb_ora', 34, keys)
+# Gyro: the overhand Steel Ball throw
+wind = P(right_arm=[-160, 10, 20], left_arm=[-50, 20, -10], torso=[-8, 14, 0], head=[-6, -6, 0], right_leg=[-10, 0, 4], left_leg=[14, 0, -4])
+release = P(right_arm=[-70, -10, 4], left_arm=[10, 0, -20], torso=[16, -10, 0], head=[4, 6, 0], right_leg=[14, 0, 4], left_leg=[-18, 0, -4], pos=[0, -1, 0])
+anim('sb_throw', 20, [(0, STAND, None), (4, wind, SETTLE), (7, release, SNAP), (12, release, None), (20, STAND, GLIDE)])
+# Spin Hardening: arms crossed, braced
+brace = P(right_arm=[-70, -40, -10], left_arm=[-70, 40, 10], torso=[6, 0, 0], head=[6, 0, 0], right_leg=[-10, 0, 6], left_leg=[10, 0, -6], pos=[0, -1, 0])
+anim('sb_harden', 30, [(0, STAND, None), (4, brace, SNAP), (24, brace, None), (30, STAND, GLIDE)])
+# Golden Spin on foot: the ball spun on the palm, held up, finding the rectangle
+spinp = P(right_arm=[-110, -10, 14], left_arm=[-20, 0, -18], head=[-8, 4, 0], torso=[-2, 0, 0])
+keys = [(0, STAND, None), (5, spinp, SETTLE)]
+for k in range(10, 41, 5):
+    keys.append((k, P(spinp, right_arm=[-110 - (k % 10), -10, 14]), BREATH))
+keys.append((46, STAND, GLIDE))
+anim('sb_spin', 46, keys)

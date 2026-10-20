@@ -116,13 +116,18 @@ public final class TeenFx {
     }
 
     @SuppressWarnings("unchecked")
-    static void anim(AbstractClientPlayer p, String name) {
+    public static void anim(AbstractClientPlayer p, String name) {
+        anim(p, "teengojo", name);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void anim(AbstractClientPlayer p, String ns, String name) {
         try {
             Object o = PlayerAnimationAccess.getPlayerAssociatedData(p).get(LAYER);
             if (!(o instanceof ModifierLayer<?> l)) {
                 return;
             }
-            KeyframeAnimation a = PlayerAnimationRegistry.getAnimation(new ResourceLocation("teengojo", name));
+            KeyframeAnimation a = PlayerAnimationRegistry.getAnimation(new ResourceLocation(ns, name));
             if (a == null) {
                 return;
             }
@@ -306,7 +311,7 @@ public final class TeenFx {
         return e.getEyePosition(partial);
     }
 
-    static Vec3 hand(Entity e, float partial, boolean right) {
+    public static Vec3 hand(Entity e, float partial, boolean right) {
         Vec3 look = e.getViewVector(partial);
         Vec3 flat = new Vec3(look.x, 0, look.z);
         flat = flat.lengthSqr() < 1e-6 ? new Vec3(0, 0, 1) : flat.normalize();
@@ -460,13 +465,13 @@ public final class TeenFx {
         return from.add(dir.scale(Math.min(m.b(), age * m.a())));
     }
 
-    static float smooth(float x) {
+    public static float smooth(float x) {
         x = Mth.clamp(x, 0, 1);
         return x * x * (3 - 2 * x);
     }
 
     /** A glowing sphere: a soft halo, a body of colour, a white-hot middle. */
-    static void orb(Draw d, Vec3 at, double r, int col, int core, float k, float age) {
+    public static void orb(Draw d, Vec3 at, double r, int col, int core, float k, float age) {
         if (r <= 0.005 || k <= 0.01F) {
             return;
         }
@@ -478,7 +483,7 @@ public final class TeenFx {
         d.ring(at, r * 1.25 * pulse, r * 0.08, argb(core, 0.5F * k));
     }
 
-    static void rays(Draw d, Vec3 at, double len, int col, float k, long seed) {
+    public static void rays(Draw d, Vec3 at, double len, int col, float k, long seed) {
         Random r = new Random(seed);
         for (int i = 0; i < 10; i++) {
             Vec3 dir = new Vec3(r.nextDouble() - 0.5, r.nextDouble() - 0.3, r.nextDouble() - 0.5).normalize();
@@ -486,32 +491,32 @@ public final class TeenFx {
         }
     }
 
-    static int argb(int rgb, float a) {
+    public static int argb(int rgb, float a) {
         return (int) (Mth.clamp(a, 0, 1) * 255) << 24 | (rgb & 0xFFFFFF);
     }
 
     /** Camera-facing shapes in one buffer: discs, rings, beams. */
-    static final class Draw {
+    public static final class Draw {
         final Vec3 cam;
         final Vector3f left, up;
         final Matrix4f pose;
         BufferBuilder b;
         boolean add;
 
-        Draw(Camera c, Matrix4f pose) {
+        public Draw(Camera c, Matrix4f pose) {
             this.cam = c.getPosition();
             this.left = c.getLeftVector();
             this.up = c.getUpVector();
             this.pose = pose;
         }
 
-        void begin(boolean additive) {
+        public void begin(boolean additive) {
             add = additive;
             b = Tesselator.getInstance().getBuilder();
             b.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         }
 
-        void end() {
+        public void end() {
             RenderSystem.enableBlend();
             if (add) {
                 RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
@@ -537,7 +542,7 @@ public final class TeenFx {
                     (left.z() * Math.cos(a) + up.z() * Math.sin(a)) * r);
         }
 
-        void disc(Vec3 c, double r, int centre, int edge) {
+        public void disc(Vec3 c, double r, int centre, int edge) {
             int n = 28;
             for (int i = 0; i < n; i++) {
                 double a0 = i * Math.PI * 2 / n, a1 = (i + 1) * Math.PI * 2 / n;
@@ -547,7 +552,7 @@ public final class TeenFx {
             }
         }
 
-        void ring(Vec3 c, double r, double w, int col) {
+        public void ring(Vec3 c, double r, double w, int col) {
             if (r <= 0 || (col >>> 24) == 0) {
                 return;
             }
@@ -565,7 +570,7 @@ public final class TeenFx {
             }
         }
 
-        void beam(Vec3 a, Vec3 z, double w, int ca, int cz) {
+        public void beam(Vec3 a, Vec3 z, double w, int ca, int cz) {
             Vec3 along = z.subtract(a);
             if (along.lengthSqr() < 1e-6 || w <= 0) {
                 return;
