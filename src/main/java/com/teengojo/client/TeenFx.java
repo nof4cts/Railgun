@@ -143,6 +143,36 @@ public final class TeenFx {
 
     @Mod.EventBusSubscriber(modid = "jjk", value = Dist.CLIENT)
     public static final class ForgeBus {
+        /**
+         * The jar has four move keys and an R page; Teen Gojo, Johnny and Gyro have six moves, so 5 and 6 fire the last
+         * two directly (taken before the hotbar sees them, so the held item doesn't change).
+         */
+        @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+        public static void onClientTick(net.minecraftforge.event.TickEvent.ClientTickEvent e) {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) {
+                return;
+            }
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || mc.screen != null) {
+                return;
+            }
+            String style;
+            try {
+                Sorcerer s = com.jjk.mod.client.ClientSorcerers.of(mc.player);
+                style = s == null ? "" : s.name();
+            } catch (Throwable t) {
+                return;
+            }
+            if (!style.equals(TeenGojo.NAME) && !style.equals("JOHNNY") && !style.equals("GYRO")) {
+                return;
+            }
+            for (int i = 4; i <= 5; i++) {
+                while (mc.options.keyHotbarSlots[i].consumeClick()) {
+                    TeenNet.press(i);
+                }
+            }
+        }
+
         @SubscribeEvent
         public static void onStage(RenderLevelStageEvent e) {
             if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || EFFECTS.isEmpty()) {

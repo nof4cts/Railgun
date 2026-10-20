@@ -41,6 +41,7 @@ public final class TeenNet {
         }
         CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("jjk", "teen_gojo"), () -> V, V::equals, V::equals);
         CHANNEL.registerMessage(0, Fx.class, Fx::encode, Fx::decode, Fx::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(1, Press.class, Press::encode, Press::decode, Press::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 
     /** kind, the entity it belongs to (or -1), a position, a direction, and two numbers whose meaning depends on the kind. */
@@ -70,6 +71,36 @@ public final class TeenNet {
         static void handle(Fx m, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.teengojo.client.TeenFx.receive(m)));
             ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /**
+     * A move key pressed beyond the jar's four (5 and 6 straight from the number row, for Teen Gojo, Johnny and Gyro,
+     * so their fifth and sixth moves don't need the R page).
+     */
+    public record Press(int slot) {
+        static void encode(Press m, FriendlyByteBuf buf) {
+            buf.writeVarInt(m.slot);
+        }
+
+        static Press decode(FriendlyByteBuf buf) {
+            return new Press(buf.readVarInt());
+        }
+
+        static void handle(Press m, Supplier<NetworkEvent.Context> ctx) {
+            ServerPlayer p = ctx.get().getSender();
+            ctx.get().enqueueWork(() -> {
+                if (p != null && m.slot >= 0 && m.slot < 8) {
+                    TeenHooks.key(p, m.slot);
+                }
+            });
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    public static void press(int slot) {
+        if (CHANNEL != null) {
+            CHANNEL.sendToServer(new Press(slot));
         }
     }
 
