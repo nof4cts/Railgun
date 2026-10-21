@@ -58,7 +58,7 @@ public final class YSelfTest {
     private static final YMove[] ORDER = {
             YMove.WORLD_BREAKER, YMove.PIERCING_BLOOD, YMove.HOMING_BLOOD, YMove.SUPERNOVA, YMove.BLOOD_STORM,
             YMove.CRIMSON_EXECUTION, YMove.BLOOD_APOCALYPSE, YMove.DISMANTLE, YMove.THOUSAND_SLASHES, YMove.CLEAVE,
-            YMove.WORLD_SPLITTER, YMove.METEOR, YMove.CE_APOCALYPSE, YMove.DOMAIN, YMove.DOMAIN_BARRAGE,
+            YMove.WORLD_SPLITTER, YMove.METEOR, YMove.DOMAIN, YMove.DOMAIN_BARRAGE,
             YMove.DOMAIN_FINISHER, YMove.OVERDRIVE, YMove.FINAL_JUDGMENT, YMove.DOMAIN_APOCALYPSE};
 
     private record Step(int at, String shot, CameraType camera, Consumer<ServerPlayer> server) {}

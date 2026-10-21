@@ -152,7 +152,6 @@ public final class Script {
             case CLEAVE -> cleave(b);
             case WORLD_SPLITTER -> worldSplitter(b);
             case METEOR -> meteor(b);
-            case CE_APOCALYPSE -> ceApocalypse(b);
             case DOMAIN -> domain(b);
             case DOMAIN_FINISHER -> domainFinisher(b);
             case DOMAIN_BARRAGE -> domainBarrage(b);
@@ -367,22 +366,6 @@ public final class Script {
         b.ring(46, GROUND, Z, 50, 90, 2.0);
         b.ring(50, GROUND, Z, 70, 70, 2.5);
         b.dust(48, GROUND, Z, 26, 28);
-    }
-
-    private static void ceApocalypse(B b) {
-        b.dark(0, 0.8, 30);
-        b.charge(0, 46, EYE, new Vec3(0, -0.6, 0), 2.0);
-        b.sound(0, CASTER, S_RUMBLE, 6.0, 0.6);
-        for (int t : new int[]{10, 22, 34, 42}) b.ring(t, CASTER, Z, 6 + t * 0.1, 20, 0.8);
-        b.sound(48, CASTER, S_WAVE, 12.0, 1.0);
-        b.impact(48, CASTER, 5, 1.0);
-        b.shell(48, CASTER, Z, 60, 40, 0);
-        b.blast(48, CASTER, Z, 60, 0.12, 1, 0);
-        for (int k = 0; k < 10; k++) b.dmg(48 + k * 4, CASTER, Z, 6 + k * 6, 0.5, 2);
-        b.knock(50, CASTER, 1.2, 4.0, 60);
-        b.ring(48, CASTER, Z, 70, 50, 2.5);
-        b.dust(58, CASTER, Z, 45, 30);
-        b.dark(90, 0.0, 20);
     }
 
     // ================================================================== Domain

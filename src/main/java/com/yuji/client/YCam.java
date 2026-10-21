@@ -397,15 +397,6 @@ public final class YCam {
                     return look(p0.add(F.scale(-20 - 14 * u)).add(0, 14 + 12 * u, 0), p0, 0, 70);
                 });
             }
-            case CE_APOCALYPSE -> {
-                shot(0, 30, 0, t -> look(caster(1.5f).add(F.scale(2.2 - 0.8 * span(t, 0, 30))).add(handheld(t, 0.05 + 0.002 * t)), caster(1.55f), 0, 54));  // his face, shaking
-                shot(30, 48, 0, t -> look(caster(0.2f).add(rot(F, 140).scale(6)).add(0, -0.5, 0), caster(2.0f), 0, 70));
-                shot(48, 70, 0, t -> {
-                    float u = ease(span(t, 48, 70));
-                    return look(caster(1f).add(rot(F, 170 + 40 * u).scale(8 + 50 * u)).add(0, 3 + 30 * u, 0), caster(1f), 0, 74);   // ripped back by the wave
-                });
-                orbitImpact(70, end, 60 * l.c.ds(), 220, 50);
-            }
             case DOMAIN_FINISHER -> {
                 shot(0, 24, 0, t -> look(caster(1.0f).add(rot(F, 60).scale(2.6 - 0.8 * span(t, 0, 24))).add(handheld(t, 0.06)), live.at(Beat.HAND, Vec3.ZERO), 0, 58));
                 shot(24, 36, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.1)), target(), 0, 82));

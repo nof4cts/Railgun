@@ -311,15 +311,6 @@ a.k(76, add(CROUCH, pos=[0, -2.0, 0]), INOUT)
 a.k(94, STAND, INOUT)
 a.write()
 
-a = Anim('ce_apocalypse', 112, STAND)
-a.k(8, FLEX_IN, OUT_).tremble(10, 46, FLEX_IN, 3.0, 2)
-a.k(47, push(STAND, FLEX_IN, 1.15), IN)
-BURST = P(right_arm=[-70, 0, 100], left_arm=[-70, 0, -100], torso=[-18, 0, 0], head=[-36, 0, 0], right_leg=[-6, 0, 16], left_leg=[6, 0, -16], pos=[0, -1.0, 0])
-a.strike(48, BURST, STAND, over=1.1, hold=26)
-a.k(84, ROAR, INOUT).k(100, STANCE, INOUT)
-a.k(112, STAND, INOUT)
-a.write()
-
 # ================================================================== the domain
 a = Anim('domain', 122, STAND)
 a.k(10, STANCE, OUT_).hold(12, 28, STANCE, 1.0, 8)

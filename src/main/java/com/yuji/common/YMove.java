@@ -20,14 +20,13 @@ public enum YMove {
     THOUSAND_SLASHES(8, false, "Dismantle: Thousand Slashes", false, 240, 400, 92, true, 1),
     CLEAVE(9, false, "Cleave", true, 70, 60, 30, false, 1),
     WORLD_SPLITTER(10, false, "Cleave: World Splitter", false, 360, 700, 102, true, 2),
-    METEOR(11, false, "Meteoric Cursed-Energy Crash", false, 260, 500, 94, true, 2),
-    CE_APOCALYPSE(12, false, "Cursed-Energy Apocalypse", false, 380, 900, 112, true, 2),
-    DOMAIN(13, false, "Domain Expansion", true, 500, 2400, 122, true, 1),
-    DOMAIN_FINISHER(13, true, "Domain Finisher", false, 300, 0, 92, true, 3),
+    METEOR(11, false, "Meteoric Crash", false, 260, 500, 94, true, 2),
+    DOMAIN(12, false, "Domain Expansion", true, 500, 2400, 122, true, 1),
+    DOMAIN_FINISHER(12, true, "Domain Finisher", false, 300, 0, 92, true, 3),
     DOMAIN_BARRAGE(7, true, "Domain Barrage", false, 260, 600, 102, true, 2),
-    OVERDRIVE(14, false, "Modulo Overdrive: Unrestricted", false, 300, 1800, 62, true, 0),
-    FINAL_JUDGMENT(15, false, "The Final Judgment: World Ender", false, 800, 3600, 234, true, 3),
-    DOMAIN_APOCALYPSE(14, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
+    OVERDRIVE(13, false, "Modulo Overdrive: Unrestricted", false, 300, 1800, 62, true, 0),
+    FINAL_JUDGMENT(14, false, "The Final Judgment: World Ender", false, 800, 3600, 234, true, 3),
+    DOMAIN_APOCALYPSE(13, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
 
     public final int slot;
     public final boolean sneak;
