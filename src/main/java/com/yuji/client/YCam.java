@@ -55,6 +55,8 @@ public final class YCam {
         if (!Y.cutscenes || JjkPrefs.skipCutscenes()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
+        // Immersive Portals renders the world from its own camera; a borrowed camera entity can crash it
+        if (net.minecraftforge.fml.ModList.get().isLoaded("immersive_portals") || net.minecraftforge.fml.ModList.get().isLoaded("imm_ptl_core")) return;
         stop();
         live = l;
         skipHeld = 0;
