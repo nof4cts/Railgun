@@ -104,16 +104,6 @@ public final class Y {
         blocksPerTick = i(p, "destruction.blocksPerTick", blocksPerTick);
         restoreLimit = i(p, "destruction.restoreLimit", restoreLimit);
         msPerTick = i(p, "destruction.msPerTick", msPerTick);
-        // settings files from the first release asked for 24000 blocks a tick, far too many on real terrain
-        String ver = p.getProperty("config.version", "1");
-        if (ver.equals("1")) blocksPerTick = Math.min(blocksPerTick, 4000);
-        if (ver.compareTo("3") < 0) overdriveSeconds = 0;   // Overdrive became permanent in settings version 3
-        if (ver.compareTo("4") < 0) {                        // and the damage was toned down in version 4
-            dmgSignature = 70;
-            dmgHeavy = 250;
-            dmgUltimate = 1000;
-            dmgFinal = 5000;
-        }
         splitterLength = i(p, "destruction.splitterLength", splitterLength);
         dismantleLength = i(p, "destruction.dismantleLength", dismantleLength);
         domainRadius = i(p, "domain.radius", domainRadius);
@@ -128,11 +118,23 @@ public final class Y {
         impactFrames = b(p, "fx.impactFrames", impactFrames);
         hitStop = b(p, "fx.hitStop", hitStop);
         cutscenes = b(p, "fx.cutscenes", cutscenes);
-        if (!Files.exists(file) || !"4".equals(p.getProperty("config.version"))) save(file);
+        // upgrades of older settings files: applied after everything is read, so they win
+        // settings files from the first release asked for 24000 blocks a tick, far too many on real terrain
+        String ver = p.getProperty("config.version", "1");
+        if (ver.equals("1")) blocksPerTick = Math.min(blocksPerTick, 4000);
+        // Overdrive became permanent (settings version 5: version 4 files may still hold the old 60 s timer)
+        if (ver.compareTo("5") < 0) overdriveSeconds = 0;
+        if (ver.compareTo("4") < 0) {                        // and the damage was toned down in version 4
+            dmgSignature = 70;
+            dmgHeavy = 250;
+            dmgUltimate = 1000;
+            dmgFinal = 5000;
+        }
+        if (!Files.exists(file) || !"5".equals(p.getProperty("config.version"))) save(file);
     }
 
     private static void save(Path file) {
-        StringBuilder sb = new StringBuilder("# Modulo Yuji (JJK kit) settings. Delete this file to restore the defaults.\nconfig.version=4\n");
+        StringBuilder sb = new StringBuilder("# Modulo Yuji (JJK kit) settings. Delete this file to restore the defaults.\nconfig.version=5\n");
         Object[] vals = {dmgSignature, dmgHeavy, dmgUltimate, dmgFinal, bossMultiplier, damageCap, knockback, resetInvulnerability,
                 destruction, unrestricted, destructionScale, maxRadius, worldEnderRadius, blocksPerTick, msPerTick, restoreLimit,
                 splitterLength, dismantleLength, domainRadius, domainSeconds, overdriveSeconds, cooldownScale, energyScale,
