@@ -87,13 +87,6 @@ def windup(t0, t1):
 
 
 # ---- Black Flash
-anim('perfect_impact', 52, [(0, STAND, None), (4, DASH, SNAP), (12, WIND, SETTLE)] + tremble(WIND, 14, 22) + strike(24, hold=8) + [(52, STAND, GLIDE)])
-anim('relentless_chain', 112, [(0, STAND, None), (4, DASH, SNAP), (12, WIND, SETTLE)] + strike(14, PUNCH, 4)
-     + [(22, DASH, SNAP), (28, WIND, SETTLE)] + strike(30, PUNCH_L, 4)
-     + [(38, CROUCH, SNAP), (44, CROUCH, None)] + strike(46, UPPER, 4)
-     + [(54, HAMMER_UP, SNAP), (58, HAMMER_UP, None)] + strike(60, HAMMER, 4)
-     + [(68, DASH, SNAP)] + windup(72, 78) + strike(80, PUNCH, 10) + [(112, STAND, GLIDE)])
-anim('void_shatter', 86, [(0, STAND, None), (6, GUARD, SETTLE)] + windup(14, 30) + [(32, DASH, SNAP)] + strike(41, PUNCH, 12) + [(60, GUARD, GLIDE), (86, STAND, GLIDE)])
 anim('world_breaker', 142, [(0, STAND, None), (10, POWER, SETTLE), (26, POWER, None)] + windup(30, 58) + [(60, DASH, SNAP)] + strike(66, PUNCH, 14)
      + [(90, GUARD, GLIDE), (142, STAND, GLIDE)])
 # ---- Blood

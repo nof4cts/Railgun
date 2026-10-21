@@ -108,13 +108,13 @@ public final class Yuji {
     /** A move key (slot 0-15). True when Yuji took it. */
     public static boolean key(ServerPlayer p, int slot) {
         if (!is(p)) return false;
-        if (slot < 0 || slot > 15) return true;
+        if (slot < 0 || slot >= Sorcerer.YUJI.moves.length) return true;
         boolean sneak = p.isShiftKeyDown();
         long now = p.serverLevel().getGameTime();
         YMove m = YMove.of(slot, sneak);
         if (m == null) return true;
         boolean inDomain = domainOf(p) != null;
-        if (slot == 12 && inDomain) m = YMove.DOMAIN_FINISHER;
+        if (slot == YMove.DOMAIN.slot && inDomain) m = YMove.DOMAIN_FINISHER;
         else if (m == YMove.DOMAIN_FINISHER) m = YMove.DOMAIN;
         if (m == YMove.DOMAIN_BARRAGE && !inDomain) {
             tell(p, "Domain Barrage only works inside your domain");
@@ -334,8 +334,12 @@ public final class Yuji {
         int t = (int) (now - r.start);
         ServerLevel level = r.p.serverLevel();
         while (r.idx < r.beats.size() && r.beats.get(r.idx).t() <= t) {
-            apply(r, r.beats.get(r.idx), now);
-            r.idx++;
+            Beat b = r.beats.get(r.idx++);
+            try {
+                apply(r, b, now);
+            } catch (Throwable e) {
+                Y.LOG.error("[yuji] beat {} of {} failed (skipped)", b.kind(), r.m, e);
+            }
         }
         // dash
         if (r.dash != null) {

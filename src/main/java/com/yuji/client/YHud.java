@@ -61,11 +61,11 @@ public final class YHud {
         int y = g.guiHeight() / 2 - s.moves.length * 11 / 2;
         for (int i = 0; i < s.moves.length; ++i) {
             YMove m = YMove.of(i, sneak);
-            if (i == 12 && dom) m = YMove.DOMAIN_FINISHER;
+            if (i == YMove.DOMAIN.slot && dom) m = YMove.DOMAIN_FINISHER;
             float cd = m == null ? 0f : cooldown(m, now);
             boolean locked = m != null && ((m == YMove.DOMAIN_BARRAGE && !dom) || (m == YMove.DOMAIN_APOCALYPSE && !od));
             String text = s.moves[i];
-            if (m != null && (sneak || (i == 12 && dom))) text = m.label();
+            if (m != null && (sneak || (i == YMove.DOMAIN.slot && dom))) text = m.label();
             if (m == YMove.OVERDRIVE && od) text = text + "  [ON]";
             String line = "[" + Keys.label(i) + "] " + text;
             int col = cd > 0.0f || locked ? -8749176 : -986891;

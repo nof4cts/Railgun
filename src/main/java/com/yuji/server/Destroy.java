@@ -198,7 +198,13 @@ public final class Destroy {
         while (it.hasNext() && budget[0] > 0 && budget[1] > 0) {
             Job j = it.next();
             j.age++;
-            boolean done = j.step(budget);
+            boolean done;
+            try {
+                done = j.step(budget);
+            } catch (Throwable t) {
+                Y.LOG.error("[yuji] destruction job failed (dropped)", t);
+                done = true;
+            }
             j.flushDebris();
             if (done) it.remove();
         }

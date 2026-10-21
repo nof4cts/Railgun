@@ -140,9 +140,6 @@ public final class Script {
     public static List<Beat> build(Ctx c) {
         B b = new B(c);
         switch (c.move()) {
-            case PERFECT_IMPACT -> perfectImpact(b);
-            case RELENTLESS_CHAIN -> relentlessChain(b);
-            case VOID_SHATTER -> voidShatter(b);
             case WORLD_BREAKER -> worldBreaker(b);
             case PIERCING_BLOOD -> piercingBlood(b);
             case HOMING_BLOOD -> homingBlood(b);
@@ -170,69 +167,6 @@ public final class Script {
     private static final Vec3 Z = Vec3.ZERO;
 
     // ================================================================== Black Flash
-    private static void perfectImpact(B b) {
-        b.dash(0, 14, TARGET, Z, 1.4);
-        b.charge(6, 18, HAND, Z, 1.0);
-        b.dark(8, 0.45, 14);
-        b.smear(21, CASTER, TARGET);
-        b.bf(24, TARGET, Z, 1.6, 1.0, 1, 1);
-        b.knock(24, TARGET, 0.6, 3.5, 2.5);
-        b.ring(24, GROUND, Z, 22, 60, 1.5);
-        b.blast(24, GROUND, Z, 6, 0.55, 0, 0);
-        b.dark(25, 0.0, 10);
-        b.dust(27, GROUND, Z, 8, 10);
-        b.ring(31, GROUND, Z, 30, 40, 2.5);
-    }
-
-    private static void relentlessChain(B b) {
-        // 1: sudden, explosive
-        b.dash(0, 12, TARGET, Z, 1.3);
-        b.bf(14, TARGET, Z, 1.2, 1.0, 3, 1);
-        b.knock(14, TARGET, 0.3, 1.2, 2.0);
-        b.ring(14, GROUND, Z, 14, 60, 1.2);
-        // 2: from the side, a bigger shockwave
-        b.dash(18, 10, TARGET, b.R.scale(1.4), 0.2);
-        b.bf(30, TARGET, Z, 1.5, 1.0, 4, 1);
-        b.ring(30, GROUND, Z, 26, 80, 1.6);
-        b.blast(30, GROUND, Z, 3.5, 0.4, 0, 0);
-        // 3: under it: launched into the air
-        b.dash(36, 8, TARGET, b.F.scale(-1.0).add(0, -0.4, 0), 0.2);
-        b.bf(46, TARGET, Z, 1.5, 1.0, 5, 1);
-        b.knock(46, TARGET, 1.7, 0.2, 2.0);
-        b.ring(46, GROUND, Z, 18, 70, 1.2);
-        // 4: up after it, the cross-angle blow that slams it back down
-        b.dash(50, 8, TARGET, b.R.scale(-1.3).add(0, 0.6, 0), 0.2);
-        b.bf(60, TARGET, Z, 1.8, 1.0, 6, 1);
-        b.knock(60, TARGET, -2.8, 0.6, 2.0);
-        // 5: the giant one, on the ground where it fell
-        b.dash(66, 12, TARGET, Z, 1.4);
-        b.charge(64, 16, HAND, Z, 1.5);
-        b.blackout(78, 2);
-        b.bf(80, TARGET, Z, 3.0, 2.0, 7, 2);
-        b.knock(80, TARGET, 0.8, 4.0, 4.0);
-        b.blast(80, GROUND, Z, 14, 0.55, 0, 0.3);
-        b.shell(80, TARGET, Z, 12, 14, 0);
-        b.ring(80, GROUND, Z, 40, 70, 2.0);
-        b.ring(86, GROUND, Z, 55, 50, 2.5);
-        b.dust(84, GROUND, Z, 18, 22);
-    }
-
-    private static void voidShatter(B b) {
-        b.dark(0, 0.78, 30);
-        b.charge(4, 34, HAND, Z, 1.5);
-        b.dash(30, 8, TARGET, Z, 1.3);
-        b.smear(37, CASTER, TARGET);
-        b.blackout(38, 3);
-        b.bf(41, TARGET, Z, 2.2, 2.5, 15, 2);
-        b.trench(41, GROUND, Z, b.F, 40, 4, 5, 6);
-        b.knock(41, TARGET, 0.5, 4.0, 3.0);
-        b.dark(44, 0.0, 14);
-        // the delayed blow: space snaps back
-        b.blast(53, GROUND, Z, 16, 0.45, 0, 0.5);
-        b.ring(53, GROUND, Z, 40, 70, 2.0);
-        b.shell(53, GROUND, Z, 16, 14, 0);
-        b.dust(55, GROUND, Z, 20, 20);
-    }
 
     private static void worldBreaker(B b) {
         b.dark(0, 0.85, 30);

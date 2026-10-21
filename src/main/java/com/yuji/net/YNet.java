@@ -49,6 +49,15 @@ public final class YNet {
         CHANNEL.registerMessage(id++, Aura.class, Aura::encode, Aura::decode, Aura::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
+    /** A bad packet is logged, never fatal. */
+    static void safe(Runnable r) {
+        try {
+            r.run();
+        } catch (Throwable t) {
+            com.yuji.Y.LOG.error("[yuji] packet failed (ignored)", t);
+        }
+    }
+
     public static void near(ServerLevel level, Vec3 at, double range, Object msg) {
         if (CHANNEL == null) return;
         CHANNEL.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(at.x, at.y, at.z, range, level.dimension())), msg);
@@ -106,7 +115,7 @@ public final class YNet {
         }
 
         static void handle(Cast m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YCasts.add(m)));
+            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YCasts.add(m))));
             ctx.get().setPacketHandled(true);
         }
 
@@ -141,7 +150,7 @@ public final class YNet {
         }
 
         static void handle(Debris m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YDebris.add(m)));
+            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YDebris.add(m))));
             ctx.get().setPacketHandled(true);
         }
     }
@@ -170,7 +179,7 @@ public final class YNet {
         }
 
         static void handle(State m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YHud.state(m)));
+            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YHud.state(m))));
             ctx.get().setPacketHandled(true);
         }
     }
@@ -198,7 +207,7 @@ public final class YNet {
         }
 
         static void handle(Domain m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YCasts.domain(m)));
+            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YCasts.domain(m))));
             ctx.get().setPacketHandled(true);
         }
     }
@@ -215,7 +224,7 @@ public final class YNet {
         }
 
         static void handle(Aura m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YCasts.aura(m)));
+            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YCasts.aura(m))));
             ctx.get().setPacketHandled(true);
         }
     }

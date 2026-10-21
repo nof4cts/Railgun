@@ -22,6 +22,21 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 public final class YClient {
     private YClient() {}
 
+    private static long lastLog;
+
+    /** Nothing of Yuji's may ever take the game down: log it, drop the cutscene, carry on. */
+    static void safe(String where, Throwable t) {
+        long now = System.currentTimeMillis();
+        if (now - lastLog > 5000) {
+            lastLog = now;
+            Y.LOG.error("[yuji] {} failed (ignored)", where, t);
+        }
+        try {
+            YCam.stop();
+        } catch (Throwable ignored) {
+        }
+    }
+
     @Mod.EventBusSubscriber(modid = "jjk", value = Dist.CLIENT)
     public static final class Forge {
         private Forge() {}
@@ -35,30 +50,41 @@ public final class YClient {
                 YAnims.frame();
                 YCam.frame(e.renderTickTime);
             } catch (Throwable t) {
-                Y.LOG.error("[yuji] frame failed", t);
-                YCam.stop();
+                safe("frame", t);
             }
         }
 
         @SubscribeEvent
         public static void onRenderLevel(RenderLevelStageEvent e) {
-            if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) YPost.begin(e);
-            else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) YDebris.render(e);
-            else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) YPost.render(e);
+            try {
+                if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) YPost.begin(e);
+                else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) YDebris.render(e);
+                else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) YPost.render(e);
+            } catch (Throwable t) {
+                safe("render", t);
+            }
         }
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent e) {
             if (e.phase != TickEvent.Phase.END) return;
-            YCam.tick();
-            YDebris.tick();
+            try {
+                YCam.tick();
+                YDebris.tick();
+            } catch (Throwable t) {
+                safe("tick", t);
+            }
         }
 
         @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onAngles(ViewportEvent.ComputeCameraAngles e) {
-            YCam.Pose p = YCam.pose();
-            if (p != null) e.setRoll(p.roll());
-            YFx.onCameraAngles(e);
+            try {
+                YCam.Pose p = YCam.pose();
+                if (p != null) e.setRoll(p.roll());
+                YFx.onCameraAngles(e);
+            } catch (Throwable t) {
+                safe("camera", t);
+            }
         }
 
         @SubscribeEvent
@@ -92,13 +118,21 @@ public final class YClient {
 
         @SubscribeEvent
         public static void onGui(RenderGuiEvent.Post e) {
-            YHud.draw(e.getGuiGraphics());
+            try {
+                YHud.draw(e.getGuiGraphics());
+            } catch (Throwable t) {
+                safe("hud", t);
+            }
         }
 
         /** The letterbox goes on last, over everything (the kit's own HUD included). */
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void onGuiLast(RenderGuiEvent.Post e) {
-            YCam.overlay(e.getGuiGraphics());
+            try {
+                YCam.overlay(e.getGuiGraphics());
+            } catch (Throwable t) {
+                safe("overlay", t);
+            }
         }
 
         @SubscribeEvent
