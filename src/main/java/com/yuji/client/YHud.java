@@ -56,19 +56,14 @@ public final class YHud {
         Sorcerer s = Sorcerer.YUJI;
         Font font = mc.font;
         long now = mc.level.getGameTime();
-        boolean sneak = mc.player.isShiftKeyDown();
         boolean dom = domainOpen(), od = overdrive();
         int y = g.guiHeight() / 2 - s.moves.length * 11 / 2;
         for (int i = 0; i < s.moves.length; ++i) {
-            YMove m = YMove.of(i, sneak);
-            if (i == YMove.DOMAIN.slot && dom) m = YMove.DOMAIN_FINISHER;
+            YMove m = YMove.resolve(i, dom, od);
             float cd = m == null ? 0f : cooldown(m, now);
-            boolean locked = m != null && ((m == YMove.DOMAIN_BARRAGE && !dom) || (m == YMove.DOMAIN_APOCALYPSE && !od));
-            String text = s.moves[i];
-            if (m != null && (sneak || (i == YMove.DOMAIN.slot && dom))) text = m.label();
-            if (m == YMove.OVERDRIVE && od) text = text + "  [ON]";
+            String text = m != null && m.sneak ? m.label() + "  [now]" : s.moves[i];
             String line = "[" + Keys.label(i) + "] " + text;
-            int col = cd > 0.0f || locked ? -8749176 : -986891;
+            int col = cd > 0.0f ? -8749176 : -986891;
             Keys.mark(g, font, line, 6, y, i);
             g.drawString(font, line, 6, y, col, true);
             int lw = font.width(line);

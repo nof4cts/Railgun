@@ -109,30 +109,9 @@ public final class Yuji {
     public static boolean key(ServerPlayer p, int slot) {
         if (!is(p)) return false;
         if (slot < 0 || slot >= Sorcerer.YUJI.moves.length) return true;
-        boolean sneak = p.isShiftKeyDown();
         long now = p.serverLevel().getGameTime();
-        YMove m = YMove.of(slot, sneak);
+        YMove m = YMove.resolve(slot, domainOf(p) != null, overdrive(p));
         if (m == null) return true;
-        boolean inDomain = domainOf(p) != null;
-        if (slot == YMove.DOMAIN.slot && inDomain) m = YMove.DOMAIN_FINISHER;
-        else if (m == YMove.DOMAIN_FINISHER) m = YMove.DOMAIN;
-        if (m == YMove.DOMAIN_BARRAGE && !inDomain) {
-            tell(p, "Domain Barrage only works inside your domain");
-            return true;
-        }
-        if (m == YMove.DOMAIN_APOCALYPSE && !overdrive(p)) {
-            tell(p, "Domain Apocalypse needs Modulo Overdrive");
-            return true;
-        }
-        if (m == YMove.OVERDRIVE && overdrive(p)) {
-            // toggle off
-            OVERDRIVE.remove(p.getUUID());
-            p.removeEffect(MobEffects.MOVEMENT_SPEED);
-            flight(p, false);
-            YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), 0));
-            state(p);
-            return true;
-        }
         Run run = RUNS.get(p.getUUID());
         if (run != null) return true;   // busy: the move in progress finishes first
         long ready = ready(p)[m.ordinal()];

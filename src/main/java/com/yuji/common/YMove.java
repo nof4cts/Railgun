@@ -1,8 +1,9 @@
 package com.yuji.common;
 
 /**
- * Every move. Sixteen key slots (four pages of 1-4); Sneak + key gives the slot's second move. The Domain slot
- * becomes the Domain Finisher while the domain is open.
+ * Every move, one per key slot: four pages of 1-4 (R turns the page). No Sneak combinations. Three keys change with
+ * the situation (the "sneak" flag marks these alternates): inside his domain, Domain Expansion becomes the Domain
+ * Finisher and Dismantle becomes the Domain Barrage; in Overdrive, the Overdrive key becomes Domain Apocalypse.
  *
  * canon = established in the manga (the technique itself; the cinematic staging is always our own).
  * tier  = which damage setting the move's main blow uses (0 signature, 1 heavy, 2 ultimate, 3 final).
@@ -10,23 +11,23 @@ package com.yuji.common;
 public enum YMove {
     WORLD_BREAKER(0, false, "Black Flash: World Breaker", false, 420, 900, 142, true, 2),
     PIERCING_BLOOD(1, false, "Piercing Blood", true, 50, 40, 30, false, 0),
-    HOMING_BLOOD(1, true, "Piercing Blood: Homing", true, 110, 120, 40, false, 1),
-    SUPERNOVA(2, false, "Supernova", true, 140, 200, 62, true, 1),
-    BLOOD_STORM(3, false, "Blood Storm", false, 220, 400, 112, true, 1),
-    CRIMSON_EXECUTION(4, false, "Crimson Execution", false, 200, 300, 64, true, 2),
-    BLOOD_APOCALYPSE(4, true, "Apocalypse", false, 420, 900, 172, true, 2),
-    DISMANTLE(5, false, "Dismantle", true, 40, 30, 30, false, 0),
-    THOUSAND_SLASHES(5, true, "Dismantle: Thousand Slashes", false, 240, 400, 92, true, 1),
-    CLEAVE(6, false, "Cleave", true, 70, 60, 30, false, 1),
-    WORLD_SPLITTER(6, true, "Cleave: World Splitter", false, 360, 700, 102, true, 2),
-    METEOR(7, false, "Meteoric Cursed-Energy Crash", false, 260, 500, 94, true, 2),
-    CE_APOCALYPSE(8, false, "Cursed-Energy Apocalypse", false, 380, 900, 112, true, 2),
-    DOMAIN(9, false, "Domain Expansion", true, 500, 2400, 122, true, 1),
-    DOMAIN_FINISHER(9, true, "Domain Finisher", false, 300, 0, 92, true, 3),
-    DOMAIN_BARRAGE(10, false, "Domain Barrage", false, 260, 600, 102, true, 2),
-    OVERDRIVE(11, false, "Modulo Overdrive: Unrestricted", false, 300, 1800, 62, true, 0),
-    FINAL_JUDGMENT(12, false, "The Final Judgment: World Ender", false, 800, 3600, 234, true, 3),
-    DOMAIN_APOCALYPSE(12, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
+    HOMING_BLOOD(2, false, "Piercing Blood: Homing", true, 110, 120, 40, false, 1),
+    SUPERNOVA(3, false, "Supernova", true, 140, 200, 62, true, 1),
+    BLOOD_STORM(4, false, "Blood Storm", false, 220, 400, 112, true, 1),
+    CRIMSON_EXECUTION(5, false, "Crimson Execution", false, 200, 300, 64, true, 2),
+    BLOOD_APOCALYPSE(6, false, "Apocalypse", false, 420, 900, 172, true, 2),
+    DISMANTLE(7, false, "Dismantle", true, 40, 30, 30, false, 0),
+    THOUSAND_SLASHES(8, false, "Dismantle: Thousand Slashes", false, 240, 400, 92, true, 1),
+    CLEAVE(9, false, "Cleave", true, 70, 60, 30, false, 1),
+    WORLD_SPLITTER(10, false, "Cleave: World Splitter", false, 360, 700, 102, true, 2),
+    METEOR(11, false, "Meteoric Cursed-Energy Crash", false, 260, 500, 94, true, 2),
+    CE_APOCALYPSE(12, false, "Cursed-Energy Apocalypse", false, 380, 900, 112, true, 2),
+    DOMAIN(13, false, "Domain Expansion", true, 500, 2400, 122, true, 1),
+    DOMAIN_FINISHER(13, true, "Domain Finisher", false, 300, 0, 92, true, 3),
+    DOMAIN_BARRAGE(7, true, "Domain Barrage", false, 260, 600, 102, true, 2),
+    OVERDRIVE(14, false, "Modulo Overdrive: Unrestricted", false, 300, 1800, 62, true, 0),
+    FINAL_JUDGMENT(15, false, "The Final Judgment: World Ender", false, 800, 3600, 234, true, 3),
+    DOMAIN_APOCALYPSE(14, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
 
     public final int slot;
     public final boolean sneak;
@@ -63,6 +64,15 @@ public enum YMove {
             if (!m.sneak) plain = m;
         }
         return plain;
+    }
+
+    /** The move a key casts right now: one move per key, three of which change with the situation (no Sneak). */
+    public static YMove resolve(int slot, boolean inDomain, boolean overdrive) {
+        YMove m = of(slot, false);
+        if (m == DOMAIN && inDomain) return DOMAIN_FINISHER;
+        if (m == DISMANTLE && inDomain) return DOMAIN_BARRAGE;
+        if (m == OVERDRIVE && overdrive) return DOMAIN_APOCALYPSE;
+        return m;
     }
 
     public String label() {
