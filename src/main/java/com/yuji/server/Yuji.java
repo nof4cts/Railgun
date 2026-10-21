@@ -60,6 +60,7 @@ public final class Yuji {
     private static final Map<UUID, Domain> DOMAINS = new HashMap<>();
     private static final Map<UUID, Long> OVERDRIVE = new HashMap<>();
     private static final Map<UUID, Long> SAFE_UNTIL = new HashMap<>();
+    private static Run CURRENT;
     /** "Until" for permanent Overdrive (far in the future, still safe to add to). */
     static final long FOREVER = Long.MAX_VALUE / 4;
     static final String OD_TAG = "yuji_overdrive";
@@ -78,6 +79,7 @@ public final class Yuji {
         long dashStart;
         Vec3 dashFrom;
         final List<Object[]> bolts = new ArrayList<>();   // {impactTick(Long), Beat}
+        final Map<Integer, Double> dealt = new HashMap<>();
 
         Run(ServerPlayer p, YMove m, Ctx c, List<Beat> beats, long start, Destroy.Journal j) {
             this.p = p;
@@ -328,6 +330,15 @@ public final class Yuji {
     }
 
     private static void step(Run r, long now) {
+        CURRENT = r;
+        try {
+            stepInner(r, now);
+        } finally {
+            CURRENT = null;
+        }
+    }
+
+    private static void stepInner(Run r, long now) {
         int t = (int) (now - r.start);
         ServerLevel level = r.p.serverLevel();
         while (r.idx < r.beats.size() && r.beats.get(r.idx).t() <= t) {
@@ -532,10 +543,20 @@ public final class Yuji {
     static void hurt(ServerPlayer p, LivingEntity e, double amount, boolean main, Set<Integer> skip) {
         if (e == p || !e.isAlive() || skip.contains(e.getId())) return;
         if (e instanceof Player pl && (pl.isCreative() || pl.isSpectator())) return;
-        double dmg = amount;
-        if (overdrive(p)) dmg *= 1.6;
+        double dmg = amount, boost = 1.0;
+        if (overdrive(p)) boost *= 1.6;
         Domain d = domainOf(p);
-        if (d != null && e.position().distanceTo(d.centre) <= d.radius) dmg *= 1.5;
+        if (d != null && e.position().distanceTo(d.centre) <= d.radius) boost *= 1.5;
+        dmg *= boost;
+        Run r = CURRENT;
+        if (r != null && r.m.basic()) {
+            // a basic move deals at most this much to any one target over the whole cast, however many hits land
+            double cap = Y.dmgSignature * boost;
+            double done = r.dealt.getOrDefault(e.getId(), 0.0);
+            dmg = Math.min(dmg, cap - done);
+            if (dmg <= 0.01) return;
+            r.dealt.put(e.getId(), done + dmg);
+        }
         if (e.getType().is(Tags.EntityTypes.BOSSES)) dmg *= Y.bossMultiplier;
         if (Y.damageCap > 0) dmg = Math.min(dmg, Y.damageCap);
         if (Y.resetInvulnerability) e.invulnerableTime = 0;

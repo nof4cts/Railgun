@@ -75,6 +75,11 @@ public enum YMove {
         return m;
     }
 
+    /** The everyday moves: each one does at most damage.signature (default 70, most of an iron golem) per target. */
+    public boolean basic() {
+        return this == PIERCING_BLOOD || this == HOMING_BLOOD || this == SUPERNOVA || this == DISMANTLE || this == CLEAVE;
+    }
+
     public String label() {
         return (canon ? "" : "*") + title;
     }
