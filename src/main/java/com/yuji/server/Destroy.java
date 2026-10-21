@@ -219,7 +219,7 @@ public final class Destroy {
         final Vec3 F, R;
         final double tw, th, ps;
         final int x0, z0, x1, z1;
-        int x, z;
+        int x, z, laid;
         final BlockState ink = Blocks.RED_CONCRETE.defaultBlockState(), edge = Blocks.BLACK_CONCRETE.defaultBlockState();
 
         Glyph(ServerLevel level, ServerPlayer owner, Journal j, Vec3 c, Vec3 f, Vec3 r, double width) {
@@ -264,8 +264,9 @@ public final class Destroy {
                         pos.set(x, 0, z);
                         if (level.isLoaded(pos)) {
                             int top = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
-                            if (top > level.getMinBuildHeight()) {
+                            if (top >= level.getMinBuildHeight()) {
                                 BlockState face = in ? ink : edge;
+                                laid++;
                                 pos.set(x, top, z);
                                 if (breakable(pos, level.getBlockState(pos))) {
                                     paint(pos, face, budget);
@@ -285,7 +286,11 @@ public final class Destroy {
                     x++;
                 }
             }
-            return x > x1;
+            if (x > x1) {
+                Y.LOG.info("[yuji] the World Ender's crater is signed ({} columns)", laid);
+                return true;
+            }
+            return false;
         }
     }
 
