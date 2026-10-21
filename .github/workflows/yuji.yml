@@ -29,7 +29,7 @@ jobs:
           MESA_GLSL_VERSION_OVERRIDE: '450'
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri > /dev/null
-          pip install -q portablemc
+          pip install -q 'portablemc<5'
           MC=$PWD/mc; mkdir -p $MC/mods
           cp build/out/jjk-1.0.0.jar $MC/mods/
           GL=$(curl -sSf 'https://api.modrinth.com/v2/project/geckolib/version?game_versions=%5B%221.20.1%22%5D&loaders=%5B%22forge%22%5D' | python3 -c "import json,sys; v=json.load(sys.stdin); print(v[0]['files'][0]['url'])")
