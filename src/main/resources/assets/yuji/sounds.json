@@ -1,0 +1,200 @@
+{
+  "charge": {
+    "subtitle": "subtitles.yuji.charge",
+    "sounds": [
+      {
+        "name": "yuji:charge",
+        "stream": false
+      }
+    ]
+  },
+  "black_flash": {
+    "subtitle": "subtitles.yuji.black_flash",
+    "sounds": [
+      {
+        "name": "yuji:black_flash",
+        "stream": false
+      }
+    ]
+  },
+  "black_flash_big": {
+    "subtitle": "subtitles.yuji.black_flash_big",
+    "sounds": [
+      {
+        "name": "yuji:black_flash_big",
+        "stream": false
+      }
+    ]
+  },
+  "dash": {
+    "subtitle": "subtitles.yuji.dash",
+    "sounds": [
+      {
+        "name": "yuji:dash",
+        "stream": false
+      }
+    ]
+  },
+  "blood_form": {
+    "subtitle": "subtitles.yuji.blood_form",
+    "sounds": [
+      {
+        "name": "yuji:blood_form",
+        "stream": false
+      }
+    ]
+  },
+  "blood_fire": {
+    "subtitle": "subtitles.yuji.blood_fire",
+    "sounds": [
+      {
+        "name": "yuji:blood_fire",
+        "stream": false
+      }
+    ]
+  },
+  "blood_hit": {
+    "subtitle": "subtitles.yuji.blood_hit",
+    "sounds": [
+      {
+        "name": "yuji:blood_hit",
+        "stream": false
+      }
+    ]
+  },
+  "blood_rain": {
+    "subtitle": "subtitles.yuji.blood_rain",
+    "sounds": [
+      {
+        "name": "yuji:blood_rain",
+        "stream": false
+      }
+    ]
+  },
+  "dismantle": {
+    "subtitle": "subtitles.yuji.dismantle",
+    "sounds": [
+      {
+        "name": "yuji:dismantle",
+        "stream": false
+      }
+    ]
+  },
+  "cleave": {
+    "subtitle": "subtitles.yuji.cleave",
+    "sounds": [
+      {
+        "name": "yuji:cleave",
+        "stream": false
+      }
+    ]
+  },
+  "world_splitter": {
+    "subtitle": "subtitles.yuji.world_splitter",
+    "sounds": [
+      {
+        "name": "yuji:world_splitter",
+        "stream": false
+      }
+    ]
+  },
+  "crater": {
+    "subtitle": "subtitles.yuji.crater",
+    "sounds": [
+      {
+        "name": "yuji:crater",
+        "stream": false
+      }
+    ]
+  },
+  "eruption": {
+    "subtitle": "subtitles.yuji.eruption",
+    "sounds": [
+      {
+        "name": "yuji:eruption",
+        "stream": true
+      }
+    ]
+  },
+  "domain": {
+    "subtitle": "subtitles.yuji.domain",
+    "sounds": [
+      {
+        "name": "yuji:domain",
+        "stream": true
+      }
+    ]
+  },
+  "domain_hum": {
+    "subtitle": "subtitles.yuji.domain_hum",
+    "sounds": [
+      {
+        "name": "yuji:domain_hum",
+        "stream": false
+      }
+    ]
+  },
+  "overdrive": {
+    "subtitle": "subtitles.yuji.overdrive",
+    "sounds": [
+      {
+        "name": "yuji:overdrive",
+        "stream": false
+      }
+    ]
+  },
+  "wave": {
+    "subtitle": "subtitles.yuji.wave",
+    "sounds": [
+      {
+        "name": "yuji:wave",
+        "stream": false
+      }
+    ]
+  },
+  "world_ender": {
+    "subtitle": "subtitles.yuji.world_ender",
+    "sounds": [
+      {
+        "name": "yuji:world_ender",
+        "stream": true
+      }
+    ]
+  },
+  "rumble": {
+    "subtitle": "subtitles.yuji.rumble",
+    "sounds": [
+      {
+        "name": "yuji:rumble",
+        "stream": false
+      }
+    ]
+  },
+  "impact": {
+    "subtitle": "subtitles.yuji.impact",
+    "sounds": [
+      {
+        "name": "yuji:impact",
+        "stream": false
+      }
+    ]
+  },
+  "meteor": {
+    "subtitle": "subtitles.yuji.meteor",
+    "sounds": [
+      {
+        "name": "yuji:meteor",
+        "stream": false
+      }
+    ]
+  },
+  "card": {
+    "subtitle": "subtitles.yuji.card",
+    "sounds": [
+      {
+        "name": "yuji:card",
+        "stream": false
+      }
+    ]
+  }
+}

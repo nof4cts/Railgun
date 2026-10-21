@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+}
+version = '1.0.0'
+base { archivesName = 'yuji-patch' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+}
+repositories {
+    flatDir { dirs 'libs' }
+    maven { url = 'https://maven.kosmx.dev/' }
+    maven { url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    mavenCentral()
+}
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // the kit as it is now (the jar the user plays), remapped to Mojang names to compile against
+    compileOnly fg.deobf("local:jjk:1.0.0")
+    compileOnly fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}")
+    compileOnly fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.4.9")
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+jar { finalizedBy 'reobfJar' }
+
+// The kit jar with Modulo Yuji added: everything of the original, plus com/yuji/**, plus the two hub classes
+// recompiled with Yuji in them (the sorcerer list and the hooks the selector and key handler call).
+tasks.register('patchedJar', Jar) {
+    dependsOn 'reobfJar'
+    archiveFileName = 'jjk-1.0.0.jar'
+    destinationDirectory = file('build/out')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes(['Specification-Title': 'jjk', 'Specification-Vendor': 'Ethan', 'Specification-Version': '1',
+                    'Implementation-Title': 'jjk', 'Implementation-Version': '1.0.0', 'Implementation-Vendor': 'Ethan'])
+    }
+    from(zipTree(layout.buildDirectory.file("libs/yuji-patch-1.0.0.jar"))) { exclude 'META-INF/**' }
+    from(zipTree('libs/jjk-1.0.0.jar')) {
+        exclude 'com/jjk/mod/Sorcerer.class', 'com/teengojo/TeenHooks.class'
+        exclude 'META-INF/MANIFEST.MF'
+    }
+}
+build.finalizedBy 'patchedJar'
