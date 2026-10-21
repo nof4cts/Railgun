@@ -659,7 +659,7 @@ public final class Yuji {
      * ends (he drifts down safely: no fall damage for a few seconds), never from creative or spectator players.
      */
     /** Overdrive off: flight taken back (with a safe landing), aura out, the permanent flag cleared. */
-    static void endOverdrive(ServerPlayer p) {
+    public static void endOverdrive(ServerPlayer p) {
         if (OVERDRIVE.remove(p.getUUID()) == null) return;
         p.getPersistentData().remove(OD_TAG);
         p.removeEffect(MobEffects.MOVEMENT_SPEED);

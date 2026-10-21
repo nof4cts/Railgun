@@ -184,10 +184,13 @@ public final class YSelfTest {
                 step(t + 560, null, CameraType.FIRST_PERSON, p -> {
                     ServerLevel l = p.serverLevel();
                     int gy = l.getHeight(Heightmap.Types.MOTION_BLOCKING, gx, 14);
-                    p.teleportTo(l, gx + 0.5, gy + 150, 14.5, 0.0F, 90.0F);
+                    Yuji.endOverdrive(p);   // no aura around the camera for this one
+                    p.teleportTo(l, gx + 0.5, gy + 120, 14.5, 0.0F, 90.0F);
+                    Minecraft.getInstance().execute(() -> Minecraft.getInstance().options.hideGui = true);
                 });
                 step(t + 620, String.format("%02d_final_judgment_name", k), CameraType.FIRST_PERSON, null);
                 step(t + 630, null, CameraType.THIRD_PERSON_BACK, p -> {
+                    Minecraft.getInstance().execute(() -> Minecraft.getInstance().options.hideGui = false);
                     ServerLevel l = p.serverLevel();
                     p.teleportTo(l, gx + 0.5, l.getHeight(Heightmap.Types.MOTION_BLOCKING, gx, 0), 0.5, 0.0F, 5.0F);
                 });
