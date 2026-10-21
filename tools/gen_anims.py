@@ -91,26 +91,31 @@ class Anim:
         return self
 
     def write(self):
+        """
+        The whole-body lean, twist and drop go on Player Animator's "body" bone (the entire model moves as one),
+        never on "torso": in the player model the arms and legs are not attached to the torso, so bending or
+        shifting the torso alone tears it away from the hips and shoulders (the "floating torso" look).
+        """
         keys = {}
         for t, pose, ease in self.keys:
             keys[min(t, self.length)] = (pose, ease)   # later keys on the same tick win
         bones = {}
-        for b in BONES:
-            rot, pos = {}, {}
+
+        def track(get):
+            out = {}
             for t in sorted(keys):
                 pose, ease = keys[t]
-                k = {'vector': [round(v, 2) for v in pose[b]]}
+                k = {'vector': [round(v, 2) for v in get(pose)]}
                 if ease:
                     k['easing'] = ease
-                rot[f'{t / 20.0:.3f}'] = k
-                if b == 'torso':
-                    v = {'vector': [round(x, 2) for x in pose['pos']]}
-                    if ease:
-                        v['easing'] = ease
-                    pos[f'{t / 20.0:.3f}'] = v
-            bones[b] = {'rotation': rot}
-            if b == 'torso':
-                bones[b]['position'] = pos
+                out[f'{t / 20.0:.3f}'] = k
+            return out
+
+        for b in ['head', 'right_arm', 'left_arm', 'right_leg', 'left_leg']:
+            bones[b] = {'rotation': track(lambda pose, b=b: pose[b])}
+        # lean and twist of the whole figure (pitch softened a little: it pivots at the feet), and its drop
+        bones['body'] = {'rotation': track(lambda pose: [pose['torso'][0] * 0.7, pose['torso'][1], pose['torso'][2] * 0.7]),
+                         'position': track(lambda pose: [pose['pos'][0], pose['pos'][1], pose['pos'][2]])}
         data = {'format_version': '1.8.0', 'animations': {'yuji_' + self.name: {'animation_length': self.length / 20.0, 'loop': False, 'bones': bones}}}
         with open(os.path.join(OUT, 'yuji_' + self.name + '.json'), 'w') as f:
             json.dump(data, f, indent=1)
