@@ -430,7 +430,7 @@ public final class Yuji {
                     if (a < 0 || a > len || Math.abs(s) > w * 0.5 || Math.abs(nn) > 1.2 + e.getBbWidth()) continue;
                     if (hit.add(e.getId())) hurt(p, e, tierDamage(b.i()), false, Set.of());
                 }
-                Destroy.slab(level, p, r.journal, p0, d, side, len, w * 0.6);
+                Destroy.slab(level, p, r.journal, p0, d, side, len, w * 0.8);
             }
             case Beat.CLEAVE -> {
                 LivingEntity e = nearest(p, p0, Math.max(3.0, b.x() + 1.5));

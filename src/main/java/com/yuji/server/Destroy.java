@@ -155,24 +155,44 @@ public final class Destroy {
     }
 
     /** The thin plane a slash cuts: immediate, bounded. */
+    /**
+     * The cut a slash leaves: a gash two blocks thick along the whole blade, through everything it passes (trees,
+     * walls, the ground). Immediate, so the world splits the moment the blade passes, within its own time budget.
+     */
     public static void slab(ServerLevel level, ServerPlayer owner, Journal j, Vec3 origin, Vec3 dir, Vec3 side, double len, double width) {
         if (Y.destructionOff()) return;
-        Job job = new Job(level, owner, j, origin.add(dir.scale(len * 0.5)), 0.6f) {
+        Job job = new Job(level, owner, j, origin.add(dir.scale(len * 0.5)), 0.9f) {
             boolean step(int[] b) {
                 return true;
             }
         };
-        int[] budget = {20000, 20000};
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        double hw = width * 0.5;
-        for (double a = 1.5; a <= len; a += 0.5) {
-            for (double w = -hw; w <= hw; w += 0.5) {
-                Vec3 p = origin.add(dir.scale(a)).add(side.scale(w));
-                pos.set(Mth.floor(p.x), Mth.floor(p.y), Mth.floor(p.z));
-                if (!level.isLoaded(pos)) continue;
-                job.remove(pos, budget);
-                if (budget[0] <= 0) break;
+        long saved = deadline;
+        deadline = System.nanoTime() + 15_000_000L;   // its own budget (the per-tick one may already be spent)
+        try {
+            int[] budget = {60000, 30000};
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+            Vec3 n = dir.cross(side);
+            n = n.lengthSqr() < 1e-6 ? new Vec3(0, 1, 0) : n.normalize();
+            double hw = width * 0.5;
+            long last = Long.MIN_VALUE;
+            outer:
+            for (double a = 1.5; a <= len; a += 0.5) {
+                double taper = 1.0 - Math.pow(a / len, 4) * 0.6;          // the blade thins toward its tip
+                for (double w = -hw * taper; w <= hw * taper; w += 0.5) {
+                    for (double t = -0.9; t <= 0.9; t += 0.6) {          // two blocks thick
+                        Vec3 p = origin.add(dir.scale(a)).add(side.scale(w)).add(n.scale(t));
+                        pos.set(Mth.floor(p.x), Mth.floor(p.y), Mth.floor(p.z));
+                        long key = pos.asLong();
+                        if (key == last) continue;
+                        last = key;
+                        if (!level.isLoaded(pos)) continue;
+                        job.remove(pos, budget);
+                        if (budget[0] <= 0 || budget[1] <= 0) break outer;
+                    }
+                }
             }
+        } finally {
+            deadline = saved;
         }
         job.flushDebris();
     }
