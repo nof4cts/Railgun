@@ -15,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -32,6 +34,8 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
@@ -319,7 +323,10 @@ public final class Yuji {
                 p.getPersistentData().remove(OD_TAG);
                 YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), 0));
                 state(p);
-            } else if (now % 40 == 0) {
+                continue;
+            }
+            if (now % 10 == 0) purge(p);   // anything that slipped in some other way
+            if (now % 40 == 0) {
                 flight(p, true);
                 YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), en.getValue()));
                 p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60, 2, false, false, false));
@@ -509,6 +516,7 @@ public final class Yuji {
             case Beat.OVERDRIVE -> {
                 long until = Y.overdriveSeconds <= 0 ? FOREVER : now + Y.overdriveSeconds * 20L;
                 OVERDRIVE.put(p.getUUID(), until);
+                purge(p);
                 if (until == FOREVER) p.getPersistentData().putBoolean(OD_TAG, true);
                 p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60, 2, false, false, false));
                 flight(p, true);
@@ -607,6 +615,22 @@ public final class Yuji {
             Run r = RUNS.get(p.getUUID());
             if (r != null && r.m.cutscene && !e.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) e.setCanceled(true);
         }
+    }
+
+    /** In Overdrive no harmful effect can take hold of him (poison, wither, slowness, weakness, blindness...). */
+    @SubscribeEvent
+    public static void onEffect(MobEffectEvent.Applicable e) {
+        if (e.getEntity() instanceof ServerPlayer p && overdrive(p) && e.getEffectInstance().getEffect().getCategory() == MobEffectCategory.HARMFUL) {
+            e.setResult(Event.Result.DENY);
+        }
+    }
+
+    static void purge(ServerPlayer p) {
+        List<MobEffect> bad = new ArrayList<>();
+        for (MobEffectInstance inst : p.getActiveEffects()) {
+            if (inst.getEffect().getCategory() == MobEffectCategory.HARMFUL) bad.add(inst.getEffect());
+        }
+        for (MobEffect m : bad) p.removeEffect(m);
     }
 
     @SubscribeEvent
