@@ -20,6 +20,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
@@ -139,6 +142,7 @@ public final class YPost {
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 33071);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, 33071);
+            GL15.glBindBuffer(GL21.GL_PIXEL_UNPACK_BUFFER, 0);
             GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, 0x8814, 4, YCasts.ROWS, 0, GL11.GL_RGBA, GL11.GL_FLOAT, (FloatBuffer) null);
             GlStateManager._bindTexture(0);
             fxBuf = MemoryUtil.memAllocFloat(YCasts.ROWS * 16);
@@ -181,7 +185,20 @@ public final class YPost {
         // effect data
         fxBuf.clear();
         fxBuf.put(fx.data).flip();
+        GlStateManager._activeTexture(GL30.GL_TEXTURE0);
         GlStateManager._bindTexture(fxTex);
+        // Upload from our own memory with clean unpack state. Minecraft (and other mods) leave row-length / skip
+        // settings and sometimes a pixel-unpack buffer bound; with those, NVIDIA's driver reads far outside our
+        // buffer and kills the game (EXCEPTION_ACCESS_VIOLATION in nvoglv64.dll).
+        GL15.glBindBuffer(GL21.GL_PIXEL_UNPACK_BUFFER, 0);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ROW_LENGTH, 0);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_PIXELS, 0);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_SKIP_ROWS, 0);
+        GlStateManager._pixelStore(GL11.GL_UNPACK_ALIGNMENT, 4);
+        GL11.glPixelStorei(GL12.GL_UNPACK_SKIP_IMAGES, 0);
+        GL11.glPixelStorei(GL12.GL_UNPACK_IMAGE_HEIGHT, 0);
+        GL11.glPixelStorei(GL11.GL_UNPACK_SWAP_BYTES, GL11.GL_FALSE);
+        GL11.glPixelStorei(GL11.GL_UNPACK_LSB_FIRST, GL11.GL_FALSE);
         GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 4, YCasts.ROWS, GL11.GL_RGBA, GL11.GL_FLOAT, fxBuf);
 
         // 1. the world pass
