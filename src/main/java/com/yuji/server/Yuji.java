@@ -128,6 +128,7 @@ public final class Yuji {
             // toggle off
             OVERDRIVE.remove(p.getUUID());
             p.removeEffect(MobEffects.MOVEMENT_SPEED);
+            flight(p, false);
             YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), 0));
             state(p);
             return true;
@@ -316,9 +317,11 @@ public final class Yuji {
             long now = p.serverLevel().getGameTime();
             if (now >= en.getValue() || !is(p) || !p.isAlive()) {
                 oit.remove();
+                flight(p, false);
                 YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), 0));
                 state(p);
             } else if (now % 40 == 0) {
+                flight(p, true);
                 YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), en.getValue()));
                 p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60, 2, false, false, false));
                 p.addEffect(new MobEffectInstance(MobEffects.JUMP, 60, 1, false, false, false));
@@ -466,6 +469,7 @@ public final class Yuji {
                 long until = now + Y.overdriveSeconds * 20L;
                 OVERDRIVE.put(p.getUUID(), until);
                 p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60, 2, false, false, false));
+                flight(p, true);
                 YNet.near(level, p.position(), 256, new YNet.Aura(p.getId(), until));
                 state(p);
             }
@@ -557,7 +561,7 @@ public final class Yuji {
     public static void onFall(LivingFallEvent e) {
         if (e.getEntity() instanceof ServerPlayer p && is(p)) {
             Long safe = SAFE_UNTIL.get(p.getUUID());
-            if (RUNS.containsKey(p.getUUID()) || (safe != null && safe > p.serverLevel().getGameTime())) e.setCanceled(true);
+            if (RUNS.containsKey(p.getUUID()) || overdrive(p) || (safe != null && safe > p.serverLevel().getGameTime())) e.setCanceled(true);
         }
     }
 
@@ -574,6 +578,29 @@ public final class Yuji {
         Energy.set(p, Energy.MAX);
     }
 
+    /**
+     * Overdrive flight: double-tap jump to take off, like creative flight but faster. Taken away when Overdrive
+     * ends (he drifts down safely: no fall damage for a few seconds), never from creative or spectator players.
+     */
+    static void flight(ServerPlayer p, boolean on) {
+        var ab = p.getAbilities();
+        boolean native_ = p.isCreative() || p.isSpectator();
+        if (on) {
+            if (!ab.mayfly || ab.getFlyingSpeed() < 0.09f) {
+                ab.mayfly = true;
+                if (!native_) ab.setFlyingSpeed(0.1f);
+                p.onUpdateAbilities();
+            }
+        } else if (!native_) {
+            ab.mayfly = false;
+            ab.flying = false;
+            ab.setFlyingSpeed(0.05f);
+            p.onUpdateAbilities();
+            p.fallDistance = 0;
+            SAFE_UNTIL.put(p.getUUID(), p.serverLevel().getGameTime() + 200);
+        }
+    }
+
     public static boolean busy(ServerPlayer p) {
         return RUNS.containsKey(p.getUUID());
     }
@@ -582,7 +609,7 @@ public final class Yuji {
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent e) {
         UUID u = e.getEntity().getUUID();
         RUNS.remove(u);
-        OVERDRIVE.remove(u);
+        if (OVERDRIVE.remove(u) != null && e.getEntity() instanceof ServerPlayer p) flight(p, false);
     }
 
     @SubscribeEvent
