@@ -56,7 +56,7 @@ public final class YSelfTest {
     private static String pendingShot;
     private static final List<Step> SCRIPT = new ArrayList<>();
     private static final YMove[] ORDER = {
-            YMove.RCT, YMove.THE_END, YMove.WORLD_BREAKER, YMove.RICOCHET, YMove.RESONANCE, YMove.PIERCING_BLOOD, YMove.HOMING_BLOOD, YMove.SUPERNOVA, YMove.BLOOD_STORM,
+            YMove.AS_GOD, YMove.RCT, YMove.THE_END, YMove.WORLD_BREAKER, YMove.RICOCHET, YMove.RESONANCE, YMove.PIERCING_BLOOD, YMove.HOMING_BLOOD, YMove.SUPERNOVA, YMove.BLOOD_STORM,
             YMove.CRIMSON_EXECUTION, YMove.BLOOD_APOCALYPSE, YMove.DISMANTLE, YMove.THOUSAND_SLASHES, YMove.CLEAVE,
             YMove.WORLD_SPLITTER, YMove.METEOR, YMove.DOMAIN, YMove.DOMAIN_BARRAGE,
             YMove.DOMAIN_FINISHER, YMove.OVERDRIVE, YMove.FINAL_JUDGMENT, YMove.DOMAIN_APOCALYPSE};
@@ -178,6 +178,17 @@ public final class YSelfTest {
             // big destruction takes a while to stream in
             t += m.end + (m.tier >= 2 ? 120 : 60) + (chain ? 0 : 40);
             if (m == YMove.OVERDRIVE) t -= 20;
+            if (m == YMove.AS_GOD) {
+                // try to kill him every way there is
+                step(t - 30, null, CameraType.THIRD_PERSON_BACK, p -> {
+                    p.setGameMode(GameType.SURVIVAL);
+                    p.kill();
+                    p.hurt(p.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+                    p.hurt(p.damageSources().genericKill(), Float.MAX_VALUE);
+                    Y.LOG.info("[selftest] As God As My Witness: after /kill, the void and generic kill: alive={} health={}", p.isAlive(), p.getHealth());
+                    p.setGameMode(GameType.CREATIVE);
+                });
+            }
             if (m == YMove.FINAL_JUDGMENT) {
                 // wait for the crater and the name in its floor, then look straight down on it
                 final int gx = cx;

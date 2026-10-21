@@ -58,7 +58,10 @@ public final class YClient {
         public static void onRenderLevel(RenderLevelStageEvent e) {
             try {
                 if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) YPost.begin(e);
-                else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) YDebris.render(e);
+                else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+                    YDebris.render(e);
+                    YGod.render(e);
+                }
                 else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) YPost.render(e);
             } catch (Throwable t) {
                 safe("render", t);
@@ -141,6 +144,7 @@ public final class YClient {
             YCam.stop();
             YCasts.clear();
             YDebris.clear();
+            YGod.clear();
             YFx.reset();
         }
     }

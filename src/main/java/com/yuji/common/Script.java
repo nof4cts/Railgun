@@ -143,6 +143,7 @@ public final class Script {
             case WORLD_BREAKER -> worldBreaker(b);
             case RCT -> rct(b);
             case THE_END -> theEnd(b);
+            case AS_GOD -> asGod(b);
             case RICOCHET -> ricochet(b);
             case RESONANCE -> resonance(b);
             case PIERCING_BLOOD -> piercingBlood(b);
@@ -267,6 +268,17 @@ public final class Script {
      * them gives way to nothing. He drags them down through the earth, past the bedrock, into the void, and holds on
      * until it takes them. Then he walks back out where he started.
      */
+    /** As God As My Witness: one hand raised; for thirty seconds nothing in the world can kill him. */
+    private static void asGod(B b) {
+        b.charge(0, 12, EYE, new Vec3(0, 0.6, 0), 0.7);
+        b.sound(0, CASTER, S_CHARGE, 2.0, 1.2);
+        b.add(Beat.of(12, GOD, CASTER, Z).p(600, 0, 0));
+        b.sound(12, CASTER, S_DOMAIN, 4.0, 1.5);
+        b.shell(12, CASTER, new Vec3(0, 1, 0), 5, 14, 0);
+        b.ring(12, CASTER, Z, 12, 30, 0.8);
+        b.impact(12, CASTER, 6, 0.5);
+    }
+
     private static void theEnd(B b) {
         b.dark(0, 0.6, 6);
         b.dash(0, 5, TARGET, b.F.scale(0.8), 0.0);               // around behind them

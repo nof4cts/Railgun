@@ -229,6 +229,15 @@ a.k(32, add(STANCE, head=[-4, 0, 0]), INOUT)
 a.k(44, STAND, INOUT)
 a.write()
 
+# ---- As God As My Witness: the right hand raised as if swearing an oath, eyes to the sky
+OATH = P(right_arm=[-168, -6, -10], left_arm=[-30, 30, -10], torso=[-6, 0, 0], head=[-22, 0, 0], right_leg=[0, 0, 5], left_leg=[0, 0, -5])
+a = Anim('as_god', 40, STAND)
+a.k(4, add(OATH, right_arm=[40, 0, 0]), OUT_)
+a.k(10, OATH, OUT_).k(12, add(OATH, right_arm=[-6, 0, 0], head=[-6, 0, 0]), SNAP)
+a.hold(14, 28, OATH, 0.6, 5)
+a.k(40, STAND, INOUT)
+a.write()
+
 # ---- The End: the chokehold, held all the way down
 CHOKE = P(right_arm=[-88, -62, 0], left_arm=[-96, 48, 0], torso=[-8, 6, 0], head=[14, -10, 0], right_leg=[-10, 0, 6], left_leg=[14, 0, -6], pos=[0, -0.6, 0])
 a = Anim('the_end', 96, STAND)

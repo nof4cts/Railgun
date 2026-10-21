@@ -37,6 +37,10 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -71,6 +75,8 @@ public final class Yuji {
     private static final Map<UUID, Long> OVERDRIVE = new HashMap<>();
     private static final Map<UUID, Long> SAFE_UNTIL = new HashMap<>();
     private static Run CURRENT;
+    /** As God As My Witness: until when nothing can kill him. */
+    private static final Map<UUID, Long> GOD = new HashMap<>();
     /** The extra max health from Reverse Cursed Technique x100 (one fixed id, so it never stacks). */
     static final UUID RCT_HP = UUID.fromString("6f3c7a1e-2b54-4d8e-9c1f-7a0d5e3b9c21");
     /** "Until" for permanent Overdrive (far in the future, still safe to add to). */
@@ -393,6 +399,11 @@ public final class Yuji {
                     continue;
                 }
                 if (Energy.get(p) < Energy.MAX) Energy.set(p, Energy.MAX);
+                Long gu = GOD.get(p.getUUID());
+                if (gu != null && gu <= p.serverLevel().getGameTime()) {
+                    GOD.remove(p.getUUID());
+                    YNet.near(p.serverLevel(), p.position(), 256, new YNet.God(p.getId(), 0));
+                }
                 if (server.getTickCount() % 40 == 0) state(p);
             }
         }
@@ -542,6 +553,13 @@ public final class Yuji {
                 if (d != null) YNet.near(level, d.centre, 512, new YNet.Domain(p.getId(), d.centre, d.radius, 0, new int[0]));
                 state(p);
             }
+            case Beat.GOD -> {
+                long until = now + (long) b.x();
+                GOD.put(p.getUUID(), until);
+                p.setHealth(Math.max(p.getHealth(), 1f));
+                YNet.near(level, p.position(), 256, new YNet.God(p.getId(), until));
+                state(p);
+            }
             case Beat.GRAB -> {
                 Entity t = Anchors.entity(level, r.c.targetId());
                 if (t instanceof LivingEntity && t.isAlive()) {
@@ -557,7 +575,7 @@ public final class Yuji {
             }
             case Beat.KILL -> {
                 Entity t = r.grabbed >= 0 ? level.getEntity(r.grabbed) : Anchors.entity(level, r.c.targetId());
-                if (t instanceof LivingEntity le && le.isAlive()) {
+                if (t instanceof LivingEntity le && le.isAlive() && !(le instanceof ServerPlayer sp && god(sp))) {
                     // the void takes them: it ignores creative mode, armour, totems and invulnerability
                     le.invulnerableTime = 0;
                     le.hurt(level.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
@@ -711,6 +729,67 @@ public final class Yuji {
             Run r = RUNS.get(p.getUUID());
             if (r != null && r.m.cutscene && !e.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) e.setCanceled(true);
         }
+    }
+
+    // ------------------------------------------------------------------ As God As My Witness
+    public static boolean god(ServerPlayer p) {
+        Long u = GOD.get(p.getUUID());
+        return u != null && u > p.serverLevel().getGameTime();
+    }
+
+    /** Every attack on him, whatever it is (/kill, the void, other mods, bypass-everything damage) simply doesn't happen. */
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void onGodAttack(LivingAttackEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p && god(p)) e.setCanceled(true);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void onGodHurt(LivingHurtEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p && god(p)) {
+            e.setAmount(0);
+            e.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void onGodDamage(LivingDamageEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p && god(p)) {
+            e.setAmount(0);
+            e.setCanceled(true);
+        }
+    }
+
+    /** If anything gets him to death anyway (health set straight to zero), death is refused. */
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void onGodDeath(LivingDeathEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p && god(p)) {
+            e.setCanceled(true);
+            p.setHealth(Math.max(1f, p.getMaxHealth() * 0.25f));
+            p.deathTime = 0;
+        }
+    }
+
+    /** Before he ticks: undo anything that zeroed his health, and pull him out of the void. */
+    @SubscribeEvent
+    public static void onGodTick(TickEvent.PlayerTickEvent e) {
+        if (e.phase != TickEvent.Phase.START || !(e.player instanceof ServerPlayer p) || !god(p)) return;
+        if (p.getHealth() < 1f || p.isDeadOrDying()) {
+            p.setHealth(Math.max(1f, p.getMaxHealth() * 0.25f));
+            p.deathTime = 0;
+        }
+        if (p.getY() < p.serverLevel().getMinBuildHeight() - 32 && !RUNS.containsKey(p.getUUID())) {
+            var spawn = p.serverLevel().getSharedSpawnPos();
+            int y = p.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, p.getBlockX(), p.getBlockZ());
+            if (y <= p.serverLevel().getMinBuildHeight()) {
+                p.teleportTo(p.serverLevel(), spawn.getX() + 0.5, p.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, spawn.getX(), spawn.getZ()) + 1, spawn.getZ() + 0.5, p.getYRot(), p.getXRot());
+            } else {
+                p.teleportTo(p.serverLevel(), p.getX(), y + 1, p.getZ(), p.getYRot(), p.getXRot());
+            }
+            p.setDeltaMovement(Vec3.ZERO);
+            p.fallDistance = 0;
+        }
+        long now = p.serverLevel().getGameTime();
+        if (now % 40 == 0) YNet.near(p.serverLevel(), p.position(), 256, new YNet.God(p.getId(), GOD.get(p.getUUID())));
     }
 
     /** In Overdrive no harmful effect can take hold of him (poison, wither, slowness, weakness, blindness...). */
