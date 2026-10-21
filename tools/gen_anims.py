@@ -164,8 +164,9 @@ def slash_l(side, height=0):
 # ================================================================== World Breaker (the one Black Flash)
 a = Anim('world_breaker', 142, STAND)
 a.k(6, STANCE, OUT_)
-a.k(12, ROAR, OUT_).tremble(14, 28, ROAR, 2.0)               # the cursed energy wells up
-a.k(30, mix(ROAR, wind_r(), 0.5), INOUT)
+FOCUS = P(right_arm=[-70, 20, 0], left_arm=[-62, -46, 0], torso=[18, 6, 0], head=[22, -4, 0], right_leg=[-24, 0, 6], left_leg=[-6, 0, -6], pos=[0, -2.0, 0])
+a.k(12, FOCUS, OUT_).tremble(14, 28, FOCUS, 1.6)             # head down, left hand clamped on the right forearm, pouring it into the fist
+a.k(30, mix(FOCUS, wind_r(), 0.5), INOUT)
 a.k(34, wind_r(1.2), OUT_).tremble(36, 56, wind_r(1.25), 3.0)  # coiled, shaking with it
 a.k(58, push(STAND, wind_r(1.25), 1.15), IN)                # the last inhale
 a.k(61, P(punch_r(0.4), right_arm=[30, 10, 26], pos=[0, -1.8, -1.5]), SNAP)   # the step in
@@ -197,14 +198,15 @@ a.write()
 
 a = Anim('supernova', 62, STAND)
 a.k(4, CLASP, OUT_)
-OPEN = P(right_arm=[-110, -30, 50], left_arm=[-110, 30, -50], torso=[-6, 0, 0], head=[-10, 0, 0], right_leg=[-6, 0, 6], left_leg=[6, 0, -6])
-a.k(12, OPEN, OUT_).hold(13, 17, OPEN, 1.5, 2)              # the five orbs spread around him
-GATHER = P(right_arm=[-60, 40, 30], left_arm=[-60, -40, -30], torso=[12, 0, 0], head=[8, 0, 0], right_leg=[-20, 0, 5], left_leg=[-20, 0, -5], pos=[0, -1.6, 0])
-a.k(19, GATHER, IN)
-DOUBLE = P(right_arm=[-90, 14, 0], left_arm=[-90, -14, 0], torso=[16, 0, 0], head=[0, 0, 0], right_leg=[-24, 0, 5], left_leg=[30, 0, -5], pos=[0, -1.4, -1.2])
-a.k(22, DOUBLE, SNAP).k(25, push(STAND, DOUBLE, 1.1), OUT_).k(28, DOUBLE, INOUT)
-a.k(32, add(DOUBLE, right_arm=[-8, 0, 0], left_arm=[-8, 0, 0]), SNAP)   # the burst shoves back through his arms
-a.hold(34, 46, DOUBLE, 1.0, 4)
+HOLD_UP = P(right_arm=[-150, -20, 20], left_arm=[-86, -10, 0], torso=[-4, 18, 0], head=[-8, -14, 0], right_leg=[10, 0, 5], left_leg=[-12, 0, -5])
+a.k(12, HOLD_UP, OUT_).hold(13, 17, HOLD_UP, 1.2, 2)        # palm up over his shoulder, the orbs circling it; the left hand marks the target
+COCK = P(right_arm=[-170, 30, 10], left_arm=[-70, -20, 0], torso=[-14, 34, 0], head=[-4, -24, 0], right_leg=[18, 0, 5], left_leg=[-20, 0, -5], pos=[0, -0.6, 0.6])
+a.k(19, COCK, IN)
+PITCH = P(right_arm=[-60, -24, 0], left_arm=[20, 10, -20], torso=[26, -30, 0], head=[6, 24, 0], right_leg=[-26, 0, 5], left_leg=[32, 0, -5], pos=[0, -1.6, -1.2])
+a.strike(22, PITCH, STAND, over=1.12, hold=0)                  # pitched overhand
+a.k(30, add(PITCH, right_arm=[-30, 0, 0], torso=[-10, 0, 0]), INOUT)
+a.k(32, P(PITCH, right_arm=[-120, -10, 0], torso=[10, -20, 0]), SNAP)    # the fingers spread: Supernova
+a.hold(34, 46, P(PITCH, right_arm=[-120, -10, 0], torso=[10, -20, 0]), 1.0, 4)
 a.k(62, STAND, INOUT)
 a.write()
 
@@ -239,11 +241,12 @@ a.write()
 
 a = Anim('blood_apocalypse', 172, STAND)
 a.k(4, CLASP, OUT_)
-for i, t in enumerate(range(8, 40, 4)):                    # both arms climb, slowly, lifting the sea of blood
+LIFT = P(right_arm=[-176, -8, 6], left_arm=[-10, 0, -16], torso=[-8, 10, 0], head=[-34, -6, 0], right_leg=[-4, 0, 6], left_leg=[6, 0, -6])
+for i, t in enumerate(range(8, 40, 4)):                    # one hand rises, slowly, the blood gathering in the sky above it
     u = (i + 1) / 8
-    a.k(t, mix(CLASP, SKY, u), INOUT)
-a.tremble(42, 100, SKY, 1.5, 4)
-a.k(102, add(SKY, torso=[-16, 0, 0], head=[-10, 0, 0], pos=[0, 0.6, 0]), IN)
+    a.k(t, mix(CLASP, LIFT, u), INOUT)
+a.tremble(42, 100, LIFT, 1.2, 4)
+a.k(102, add(LIFT, right_arm=[8, 0, 0], torso=[-10, 0, 0], pos=[0, 0.4, 0]), IN)       # the hand closes on it
 SLAM = P(right_arm=[-40, 10, 10], left_arm=[-40, -10, -10], torso=[40, 0, 0], head=[10, 0, 0], right_leg=[-30, 0, 6], left_leg=[20, 0, -6], pos=[0, -2.6, -0.6])
 a.strike(106, SLAM, STAND, over=1.12, hold=20)
 a.k(140, STANCE, OUT_).hold(142, 160, STANCE, 1.0, 8)
@@ -346,7 +349,7 @@ for i, t in enumerate(range(6, 72, 3)):
         a.k(t, slash(-1, h) if (i // 2) % 2 else slash_l(-1, h), SNAP)
     else:                                                  # Cleave: short hooks
         a.k(t, punch_r(0.7) if (i // 2) % 2 else punch_l(0.7), SNAP)
-a.k(72, add(SKY, pos=[0, 0.4, 0]), IN)
+a.k(72, P(right_arm=[-160, 50, 0], left_arm=[-160, -50, 0], torso=[-10, 0, 0], head=[-14, 0, 0], right_leg=[0, 0, 5], left_leg=[0, 0, -5]), IN)   # wrists crossed overhead
 a.strike(74, P(SLAM := P(right_arm=[-40, 10, 10], left_arm=[-40, -10, -10], torso=[40, 0, 0], head=[10, 0, 0], right_leg=[-30, 0, 6],
                          left_leg=[20, 0, -6], pos=[0, -2.6, -0.6])), STAND, over=1.12, hold=12)
 a.k(102, STAND, INOUT)
@@ -357,7 +360,10 @@ a.k(6, CROUCH, OUT_)
 CLENCH = P(CROUCH, right_arm=[10, 0, 34], left_arm=[10, 0, -34], torso=[34, 0, 0], head=[-6, 0, 0])
 a.k(10, CLENCH, INOUT).tremble(12, 40, CLENCH, 3.5, 2)
 a.k(41, push(STAND, CLENCH, 1.15), IN)
-a.strike(42, ROAR, STAND, over=1.15, hold=10)
+PALM = P(right_arm=[-84, 34, 0], left_arm=[-80, -30, 0], torso=[-4, 4, 0], head=[-6, 0, 0], right_leg=[-4, 0, 8], left_leg=[4, 0, -8])
+a.strike(42, PALM, STAND, over=1.1, hold=0)                 # stands up straight, fist driven into his palm
+a.k(48, add(PALM, head=[0, 0, 18]), SNAP).k(52, add(PALM, head=[0, 0, -16]), SNAP)   # neck cracked, one side, then the other
+a.k(56, add(STANCE, head=[-8, 0, 0]), OUT_)
 a.k(62, STANCE, INOUT)
 a.write()
 
@@ -392,7 +398,10 @@ a.k(151, CHOP0, OUT_)
 a.strike(152, CHOP1, STAND, over=1.12, hold=0)
 a.k(158, wind_r(1.2), OUT_).tremble(160, 174, wind_r(1.3), 3.0, 2)
 a.strike(176, punch_r(1.35), STAND, over=1.18, hold=10)
-a.k(190, SKY, SNAP).hold(192, 230, SKY, 1.2, 6)
+AWAY = P(right_arm=[-6, 0, 10], left_arm=[2, 0, -6], torso=[4, 70, 0], head=[14, 30, 0], right_leg=[0, 30, 4], left_leg=[0, 30, -4], pos=[0, 0, 0])
+a.k(190, push(STAND, punch_r(1.0), 1.1), SNAP)
+a.k(198, P(punch_r(0.6), right_arm=[-30, 0, 10]), OUT_)
+a.k(208, AWAY, INOUT).hold(210, 236, AWAY, 0.8, 8)           # turns his back on it
 a.k(250, STANCE, INOUT)
 a.k(286, STAND, INOUT)
 a.write()
