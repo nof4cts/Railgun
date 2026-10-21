@@ -39,7 +39,7 @@ public final class Y {
     public static int msPerTick = 6;
     public static int splitterLength = 320, dismantleLength = 80;
     // domain, cooldowns, energy (server)
-    public static int domainRadius = 48, domainSeconds = 30, overdriveSeconds = 60;
+    public static int domainRadius = 48, domainSeconds = 30, overdriveSeconds = 0;
     public static double cooldownScale = 1.0, energyScale = 1.0;
     // presentation (client)
     public static double shake = 1.0, flash = 1.0, motion = 1.0, slashVisibility = 0.6;
@@ -66,7 +66,7 @@ public final class Y {
             {"destruction.dismantleLength", "Reach of Dismantle."},
             {"domain.radius", "Radius of the Domain Expansion."},
             {"domain.seconds", "How long the domain lasts."},
-            {"overdrive.seconds", "How long Modulo Overdrive lasts."},
+            {"overdrive.seconds", "How long Modulo Overdrive lasts (0 = permanent: until he dies or picks another technique)."},
             {"cooldown.scale", "Multiplier on every cooldown (0 = none)."},
             {"energy.scale", "Multiplier on cursed energy costs (0 = free)."},
             {"fx.shake", "Camera shake (0 = off)."},
@@ -105,7 +105,9 @@ public final class Y {
         restoreLimit = i(p, "destruction.restoreLimit", restoreLimit);
         msPerTick = i(p, "destruction.msPerTick", msPerTick);
         // settings files from the first release asked for 24000 blocks a tick, far too many on real terrain
-        if (!"2".equals(p.getProperty("config.version"))) blocksPerTick = Math.min(blocksPerTick, 4000);
+        String ver = p.getProperty("config.version", "1");
+        if (ver.equals("1")) blocksPerTick = Math.min(blocksPerTick, 4000);
+        if (!ver.equals("3")) overdriveSeconds = 0;   // Overdrive became permanent in settings version 3
         splitterLength = i(p, "destruction.splitterLength", splitterLength);
         dismantleLength = i(p, "destruction.dismantleLength", dismantleLength);
         domainRadius = i(p, "domain.radius", domainRadius);
@@ -120,11 +122,11 @@ public final class Y {
         impactFrames = b(p, "fx.impactFrames", impactFrames);
         hitStop = b(p, "fx.hitStop", hitStop);
         cutscenes = b(p, "fx.cutscenes", cutscenes);
-        if (!Files.exists(file) || !"2".equals(p.getProperty("config.version"))) save(file);
+        if (!Files.exists(file) || !"3".equals(p.getProperty("config.version"))) save(file);
     }
 
     private static void save(Path file) {
-        StringBuilder sb = new StringBuilder("# Modulo Yuji (JJK kit) settings. Delete this file to restore the defaults.\nconfig.version=2\n");
+        StringBuilder sb = new StringBuilder("# Modulo Yuji (JJK kit) settings. Delete this file to restore the defaults.\nconfig.version=3\n");
         Object[] vals = {dmgSignature, dmgHeavy, dmgUltimate, dmgFinal, bossMultiplier, damageCap, knockback, resetInvulnerability,
                 destruction, unrestricted, destructionScale, maxRadius, worldEnderRadius, blocksPerTick, msPerTick, restoreLimit,
                 splitterLength, dismantleLength, domainRadius, domainSeconds, overdriveSeconds, cooldownScale, energyScale,

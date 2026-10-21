@@ -60,6 +60,9 @@ public final class Yuji {
     private static final Map<UUID, Domain> DOMAINS = new HashMap<>();
     private static final Map<UUID, Long> OVERDRIVE = new HashMap<>();
     private static final Map<UUID, Long> SAFE_UNTIL = new HashMap<>();
+    /** "Until" for permanent Overdrive (far in the future, still safe to add to). */
+    static final long FOREVER = Long.MAX_VALUE / 4;
+    static final String OD_TAG = "yuji_overdrive";
 
     private Yuji() {}
 
@@ -258,6 +261,8 @@ public final class Yuji {
             if (now - r.start >= r.m.end && r.bolts.isEmpty() && r.idx >= r.beats.size()) {
                 it.remove();
                 SAFE_UNTIL.put(p.getUUID(), now + 60);
+                // Domain Apocalypse spends everything: Overdrive burns out with it
+                if (r.m == YMove.DOMAIN_APOCALYPSE) endOverdrive(p);
             }
         }
         // domains
@@ -306,6 +311,7 @@ public final class Yuji {
             if (now >= en.getValue() || !is(p) || !p.isAlive()) {
                 oit.remove();
                 flight(p, false);
+                p.getPersistentData().remove(OD_TAG);
                 YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), 0));
                 state(p);
             } else if (now % 40 == 0) {
@@ -454,8 +460,9 @@ public final class Yuji {
                 state(p);
             }
             case Beat.OVERDRIVE -> {
-                long until = now + Y.overdriveSeconds * 20L;
+                long until = Y.overdriveSeconds <= 0 ? FOREVER : now + Y.overdriveSeconds * 20L;
                 OVERDRIVE.put(p.getUUID(), until);
+                if (until == FOREVER) p.getPersistentData().putBoolean(OD_TAG, true);
                 p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60, 2, false, false, false));
                 flight(p, true);
                 YNet.near(level, p.position(), 256, new YNet.Aura(p.getId(), until));
@@ -570,6 +577,17 @@ public final class Yuji {
      * Overdrive flight: double-tap jump to take off, like creative flight but faster. Taken away when Overdrive
      * ends (he drifts down safely: no fall damage for a few seconds), never from creative or spectator players.
      */
+    /** Overdrive off: flight taken back (with a safe landing), aura out, the permanent flag cleared. */
+    static void endOverdrive(ServerPlayer p) {
+        if (OVERDRIVE.remove(p.getUUID()) == null) return;
+        p.getPersistentData().remove(OD_TAG);
+        p.removeEffect(MobEffects.MOVEMENT_SPEED);
+        p.removeEffect(MobEffects.JUMP);
+        flight(p, false);
+        YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), 0));
+        state(p);
+    }
+
     static void flight(ServerPlayer p, boolean on) {
         var ab = p.getAbilities();
         boolean native_ = p.isCreative() || p.isSpectator();
@@ -597,12 +615,20 @@ public final class Yuji {
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent e) {
         UUID u = e.getEntity().getUUID();
         RUNS.remove(u);
+        // flight never gets saved onto the player; permanent Overdrive is remembered by a tag and comes back on login
         if (OVERDRIVE.remove(u) != null && e.getEntity() instanceof ServerPlayer p) flight(p, false);
     }
 
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent e) {
-        if (e.getEntity() instanceof ServerPlayer p && is(p)) state(p);
+        if (e.getEntity() instanceof ServerPlayer p && is(p)) {
+            if (p.getPersistentData().getBoolean(OD_TAG)) {
+                OVERDRIVE.put(p.getUUID(), FOREVER);
+                flight(p, true);
+                YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), FOREVER));
+            }
+            state(p);
+        }
     }
 
     @SubscribeEvent
