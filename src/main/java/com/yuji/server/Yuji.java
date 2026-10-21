@@ -21,6 +21,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -662,6 +665,18 @@ public final class Yuji {
         }
     }
 
+    /**
+     * Shrine cuts the space itself, so it goes straight through Gojo's Infinity (both the kit's Gojo and Teen Gojo):
+     * against players, Dismantle, Cleave and everything built on them land as an unblockable, sourceless cut (the
+     * kind of damage Infinity lets through). Everything else is an ordinary player attack.
+     */
+    private static DamageSource source(ServerPlayer p, LivingEntity victim, Run r) {
+        if (r != null && r.m.shrine() && victim instanceof Player) {
+            return new DamageSource(p.serverLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.GENERIC_KILL));
+        }
+        return p.damageSources().playerAttack(p);
+    }
+
     static void hurt(ServerPlayer p, LivingEntity e, double amount, boolean main, Set<Integer> skip) {
         if (amount <= 0 || e == p || !e.isAlive() || skip.contains(e.getId())) return;
         if (e instanceof Player pl && (pl.isCreative() || pl.isSpectator())) return;
@@ -682,7 +697,7 @@ public final class Yuji {
         if (e.getType().is(Tags.EntityTypes.BOSSES)) dmg *= Y.bossMultiplier;
         if (Y.damageCap > 0) dmg = Math.min(dmg, Y.damageCap);
         if (Y.resetInvulnerability) e.invulnerableTime = 0;
-        e.hurt(p.damageSources().playerAttack(p), (float) Math.min(dmg, Float.MAX_VALUE / 4));
+        e.hurt(source(p, e, r), (float) Math.min(dmg, Float.MAX_VALUE / 4));
         if (Y.resetInvulnerability) e.invulnerableTime = 0;
     }
 

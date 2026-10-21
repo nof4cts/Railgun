@@ -83,6 +83,11 @@ public enum YMove {
         return this == PIERCING_BLOOD || this == HOMING_BLOOD || this == SUPERNOVA || this == DISMANTLE || this == CLEAVE;
     }
 
+    /** Sukuna's technique (Shrine): these cut through Gojo's Infinity. */
+    public boolean shrine() {
+        return this == DISMANTLE || this == THOUSAND_SLASHES || this == CLEAVE || this == WORLD_SPLITTER || this == DOMAIN_BARRAGE;
+    }
+
     public String label() {
         return (canon ? "" : "*") + title;
     }
