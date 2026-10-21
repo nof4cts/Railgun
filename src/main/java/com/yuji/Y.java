@@ -35,7 +35,8 @@ public final class Y {
     public static String destruction = "PERMANENT";      // PERMANENT, VISUAL (debris only, the world is untouched) or OFF
     public static boolean unrestricted = false;           // also bedrock and other unbreakable blocks
     public static double destructionScale = 1.0;
-    public static int maxRadius = 400, worldEnderRadius = 160, blocksPerTick = 24000, restoreLimit = 600000;
+    public static int maxRadius = 400, worldEnderRadius = 160, blocksPerTick = 4000, restoreLimit = 600000;
+    public static int msPerTick = 6;
     public static int splitterLength = 320, dismantleLength = 80;
     // domain, cooldowns, energy (server)
     public static int domainRadius = 48, domainSeconds = 30, overdriveSeconds = 60;
@@ -59,6 +60,7 @@ public final class Y {
             {"destruction.maxRadius", "Largest radius any single destruction may have."},
             {"destruction.worldEnderRadius", "Radius of the World Ender crater (the Final Judgment)."},
             {"destruction.blocksPerTick", "Most blocks changed per server tick (big craters stream in over a few seconds)."},
+            {"destruction.msPerTick", "Most milliseconds of each server tick spent destroying blocks (keeps the game smooth)."},
             {"destruction.restoreLimit", "Blocks remembered for /yuji restore (big World Enders past this can't be undone)."},
             {"destruction.splitterLength", "Length of the World Splitter cut."},
             {"destruction.dismantleLength", "Reach of Dismantle."},
@@ -101,6 +103,9 @@ public final class Y {
         worldEnderRadius = i(p, "destruction.worldEnderRadius", worldEnderRadius);
         blocksPerTick = i(p, "destruction.blocksPerTick", blocksPerTick);
         restoreLimit = i(p, "destruction.restoreLimit", restoreLimit);
+        msPerTick = i(p, "destruction.msPerTick", msPerTick);
+        // settings files from the first release asked for 24000 blocks a tick, far too many on real terrain
+        if (!"2".equals(p.getProperty("config.version"))) blocksPerTick = Math.min(blocksPerTick, 4000);
         splitterLength = i(p, "destruction.splitterLength", splitterLength);
         dismantleLength = i(p, "destruction.dismantleLength", dismantleLength);
         domainRadius = i(p, "domain.radius", domainRadius);
@@ -115,13 +120,13 @@ public final class Y {
         impactFrames = b(p, "fx.impactFrames", impactFrames);
         hitStop = b(p, "fx.hitStop", hitStop);
         cutscenes = b(p, "fx.cutscenes", cutscenes);
-        if (!Files.exists(file)) save(file);
+        if (!Files.exists(file) || !"2".equals(p.getProperty("config.version"))) save(file);
     }
 
     private static void save(Path file) {
-        StringBuilder sb = new StringBuilder("# Modulo Yuji (JJK kit) settings. Delete this file to restore the defaults.\n");
+        StringBuilder sb = new StringBuilder("# Modulo Yuji (JJK kit) settings. Delete this file to restore the defaults.\nconfig.version=2\n");
         Object[] vals = {dmgSignature, dmgHeavy, dmgUltimate, dmgFinal, bossMultiplier, damageCap, knockback, resetInvulnerability,
-                destruction, unrestricted, destructionScale, maxRadius, worldEnderRadius, blocksPerTick, restoreLimit,
+                destruction, unrestricted, destructionScale, maxRadius, worldEnderRadius, blocksPerTick, msPerTick, restoreLimit,
                 splitterLength, dismantleLength, domainRadius, domainSeconds, overdriveSeconds, cooldownScale, energyScale,
                 shake, flash, motion, slashVisibility, impactFrames, hitStop, cutscenes};
         for (int k = 0; k < DOC.length; k++) {

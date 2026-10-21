@@ -44,6 +44,7 @@ public final class Destroy {
     /** Recent destruction, newest last: each entry is one cast's changes (packed pos, old state). */
     private static final Deque<Journal> JOURNAL = new ArrayDeque<>();
     private static int journaled;
+    private static long deadline = Long.MAX_VALUE;
 
     private Destroy() {}
 
@@ -94,6 +95,7 @@ public final class Destroy {
         void remove(BlockPos pos, int[] budget) {
             BlockState s = level.getBlockState(pos);
             budget[0]--;
+            if ((budget[0] & 63) == 0 && System.nanoTime() > deadline) budget[0] = 0;
             if (!breakable(pos, s)) return;
             set(pos.immutable(), s, AIR, budget);
             seen++;
@@ -194,8 +196,10 @@ public final class Destroy {
     public static void onTick(TickEvent.ServerTickEvent e) {
         if (e.phase != TickEvent.Phase.END || JOBS.isEmpty()) return;
         int[] budget = {Y.blocksPerTick * 6, Y.blocksPerTick};
+        // never more than a few milliseconds a tick, however big the crater: the world streams apart, the game keeps running
+        deadline = System.nanoTime() + Math.max(1, Y.msPerTick) * 1_000_000L;
         Iterator<Job> it = JOBS.iterator();
-        while (it.hasNext() && budget[0] > 0 && budget[1] > 0) {
+        while (it.hasNext() && budget[0] > 0 && budget[1] > 0 && System.nanoTime() < deadline) {
             Job j = it.next();
             j.age++;
             boolean done;
