@@ -34,6 +34,10 @@ public record Beat(int t, int kind, int a0, Vec3 o0, int a1, Vec3 o1, double x, 
     public static final int SOUND = 22;      // sound i at p0: x volume, y pitch
     public static final int STREAK = 23;     // a cursed-energy streak trailing the caster for dur ticks: x radius
     public static final int IMPACT = 24;     // a pure impact-frame beat at p0: i preset, x strength
+    public static final int GRAB = 27;       // The End: the target held in a chokehold in front of the caster for dur ticks
+    public static final int SINK = 28;       // The End: caster and held target sink through the ground into the void over dur ticks
+    public static final int KILL = 29;       // The End: the target dies, creative or not
+    public static final int RETURN = 30;     // The End: the caster comes back up to where he started
     public static final int GLYPH = 26;      // the World Ender's signature carved into the crater floor at p0: x = text width
     public static final int HEAL = 25;       // Reverse Cursed Technique x100: the caster's body rebuilt to x max health, fully healed
 

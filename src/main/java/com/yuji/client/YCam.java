@@ -313,6 +313,23 @@ public final class YCam {
                     return look(from.add(handheld(t, 0.6)), g, 0, 72);
                 });
             }
+            case THE_END -> {
+                // behind them in a blink; the hold, close; the ground swallowing them, seen from above; black; and him, back
+                shot(0, 6, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(0.9)), target(), 0, 80));
+                shot(6, 22, 0, t -> {
+                    float u = span(t, 6, 22);
+                    return look(caster(1.2f).add(rot(F, 70 + 20 * u).scale(2.2 - 0.4 * u)).add(handheld(t, 0.06)), target().add(0, 0.5, 0), -4, 58);
+                });
+                shot(22, 63, 0, t -> {
+                    Vec3 hole = live.at(Beat.START, Vec3.ZERO);
+                    float u = ease(span(t, 22, 63));
+                    return look(hole.add(F.scale(-3.5)).add(R.scale(1.5)).add(0, 7 + 3 * u, 0).add(handheld(t, 0.1)), hole.add(0, -4 * u, 0), 0, 70);
+                });
+                shot(66, end, 0, t -> {
+                    float u = ease(span(t, 66, end));
+                    return look(live.at(Beat.START, Vec3.ZERO).add(F.scale(3.2 + 1.5 * u)).add(R.scale(-1.0)).add(0, 1.2, 0), caster(1.5f), 0, 62);
+                });
+            }
             case WORLD_BREAKER -> {
                 // the energy wells up: low, slow orbit; then coiled, a tight push-in on the fist; the step; the hit from
                 // three angles in a row; the second eruption seen from far above

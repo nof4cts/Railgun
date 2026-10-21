@@ -142,6 +142,7 @@ public final class Script {
         switch (c.move()) {
             case WORLD_BREAKER -> worldBreaker(b);
             case RCT -> rct(b);
+            case THE_END -> theEnd(b);
             case RICOCHET -> ricochet(b);
             case RESONANCE -> resonance(b);
             case PIERCING_BLOOD -> piercingBlood(b);
@@ -261,6 +262,32 @@ public final class Script {
      * rebuilt sturdier than it was: an iron golem's 100 health (50 hearts), healed to full, poisons and withering
      * burned out.
      */
+    /**
+     * The End. He is behind them before they see him move: an arm locked around the throat, and the ground under
+     * them gives way to nothing. He drags them down through the earth, past the bedrock, into the void, and holds on
+     * until it takes them. Then he walks back out where he started.
+     */
+    private static void theEnd(B b) {
+        b.dark(0, 0.6, 6);
+        b.dash(0, 5, TARGET, b.F.scale(0.8), 0.0);               // around behind them
+        b.add(Beat.of(6, GRAB, TARGET, Z).d(64));
+        b.impact(6, TARGET, 2, 0.6);
+        b.sound(6, TARGET, S_BLOOD_HIT, 2.5, 0.6);
+        b.dark(8, 0.85, 14);
+        b.sound(10, CASTER, S_RUMBLE, 5.0, 0.5);
+        // the ground opens into black
+        b.ring(22, START, Z, 6, 12, 1.2);
+        b.shell(22, START, Z, 3, 20, 0);
+        b.sound(22, START, S_WAVE, 6.0, 0.5);
+        b.add(Beat.of(24, SINK, CASTER, Z).p(24, 0, 0).d(38));      // x: how far below the world's floor they go
+        b.blackout(63, 3);
+        b.add(Beat.of(64, KILL, TARGET, Z));
+        b.sound(64, START, S_BF_BIG, 6.0, 0.5);
+        b.add(Beat.of(66, RETURN, CASTER, Z));
+        b.impact(67, CASTER, 6, 0.6);
+        b.dark(68, 0.0, 20);
+    }
+
     private static void rct(B b) {
         b.charge(0, 16, EYE, new Vec3(0, -0.5, 0), 0.8);
         b.sound(0, CASTER, S_CHARGE, 2.0, 1.4);

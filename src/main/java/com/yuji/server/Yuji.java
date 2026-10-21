@@ -87,6 +87,11 @@ public final class Yuji {
         Beat dash;
         long dashStart;
         Vec3 dashFrom;
+        // The End: who is held, until when; the descent
+        int grabbed = -1;
+        long grabUntil, sinkStart;
+        int sinkDur;
+        double sinkFrom, sinkTo;
         final List<Object[]> bolts = new ArrayList<>();   // {impactTick(Long), Beat}
         final Map<Integer, Double> dealt = new HashMap<>();
 
@@ -136,6 +141,40 @@ public final class Yuji {
         // infinite cursed energy: nothing is ever spent
         cast(p, m);
         return true;
+    }
+
+    /** The End, every tick: the chokehold keeps them pinned in front of him, and the two of them sink. */
+    private static void theEndTick(Run r, ServerLevel level, long now) {
+        ServerPlayer p = r.p;
+        if (r.sinkDur > 0) {
+            double u = Math.min(1.0, (now - r.sinkStart) / (double) r.sinkDur);
+            double e = u * u * (3 - 2 * u);
+            double y = r.sinkFrom + (r.sinkTo - r.sinkFrom) * e;
+            p.teleportTo(level, p.getX(), y, p.getZ(), p.getYRot(), p.getXRot());
+            p.setDeltaMovement(Vec3.ZERO);
+            p.fallDistance = 0;
+        }
+        if (r.grabbed >= 0 && now <= r.grabUntil) {
+            Entity t = level.getEntity(r.grabbed);
+            if (t == null || !t.isAlive()) {
+                r.grabbed = -1;
+                return;
+            }
+            Vec3 f = r.c.f();
+            Vec3 at = p.position().add(f.scale(0.75));
+            if (t instanceof ServerPlayer tp) {
+                tp.teleportTo(level, at.x, at.y, at.z, p.getYRot(), tp.getXRot());
+            } else {
+                t.teleportTo(at.x, at.y, at.z);
+            }
+            t.setDeltaMovement(Vec3.ZERO);
+            t.hurtMarked = true;
+            t.fallDistance = 0;
+            if (t instanceof LivingEntity le) {
+                le.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 10, false, false, false));
+                le.addEffect(new MobEffectInstance(MobEffects.JUMP, 10, 250, false, false, false));
+            }
+        }
     }
 
     private static void tell(ServerPlayer p, String s) {
@@ -197,6 +236,11 @@ public final class Yuji {
                 domainCentre, domainRadius, (float) Math.min(Y.maxRadius, Y.worldEnderRadius * scale),
                 (float) (Y.splitterLength * scale), (float) Y.dismantleLength, od, scale);
         List<Beat> beats = Script.build(c);
+        if (m == YMove.THE_END && target == null) {
+            tell(p, "The End needs someone to take");
+            ready(p)[m.ordinal()] = 0;
+            return;
+        }
         Run run = new Run(p, m, c, beats, now, Destroy.journal(level));
         RUNS.put(p.getUUID(), run);
 
@@ -371,6 +415,7 @@ public final class Yuji {
                 Y.LOG.error("[yuji] beat {} of {} failed (skipped)", b.kind(), r.m, e);
             }
         }
+        theEndTick(r, level, now);
         // dash
         if (r.dash != null) {
             Beat b = r.dash;
@@ -493,6 +538,39 @@ public final class Yuji {
                 Domain d = DOMAINS.remove(p.getUUID());
                 if (d != null) YNet.near(level, d.centre, 512, new YNet.Domain(p.getId(), d.centre, d.radius, 0, new int[0]));
                 state(p);
+            }
+            case Beat.GRAB -> {
+                Entity t = Anchors.entity(level, r.c.targetId());
+                if (t instanceof LivingEntity && t.isAlive()) {
+                    r.grabbed = t.getId();
+                    r.grabUntil = now + Math.max(1, b.dur());
+                }
+            }
+            case Beat.SINK -> {
+                r.sinkStart = now;
+                r.sinkDur = Math.max(1, b.dur());
+                r.sinkFrom = p.getY();
+                r.sinkTo = level.getMinBuildHeight() - b.x();
+            }
+            case Beat.KILL -> {
+                Entity t = r.grabbed >= 0 ? level.getEntity(r.grabbed) : Anchors.entity(level, r.c.targetId());
+                if (t instanceof LivingEntity le && le.isAlive()) {
+                    // the void takes them: it ignores creative mode, armour, totems and invulnerability
+                    le.invulnerableTime = 0;
+                    le.hurt(level.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+                    if (le.isAlive()) le.kill();
+                    if (le.isAlive()) le.setHealth(0);
+                    Y.LOG.info("[yuji] The End: {} dead={}", le.getName().getString(), !le.isAlive());
+                }
+                r.grabbed = -1;
+            }
+            case Beat.RETURN -> {
+                r.sinkDur = 0;
+                Vec3 home = r.c.origin();
+                p.teleportTo(level, home.x, home.y, home.z, p.getYRot(), p.getXRot());
+                p.setDeltaMovement(Vec3.ZERO);
+                p.fallDistance = 0;
+                SAFE_UNTIL.put(p.getUUID(), now + 100);
             }
             case Beat.GLYPH -> Destroy.glyph(level, p, r.journal, p0, r.c.f(), r.c.r(), b.x());
             case Beat.HEAL -> {

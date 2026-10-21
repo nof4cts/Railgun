@@ -29,6 +29,7 @@ public enum YMove {
     OVERDRIVE(15, false, "Modulo Overdrive: Unrestricted", false, 300, 1800, 62, true, 0),
     FINAL_JUDGMENT(16, false, "The Final Judgment: World Ender", false, 800, 3600, 234, true, 3),
     RCT(17, false, "Reverse Cursed Technique x100", false, 0, 600, 44, false, 0),
+    THE_END(18, false, "The End", false, 0, 1200, 96, true, 3),
     DOMAIN_APOCALYPSE(15, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
 
     public final int slot;

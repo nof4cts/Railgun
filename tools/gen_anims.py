@@ -229,6 +229,17 @@ a.k(32, add(STANCE, head=[-4, 0, 0]), INOUT)
 a.k(44, STAND, INOUT)
 a.write()
 
+# ---- The End: the chokehold, held all the way down
+CHOKE = P(right_arm=[-88, -62, 0], left_arm=[-96, 48, 0], torso=[-8, 6, 0], head=[14, -10, 0], right_leg=[-10, 0, 6], left_leg=[14, 0, -6], pos=[0, -0.6, 0])
+a = Anim('the_end', 96, STAND)
+a.k(3, P(punch_r(0.4), right_arm=[30, 0, 20], left_arm=[30, 0, -20], torso=[24, 0, 0], pos=[0, -1.2, -1.0]), SNAP)   # around behind them
+a.k(6, push(STAND, CHOKE, 1.1), SNAP).k(9, CHOKE, OUT_)
+a.tremble(10, 62, CHOKE, 1.4, 3)                              # holding on, the whole way down
+a.k(66, STAND, SNAP)                                         # back on the surface
+a.k(72, add(STANCE, head=[10, 0, 0]), OUT_).hold(74, 88, add(STANCE, head=[10, 0, 0]), 0.6, 7)
+a.k(96, STAND, INOUT)
+a.write()
+
 # ================================================================== Blood
 a = Anim('piercing_blood', 30, STAND)
 a.k(2, add(CLASP, torso=[10, 0, 0], head=[12, 0, 0]), OUT_)        # palms meet, a small bow over them

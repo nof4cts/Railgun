@@ -56,7 +56,7 @@ public final class YSelfTest {
     private static String pendingShot;
     private static final List<Step> SCRIPT = new ArrayList<>();
     private static final YMove[] ORDER = {
-            YMove.RCT, YMove.WORLD_BREAKER, YMove.RICOCHET, YMove.RESONANCE, YMove.PIERCING_BLOOD, YMove.HOMING_BLOOD, YMove.SUPERNOVA, YMove.BLOOD_STORM,
+            YMove.RCT, YMove.THE_END, YMove.WORLD_BREAKER, YMove.RICOCHET, YMove.RESONANCE, YMove.PIERCING_BLOOD, YMove.HOMING_BLOOD, YMove.SUPERNOVA, YMove.BLOOD_STORM,
             YMove.CRIMSON_EXECUTION, YMove.BLOOD_APOCALYPSE, YMove.DISMANTLE, YMove.THOUSAND_SLASHES, YMove.CLEAVE,
             YMove.WORLD_SPLITTER, YMove.METEOR, YMove.DOMAIN, YMove.DOMAIN_BARRAGE,
             YMove.DOMAIN_FINISHER, YMove.OVERDRIVE, YMove.FINAL_JUDGMENT, YMove.DOMAIN_APOCALYPSE};
