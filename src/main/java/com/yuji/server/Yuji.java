@@ -273,15 +273,24 @@ public final class Yuji {
                 if (owner != null) state(owner);
                 continue;
             }
+            // the domain doesn't hurt: it holds. Everything inside is dragged to a crawl (walking, flying, jumping,
+            // falling, swinging), so the Barrage and the Finisher can't miss
+            List<LivingEntity> in = inside(owner, d);
+            for (LivingEntity v : in) {
+                Vec3 mv = v.getDeltaMovement();
+                v.setDeltaMovement(mv.x * 0.35, mv.y > 0 ? mv.y * 0.35 : mv.y * 0.6, mv.z * 0.35);
+                v.hurtMarked = v instanceof Player;   // players move themselves: tell their client
+                if (now % 10 == 0) {
+                    v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 6, false, true, true));
+                    v.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 30, 3, false, true, true));
+                    v.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 30, 1, false, true, true));
+                    v.addEffect(new MobEffectInstance(MobEffects.JUMP, 30, 250, false, false, false));   // no jumping out
+                }
+            }
             if (now % 10 == 0) {
-                List<LivingEntity> in = inside(owner, d);
                 int[] ids = new int[Math.min(32, in.size())];
                 for (int i = 0; i < ids.length; i++) ids[i] = in.get(i).getId();
                 YNet.near(d.level, d.centre, 512, new YNet.Domain(owner.getId(), d.centre, d.radius, d.until, ids));
-                if (now % 20 == 0) {
-                    // the sure-hit: everything inside burns
-                    for (LivingEntity v : in) hurt(owner, v, Y.dmgSignature * 0.08, false, Set.of());
-                }
             }
         }
         // overdrive
