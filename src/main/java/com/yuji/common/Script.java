@@ -562,12 +562,9 @@ public final class Script {
         b.ring(120, GROUND, Z, W * 1.2, 120, 3.0);
         b.ring(126, GROUND, Z, W * 1.6, 100, 4.0);
         b.blast(120, GROUND, Z, W, 0.35, 1, 0);
-        b.blast(140, GROUND, b.F.scale(W * 0.5), W * 0.3, 0.5, 0, 0);
-        b.blast(160, GROUND, b.R.scale(-W * 0.5), W * 0.3, 0.5, 0, 0);
-        b.blast(175, GROUND, b.R.scale(W * 0.45).add(b.F.scale(-W * 0.3)), W * 0.25, 0.5, 0, 0);
         b.dust(125, GROUND, Z, W * 0.6, W * 0.5);
-        b.dust(142, GROUND, b.F.scale(W * 0.5), W * 0.3, W * 0.3);
-        b.dust(162, GROUND, b.R.scale(-W * 0.5), W * 0.3, W * 0.3);
+        // his name, left in the floor of what remains
+        b.add(Beat.of(140, GLYPH, GROUND, Z).p(Math.min(W * 1.05, 240), 0, 0));
         b.dark(170, 0.0, 50);
     }
 

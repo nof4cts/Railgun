@@ -105,6 +105,14 @@ public final class Destroy {
             }
         }
 
+        /** Overwrite a solid block (subject to the same protection as breaking it). */
+        void paint(BlockPos pos, BlockState to, int[] budget) {
+            BlockState s = level.getBlockState(pos);
+            budget[0]--;
+            if (s == to || !breakable(pos, s)) return;
+            set(pos.immutable(), s, to, budget);
+        }
+
         void place(BlockPos pos, BlockState to, int[] budget) {
             BlockState s = level.getBlockState(pos);
             budget[0]--;
@@ -195,6 +203,84 @@ public final class Destroy {
             deadline = saved;
         }
         job.flushDebris();
+    }
+
+    /**
+     * The World Ender's signature: 虎杖悠仁 inlaid in red across the floor of the crater, readable from above with
+     * the crater's centre at its centre ("up" pointing the way he struck). Waits until the crater it belongs to
+     * has finished forming, then follows the floor wherever it lies.
+     */
+    public static void glyph(ServerLevel level, ServerPlayer owner, Journal j, Vec3 centre, Vec3 forward, Vec3 right, double width) {
+        if (Y.destructionOff() || width < 8) return;
+        JOBS.add(new Glyph(level, owner, j, centre, forward, right, width));
+    }
+
+    private static final class Glyph extends Job {
+        final Vec3 F, R;
+        final double tw, th, ps;
+        final int x0, z0, x1, z1;
+        int x, z;
+        final BlockState ink = Blocks.RED_CONCRETE.defaultBlockState(), edge = Blocks.BLACK_CONCRETE.defaultBlockState();
+
+        Glyph(ServerLevel level, ServerPlayer owner, Journal j, Vec3 c, Vec3 f, Vec3 r, double width) {
+            super(level, owner, j, c, 0f);
+            Vec3 ff = new Vec3(f.x, 0, f.z), rr = new Vec3(r.x, 0, r.z);
+            this.F = ff.lengthSqr() < 1e-6 ? new Vec3(0, 0, 1) : ff.normalize();
+            this.R = rr.lengthSqr() < 1e-6 ? new Vec3(-F.z, 0, F.x) : rr.normalize();
+            this.tw = width;
+            this.ps = width / com.yuji.common.NameGlyph.W;
+            this.th = ps * com.yuji.common.NameGlyph.H;
+            int reach = (int) Math.ceil(Math.hypot(tw, th) / 2) + 2;
+            x0 = Mth.floor(c.x) - reach;
+            x1 = Mth.floor(c.x) + reach;
+            z0 = Mth.floor(c.z) - reach;
+            z1 = Mth.floor(c.z) + reach;
+            x = x0;
+            z = z0;
+        }
+
+        private boolean inkAt(double gx, double gz) {
+            return com.yuji.common.NameGlyph.ink((int) Math.floor(gx / ps), (int) Math.floor(gz / ps));
+        }
+
+        @Override
+        boolean step(int[] budget) {
+            // the crater it is written in must be finished first
+            for (Job other : JOBS) {
+                if (other == this) break;
+                if (other.journal == journal) return false;
+            }
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+            while (x <= x1 && budget[0] > 0 && budget[1] > 0) {
+                double dx = x + 0.5 - centre.x, dz = z + 0.5 - centre.z;
+                double gx = dx * R.x + dz * R.z + tw / 2;
+                double gz = th / 2 - (dx * F.x + dz * F.z);
+                budget[0]--;
+                if (gx >= -ps && gz >= -ps && gx <= tw + ps && gz <= th + ps) {
+                    boolean in = inkAt(gx, gz);
+                    // a thin black outline around every stroke so it reads from far away
+                    boolean border = !in && (inkAt(gx + ps * 0.9, gz) || inkAt(gx - ps * 0.9, gz) || inkAt(gx, gz + ps * 0.9) || inkAt(gx, gz - ps * 0.9));
+                    if (in || border) {
+                        pos.set(x, 0, z);
+                        if (level.isLoaded(pos)) {
+                            int top = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+                            if (top > level.getMinBuildHeight()) {
+                                BlockState face = in ? ink : edge;
+                                pos.set(x, top, z);
+                                paint(pos, face, budget);
+                                pos.set(x, top - 1, z);
+                                paint(pos, face, budget);
+                            }
+                        }
+                    }
+                }
+                if (++z > z1) {
+                    z = z0;
+                    x++;
+                }
+            }
+            return x > x1;
+        }
     }
 
     public static int restore(ServerLevel level, int casts) {
@@ -325,7 +411,9 @@ public final class Destroy {
                     double bowl = depth * r * (1 - k * k) + noise;
                     if (style == 1) bowl = depth * r * (1 - k * k) * 0.6 + noise;
                     int floor = Math.max(bottom, (int) Math.floor(cy - bowl));
-                    int ceil = Math.min(top, Math.max(surf, cy) + (int) (r * (style == 1 ? 0.9 : 0.6)) + 12);
+                    // only as high as anything actually stands here (buildings and treetops included): no scanning empty sky
+                    int standing = level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+                    int ceil = Math.min(top, Math.max(standing, cy) + 1);
                     if (y == Integer.MIN_VALUE) y = ceil;
                     while (y >= floor && budget[0] > 0) {
                         pos.set(x, y, z);

@@ -178,6 +178,21 @@ public final class YSelfTest {
             // big destruction takes a while to stream in
             t += m.end + (m.tier >= 2 ? 120 : 60) + (chain ? 0 : 40);
             if (m == YMove.OVERDRIVE) t -= 20;
+            if (m == YMove.FINAL_JUDGMENT) {
+                // wait for the crater and the name in its floor, then look straight down on it
+                final int gx = cx;
+                step(t + 560, null, CameraType.FIRST_PERSON, p -> {
+                    ServerLevel l = p.serverLevel();
+                    int gy = l.getHeight(Heightmap.Types.MOTION_BLOCKING, gx, 14);
+                    p.teleportTo(l, gx + 0.5, gy + 150, 14.5, 0.0F, 90.0F);
+                });
+                step(t + 620, String.format("%02d_final_judgment_name", k), CameraType.FIRST_PERSON, null);
+                step(t + 630, null, CameraType.THIRD_PERSON_BACK, p -> {
+                    ServerLevel l = p.serverLevel();
+                    p.teleportTo(l, gx + 0.5, l.getHeight(Heightmap.Types.MOTION_BLOCKING, gx, 0), 0.5, 0.0F, 5.0F);
+                });
+                t += 660;
+            }
         }
         step(t + 40, "END", CameraType.THIRD_PERSON_BACK, null);
     }

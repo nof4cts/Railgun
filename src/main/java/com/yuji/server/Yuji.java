@@ -487,6 +487,7 @@ public final class Yuji {
                 if (d != null) YNet.near(level, d.centre, 512, new YNet.Domain(p.getId(), d.centre, d.radius, 0, new int[0]));
                 state(p);
             }
+            case Beat.GLYPH -> Destroy.glyph(level, p, r.journal, p0, r.c.f(), r.c.r(), b.x());
             case Beat.HEAL -> {
                 AttributeInstance hp = p.getAttribute(Attributes.MAX_HEALTH);
                 if (hp != null) {
