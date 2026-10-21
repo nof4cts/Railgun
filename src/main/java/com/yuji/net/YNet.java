@@ -40,7 +40,9 @@ public final class YNet {
 
     static synchronized void register() {
         if (CHANNEL != null) return;
-        CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("jjk", "yuji"), () -> V, V::equals, V::equals);
+        // lenient: a server or client without Yuji's channel can still connect (no mod-mismatch disconnect)
+        CHANNEL = NetworkRegistry.newSimpleChannel(new ResourceLocation("jjk", "yuji"), () -> V,
+                NetworkRegistry.acceptMissingOr(V), NetworkRegistry.acceptMissingOr(V));
         int id = 0;
         CHANNEL.registerMessage(id++, Cast.class, Cast::encode, Cast::decode, Cast::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, Debris.class, Debris::encode, Debris::decode, Debris::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
