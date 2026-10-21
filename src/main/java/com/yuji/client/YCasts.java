@@ -481,7 +481,9 @@ public final class YCasts {
                 }
                 case K_DUST -> {
                     Vec3 p = in.p0.subtract(cam);
-                    fr.put(K_DUST, cam, f(p.x), f(p.y), f(p.z), f(sec), f(b.x()), f(b.y()), 1, 0);
+                    // huge clouds thin out, so the crater under them still reads
+                    float thick = (float) Mth.clamp(Math.sqrt(25.0 / Math.max(1.0, b.x())), 0.3, 1.0);
+                    fr.put(K_DUST, cam, f(p.x), f(p.y), f(p.z), f(sec), f(b.x()), f(b.y()), thick, 0);
                 }
                 case K_TRENCH -> {
                     Vec3 p = in.p0.subtract(cam);

@@ -355,6 +355,7 @@ public final class Script {
                 b.blast(t + 10, GROUND, g, 2.5, 0.6, 0, 0.4);
             }
             b.ring(t0 + 10, POINT, Z, 30, 50, 1.2);
+            b.dmg(t0 + 10, POINT, Z, 24, 0.5, 1);
         }
         b.dark(100, 0.0, 12);
     }
@@ -374,6 +375,7 @@ public final class Script {
         b.impact(30, TARGET, 2, 1.0);
         b.shell(30, TARGET, Z, 6, 10, 0);
         b.blast(30, GROUND, Z, 4, 0.5, 0, 0);
+        b.dmg(30, TARGET, Z, 3.0, 4.0, 2);
         b.knock(30, TARGET, 0.8, 5.0, 2.5);
         b.ring(30, GROUND, Z, 22, 70, 1.4);
         b.sound(30, TARGET, S_BLOOD_HIT, 4.0, 0.8);
