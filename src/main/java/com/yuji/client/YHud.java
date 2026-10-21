@@ -49,6 +49,42 @@ public final class YHud {
         return Math.min(1f, left / (float) total[i]);
     }
 
+    /**
+     * His cursed energy is infinite: the kit's bar (top right) is covered with a full, slowly shimmering bar and
+     * "CE INFINITE". Drawn high in the GUI's depth so it stays on top whichever HUD draws last.
+     */
+    public static void infinite(GuiGraphics g) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.options.hideGui || YCam.running() || JjkHud.cutscene()) return;
+        if (ClientSorcerers.mine() != Sorcerer.YUJI || mc.screen instanceof com.jjk.mod.client.SelectorScreen) return;
+        Font font = mc.font;
+        int w = g.guiWidth();
+        int barW = 90, bx = w - barW - 4, by = 19;
+        int color = Sorcerer.YUJI.color;
+        float t = (System.nanoTime() / 1.0e9f) % 1000f;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 450);
+        // cover the kit's numbers
+        String old = "CE 1000 / 1000";
+        int ow = font.width(old) + 8;
+        g.fill(bx - ow - 2, by - 3, bx - 2, by + 9, 0xFF0C0608);
+        // the bar: always full, a highlight sweeping along it
+        g.fill(bx - 1, by - 1, bx + barW + 1, by + 6, 0xFF000000);
+        g.fill(bx, by, bx + barW, by + 5, 0xFF000000 | color);
+        int sweep = (int) ((t * 45) % (barW + 30)) - 15;
+        for (int i = 0; i < 12; i++) {
+            int x = bx + sweep + i;
+            if (x < bx || x >= bx + barW) continue;
+            int a = (int) (110 * Math.sin(Math.PI * i / 12.0));
+            g.fill(x, by, x + 1, by + 5, (a << 24) | 0xFFFFFF);
+        }
+        String text = "CE INFINITE";
+        float pulse = 0.75f + 0.25f * (float) Math.sin(t * 3.0);
+        int tc = 0xFF000000 | ((int) (255 * pulse) << 16) | ((int) (60 * pulse) << 8) | (int) (70 * pulse);
+        g.drawString(font, text, bx - font.width(text) - 4, by - 1, tc, true);
+        g.pose().popPose();
+    }
+
     public static void draw(GuiGraphics g) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.options.hideGui || YCam.running() || JjkHud.cutscene()) return;

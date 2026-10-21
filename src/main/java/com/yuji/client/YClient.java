@@ -120,6 +120,7 @@ public final class YClient {
         public static void onGui(RenderGuiEvent.Post e) {
             try {
                 YHud.draw(e.getGuiGraphics());
+                YHud.infinite(e.getGuiGraphics());
             } catch (Throwable t) {
                 safe("hud", t);
             }

@@ -124,9 +124,7 @@ public final class Yuji {
             tell(p, m.label() + " ready in " + String.format("%.1f", (ready - now) / 20.0) + "s");
             return true;
         }
-        int cost = (int) Math.round(m.cost * Y.energyScale);
-        if (cost > 0 && !Energy.has(p, cost)) return true;
-        if (cost > 0) Energy.spend(p, cost);
+        // infinite cursed energy: nothing is ever spent
         cast(p, m);
         return true;
     }
@@ -323,9 +321,13 @@ public final class Yuji {
                 p.addEffect(new MobEffectInstance(MobEffects.JUMP, 60, 1, false, false, false));
             }
         }
-        // a slow heartbeat of state, so the HUD is right after reconnects
-        if (server.getTickCount() % 40 == 0) {
-            for (ServerPlayer p : server.getPlayerList().getPlayers()) if (is(p)) state(p);
+        // a slow heartbeat of state, so the HUD is right after reconnects; his cursed energy never runs low
+        if (server.getTickCount() % 20 == 0) {
+            for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+                if (!is(p)) continue;
+                if (Energy.get(p) < Energy.MAX) Energy.set(p, Energy.MAX);
+                if (server.getTickCount() % 40 == 0) state(p);
+            }
         }
     }
 
