@@ -36,8 +36,9 @@ tasks.register('patchedJar', Jar) {
                     'Implementation-Title': 'jjk', 'Implementation-Version': '1.0.0', 'Implementation-Vendor': 'Ethan'])
     }
     from(zipTree(layout.buildDirectory.file("libs/yuji-patch-1.0.0.jar"))) { exclude 'META-INF/**' }
+    from('patches')   // Keys.class with 20 move slots (tools/patch_keys.py)
     from(zipTree('libs/jjk-1.0.0.jar')) {
-        exclude 'com/jjk/mod/Sorcerer.class', 'com/teengojo/TeenHooks.class'
+        exclude 'com/jjk/mod/Sorcerer.class', 'com/teengojo/TeenHooks.class', 'com/jjk/mod/client/Keys.class'
         exclude 'META-INF/MANIFEST.MF'
     }
 }

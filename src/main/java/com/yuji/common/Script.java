@@ -141,6 +141,8 @@ public final class Script {
         B b = new B(c);
         switch (c.move()) {
             case WORLD_BREAKER -> worldBreaker(b);
+            case RICOCHET -> ricochet(b);
+            case RESONANCE -> resonance(b);
             case PIERCING_BLOOD -> piercingBlood(b);
             case HOMING_BLOOD -> homingBlood(b);
             case SUPERNOVA -> supernova(b);
@@ -166,6 +168,92 @@ public final class Script {
     private static final Vec3 Z = Vec3.ZERO;
 
     // ================================================================== Black Flash
+
+    /** Knock whatever is at the target along a direction (dx, dz flat), with some lift. */
+    private static void shove(B b, int t, Vec3 dir, double up, double push) {
+        Vec3 d = new Vec3(dir.x, 0, dir.z);
+        d = d.lengthSqr() < 1e-6 ? b.F : d.normalize();
+        b.add(Beat.of(t, KNOCK, TARGET, d.scale(-1.2)).p(up, 2.8, push));
+    }
+
+    /**
+     * Black Flash: Ricochet. No charge, no crater: the target becomes a pinball. Five Black Flashes from five
+     * directions, Yuji blinking to wherever it is flying before it gets there: sideways, back the other way, up,
+     * spiked down, and the last one an uppercut that throws it into the sky, where the black sparks catch up with
+     * it a second later.
+     */
+    private static void ricochet(B b) {
+        Vec3 F = b.F, R = b.R;
+        b.dash(0, 6, TARGET, Z, 1.3);
+        b.bf(8, TARGET, Z, 1.3, 0.6, 22, 1);
+        shove(b, 8, R, 0.35, 3.2);
+        b.ring(8, GROUND, Z, 14, 70, 1.0);
+        // 2: already there, from the other side
+        b.dash(11, 3, TARGET, R.scale(2.2), 0.1);
+        b.smear(15, CASTER, TARGET);
+        b.bf(16, TARGET, Z, 1.4, 0.6, 23, 1);
+        shove(b, 16, R.scale(-1), 0.4, 3.6);
+        // 3: under it, kicked up
+        b.dash(19, 3, TARGET, R.scale(-2.0).add(0, -0.6, 0), 0.1);
+        b.bf(24, TARGET, Z, 1.5, 0.6, 24, 1);
+        shove(b, 24, F, 1.9, 0.8);
+        b.ring(24, GROUND, Z, 18, 70, 1.2);
+        // 4: above it, spiked back down
+        b.dash(28, 4, TARGET, new Vec3(0, 1.8, 0).add(F.scale(-0.6)), 0.1);
+        b.bf(34, TARGET, Z, 1.6, 0.6, 25, 1);
+        shove(b, 34, F, -3.2, 0.3);
+        b.blast(38, GROUND, Z, 5, 0.45, 0, 0);
+        b.dust(39, GROUND, Z, 7, 7);
+        // 5: as it bounces off the ground, the uppercut
+        b.dash(40, 6, TARGET, F.scale(-1.0).add(0, -0.4, 0), 0.2);
+        b.charge(40, 8, HAND, Z, 1.2);
+        b.blackout(47, 1);
+        b.bf(48, TARGET, Z, 2.4, 1.2, 26, 2);
+        shove(b, 48, F, 3.6, 0.5);
+        b.ring(48, GROUND, Z, 30, 80, 1.6);
+        b.add(Beat.of(48, BOLT, GROUND, Z).to(GROUND, new Vec3(0, 34, 0)).p(0.6, 0.0, 1).d(6));   // a black streak up after it
+        // the echo: the sparks catch it at the top
+        b.impact(62, TARGET, 2, 0.8);
+        b.bf(62, TARGET, Z, 2.0, 0.8, 27, 2);
+        b.shell(62, TARGET, Z, 8, 10, 0);
+        b.sound(62, TARGET, S_BF_BIG, 6.0, 1.2);
+    }
+
+    /**
+     * Black Flash: Resonance. One short jab, and the black sparks it leaves don't stop: they arc from enemy to
+     * enemy as black lightning, a Black Flash on each one they reach. Then everything they touched goes off again
+     * at once, in resonance with the first.
+     */
+    private static void resonance(B b) {
+        int n = Math.max(1, b.c.targetCount());
+        b.dark(0, 0.55, 10);
+        b.charge(0, 14, HAND, Z, 0.9);
+        b.dash(6, 6, TARGET, Z, 1.2);
+        b.bf(14, b.tgt(0), Z, 1.4, 0.8, 30, 1);
+        int t = 14;
+        for (int k = 1; k < Math.max(n, 5); k++) {
+            int from = b.tgt(k - 1), to = b.tgt(k);
+            // a jagged arc of black lightning to the next one
+            b.add(Beat.of(t, BOLT, from, Z).to(to, Z).p(0.35, 0.0, 1).d(3).n(1 + k));
+            t += 4;
+            b.bf(t, to, Z, 1.1 + 0.08 * k, 0.6, 30 + k, 1);
+            b.sound(t, to, S_BF, 3.0, 1.2 + 0.05 * k);
+        }
+        b.dark(t + 2, 0.75, 8);
+        int res = t + 14;
+        // resonance: all of them, at once
+        b.blackout(res - 1, 1);
+        for (int k = 0; k < Math.max(n, 5); k++) {
+            int who = b.tgt(k);
+            b.bf(res, who, Z, 1.8, 1.0, 40 + k, 2);
+            b.shell(res, who, Z, 5, 10, 0);
+            b.knock(res, who, 0.9, 2.0, 2.5);
+        }
+        b.impact(res, TARGET, 3, 0.9);
+        b.sound(res, TARGET, S_BF_BIG, 8.0, 0.9);
+        b.ring(res, GROUND, Z, 36, 80, 1.6);
+        b.dark(res + 2, 0.0, 14);
+    }
 
     private static void worldBreaker(B b) {
         b.dark(0, 0.85, 30);

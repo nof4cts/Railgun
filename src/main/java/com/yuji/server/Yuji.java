@@ -391,10 +391,12 @@ public final class Yuji {
             case Beat.BF -> {
                 // the primary blow lands on the target (or whatever is right there), then the distortion tears outwards
                 Set<Integer> hit = new HashSet<>();
-                LivingEntity primary = null;
-                Entity tgt = Anchors.entity(level, r.c.targetId());
-                if (tgt instanceof LivingEntity le && le.isAlive() && Anchors.centre(le).distanceTo(p0) < 4 + b.x()) primary = le;
-                if (primary == null) primary = nearest(p, p0, 2.5 * b.x());
+                // the blow lands on whatever is at the point of impact (the beat's own anchor already follows its target)
+                LivingEntity primary = nearest(p, p0, Math.max(2.5, 2.0 * b.x()));
+                if (primary == null) {
+                    Entity tgt = Anchors.entity(level, r.c.targetId());
+                    if (tgt instanceof LivingEntity le && le.isAlive() && Anchors.centre(le).distanceTo(p0) < 4 + b.x()) primary = le;
+                }
                 if (primary != null) {
                     hurt(p, primary, tierDamage(b.i()) * b.y(), true, hit);
                     hit.add(primary.getId());

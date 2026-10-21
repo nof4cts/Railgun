@@ -176,6 +176,44 @@ a.k(104, STANCE, OUT_).hold(106, 128, STANCE, 1.2, 8)
 a.k(142, STAND, INOUT)
 a.write()
 
+# ---- Black Flash: Ricochet - five blows from five directions, hands and feet
+KICK_R = P(right_leg=[-30, 0, 70], left_leg=[0, 0, -10], torso=[0, -30, -24], head=[0, 30, 10], right_arm=[-30, 0, 30], left_arm=[-60, -20, -30], pos=[0, 0.6, 0])
+AXE = P(right_leg=[-150, 0, 6], left_leg=[10, 0, -6], torso=[-20, 0, 0], head=[10, 0, 0], right_arm=[20, 0, 30], left_arm=[20, 0, -30], pos=[0, 1.0, 0])
+AXE_DOWN = P(right_leg=[-40, 0, 6], left_leg=[20, 0, -6], torso=[30, 0, 0], head=[20, 0, 0], right_arm=[30, 0, 40], left_arm=[30, 0, -40], pos=[0, -1.0, 0])
+a = Anim('ricochet', 80, STAND)
+a.k(3, P(punch_r(0.5), right_arm=[40, 0, 26], torso=[26, 0, 0], pos=[0, -1.4, -1.2]), SNAP)      # the dash
+a.k(6, wind_r(0.8), OUT_)
+a.strike(8, punch_r(1.1), STAND, hold=0)                                       # 1: the straight right
+a.k(12, add(KICK_R, right_leg=[0, 0, -30]), OUT_)                              # 2: the roundhouse
+a.strike(16, KICK_R, STAND, over=1.1, hold=0)
+a.k(21, CROUCH, OUT_)                                                          # 3: under it - the rising uppercut
+a.strike(24, UPPER, STAND, over=1.1, hold=0)
+a.k(30, AXE, OUT_)                                                             # 4: the axe kick from above
+a.strike(34, AXE_DOWN, STAND, over=1.1, hold=0)
+a.k(42, CROUCH, OUT_).tremble(43, 47, CROUCH, 2.0, 1)
+a.strike(48, add(UPPER, right_arm=[-8, 0, 0], pos=[0, 1.2, 0]), STAND, over=1.15, hold=8)    # 5: the launcher
+a.k(62, add(STANCE, head=[-30, 0, 0]), OUT_)                                   # watching it go up
+a.hold(64, 74, add(STANCE, head=[-30, 0, 0]), 0.8, 5)
+a.k(80, STAND, INOUT)
+a.write()
+
+# ---- Black Flash: Resonance - one short jab, two fingers following the lightning, a snap to set it all off
+JAB = P(right_arm=[-90, -2, 0], left_arm=[-50, -20, -8], torso=[6, -18, 0], head=[0, 14, 0], right_leg=[-8, 0, 4], left_leg=[14, 0, -4], pos=[0, -0.8, -0.4])
+TRACK = P(right_arm=[-96, 0, 0], left_arm=[-20, 0, -10], torso=[0, 0, 0], head=[0, 0, 0], right_leg=[0, 0, 5], left_leg=[0, 0, -5])
+SNAPF = P(right_arm=[-120, 30, 0], left_arm=[0, 0, -8], torso=[-4, 10, 0], head=[-6, -8, 0], right_leg=[0, 0, 5], left_leg=[0, 0, -5])
+a = Anim('resonance', 96, STAND)
+a.k(4, add(STANCE, right_arm=[20, 0, 0]), OUT_).tremble(6, 12, add(STANCE, right_arm=[20, 0, 0]), 1.2, 2)
+a.k(13, add(JAB, right_arm=[50, 0, 0]), IN)
+a.strike(14, JAB, STAND, over=1.08, hold=0)                                     # a short, almost lazy jab
+for i, t in enumerate(range(18, 34, 4)):                                       # two fingers follow the lightning target to target
+    a.k(t, add(TRACK, right_arm=[0, (i % 2 * 2 - 1) * 28, 0], torso=[0, (i % 2 * 2 - 1) * 14, 0], head=[0, (i % 2 * 2 - 1) * 20, 0]), INOUT)
+a.k(40, SNAPF, OUT_).hold(41, 45, SNAPF, 0.5, 2)
+a.k(46, add(SNAPF, right_arm=[12, -20, 0]), SNAP)                               # the snap: resonance
+a.k(50, add(SNAPF, right_arm=[20, -20, 0]), OUT_)
+a.k(60, add(STANCE, head=[4, 0, 0]), INOUT).hold(62, 82, STANCE, 0.8, 8)
+a.k(96, STAND, INOUT)
+a.write()
+
 # ================================================================== Blood
 a = Anim('piercing_blood', 30, STAND)
 a.k(2, add(CLASP, torso=[10, 0, 0], head=[12, 0, 0]), OUT_)        # palms meet, a small bow over them
