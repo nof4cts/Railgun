@@ -1,5 +1,6 @@
 package com.yuji.client;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.yuji.net.YNet;
@@ -26,6 +27,7 @@ public final class YDebris {
     private static final int MAX = 1600;
     private static final List<Piece> PIECES = new ArrayList<>();
     private static final Random R = new Random();
+    private static MultiBufferSource.BufferSource OWN;
 
     private YDebris() {}
 
@@ -118,7 +120,9 @@ public final class YDebris {
         float pt = e.getPartialTick();
         Vec3 cam = e.getCamera().getPosition();
         PoseStack ps = e.getPoseStack();
-        MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
+        // our own buffer: never flush (or corrupt) the batches other mods keep in the shared one
+        if (OWN == null) OWN = MultiBufferSource.immediate(new BufferBuilder(1 << 18));
+        MultiBufferSource.BufferSource buf = OWN;
         for (Piece d : PIECES) {
             double x = Mth.lerp(pt, d.px, d.x), y = Mth.lerp(pt, d.py, d.y), z = Mth.lerp(pt, d.pz, d.z);
             if ((x - cam.x) * (x - cam.x) + (z - cam.z) * (z - cam.z) > 300 * 300) continue;
