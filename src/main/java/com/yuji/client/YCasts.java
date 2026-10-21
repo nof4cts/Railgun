@@ -342,6 +342,10 @@ public final class YCasts {
                 YFx.shockwave(p0, 0.8f, 0.8f);
                 YFx.shake(0.5f);
             }
+            case Beat.HEAL -> {
+                YFx.flash(0.5f, 0.85f, 1f, 0.9f, 2.2f);
+                YFx.punch(0.25f);
+            }
             case Beat.OVERDRIVE -> {
                 YFx.flash(0.7f, 1f, 0.1f, 0.12f, 2.0f);
                 YFx.shockwave(p0, 0.9f, 1.4f);

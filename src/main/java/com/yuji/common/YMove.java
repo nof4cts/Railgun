@@ -28,6 +28,7 @@ public enum YMove {
     DOMAIN_BARRAGE(9, true, "Domain Barrage", false, 260, 600, 102, true, 2),
     OVERDRIVE(15, false, "Modulo Overdrive: Unrestricted", false, 300, 1800, 62, true, 0),
     FINAL_JUDGMENT(16, false, "The Final Judgment: World Ender", false, 800, 3600, 234, true, 3),
+    RCT(17, false, "Reverse Cursed Technique x100", false, 0, 600, 44, false, 0),
     DOMAIN_APOCALYPSE(15, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
 
     public final int slot;

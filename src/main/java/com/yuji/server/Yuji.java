@@ -19,6 +19,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -61,6 +64,8 @@ public final class Yuji {
     private static final Map<UUID, Long> OVERDRIVE = new HashMap<>();
     private static final Map<UUID, Long> SAFE_UNTIL = new HashMap<>();
     private static Run CURRENT;
+    /** The extra max health from Reverse Cursed Technique x100 (one fixed id, so it never stacks). */
+    static final UUID RCT_HP = UUID.fromString("6f3c7a1e-2b54-4d8e-9c1f-7a0d5e3b9c21");
     /** "Until" for permanent Overdrive (far in the future, still safe to add to). */
     static final long FOREVER = Long.MAX_VALUE / 4;
     static final String OD_TAG = "yuji_overdrive";
@@ -324,7 +329,15 @@ public final class Yuji {
         // a slow heartbeat of state, so the HUD is right after reconnects; his cursed energy never runs low
         if (server.getTickCount() % 20 == 0) {
             for (ServerPlayer p : server.getPlayerList().getPlayers()) {
-                if (!is(p)) continue;
+                if (!is(p)) {
+                    // no longer Yuji: the rebuilt body goes with the technique
+                    AttributeInstance hp = p.getAttribute(Attributes.MAX_HEALTH);
+                    if (hp != null && hp.getModifier(RCT_HP) != null) {
+                        hp.removeModifier(RCT_HP);
+                        if (p.getHealth() > p.getMaxHealth()) p.setHealth(p.getMaxHealth());
+                    }
+                    continue;
+                }
                 if (Energy.get(p) < Energy.MAX) Energy.set(p, Energy.MAX);
                 if (server.getTickCount() % 40 == 0) state(p);
             }
@@ -473,6 +486,24 @@ public final class Yuji {
                 Domain d = DOMAINS.remove(p.getUUID());
                 if (d != null) YNet.near(level, d.centre, 512, new YNet.Domain(p.getId(), d.centre, d.radius, 0, new int[0]));
                 state(p);
+            }
+            case Beat.HEAL -> {
+                AttributeInstance hp = p.getAttribute(Attributes.MAX_HEALTH);
+                if (hp != null) {
+                    hp.removeModifier(RCT_HP);
+                    double extra = Math.max(0, b.x() - hp.getBaseValue());
+                    if (extra > 0) hp.addPermanentModifier(new AttributeModifier(RCT_HP, "Reverse Cursed Technique x100", extra, AttributeModifier.Operation.ADDITION));
+                }
+                p.setHealth(p.getMaxHealth());
+                p.removeEffect(MobEffects.POISON);
+                p.removeEffect(MobEffects.WITHER);
+                p.removeEffect(MobEffects.HUNGER);
+                p.removeEffect(MobEffects.WEAKNESS);
+                p.removeEffect(MobEffects.CONFUSION);
+                p.removeEffect(MobEffects.BLINDNESS);
+                p.clearFire();
+                p.getFoodData().setFoodLevel(20);
+                Y.LOG.info("[yuji] {} used Reverse Cursed Technique x100: {} / {} health", p.getGameProfile().getName(), p.getHealth(), p.getMaxHealth());
             }
             case Beat.OVERDRIVE -> {
                 long until = Y.overdriveSeconds <= 0 ? FOREVER : now + Y.overdriveSeconds * 20L;

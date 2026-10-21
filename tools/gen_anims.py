@@ -214,6 +214,16 @@ a.k(60, add(STANCE, head=[4, 0, 0]), INOUT).hold(62, 82, STANCE, 0.8, 8)
 a.k(96, STAND, INOUT)
 a.write()
 
+# ---- Reverse Cursed Technique x100: palms pressed together at the chest, a deep breath, the body rebuilt
+a = Anim('rct', 44, STAND)
+PRAY = P(right_arm=[-70, 36, 0], left_arm=[-70, -36, 0], torso=[4, 0, 0], head=[18, 0, 0], right_leg=[0, 0, 4], left_leg=[0, 0, -4])
+a.k(5, PRAY, OUT_).hold(6, 16, PRAY, 0.6, 3)
+INHALE = P(right_arm=[12, 0, 10], left_arm=[12, 0, -10], torso=[-12, 0, 0], head=[-26, 0, 0], right_leg=[0, 0, 6], left_leg=[0, 0, -6], pos=[0, 0.4, 0])
+a.k(18, INHALE, SNAP).k(24, add(INHALE, torso=[4, 0, 0], head=[10, 0, 0]), OUT_)   # chest up, a deep breath, then let out
+a.k(32, add(STANCE, head=[-4, 0, 0]), INOUT)
+a.k(44, STAND, INOUT)
+a.write()
+
 # ================================================================== Blood
 a = Anim('piercing_blood', 30, STAND)
 a.k(2, add(CLASP, torso=[10, 0, 0], head=[12, 0, 0]), OUT_)        # palms meet, a small bow over them

@@ -141,6 +141,7 @@ public final class Script {
         B b = new B(c);
         switch (c.move()) {
             case WORLD_BREAKER -> worldBreaker(b);
+            case RCT -> rct(b);
             case RICOCHET -> ricochet(b);
             case RESONANCE -> resonance(b);
             case PIERCING_BLOOD -> piercingBlood(b);
@@ -253,6 +254,21 @@ public final class Script {
         b.sound(res, TARGET, S_BF_BIG, 8.0, 0.9);
         b.ring(res, GROUND, Z, 36, 80, 1.6);
         b.dark(res + 2, 0.0, 14);
+    }
+
+    /**
+     * Reverse Cursed Technique x100: negative energy multiplied against itself, a hundred times over. His body is
+     * rebuilt sturdier than it was: an iron golem's 100 health (50 hearts), healed to full, poisons and withering
+     * burned out.
+     */
+    private static void rct(B b) {
+        b.charge(0, 16, EYE, new Vec3(0, -0.5, 0), 0.8);
+        b.sound(0, CASTER, S_CHARGE, 2.0, 1.4);
+        b.add(Beat.of(18, HEAL, CASTER, Z).p(100, 0, 0));
+        b.sound(18, CASTER, S_OVERDRIVE, 3.0, 1.6);
+        b.shell(18, CASTER, new Vec3(0, 1, 0), 4, 12, 1);
+        b.ring(18, CASTER, Z, 10, 30, 0.8);
+        b.impact(18, CASTER, 6, 0.5);
     }
 
     private static void worldBreaker(B b) {

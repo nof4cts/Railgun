@@ -34,6 +34,7 @@ public record Beat(int t, int kind, int a0, Vec3 o0, int a1, Vec3 o1, double x, 
     public static final int SOUND = 22;      // sound i at p0: x volume, y pitch
     public static final int STREAK = 23;     // a cursed-energy streak trailing the caster for dur ticks: x radius
     public static final int IMPACT = 24;     // a pure impact-frame beat at p0: i preset, x strength
+    public static final int HEAL = 25;       // Reverse Cursed Technique x100: the caster's body rebuilt to x max health, fully healed
 
     // ---- anchors
     public static final int CASTER = 0, EYE = 1, TARGET = 2, POINT = 3, GROUND = 4, HAND = 5, START = 6, DOMAIN = 7, T0 = 10;
