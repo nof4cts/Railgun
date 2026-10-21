@@ -297,13 +297,43 @@ public final class Script {
     }
 
     // ================================================================== Blood Manipulation
+    /**
+     * Piercing Blood. The compressed blood is fired point-blank; where it hits, it bursts: the beam splits into
+     * thinner beams, one for every enemy around the one it hit (the more of them, the more it splits), and each of
+     * those splits again as it passes through, spraying out beyond them.
+     */
     private static void piercingBlood(B b) {
+        int n = b.c.targetCount();
         b.sound(0, HAND, S_BLOOD_FORM, 1.5, 1.2);
         b.orb(0, 8, HAND, Z, HAND, Z, 0.22);
         b.sound(8, HAND, S_BLOOD_FIRE, 3.0, 1.0);
-        b.bolt(8, 4, HAND, Z, POINT, Z, 0.16, 1.0, 0, 0);
-        b.blast(12, POINT, Z, 2.0, 0.6, 2, 0.2);
-        b.ring(12, POINT, Z, 6, 40, 0.6);
+        int first = n > 0 ? T0 : POINT;
+        b.bolt(8, 4, HAND, Z, first, Z, 0.16, 1.0, 0, 0);
+        b.blast(12, first, Z, 2.0, 0.6, 2, 0.2);
+        b.ring(12, first, Z, 6, 40, 0.6);
+        if (n <= 1) {
+            // nothing else to split toward: the beam still bursts out behind its target
+            for (int k = 0; k < 4; k++) {
+                Vec3 d = b.F.add(b.jitter(0.9)).normalize().scale(6 + b.r.nextDouble() * 6);
+                b.bolt(12, 3, first, Z, first, d, 0.07, 0.0, 0, 0);
+            }
+            return;
+        }
+        // the split: a beam from the struck enemy to every other one around it
+        b.sound(12, first, S_BLOOD_FIRE, 3.0, 1.4);
+        for (int k = 1; k < n; k++) {
+            int to = T0 + k;
+            int dur = 3 + k % 3;
+            b.bolt(12 + k / 4, dur, first, Z, to, Z, 0.1, 1.0, 0, 0);
+            int hit = 12 + k / 4 + dur;
+            b.ring(hit, to, Z, 3, 30, 0.4);
+            // and through each of them it splits again, spraying out the far side
+            for (int s2 = 0; s2 < 2; s2++) {
+                Vec3 d = b.jitter(2.0).add(0, 0.3, 0).normalize().scale(4 + b.r.nextDouble() * 5);
+                b.bolt(hit, 3, to, Z, to, d, 0.06, 0.0, 0, 0);
+            }
+            if (k % 3 == 0) b.sound(hit, to, S_BLOOD_HIT, 2.0, 1.2 + 0.05 * k);
+        }
     }
 
     private static void homingBlood(B b) {

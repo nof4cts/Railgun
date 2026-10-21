@@ -178,7 +178,7 @@ public final class Yuji {
             point = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(24)) : hit.getLocation();
         }
         Vec3 around = dom != null ? dom.centre : point;
-        double reach = dom != null ? dom.radius : 40;
+        double reach = dom != null ? dom.radius : (m == YMove.PIERCING_BLOOD ? 18 : 40);
         List<LivingEntity> near = level.getEntitiesOfClass(LivingEntity.class, new AABB(around, around).inflate(reach),
                 e -> e != p && e.isAlive() && !(e instanceof Player pl && (pl.isCreative() || pl.isSpectator())) && e.position().distanceTo(around) <= reach);
         near.sort(Comparator.comparingDouble(e -> e.distanceToSqr(around)));
@@ -186,7 +186,7 @@ public final class Yuji {
             near.remove(target);
             near.add(0, target);
         }
-        int[] targets = new int[Math.min(8, near.size())];
+        int[] targets = new int[Math.min(m == YMove.PIERCING_BLOOD ? 16 : 8, near.size())];
         for (int i = 0; i < targets.length; i++) targets[i] = near.get(i).getId();
 
         boolean od = overdrive(p);
@@ -585,7 +585,7 @@ public final class Yuji {
     }
 
     static void hurt(ServerPlayer p, LivingEntity e, double amount, boolean main, Set<Integer> skip) {
-        if (e == p || !e.isAlive() || skip.contains(e.getId())) return;
+        if (amount <= 0 || e == p || !e.isAlive() || skip.contains(e.getId())) return;
         if (e instanceof Player pl && (pl.isCreative() || pl.isSpectator())) return;
         double dmg = amount, boost = 1.0;
         if (overdrive(p)) boost *= 1.6;
