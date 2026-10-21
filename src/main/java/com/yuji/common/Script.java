@@ -141,9 +141,7 @@ public final class Script {
         B b = new B(c);
         switch (c.move()) {
             case PERFECT_IMPACT -> perfectImpact(b);
-            case ZERO_DISTANCE -> zeroDistance(b);
             case RELENTLESS_CHAIN -> relentlessChain(b);
-            case RELENTLESS_EXECUTION -> relentlessExecution(b);
             case VOID_SHATTER -> voidShatter(b);
             case WORLD_BREAKER -> worldBreaker(b);
             case PIERCING_BLOOD -> piercingBlood(b);
@@ -186,20 +184,6 @@ public final class Script {
         b.ring(31, GROUND, Z, 30, 40, 2.5);
     }
 
-    private static void zeroDistance(B b) {
-        b.dash(0, 3, TARGET, Z, 1.1);
-        b.charge(3, 10, HAND, Z, 1.2);
-        b.dark(3, 0.55, 4);
-        b.blackout(11, 2);
-        b.bf(13, TARGET, Z, 1.8, 3.0, 2, 2);
-        b.knock(13, TARGET, 0.7, 4.5, 3.0);
-        b.shell(13, TARGET, Z, 9, 10, 0);
-        b.ring(13, GROUND, Z, 26, 80, 1.5);
-        b.blast(13, GROUND, Z, 5, 0.5, 0, 0);
-        b.dark(14, 0.0, 8);
-        b.dust(15, GROUND, Z, 7, 8);
-    }
-
     private static void relentlessChain(B b) {
         // 1: sudden, explosive
         b.dash(0, 12, TARGET, Z, 1.3);
@@ -231,28 +215,6 @@ public final class Script {
         b.ring(80, GROUND, Z, 40, 70, 2.0);
         b.ring(86, GROUND, Z, 55, 50, 2.5);
         b.dust(84, GROUND, Z, 18, 22);
-    }
-
-    private static void relentlessExecution(B b) {
-        int[] ts = {10, 16, 22, 28, 34, 40};
-        for (int k = 0; k < ts.length; k++) {
-            double side = (k % 2 == 0 ? 1 : -1);
-            b.dash(ts[k] - 4, 4, TARGET, b.R.scale(side * 1.2).add(0, (k % 3 - 1) * 0.3, 0), 0.3);
-            b.bf(ts[k], TARGET, Z, 1.0 + 0.1 * k, 0.8, 8 + k, 1);
-            b.knock(ts[k], TARGET, 0.12, 0.3, 1.6);
-            if (k % 2 == 1) b.ring(ts[k], GROUND, Z, 12 + k * 2, 70, 1.0);
-        }
-        b.charge(44, 18, HAND, Z, 1.6);
-        b.dark(44, 0.6, 12);
-        b.dash(56, 6, TARGET, Z, 1.3);
-        b.blackout(60, 2);
-        b.smear(60, CASTER, TARGET);
-        b.bf(62, TARGET, Z, 2.6, 2.5, 14, 2);
-        b.knock(62, TARGET, 0.6, 5.0, 3.0);
-        b.trench(62, GROUND, Z, b.F, 50, 5, 6, 10);
-        b.ring(62, GROUND, Z, 36, 80, 1.8);
-        b.dust(64, GROUND, Z, 12, 14);
-        b.dark(63, 0.0, 10);
     }
 
     private static void voidShatter(B b) {

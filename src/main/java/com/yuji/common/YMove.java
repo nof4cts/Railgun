@@ -9,9 +9,7 @@ package com.yuji.common;
  */
 public enum YMove {
     PERFECT_IMPACT(0, false, "Black Flash: Perfect Impact", true, 140, 140, 52, true, 1),
-    ZERO_DISTANCE(0, true, "Black Flash: Zero Distance", false, 160, 160, 34, true, 2),
     RELENTLESS_CHAIN(1, false, "Black Flash: Relentless Chain", false, 260, 320, 112, true, 2),
-    RELENTLESS_EXECUTION(1, true, "Black Flash: Relentless Execution", false, 240, 300, 94, true, 2),
     VOID_SHATTER(2, false, "Black Flash: Void Shatter", false, 300, 400, 86, true, 2),
     WORLD_BREAKER(3, false, "Black Flash: World Breaker", false, 420, 900, 142, true, 2),
     PIERCING_BLOOD(4, false, "Piercing Blood", true, 50, 40, 30, false, 0),
