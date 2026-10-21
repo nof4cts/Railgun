@@ -36,6 +36,9 @@ public final class YCam {
     private static Pose pose;
     private static final List<Shot> SHOTS = new ArrayList<>();
     private static double titleStart;
+    private static Shot lastShot;
+    private static boolean shotChanged, cutIsHard;
+    private static long lastNanos;
 
     private YCam() {}
 
@@ -55,8 +58,6 @@ public final class YCam {
         if (!Y.cutscenes || JjkPrefs.skipCutscenes()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
-        // Immersive Portals renders the world from its own camera; a borrowed camera entity can crash it
-        if (net.minecraftforge.fml.ModList.get().isLoaded("immersive_portals") || net.minecraftforge.fml.ModList.get().isLoaded("imm_ptl_core")) return;
         stop();
         live = l;
         skipHeld = 0;
@@ -68,6 +69,10 @@ public final class YCam {
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         mc.setCameraEntity(camera);
         titleStart = YFx.time();
+        lastShot = null;
+        shotChanged = cutIsHard = false;
+        lastNanos = 0;
+        pose = null;
         SHOTS.clear();
         try {
             build(l);
@@ -115,7 +120,24 @@ public final class YCam {
         mc.player.xRotO = lockPitch;
         float t = (float) Math.max(0, live.t);
         try {
-            pose = evaluate(t);
+            Pose target = evaluate(t);
+            long now = System.nanoTime();
+            float dt = lastNanos == 0 ? 0f : Math.min(0.1f, (now - lastNanos) / 1.0e9f);
+            lastNanos = now;
+            if (pose == null || shotChanged) {
+                pose = target;                      // a cut: land on the new framing exactly
+                if (shotChanged && cutIsHard) {
+                    YFx.punch(0.18f);
+                }
+                shotChanged = false;
+            } else {
+                // follow the shot through a short spring: anything jerky (a knocked-back target, a teleport step)
+                // is ironed into a smooth camera move, and nothing lags more than a few frames
+                float k = 1f - (float) Math.exp(-dt / 0.055f);
+                float kr = 1f - (float) Math.exp(-dt / 0.04f);
+                pose = new Pose(pose.pos().lerp(target.pos(), k), Mth.rotLerp(kr, pose.yaw(), target.yaw()),
+                        Mth.lerp(kr, pose.pitch(), target.pitch()), Mth.lerp(kr, pose.roll(), target.roll()), Mth.lerp(k, pose.fov(), target.fov()));
+            }
         } catch (Throwable e) {
             Y.LOG.error("[yuji] camera failed", e);
             stop();
@@ -142,6 +164,11 @@ public final class YCam {
             }
         }
         if (cur == null) cur = SHOTS.get(0);
+        if (cur != lastShot) {
+            shotChanged = lastShot != null && cur.blend == 0;
+            cutIsHard = shotChanged;
+            lastShot = cur;
+        }
         Pose a = cur.at.apply(t);
         if (prev != null && cur.blend > 0 && t < cur.t0 + cur.blend) {
             float u = ease((t - cur.t0) / cur.blend);
@@ -255,7 +282,8 @@ public final class YCam {
                 shot(0, 40, 0, t -> look(caster(0.3f).add(rot(F, 140 + t * 0.6).scale(12)).add(0, 0.6, 0), caster(1.6f), 0, 58));
                 shot(40, 112, 12, t -> look(caster(1.3f).add(rot(F, 40 + (t - 40) * 1.6).scale(3.2)).add(0, -0.3, 0).add(handheld(t, 0.08)), caster(1.3f), 0, 60));
                 shot(112, 120, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(1.0)), target(), 0, 78));
-                hit(120, 136, l, 1);
+                hit(120, 126, l, 3);
+                hit(126, 136, l, 2);
                 shot(136, end, 0, t -> {
                     float u = ease(span(t, 136, end));
                     Vec3 g = ground();
@@ -285,13 +313,138 @@ public final class YCam {
                     return look(from.add(handheld(t, 0.6)), g, 0, 72);
                 });
             }
+            case WORLD_BREAKER -> {
+                // the energy wells up: low, slow orbit; then coiled, a tight push-in on the fist; the step; the hit from
+                // three angles in a row; the second eruption seen from far above
+                shot(0, 28, 0, t -> look(caster(0.4f).add(rot(F, 150 - t * 1.8).scale(4.5)).add(0, -0.2, 0).add(handheld(t, 0.05)), caster(1.7f), 0, 60));
+                shot(28, 56, 0, t -> {
+                    float u = ease(span(t, 28, 56));
+                    Vec3 fist = live.at(Beat.HAND, Vec3.ZERO);
+                    return look(caster(1.1f).add(rot(F, 75).scale(2.6 - 1.2 * u)).add(handheld(t, 0.05 + 0.1 * u)), fist, 0, 62 - 10 * u);
+                });
+                shot(56, 64, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.1)), target(), 0, 80));
+                hit(66, 72, l, 3);
+                hit(72, 80, l, 2);
+                hit(80, 94, l, 1);
+                orbitImpact(94, 106, 26 * l.c.ds(), 200, 70);
+                shot(106, end, 0, t -> {
+                    float u = ease(span(t, 106, end));
+                    Vec3 g = ground();
+                    return look(g.add(F.scale(-30 - 30 * u)).add(R.scale(18)).add(0, 26 + 30 * u, 0).add(handheld(t, 0.5)), g.add(F.scale(6)), 0, 72);
+                });
+            }
+            case SUPERNOVA -> {
+                shot(0, 12, 0, t -> look(caster(1.4f).add(rot(F, 30 + t * 2).scale(2.8)), caster(1.4f), 0, 60));
+                shot(12, 20, 0, t -> look(caster(1.0f).add(F.scale(-3.5)).add(0, 1.4, 0), caster(1.8f).add(F.scale(2)), 0, 82));   // the five orbs around him
+                shot(20, 32, 0, t -> {
+                    float u = span(t, 20, 32);
+                    Vec3 tg = target();
+                    Vec3 orb = caster(1.6f).lerp(tg, u);
+                    return look(orb.add(R.scale(3)).add(0, 1, 0), orb.add(F.scale(2)), 0, 76);     // riding with the orbs
+                });
+                hit(32, 44, l, 2);
+                orbitImpact(44, end, 8, 120, 60);
+            }
+            case BLOOD_STORM -> {
+                shot(0, 20, 0, t -> look(caster(1.2f).add(rot(F, 20 + t * 1.5).scale(3.0)).add(0, -0.4, 0), caster(1.9f), 0, 64));
+                shot(20, 60, 0, t -> {
+                    float u = ease(span(t, 20, 60));
+                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
+                    return look(p0.add(rot(F, 180 + 40 * u).scale(26)).add(0, 5 + 10 * u, 0).add(handheld(t, 0.3)), p0.add(0, 6, 0), 0, 74);
+                });
+                shot(60, 84, 0, t -> look(live.at(Beat.POINT, new Vec3(0, 1.0, 0)).add(R.scale(6)).add(F.scale(-4)), live.at(Beat.POINT, new Vec3(0, 18, 0)), -6, 84));  // looking up into the rain
+                shot(84, end, 0, t -> {
+                    float u = ease(span(t, 84, end));
+                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
+                    return look(p0.add(rot(F, 250 + 30 * u).scale(30 + 10 * u)).add(0, 22 + 10 * u, 0), p0, 0, 70);
+                });
+            }
+            case CRIMSON_EXECUTION -> {
+                shot(0, 20, 0, t -> look(live.at(Beat.HAND, Vec3.ZERO).add(rot(F, 120 + t * 4).scale(1.8)), live.at(Beat.HAND, Vec3.ZERO), 0, 56));  // the blood spinning in his hand
+                shot(20, 27, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(0.9)), target(), 0, 84));
+                hit(28, 38, l, 3);
+                hit(38, 50, l, 4);
+                orbitImpact(50, end, 6, 60, 50);
+            }
+            case BLOOD_APOCALYPSE -> {
+                shot(0, 40, 0, t -> look(caster(0.2f).add(rot(F, 200 - t)).scale(1).add(rot(F, 200 - t).scale(3.0)).add(0, -0.6, 0), caster(2.2f).add(0, 3 * span(t, 0, 40), 0), 0, 66));
+                shot(40, 100, 0, t -> {
+                    float u = ease(span(t, 40, 100));
+                    Vec3 sky = live.at(Beat.POINT, new Vec3(0, 40, 0));
+                    return look(caster(0.5f).add(F.scale(-12 - 20 * u)).add(R.scale(10)).add(0, 3 + 8 * u, 0), sky.lerp(live.at(Beat.POINT, Vec3.ZERO), 0.3), 0, 76);
+                });
+                shot(100, 116, 0, t -> {
+                    float u = span(t, 100, 116);
+                    Vec3 sky = live.at(Beat.POINT, new Vec3(0, 40, 0));
+                    Vec3 g = ground();
+                    Vec3 drop = sky.lerp(g, u * u);
+                    return look(g.add(R.scale(34)).add(F.scale(-10)).add(0, 6, 0), drop, 0, 70);   // following it down
+                });
+                hit(116, 126, l, 4);
+                orbitImpact(126, end, 30 * l.c.ds(), 160, 80);
+            }
+            case THOUSAND_SLASHES -> {
+                shot(0, 8, 0, t -> look(caster(1.6f).add(F.scale(2.4)).add(R.scale(-0.8)), caster(1.5f), 0, 60));
+                shot(8, 30, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.2)).add(handheld(t, 0.15)), live.at(Beat.POINT, Vec3.ZERO), 0, 78));
+                shot(30, 60, 0, t -> {
+                    float u = ease(span(t, 30, 60));
+                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
+                    return look(p0.add(rot(F, 90 + 120 * u).scale(14)).add(0, 3, 0).add(handheld(t, 0.25)), p0, 0, 74);   // circling the storm of cuts
+                });
+                shot(60, end, 0, t -> {
+                    float u = ease(span(t, 60, end));
+                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
+                    return look(p0.add(F.scale(-20 - 14 * u)).add(0, 14 + 12 * u, 0), p0, 0, 70);
+                });
+            }
+            case CE_APOCALYPSE -> {
+                shot(0, 30, 0, t -> look(caster(1.5f).add(F.scale(2.2 - 0.8 * span(t, 0, 30))).add(handheld(t, 0.05 + 0.002 * t)), caster(1.55f), 0, 54));  // his face, shaking
+                shot(30, 48, 0, t -> look(caster(0.2f).add(rot(F, 140).scale(6)).add(0, -0.5, 0), caster(2.0f), 0, 70));
+                shot(48, 70, 0, t -> {
+                    float u = ease(span(t, 48, 70));
+                    return look(caster(1f).add(rot(F, 170 + 40 * u).scale(8 + 50 * u)).add(0, 3 + 30 * u, 0), caster(1f), 0, 74);   // ripped back by the wave
+                });
+                orbitImpact(70, end, 60 * l.c.ds(), 220, 50);
+            }
+            case DOMAIN_FINISHER -> {
+                shot(0, 24, 0, t -> look(caster(1.0f).add(rot(F, 60).scale(2.6 - 0.8 * span(t, 0, 24))).add(handheld(t, 0.06)), live.at(Beat.HAND, Vec3.ZERO), 0, 58));
+                shot(24, 36, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.1)), target(), 0, 82));
+                hit(38, 46, l, 3);
+                hit(46, 56, l, 2);
+                shot(56, end, 0, t -> {
+                    float u = ease(span(t, 56, end));
+                    Vec3 dc = live.at(Beat.DOMAIN, Vec3.ZERO);
+                    double r = l.c.domainRadius();
+                    return look(dc.add(rot(F, 200 + 50 * u).scale(r * (0.5 + 0.6 * u))).add(0, 4 + r * 0.5 * u, 0), dc, 0, 74);
+                });
+            }
+            case DOMAIN_BARRAGE -> {
+                double r = Math.max(8, l.c.domainRadius());
+                shot(0, 40, 0, t -> {
+                    Vec3 dc = live.at(Beat.DOMAIN, Vec3.ZERO);
+                    return look(dc.add(rot(F, 40 + t * 3).scale(r * 0.55)).add(0, 5, 0).add(handheld(t, 0.2)), dc.add(0, 2, 0), 0, 76);
+                });
+                shot(40, 70, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(1.0)).add(handheld(t, 0.2)), target(), 0, 80));
+                hit(74, 84, l, 4);
+                shot(84, end, 0, t -> {
+                    float u = ease(span(t, 84, end));
+                    Vec3 dc = live.at(Beat.DOMAIN, Vec3.ZERO);
+                    return look(dc.add(rot(F, 300 + 40 * u).scale(r * (0.6 + 0.4 * u))).add(0, r * (0.3 + 0.4 * u), 0), dc, 0, 72);
+                });
+            }
             default -> generic(l);
         }
         SHOTS.sort((a, b) -> Integer.compare(a.t0, b.t0));
         if (SHOTS.isEmpty()) generic(l);
     }
 
-    /** A side-on shot of a blow landing: cut in on the frame of the hit. */
+    /**
+     * A blow landing, cut in on the frame of the hit. Framings rotate so no two hits look alike:
+     * side (+1 / -1): profile of the exchange, drifting in;
+     * 2: low hero angle from behind the target, looking up past it into his face;
+     * 3: over his shoulder, tight, rolling into the punch;
+     * 4: a high crash-zoom down onto the contact point.
+     */
     private static void hit(int t0, int t1, YCasts.Live l, int side) {
         shot(t0 - 2, t1, 0, t -> {
             Vec3 c = caster(1.2f), tg = target();
@@ -299,12 +452,42 @@ public final class YCam {
             Vec3 flat = new Vec3(d.x, 0, d.z);
             if (flat.lengthSqr() < 1e-4) flat = l.c.f();
             flat = flat.normalize();
-            Vec3 perp = new Vec3(-flat.z, 0, flat.x).scale(side);
+            Vec3 perp = new Vec3(-flat.z, 0, flat.x);
             Vec3 mid = c.lerp(tg, 0.55);
-            double dist = 4.5 + d.length() * 0.4;
             float u = span(t, t0, t1);
-            Vec3 from = mid.add(perp.scale(dist * (1 - 0.12 * u))).add(flat.scale(-1.2)).add(0, 0.5, 0);
-            return look(from.add(handheld(t, 0.15)), mid.add(flat.scale(0.6)), side * 3, 74);
+            float e = 1 - (float) Math.pow(1 - u, 3);
+            switch (side) {
+                case 2 -> {
+                    Vec3 from = tg.add(flat.scale(2.6 + 1.2 * e)).add(perp.scale(1.1)).add(0, -0.9, 0);
+                    return look(from.add(handheld(t, 0.12)), c.add(0, 0.35, 0), -4, 82 - 6 * e);
+                }
+                case 3 -> {
+                    Vec3 from = c.add(flat.scale(-1.9 + 0.5 * e)).add(perp.scale(0.9)).add(0, 0.55, 0);
+                    return look(from.add(handheld(t, 0.1)), tg, 6 * (1 - e), 78 + 8 * e);
+                }
+                case 4 -> {
+                    double h = 9 - 4 * e;
+                    Vec3 from = mid.add(flat.scale(-2.0)).add(perp.scale(2.5)).add(0, h, 0);
+                    return look(from, tg.add(0, -0.5, 0), 0, 70 - 10 * e);
+                }
+                default -> {
+                    double dist = 4.5 + d.length() * 0.4;
+                    Vec3 from = mid.add(perp.scale(side * dist * (1 - 0.14 * e))).add(flat.scale(-1.2)).add(0, 0.5, 0);
+                    return look(from.add(handheld(t, 0.15)), mid.add(flat.scale(0.6)), side * 3, 74);
+                }
+            }
+        });
+    }
+
+    /** After a blow: the camera circles the impact as the dust rises, pulling out to show the damage. */
+    private static void orbitImpact(int t0, int t1, double radius, double startDeg, double sweep) {
+        shot(t0, t1, 0, t -> {
+            float u = ease(span(t, t0, t1));
+            Vec3 g = ground();
+            Vec3 F = live.c.f();
+            double d = 6 + radius * (0.9 + 0.9 * u);
+            Vec3 from = g.add(rot(F, startDeg + sweep * u).scale(d)).add(0, 2.5 + radius * (0.35 + 0.45 * u), 0);
+            return look(from.add(handheld(t, 0.3)), g.add(0, 1.0 + radius * 0.1, 0), 0, 72);
         });
     }
 
@@ -345,7 +528,8 @@ public final class YCam {
         for (int i = 0; i < hits.size(); i++) {
             int h = hits.get(i);
             int next = i + 1 < hits.size() ? hits.get(i + 1) - 2 : Math.min(end, h + 16);
-            hit(h, Math.max(h + 4, next), l, i % 2 == 0 ? 1 : -1);
+            int[] styles = {3, 1, 2, -1, 4};
+            hit(h, Math.max(h + 4, next), l, styles[i % styles.length]);
         }
         // what is left
         int last = hits.isEmpty() ? first : hits.get(hits.size() - 1) + 12;
@@ -358,6 +542,9 @@ public final class YCam {
         Minecraft mc = Minecraft.getInstance();
         int w = g.guiWidth(), h = g.guiHeight();
         int bar = Math.max(28, (int) (h * 0.11));
+        // drawn high in the GUI's depth so HUDs that draw after us (the kit's name tag and energy bar) stay hidden
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 450);
         g.fill(0, 0, w, bar, 0xFF000000);
         g.fill(0, h - bar, w, h, 0xFF000000);
         double since = YFx.time() - titleStart;
@@ -376,5 +563,6 @@ public final class YCam {
         }
         String hint = "Hold " + mc.options.keyShift.getTranslatedKeyMessage().getString() + " to skip";
         g.drawString(mc.font, hint, w - mc.font.width(hint) - 10, h - bar / 2 - 4, 0x707070, false);
+        g.pose().popPose();
     }
 }

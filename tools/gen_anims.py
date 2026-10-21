@@ -1,133 +1,401 @@
-"""Modulo Yuji's body (Player Animator, bedrock format): assets/yuji/player_animation/yuji_<move>.json, one per move,
-keyed to the same ticks as the move's timeline (common/Script.java), plus the subtitle lang file.
+"""Modulo Yuji's body (Player Animator, bedrock format): assets/yuji/player_animation/yuji_<move>.json.
+
+Every move has its own choreography, keyed to the same ticks as its timeline (common/Script.java): anticipation
+before each blow, a snap into contact, overshoot and follow-through after it, weight carried through the hips, and
+a settle back into his stance. Keys are dense and eased so the motion reads as fluid rather than pose-to-pose.
+Also writes the subtitle lang file.
 
     python3 tools/gen_anims.py
 """
 import json
+import math
 import os
 
 ROOT = os.path.join(os.path.dirname(__file__), "..", "src", "main", "resources", "assets", "yuji")
 OUT = os.path.join(ROOT, "player_animation")
 os.makedirs(OUT, exist_ok=True)
 BONES = ['head', 'torso', 'right_arm', 'left_arm', 'right_leg', 'left_leg']
+KEYS = BONES + ['pos']
 Z = [0, 0, 0]
-SNAP, GLIDE, SETTLE, IN, BREATH = 'easeOutExpo', 'easeInOutSine', 'easeOutCubic', 'easeInCubic', 'easeInOutQuad'
+# easings (into the key)
+SNAP, OUT_, INOUT, IN, BACK, ELASTIC, QUAD = 'easeOutExpo', 'easeOutCubic', 'easeInOutSine', 'easeInCubic', 'easeOutBack', 'easeOutElastic', 'easeInOutQuad'
 
 
 def P(base=None, **bones):
-    out = {b: list((base or {}).get(b, Z)) for b in BONES + ['pos']}
+    out = {b: list((base or {}).get(b, Z)) for b in KEYS}
     for b, v in bones.items():
         out[b] = list(v)
     return out
 
 
-def anim(move, length, keys):
-    name = 'yuji_' + move
-    keys = sorted(keys, key=lambda k: k[0])
-    bones = {}
-    for b in BONES:
-        rot, pos = {}, {}
-        for tick, pose, ease in keys:
-            k = {'vector': pose[b]}
-            if ease:
-                k['easing'] = ease
-            rot[f'{tick / 20.0:.3f}'] = k
-            if b == 'torso':
-                v = {'vector': pose['pos']}
-                if ease:
-                    v['easing'] = ease
-                pos[f'{tick / 20.0:.3f}'] = v
-        bones[b] = {'rotation': rot}
-        if b == 'torso':
-            bones[b]['position'] = pos
-    data = {'format_version': '1.8.0', 'animations': {name: {'animation_length': length / 20.0, 'loop': False, 'bones': bones}}}
-    with open(os.path.join(OUT, name + '.json'), 'w') as f:
-        json.dump(data, f, indent=1)
-    print(name, length)
-
-
-STAND = P(right_arm=[4, 0, 6], left_arm=[4, 0, -6])
-GUARD = P(right_arm=[-50, 20, 10], left_arm=[-60, -25, -10], torso=[6, 10, 0], head=[0, -8, 0], right_leg=[-8, 0, 4], left_leg=[10, 0, -4], pos=[0, -0.6, 0])
-WIND = P(right_arm=[40, 10, 28], left_arm=[-70, -25, -6], torso=[8, 32, 0], head=[4, -26, 0], right_leg=[14, 0, 5], left_leg=[-16, 0, -5], pos=[0, -1.4, 0])
-PUNCH = P(right_arm=[-92, -8, 0], left_arm=[25, 0, -18], torso=[12, -30, 0], head=[0, 24, 0], right_leg=[-14, 0, 5], left_leg=[26, 0, -5], pos=[0, -1.2, 0])
-PUNCH_L = P(left_arm=[-92, 8, 0], right_arm=[25, 0, 18], torso=[12, 30, 0], head=[0, -24, 0], left_leg=[-14, 0, -5], right_leg=[26, 0, 5], pos=[0, -1.2, 0])
-DASH = P(right_arm=[45, 0, 18], left_arm=[45, 0, -18], torso=[28, 0, 0], head=[-20, 0, 0], right_leg=[-30, 0, 4], left_leg=[30, 0, -4], pos=[0, -1.2, 0])
-UPPER = P(right_arm=[-165, -10, 8], left_arm=[20, 0, -14], torso=[-14, -18, 0], head=[-20, 10, 0], right_leg=[-6, 0, 4], left_leg=[12, 0, -4])
-HAMMER_UP = P(right_arm=[-175, 10, 12], left_arm=[-175, -10, -12], torso=[-12, 0, 0], head=[-14, 0, 0])
-HAMMER = P(right_arm=[-50, 10, 0], left_arm=[-50, -10, 0], torso=[36, 0, 0], head=[16, 0, 0], right_leg=[-20, 0, 4], left_leg=[20, 0, -4], pos=[0, -2, 0])
-CLASP = P(right_arm=[-78, 38, 0], left_arm=[-78, -38, 0], torso=[4, 0, 0], head=[6, 0, 0], right_leg=[-6, 0, 4], left_leg=[8, 0, -4])
-AIM = P(right_arm=[-90, 4, 0], left_arm=[-86, -24, 0], torso=[0, -12, 0], head=[0, 10, 0], right_leg=[-10, 0, 4], left_leg=[12, 0, -4])
-RAISE = P(right_arm=[-170, 0, 18], left_arm=[-170, 0, -18], torso=[-8, 0, 0], head=[-24, 0, 0], right_leg=[0, 0, 6], left_leg=[0, 0, -6])
-SLASH_A = P(right_arm=[-115, 70, 0], left_arm=[10, 0, -10], torso=[0, 34, 0], head=[0, -20, 0], right_leg=[10, 0, 4], left_leg=[-10, 0, -4])
-SLASH_B = P(right_arm=[-60, -70, 0], left_arm=[20, 0, -16], torso=[6, -36, 0], head=[0, 22, 0], right_leg=[-12, 0, 4], left_leg=[14, 0, -4])
-SIGN = P(right_arm=[-104, 28, 0], left_arm=[-104, -28, 0], torso=[2, 0, 0], head=[10, 0, 0], right_leg=[0, 0, 5], left_leg=[0, 0, -5])
-POWER = P(right_arm=[-20, 0, 64], left_arm=[-20, 0, -64], torso=[-12, 0, 0], head=[-22, 0, 0], right_leg=[-6, 0, 10], left_leg=[6, 0, -10], pos=[0, -2, 0])
-CROUCH = P(right_arm=[30, 0, 20], left_arm=[30, 0, -20], torso=[30, 0, 0], head=[-24, 0, 0], right_leg=[-50, 0, 4], left_leg=[-50, 0, -4], pos=[0, -4, 0])
-DIVE = P(right_arm=[-175, 0, 6], left_arm=[-175, 0, -6], torso=[70, 0, 0], head=[-50, 0, 0], right_leg=[20, 0, 4], left_leg=[20, 0, -4])
-GROUND_PUNCH = P(right_arm=[-30, 0, 4], left_arm=[30, 0, -40], torso=[60, 0, 0], head=[-30, 0, 0], right_leg=[-60, 0, 6], left_leg=[-10, 0, -6], pos=[0, -6, 0])
-
-
-def tremble(pose, t0, t1, step=2, amt=3):
-    out = []
-    for k, t in enumerate(range(t0, t1, step)):
-        s = amt if k % 2 else -amt
-        q = P(pose, right_arm=[pose['right_arm'][0] + s, pose['right_arm'][1], pose['right_arm'][2]],
-              torso=[pose['torso'][0], pose['torso'][1] + s * 0.5, pose['torso'][2]])
-        out.append((t, q, BREATH))
+def add(a, **delta):
+    """a with some bones nudged by a delta."""
+    out = P(a)
+    for b, v in delta.items():
+        out[b] = [x + y for x, y in zip(out[b], v)]
     return out
 
 
-def strike(t, pose=PUNCH, hold=6):
-    """Snap into the blow one tick before contact, hold it through the hit-stop."""
-    return [(t - 1, pose, SNAP), (t + hold, pose, None)]
+def mix(a, b, u):
+    return {k: [x + (y - x) * u for x, y in zip(a[k], b[k])] for k in KEYS}
 
 
-def windup(t0, t1):
-    return [(t0, WIND, SETTLE)] + tremble(WIND, t0 + 2, t1)
+def push(rest, pose, k):
+    """Exaggerate (k > 1) or soften (k < 1) a pose relative to a rest pose: overshoot and anticipation."""
+    return {key: [r + (p - r) * k for r, p in zip(rest[key], pose[key])] for key in KEYS}
 
 
-# ---- Black Flash
-anim('world_breaker', 142, [(0, STAND, None), (10, POWER, SETTLE), (26, POWER, None)] + windup(30, 58) + [(60, DASH, SNAP)] + strike(66, PUNCH, 14)
-     + [(90, GUARD, GLIDE), (142, STAND, GLIDE)])
-# ---- Blood
-anim('piercing_blood', 30, [(0, STAND, None), (3, CLASP, SNAP), (7, CLASP, None), (9, AIM, SNAP), (18, AIM, None), (30, STAND, GLIDE)])
-anim('homing_blood', 40, [(0, STAND, None), (3, CLASP, SNAP), (7, CLASP, None), (9, P(AIM, right_arm=[-110, 20, 0]), SNAP), (12, AIM, SETTLE), (26, AIM, None), (40, STAND, GLIDE)])
-anim('supernova', 62, [(0, STAND, None), (4, CLASP, SETTLE), (16, P(CLASP, right_arm=[-120, 40, 0], left_arm=[-120, -40, 0]), BREATH), (24, AIM, SNAP), (40, AIM, None), (62, STAND, GLIDE)])
-anim('blood_storm', 112, [(0, STAND, None), (6, CLASP, SETTLE), (20, RAISE, SNAP), (90, RAISE, None), (112, STAND, GLIDE)])
-anim('crimson_execution', 64, [(0, STAND, None), (4, CLASP, SETTLE), (20, CLASP, None), (23, DASH, SNAP), (27, AIM, SNAP), (40, AIM, None), (64, STAND, GLIDE)])
-anim('blood_apocalypse', 172, [(0, STAND, None), (8, RAISE, SETTLE)] + tremble(RAISE, 10, 100, 4, 2) + [(104, P(RAISE, torso=[-14, 0, 0]), SNAP), (110, AIM, SNAP), (130, AIM, None), (172, STAND, GLIDE)])
-# ---- Shrine
-anim('dismantle', 30, [(0, STAND, None), (2, SLASH_A, SNAP), (4, SLASH_B, SNAP), (12, SLASH_B, None), (30, STAND, GLIDE)])
-ts = [(0, STAND, None)]
-for k, t in enumerate(range(8, 60, 4)):
-    ts.append((t, SLASH_A if k % 2 == 0 else SLASH_B, SNAP))
-ts += [(70, STAND, GLIDE), (92, STAND, None)]
-anim('thousand_slashes', 92, ts)
-anim('cleave', 30, [(0, STAND, None), (2, DASH, SNAP), (5, P(SLASH_A, right_arm=[-90, 50, 0]), SNAP), (6, SLASH_B, SNAP), (14, SLASH_B, None), (30, STAND, GLIDE)])
-anim('world_splitter', 102, [(0, STAND, None), (4, P(SLASH_A, right_arm=[-175, 20, 0]), SETTLE)] + tremble(P(SLASH_A, right_arm=[-175, 20, 0]), 6, 20)
-     + [(22, P(SLASH_B, right_arm=[-20, -10, 0], torso=[30, -10, 0]), SNAP), (40, P(SLASH_B, right_arm=[-20, -10, 0], torso=[30, -10, 0]), None), (102, STAND, GLIDE)])
-# ---- power
-anim('meteor', 94, [(0, STAND, None), (4, CROUCH, SETTLE), (8, RAISE, SNAP), (26, RAISE, None), (30, P(CROUCH, pos=[0, 0, 0]), SETTLE), (36, DIVE, SNAP),
-                    (45, DIVE, None), (46, GROUND_PUNCH, SNAP), (64, GROUND_PUNCH, None), (94, STAND, GLIDE)])
-anim('ce_apocalypse', 112, [(0, STAND, None), (8, POWER, SETTLE)] + tremble(POWER, 10, 46, 3, 3) + [(48, P(POWER, right_arm=[-60, 0, 90], left_arm=[-60, 0, -90], head=[-30, 0, 0]), SNAP),
-                                                                     (80, POWER, None), (112, STAND, GLIDE)])
-# ---- domain
-anim('domain', 122, [(0, STAND, None), (10, GUARD, SETTLE), (34, SIGN, SNAP), (90, SIGN, None), (122, STAND, GLIDE)])
-anim('domain_finisher', 92, [(0, STAND, None)] + windup(2, 22) + [(24, DASH, SNAP)] + strike(38, PUNCH, 14) + [(92, STAND, GLIDE)])
-db = [(0, STAND, None)]
-for k, t in enumerate(range(6, 72, 3)):
-    db.append((t, SLASH_A if k % 2 == 0 else SLASH_B, SNAP))
-db += [(73, RAISE, SNAP), (74, P(HAMMER), SNAP), (90, HAMMER, None), (102, STAND, GLIDE)]
-anim('domain_barrage', 102, db)
-anim('overdrive', 62, [(0, STAND, None), (6, CROUCH, SETTLE)] + tremble(CROUCH, 8, 40, 2, 3) + [(42, POWER, SNAP), (54, POWER, None), (62, STAND, GLIDE)])
-# ---- ultimates
-anim('final_judgment', 234, [(0, STAND, None), (20, GUARD, SETTLE), (36, POWER, SETTLE), (40, WIND, SETTLE)] + tremble(WIND, 42, 112, 3, 2)
-     + [(113, DASH, SNAP)] + strike(120, PUNCH, 20) + [(170, GUARD, GLIDE), (234, STAND, GLIDE)])
-ap = [(0, STAND, None), (10, GUARD, SETTLE), (28, SIGN, SNAP), (44, SIGN, None), (56, CLASP, SETTLE), (60, RAISE, SNAP), (104, RAISE, None)]
-for k, t in enumerate(range(110, 146, 3)):
-    ap.append((t, SLASH_A if k % 2 == 0 else SLASH_B, SNAP))
-ap += [(147, DASH, SNAP), (151, P(SLASH_A, right_arm=[-90, 50, 0]), SNAP), (152, SLASH_B, SNAP)] + windup(156, 174) + strike(176, PUNCH, 14) + [(190, RAISE, SNAP), (210, RAISE, None), (286, STAND, GLIDE)]
-anim('domain_apocalypse', 286, ap)
+class Anim:
+    def __init__(self, name, length, start):
+        self.name, self.length = name, length
+        self.keys = [(0, start, None)]
+
+    def k(self, t, pose, ease=INOUT):
+        self.keys.append((t, pose, ease))
+        return self
+
+    def hold(self, t0, t1, pose, amp=1.5, period=10):
+        """Not frozen: a held pose that breathes."""
+        t = t0
+        i = 0
+        while t < t1:
+            s = math.sin(i * 1.7) * amp
+            self.k(t, add(pose, torso=[s * 0.6, s * 0.3, 0], head=[s * 0.5, 0, 0], right_arm=[s, 0, 0], left_arm=[-s, 0, 0]), INOUT)
+            t += period
+            i += 1
+        return self
+
+    def tremble(self, t0, t1, pose, amp=2.5, step=2):
+        i = 0
+        for t in range(t0, t1, step):
+            s = amp if i % 2 else -amp
+            a = amp * (0.4 + 0.6 * (t - t0) / max(1, t1 - t0))   # builds up
+            s = a if i % 2 else -a
+            self.k(t, add(pose, right_arm=[s, s * 0.4, 0], left_arm=[-s * 0.6, 0, s * 0.3], torso=[0, s * 0.3, 0], head=[s * 0.3, 0, 0]), QUAD)
+            i += 1
+        return self
+
+    def strike(self, t, pose, rest, wind=None, over=1.12, hold=6, recover=None):
+        """Anticipation -> contact on tick t (snapped in one tick) -> overshoot -> follow-through -> hold."""
+        if wind is not None:
+            self.k(t - 3, wind, OUT_)
+            self.k(t - 2, push(rest, wind, 1.08), INOUT)
+        self.k(t - 1, push(rest, pose, 0.85), IN)
+        self.k(t, pose, SNAP)
+        self.k(t + 2, push(rest, pose, over), OUT_)
+        self.k(t + 4, pose, INOUT)
+        if hold:
+            self.hold(t + 6, t + 4 + hold, pose, 1.0, 4)
+        if recover is not None:
+            self.k(t + 4 + hold + 4, recover, OUT_)
+        return self
+
+    def write(self):
+        keys = {}
+        for t, pose, ease in self.keys:
+            keys[min(t, self.length)] = (pose, ease)   # later keys on the same tick win
+        bones = {}
+        for b in BONES:
+            rot, pos = {}, {}
+            for t in sorted(keys):
+                pose, ease = keys[t]
+                k = {'vector': [round(v, 2) for v in pose[b]]}
+                if ease:
+                    k['easing'] = ease
+                rot[f'{t / 20.0:.3f}'] = k
+                if b == 'torso':
+                    v = {'vector': [round(x, 2) for x in pose['pos']]}
+                    if ease:
+                        v['easing'] = ease
+                    pos[f'{t / 20.0:.3f}'] = v
+            bones[b] = {'rotation': rot}
+            if b == 'torso':
+                bones[b]['position'] = pos
+        data = {'format_version': '1.8.0', 'animations': {'yuji_' + self.name: {'animation_length': self.length / 20.0, 'loop': False, 'bones': bones}}}
+        with open(os.path.join(OUT, 'yuji_' + self.name + '.json'), 'w') as f:
+            json.dump(data, f, indent=1)
+        print(self.name, self.length, len(keys), 'keys')
+
+
+# ------------------------------------------------------------------ his vocabulary
+STAND = P(right_arm=[4, 0, 6], left_arm=[4, 0, -6])
+STANCE = P(right_arm=[-42, 18, 8], left_arm=[-58, -22, -8], torso=[6, 14, 0], head=[0, -12, 0], right_leg=[-10, 0, 5], left_leg=[12, 0, -5], pos=[0, -0.7, 0])
+CROUCH = P(right_arm=[25, 0, 22], left_arm=[25, 0, -22], torso=[28, 0, 0], head=[-22, 0, 0], right_leg=[-48, 0, 5], left_leg=[-48, 0, -5], pos=[0, -3.8, 0])
+
+
+def wind_r(depth=1.0):
+    """Right fist drawn back past the hip, left palm out to aim, hips turned away."""
+    return P(right_arm=[42 * depth, 14, 30], left_arm=[-78, -28, -6], torso=[10, 36 * depth, 0], head=[4, -30 * depth, 0],
+             right_leg=[16, 0, 6], left_leg=[-22, 0, -6], pos=[0, -1.6 * depth, 0.5])
+
+
+def punch_r(reach=1.0):
+    """The straight right: shoulder through, rear leg driving, head behind the fist."""
+    return P(right_arm=[-94, -6, 0], left_arm=[30, 6, -24], torso=[14 * reach, -34 * reach, 0], head=[2, 28 * reach, 0],
+             right_leg=[-20, 0, 6], left_leg=[34 * reach, 0, -6], pos=[0, -1.4, -1.0 * reach])
+
+
+def punch_l(reach=1.0):
+    return P(left_arm=[-94, 6, 0], right_arm=[30, -6, 24], torso=[14 * reach, 34 * reach, 0], head=[2, -28 * reach, 0],
+             left_leg=[-20, 0, -6], right_leg=[34 * reach, 0, 6], pos=[0, -1.4, -1.0 * reach])
+
+
+UPPER = P(right_arm=[-168, -12, 10], left_arm=[24, 0, -18], torso=[-16, -20, 0], head=[-24, 12, 0], right_leg=[-4, 0, 4], left_leg=[14, 0, -4], pos=[0, 0.4, 0])
+CLASP = P(right_arm=[-76, 40, 0], left_arm=[-76, -40, 0], torso=[6, 0, 0], head=[8, 0, 0], right_leg=[-6, 0, 4], left_leg=[8, 0, -4], pos=[0, -0.4, 0])
+FINGER = P(right_arm=[-92, 2, 0], left_arm=[-30, -10, -12], torso=[0, -16, 0], head=[0, 14, 0], right_leg=[-10, 0, 4], left_leg=[12, 0, -4])
+TWO_HAND = P(right_arm=[-92, 8, 0], left_arm=[-88, -30, 0], torso=[4, -10, 0], head=[2, 8, 0], right_leg=[-14, 0, 5], left_leg=[16, 0, -5], pos=[0, -0.8, 0])
+SKY = P(right_arm=[-172, 0, 14], left_arm=[-172, 0, -14], torso=[-12, 0, 0], head=[-30, 0, 0], right_leg=[0, 0, 7], left_leg=[0, 0, -7])
+SIGN = P(right_arm=[-102, 30, 0], left_arm=[-102, -30, 0], torso=[2, 0, 0], head=[14, 0, 0], right_leg=[0, 0, 5], left_leg=[0, 0, -5])
+ROAR = P(right_arm=[-24, 0, 70], left_arm=[-24, 0, -70], torso=[-14, 0, 0], head=[-30, 0, 0], right_leg=[-8, 0, 12], left_leg=[8, 0, -12], pos=[0, -2.2, 0])
+FLEX_IN = P(right_arm=[-60, 50, -10], left_arm=[-60, -50, 10], torso=[22, 0, 0], head=[16, 0, 0], right_leg=[-30, 0, 6], left_leg=[-30, 0, -6], pos=[0, -2.6, 0])
+
+
+def slash(side, height=0):
+    """An open-hand sweep: side +1 = start (hand at the far shoulder), -1 = finish (hand flung out)."""
+    return P(right_arm=[-100 - height, 72 * side, -10 * side], left_arm=[14, 0, -14], torso=[2, 38 * side, 0], head=[0, -22 * side, 0],
+             right_leg=[10 * side, 0, 4], left_leg=[-10 * side, 0, -4])
+
+
+def slash_l(side, height=0):
+    return P(left_arm=[-100 - height, -72 * side, 10 * side], right_arm=[14, 0, 14], torso=[2, -38 * side, 0], head=[0, 22 * side, 0],
+             left_leg=[10 * side, 0, -4], right_leg=[-10 * side, 0, 4])
+
+
+# ================================================================== World Breaker (the one Black Flash)
+a = Anim('world_breaker', 142, STAND)
+a.k(6, STANCE, OUT_)
+a.k(12, ROAR, OUT_).tremble(14, 28, ROAR, 2.0)               # the cursed energy wells up
+a.k(30, mix(ROAR, wind_r(), 0.5), INOUT)
+a.k(34, wind_r(1.2), OUT_).tremble(36, 56, wind_r(1.25), 3.0)  # coiled, shaking with it
+a.k(58, push(STAND, wind_r(1.25), 1.15), IN)                # the last inhale
+a.k(61, P(punch_r(0.4), right_arm=[30, 10, 26], pos=[0, -1.8, -1.5]), SNAP)   # the step in
+a.strike(66, punch_r(1.3), STAND, wind=None, over=1.18, hold=18)
+a.k(92, push(STAND, punch_r(1.0), 0.8), INOUT)
+a.k(104, STANCE, OUT_).hold(106, 128, STANCE, 1.2, 8)
+a.k(142, STAND, INOUT)
+a.write()
+
+# ================================================================== Blood
+a = Anim('piercing_blood', 30, STAND)
+a.k(2, add(CLASP, torso=[10, 0, 0], head=[12, 0, 0]), OUT_)        # palms meet, a small bow over them
+a.k(6, add(CLASP, right_arm=[6, 4, 0], left_arm=[6, -4, 0]), INOUT)   # compressing
+a.k(8, push(STAND, FINGER, 0.9), SNAP)
+a.k(9, add(FINGER, right_arm=[-14, 0, 0], torso=[-6, 0, 0], pos=[0, 0, 0.6]), SNAP)   # recoil kicks the hand up
+a.k(12, FINGER, BACK).hold(14, 20, FINGER, 0.8, 3)
+a.k(30, STAND, INOUT)
+a.write()
+
+a = Anim('homing_blood', 40, STAND)
+a.k(3, CLASP, OUT_)
+a.k(7, add(CLASP, torso=[0, 20, 0]), INOUT)
+for i, t in enumerate(range(8, 15)):                       # the beams fan out as the hand sweeps across
+    u = i / 6
+    a.k(t, P(FINGER, right_arm=[-96 + 10 * math.sin(u * 3.14), 50 - 100 * u, 0], torso=[0, 18 - 36 * u, 0], head=[0, -10 + 24 * u, 0]), INOUT)
+a.k(18, add(FINGER, right_arm=[0, -50, 0], torso=[0, -18, 0]), OUT_).hold(20, 30, add(FINGER, right_arm=[0, -50, 0], torso=[0, -18, 0]), 0.8, 4)
+a.k(40, STAND, INOUT)
+a.write()
+
+a = Anim('supernova', 62, STAND)
+a.k(4, CLASP, OUT_)
+OPEN = P(right_arm=[-110, -30, 50], left_arm=[-110, 30, -50], torso=[-6, 0, 0], head=[-10, 0, 0], right_leg=[-6, 0, 6], left_leg=[6, 0, -6])
+a.k(12, OPEN, OUT_).hold(13, 17, OPEN, 1.5, 2)              # the five orbs spread around him
+GATHER = P(right_arm=[-60, 40, 30], left_arm=[-60, -40, -30], torso=[12, 0, 0], head=[8, 0, 0], right_leg=[-20, 0, 5], left_leg=[-20, 0, -5], pos=[0, -1.6, 0])
+a.k(19, GATHER, IN)
+DOUBLE = P(right_arm=[-90, 14, 0], left_arm=[-90, -14, 0], torso=[16, 0, 0], head=[0, 0, 0], right_leg=[-24, 0, 5], left_leg=[30, 0, -5], pos=[0, -1.4, -1.2])
+a.k(22, DOUBLE, SNAP).k(25, push(STAND, DOUBLE, 1.1), OUT_).k(28, DOUBLE, INOUT)
+a.k(32, add(DOUBLE, right_arm=[-8, 0, 0], left_arm=[-8, 0, 0]), SNAP)   # the burst shoves back through his arms
+a.hold(34, 46, DOUBLE, 1.0, 4)
+a.k(62, STAND, INOUT)
+a.write()
+
+a = Anim('blood_storm', 112, STAND)
+a.k(6, CLASP, OUT_)
+a.k(14, add(CLASP, right_arm=[-30, -20, 0], left_arm=[-30, 20, 0]), INOUT)
+CONDUCT_UP = P(right_arm=[-170, -10, 20], left_arm=[-40, 0, -30], torso=[-8, -10, 0], head=[-24, 6, 0], right_leg=[0, 0, 6], left_leg=[0, 0, -6])
+CONDUCT_DOWN = P(right_arm=[-70, -20, 20], left_arm=[-60, 0, -40], torso=[14, -6, 0], head=[6, 4, 0], right_leg=[-10, 0, 6], left_leg=[10, 0, -6], pos=[0, -0.8, 0])
+a.k(20, CONDUCT_UP, BACK)
+for w in range(4):                                         # each wave called down with a sweep of the arm
+    t0 = 24 + w * 20
+    side = 1 if w % 2 == 0 else -1
+    a.k(t0 + 2, add(CONDUCT_UP, right_arm=[0, 30 * side, 0], torso=[0, 10 * side, 0]), INOUT)
+    a.k(t0 + 9, add(CONDUCT_DOWN, right_arm=[0, 30 * side, 0], torso=[0, 10 * side, 0]), SNAP)
+    a.k(t0 + 16, CONDUCT_UP, INOUT)
+a.k(100, CONDUCT_DOWN, OUT_)
+a.k(112, STAND, INOUT)
+a.write()
+
+a = Anim('crimson_execution', 64, STAND)
+for i, t in enumerate(range(2, 20, 3)):                    # the blood circles the hand as it is spun up
+    ang = i * 1.2
+    a.k(t, P(CLASP, right_arm=[-80 + 8 * math.sin(ang), 40 + 8 * math.cos(ang), 0], torso=[6, 6 * math.sin(ang), 0]), INOUT)
+a.k(21, CROUCH, IN)
+a.k(24, P(punch_r(0.6), right_arm=[40, 0, 20], left_arm=[30, 0, -20], torso=[30, 0, 0], pos=[0, -1.5, -1.5]), SNAP)   # the dash
+a.k(27, TWO_HAND, SNAP)
+a.k(28, add(TWO_HAND, right_arm=[-22, 0, 0], left_arm=[-20, 0, 0], torso=[-10, 0, 0], pos=[0, 0, 1.4]), SNAP)  # the shot
+a.k(31, add(TWO_HAND, right_arm=[-6, 0, 0], left_arm=[-6, 0, 0]), BACK)
+a.hold(33, 46, TWO_HAND, 0.8, 4)
+a.k(64, STAND, INOUT)
+a.write()
+
+a = Anim('blood_apocalypse', 172, STAND)
+a.k(4, CLASP, OUT_)
+for i, t in enumerate(range(8, 40, 4)):                    # both arms climb, slowly, lifting the sea of blood
+    u = (i + 1) / 8
+    a.k(t, mix(CLASP, SKY, u), INOUT)
+a.tremble(42, 100, SKY, 1.5, 4)
+a.k(102, add(SKY, torso=[-16, 0, 0], head=[-10, 0, 0], pos=[0, 0.6, 0]), IN)
+SLAM = P(right_arm=[-40, 10, 10], left_arm=[-40, -10, -10], torso=[40, 0, 0], head=[10, 0, 0], right_leg=[-30, 0, 6], left_leg=[20, 0, -6], pos=[0, -2.6, -0.6])
+a.strike(106, SLAM, STAND, over=1.12, hold=20)
+a.k(140, STANCE, OUT_).hold(142, 160, STANCE, 1.0, 8)
+a.k(172, STAND, INOUT)
+a.write()
+
+# ================================================================== Shrine
+a = Anim('dismantle', 30, STAND)
+a.k(1, slash(1.05), OUT_)
+a.k(3, slash(-1), SNAP)                                      # one flick, wrist snapped through
+a.k(5, push(STAND, slash(-1), 1.12), OUT_)
+a.k(8, slash(-0.9), INOUT).hold(10, 16, slash(-0.9), 0.8, 3)
+a.k(30, STAND, INOUT)
+a.write()
+
+a = Anim('thousand_slashes', 92, STAND)
+a.k(4, STANCE, OUT_)
+heights = [0, 30, -20, 15, -30, 25, 5, -10, 35, -25, 10, 20, -15]
+for i, t in enumerate(range(8, 60, 4)):                     # alternating hands, a different angle every cut
+    h = heights[i % len(heights)]
+    if i % 2 == 0:
+        a.k(t, slash(1, h), OUT_).k(t + 2, slash(-1, h), SNAP)
+    else:
+        a.k(t, slash_l(1, h), OUT_).k(t + 2, slash_l(-1, h), SNAP)
+FINISH = P(right_arm=[-120, -60, -20], left_arm=[-120, 60, 20], torso=[20, 0, 0], head=[10, 0, 0], right_leg=[-24, 0, 6], left_leg=[24, 0, -6], pos=[0, -1.6, 0])
+a.k(62, push(STAND, FINISH, 1.1), SNAP).k(66, FINISH, OUT_).hold(68, 78, FINISH, 0.8, 4)
+a.k(92, STAND, INOUT)
+a.write()
+
+a = Anim('cleave', 30, STAND)
+a.k(2, P(punch_r(0.5), right_arm=[40, 0, 30], torso=[26, 0, 0], pos=[0, -1.4, -1.2]), SNAP)   # the dash in
+CHOP0 = P(right_arm=[-96, 80, 0], left_arm=[-40, -10, -10], torso=[6, 44, 0], head=[0, -30, 0], right_leg=[12, 0, 6], left_leg=[-14, 0, -6], pos=[0, -1.2, 0])
+CHOP1 = P(right_arm=[-86, -76, 0], left_arm=[24, 0, -24], torso=[10, -46, 0], head=[0, 30, 0], right_leg=[-16, 0, 6], left_leg=[18, 0, -6], pos=[0, -1.4, 0])
+a.k(5, CHOP0, OUT_)
+a.strike(6, CHOP1, STAND, over=1.15, hold=6)
+a.k(30, STAND, INOUT)
+a.write()
+
+a = Anim('world_splitter', 102, STAND)
+RAISED = P(right_arm=[-178, 10, 4], left_arm=[-30, -10, -20], torso=[-10, 10, 0], head=[-20, -6, 0], right_leg=[-6, 0, 6], left_leg=[10, 0, -6])
+a.k(5, RAISED, OUT_).tremble(7, 20, RAISED, 2.0)
+a.k(21, add(RAISED, torso=[-14, 0, 0], right_arm=[-6, 0, 0]), IN)
+DOWNCUT = P(right_arm=[-20, -4, 0], left_arm=[30, 0, -30], torso=[44, 0, 0], head=[20, 0, 0], right_leg=[-36, 0, 6], left_leg=[20, 0, -6], pos=[0, -3.0, -0.8])
+a.strike(22, DOWNCUT, STAND, over=1.1, hold=24)
+a.k(60, STANCE, OUT_).hold(62, 86, STANCE, 1.0, 8)
+a.k(102, STAND, INOUT)
+a.write()
+
+# ================================================================== power moves
+a = Anim('meteor', 94, STAND)
+a.k(5, CROUCH, OUT_)
+a.k(7, push(STAND, CROUCH, 1.15), INOUT)
+LAUNCH = P(right_arm=[-176, 0, 10], left_arm=[-176, 0, -10], torso=[-6, 0, 0], head=[-30, 0, 0], right_leg=[10, 0, 2], left_leg=[10, 0, -2], pos=[0, 1.0, 0])
+a.k(9, LAUNCH, SNAP).k(18, add(LAUNCH, head=[-10, 0, 0]), OUT_)
+TUCK = P(right_arm=[-40, 0, 20], left_arm=[-40, 0, -20], torso=[50, 0, 0], head=[-10, 0, 0], right_leg=[-110, 0, 6], left_leg=[-110, 0, -6], pos=[0, 2.0, 0])
+a.k(26, TUCK, INOUT).k(31, add(TUCK, torso=[30, 0, 0]), INOUT)    # flipping over at the top
+DIVE = P(right_arm=[-178, 0, 4], left_arm=[-178, 0, -4], torso=[78, 0, 0], head=[-56, 0, 0], right_leg=[16, 0, 4], left_leg=[22, 0, -4])
+a.k(36, DIVE, SNAP).hold(38, 44, DIVE, 1.5, 2)
+LAND = P(right_arm=[-36, 0, 4], left_arm=[30, 0, -50], torso=[56, 0, 0], head=[-32, 0, 0], right_leg=[-80, 0, 8], left_leg=[-6, 0, -8], pos=[0, -6.5, 0])
+a.strike(46, LAND, STAND, over=1.06, hold=20)            # the superhero landing, fist in the crater
+a.k(76, add(CROUCH, pos=[0, -2.0, 0]), INOUT)
+a.k(94, STAND, INOUT)
+a.write()
+
+a = Anim('ce_apocalypse', 112, STAND)
+a.k(8, FLEX_IN, OUT_).tremble(10, 46, FLEX_IN, 3.0, 2)
+a.k(47, push(STAND, FLEX_IN, 1.15), IN)
+BURST = P(right_arm=[-70, 0, 100], left_arm=[-70, 0, -100], torso=[-18, 0, 0], head=[-36, 0, 0], right_leg=[-6, 0, 16], left_leg=[6, 0, -16], pos=[0, -1.0, 0])
+a.strike(48, BURST, STAND, over=1.1, hold=26)
+a.k(84, ROAR, INOUT).k(100, STANCE, INOUT)
+a.k(112, STAND, INOUT)
+a.write()
+
+# ================================================================== the domain
+a = Anim('domain', 122, STAND)
+a.k(10, STANCE, OUT_).hold(12, 28, STANCE, 1.0, 8)
+a.k(31, add(SIGN, right_arm=[20, 0, 0], left_arm=[20, 0, 0]), INOUT)
+a.k(34, SIGN, SNAP).k(36, add(SIGN, head=[6, 0, 0]), OUT_)
+a.hold(38, 58, SIGN, 0.6, 5)
+a.k(62, add(SIGN, head=[-24, 0, 0], torso=[-6, 0, 0]), SNAP)      # eyes up as the domain opens
+a.hold(64, 100, add(SIGN, head=[-24, 0, 0], torso=[-6, 0, 0]), 0.6, 6)
+a.k(110, STANCE, INOUT)
+a.k(122, STAND, INOUT)
+a.write()
+
+a = Anim('domain_finisher', 92, STAND)
+a.k(4, wind_r(1.0), OUT_).tremble(6, 22, wind_r(1.15), 2.5)
+a.k(25, P(punch_r(0.5), right_arm=[40, 0, 26], torso=[30, 20, 0], pos=[0, -1.8, -1.4]), SNAP)
+a.k(34, wind_r(1.2), INOUT)
+a.strike(38, punch_r(1.3), STAND, wind=None, over=1.16, hold=16)
+a.k(70, STANCE, OUT_)
+a.k(92, STAND, INOUT)
+a.write()
+
+a = Anim('domain_barrage', 102, STAND)
+a.k(3, STANCE, OUT_)
+for i, t in enumerate(range(6, 72, 3)):
+    if i % 2 == 0:                                         # Dismantle: open-hand cuts, alternating
+        h = [20, -10, 30, 0, -20][i // 2 % 5]
+        a.k(t, slash(-1, h) if (i // 2) % 2 else slash_l(-1, h), SNAP)
+    else:                                                  # Cleave: short hooks
+        a.k(t, punch_r(0.7) if (i // 2) % 2 else punch_l(0.7), SNAP)
+a.k(72, add(SKY, pos=[0, 0.4, 0]), IN)
+a.strike(74, P(SLAM := P(right_arm=[-40, 10, 10], left_arm=[-40, -10, -10], torso=[40, 0, 0], head=[10, 0, 0], right_leg=[-30, 0, 6],
+                         left_leg=[20, 0, -6], pos=[0, -2.6, -0.6])), STAND, over=1.12, hold=12)
+a.k(102, STAND, INOUT)
+a.write()
+
+a = Anim('overdrive', 62, STAND)
+a.k(6, CROUCH, OUT_)
+CLENCH = P(CROUCH, right_arm=[10, 0, 34], left_arm=[10, 0, -34], torso=[34, 0, 0], head=[-6, 0, 0])
+a.k(10, CLENCH, INOUT).tremble(12, 40, CLENCH, 3.5, 2)
+a.k(41, push(STAND, CLENCH, 1.15), IN)
+a.strike(42, ROAR, STAND, over=1.15, hold=10)
+a.k(62, STANCE, INOUT)
+a.write()
+
+# ================================================================== ultimates
+a = Anim('final_judgment', 234, STAND)
+a.k(14, STANCE, OUT_).hold(16, 34, STANCE, 1.0, 6)
+FIST_UP = P(right_arm=[-176, 0, 6], left_arm=[-50, -20, -10], torso=[-10, 8, 0], head=[-24, -4, 0], right_leg=[-6, 0, 7], left_leg=[10, 0, -7])
+a.k(38, FIST_UP, OUT_).tremble(40, 70, FIST_UP, 1.5, 3)         # the fist raised to the darkening sky
+a.k(76, mix(FIST_UP, wind_r(1.3), 0.5), INOUT)
+a.k(82, wind_r(1.35), OUT_).tremble(84, 110, wind_r(1.4), 3.5, 2)   # dragged down to the hip, shaking with it
+a.k(112, push(STAND, wind_r(1.4), 1.12), IN)
+a.k(116, P(punch_r(0.4), right_arm=[30, 10, 26], torso=[24, 30, 0], pos=[0, -2.0, -1.6]), SNAP)
+a.strike(120, punch_r(1.4), STAND, over=1.2, hold=34)        # and held, while the world ends
+a.k(166, push(STAND, punch_r(1.0), 0.7), INOUT)
+a.k(186, STANCE, OUT_).hold(188, 220, STANCE, 1.2, 8)
+a.k(234, STAND, INOUT)
+a.write()
+
+a = Anim('domain_apocalypse', 286, STAND)
+a.k(10, STANCE, OUT_)
+a.k(25, add(SIGN, right_arm=[20, 0, 0], left_arm=[20, 0, 0]), INOUT).k(28, SIGN, SNAP).hold(30, 40, SIGN, 0.6, 5)
+a.k(42, add(SIGN, head=[-24, 0, 0]), SNAP)
+a.k(56, CONDUCT_UP, OUT_)
+for w in range(3):                                         # the storm, called down
+    t0 = 60 + w * 16
+    side = 1 if w % 2 == 0 else -1
+    a.k(t0 + 7, add(CONDUCT_DOWN, right_arm=[0, 30 * side, 0]), SNAP).k(t0 + 14, CONDUCT_UP, INOUT)
+for i, t in enumerate(range(108, 146, 3)):                  # Dismantle across the domain
+    a.k(t, slash(1 if i % 2 == 0 else -1, (i % 4) * 12 - 18), SNAP)
+a.k(147, P(punch_r(0.5), right_arm=[40, 0, 26], torso=[26, 0, 0], pos=[0, -1.4, -1.2]), SNAP)
+a.k(151, CHOP0, OUT_)
+a.strike(152, CHOP1, STAND, over=1.12, hold=0)
+a.k(158, wind_r(1.2), OUT_).tremble(160, 174, wind_r(1.3), 3.0, 2)
+a.strike(176, punch_r(1.35), STAND, over=1.18, hold=10)
+a.k(190, SKY, SNAP).hold(192, 230, SKY, 1.2, 6)
+a.k(250, STANCE, INOUT)
+a.k(286, STAND, INOUT)
+a.write()
 
 # subtitles
 names = ["charge", "black_flash", "black_flash_big", "dash", "blood_form", "blood_fire", "blood_hit", "blood_rain", "dismantle", "cleave",
