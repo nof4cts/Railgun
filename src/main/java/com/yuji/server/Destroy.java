@@ -267,9 +267,15 @@ public final class Destroy {
                             if (top > level.getMinBuildHeight()) {
                                 BlockState face = in ? ink : edge;
                                 pos.set(x, top, z);
-                                paint(pos, face, budget);
-                                pos.set(x, top - 1, z);
-                                paint(pos, face, budget);
+                                if (breakable(pos, level.getBlockState(pos))) {
+                                    paint(pos, face, budget);
+                                    pos.set(x, top - 1, z);
+                                    paint(pos, face, budget);
+                                } else {
+                                    // the crater reached bedrock (or something protected): lay it on top instead
+                                    pos.set(x, top + 1, z);
+                                    place(pos, face, budget);
+                                }
                             }
                         }
                     }
