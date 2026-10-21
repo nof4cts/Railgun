@@ -668,10 +668,13 @@ public final class Yuji {
     /**
      * Shrine cuts the space itself, so it goes straight through Gojo's Infinity (both the kit's Gojo and Teen Gojo):
      * against players, Dismantle, Cleave and everything built on them land as an unblockable, sourceless cut (the
-     * kind of damage Infinity lets through). Everything else is an ordinary player attack.
+     * kind of damage Infinity lets through). While his domain is open, every move does. Everything else is an
+     * ordinary player attack.
      */
     private static DamageSource source(ServerPlayer p, LivingEntity victim, Run r) {
-        if (r != null && r.m.shrine() && victim instanceof Player) {
+        // with his domain open, every move he has is a sure hit: nothing blocks it, Infinity included
+        boolean domain = domainOf(p) != null;
+        if (victim instanceof Player && (domain || (r != null && r.m.shrine()))) {
             return new DamageSource(p.serverLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.GENERIC_KILL));
         }
         return p.damageSources().playerAttack(p);
