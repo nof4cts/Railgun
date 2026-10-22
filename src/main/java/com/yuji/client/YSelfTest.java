@@ -56,7 +56,7 @@ public final class YSelfTest {
     private static String pendingShot;
     private static final List<Step> SCRIPT = new ArrayList<>();
     private static final YMove[] ORDER = {
-            YMove.AS_GOD, YMove.RCT, YMove.THE_END, YMove.WORLD_BREAKER, YMove.RICOCHET, YMove.RESONANCE, YMove.PIERCING_BLOOD, YMove.HOMING_BLOOD, YMove.SUPERNOVA, YMove.BLOOD_STORM,
+            YMove.AS_GOD, YMove.FOURTH_WALL, YMove.RCT, YMove.THE_END, YMove.WORLD_BREAKER, YMove.RICOCHET, YMove.RESONANCE, YMove.PIERCING_BLOOD, YMove.HOMING_BLOOD, YMove.SUPERNOVA, YMove.BLOOD_STORM,
             YMove.CRIMSON_EXECUTION, YMove.BLOOD_APOCALYPSE, YMove.DISMANTLE, YMove.THOUSAND_SLASHES, YMove.CLEAVE,
             YMove.WORLD_SPLITTER, YMove.METEOR, YMove.DOMAIN, YMove.DOMAIN_BARRAGE,
             YMove.DOMAIN_FINISHER, YMove.OVERDRIVE, YMove.FINAL_JUDGMENT, YMove.DOMAIN_APOCALYPSE};
@@ -193,6 +193,14 @@ public final class YSelfTest {
                 step(t + 18, "00_heavenly_judgement_a", CameraType.FIRST_PERSON, null);
                 step(t + 36, "00_heavenly_judgement_b", CameraType.FIRST_PERSON, null);
                 t += 90;
+            }
+            if (m == YMove.FOURTH_WALL) {
+                // the whole-server slash overlay (the shutdown itself is skipped under -Dyuji.selftest=true)
+                step(t - 24, null, CameraType.FIRST_PERSON, p -> com.yuji.net.YNet.all(new com.yuji.net.YNet.Wall("Dev", 50)));
+                step(t - 10, "20_fourth_wall_a", CameraType.FIRST_PERSON, null);
+                step(t + 6, "20_fourth_wall_b", CameraType.FIRST_PERSON, null);
+                step(t + 24, "20_fourth_wall_c", CameraType.FIRST_PERSON, null);
+                t += 70;
             }
             if (m == YMove.FINAL_JUDGMENT) {
                 // wait for the crater and the name in its floor, then look straight down on it

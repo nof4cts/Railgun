@@ -31,6 +31,7 @@ public enum YMove {
     RCT(17, false, "Reverse Cursed Technique x100", false, 0, 600, 44, false, 0),
     THE_END(18, false, "The End", false, 0, 1200, 96, true, 3),
     AS_GOD(19, false, "As God As My Witness", false, 0, 1200, 40, false, 0),
+    FOURTH_WALL(20, false, "4th Wall Breaker", false, 0, 0, 80, true, 0),
     DOMAIN_APOCALYPSE(15, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
 
     public final int slot;

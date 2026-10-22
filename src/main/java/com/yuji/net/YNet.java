@@ -51,6 +51,12 @@ public final class YNet {
         CHANNEL.registerMessage(id++, Aura.class, Aura::encode, Aura::decode, Aura::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, God.class, God::encode, God::decode, God::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, Judge.class, Judge::encode, Judge::decode, Judge::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        CHANNEL.registerMessage(id++, Wall.class, Wall::encode, Wall::decode, Wall::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+    }
+
+    /** To every player on the server, wherever they are. */
+    public static void all(Object msg) {
+        if (CHANNEL != null) CHANNEL.send(PacketDistributor.ALL.noArg(), msg);
     }
 
     /** A bad packet is logged, never fatal. */
@@ -212,6 +218,23 @@ public final class YNet {
 
         static void handle(Domain m, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YCasts.domain(m))));
+            ctx.get().setPacketHandled(true);
+        }
+    }
+
+    /** 4th Wall Breaker: the whole server's screens are slashed open, then it goes down. Carries who did it. */
+    public record Wall(String by, int ticks) {
+        static void encode(Wall m, FriendlyByteBuf b) {
+            b.writeUtf(m.by, 64);
+            b.writeVarInt(m.ticks);
+        }
+
+        static Wall decode(FriendlyByteBuf b) {
+            return new Wall(b.readUtf(64), b.readVarInt());
+        }
+
+        static void handle(Wall m, Supplier<NetworkEvent.Context> ctx) {
+            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.yuji.client.YWall.start(m))));
             ctx.get().setPacketHandled(true);
         }
     }

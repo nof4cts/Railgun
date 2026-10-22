@@ -140,6 +140,10 @@ public final class Yuji {
         long now = p.serverLevel().getGameTime();
         YMove m = YMove.resolve(slot, domainOf(p) != null, overdrive(p));
         if (m == null) return true;
+        if (m == YMove.FOURTH_WALL && !p.hasPermissions(4)) {
+            tell(p, "Only a server operator can break the 4th wall");
+            return true;
+        }
         Run run = RUNS.get(p.getUUID());
         if (run != null) return true;   // busy: the move in progress finishes first
         long ready = ready(p)[m.ordinal()];
@@ -552,6 +556,9 @@ public final class Yuji {
                 Domain d = DOMAINS.remove(p.getUUID());
                 if (d != null) YNet.near(level, d.centre, 512, new YNet.Domain(p.getId(), d.centre, d.radius, 0, new int[0]));
                 state(p);
+            }
+            case Beat.WALL -> {
+                if (p.hasPermissions(4)) ServerShutdown.begin(p.getServer(), p.getGameProfile().getName(), (int) b.x());
             }
             case Beat.GOD -> {
                 long until = now + (long) b.x();

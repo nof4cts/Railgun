@@ -9,7 +9,7 @@ import os
 import zipfile
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
-SLOTS = 20
+SLOTS = 24
 with zipfile.ZipFile(os.path.join(ROOT, "libs", "jjk-1.0.0.jar")) as z:
     data = bytearray(z.read("com/jjk/mod/client/Keys.class"))
 needle = bytes([0x10, 16, 0xBD])            # bipush 16; anewarray

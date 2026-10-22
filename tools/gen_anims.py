@@ -229,6 +229,16 @@ a.k(32, add(STANCE, head=[-4, 0, 0]), INOUT)
 a.k(44, STAND, INOUT)
 a.write()
 
+# ---- 4th Wall Breaker: a wide slash across the air in front of him, toward the screen
+a = Anim('fourth_wall', 80, STAND)
+a.k(6, add(STANCE, right_arm=[-120, 60, 0]), OUT_).tremble(8, 16, add(STANCE, right_arm=[-120, 60, 0]), 1.5)
+a.k(17, P(right_arm=[-70, 70, 0], left_arm=[20, 0, -10], torso=[0, 40, 0], head=[0, -26, 0]), IN)
+a.k(19, P(right_arm=[-80, -78, 0], left_arm=[24, 0, -18], torso=[6, -42, 0], head=[0, 30, 0], right_leg=[-12, 0, 6], left_leg=[14, 0, -6], pos=[0, -1.2, 0]), SNAP)   # the cut
+a.k(24, push(STAND, P(right_arm=[-70, -70, 0], torso=[4, -30, 0]), 1.1), OUT_)
+a.hold(28, 44, add(STANCE, head=[0, 6, 0]), 0.6, 7)
+a.k(80, STAND, INOUT)
+a.write()
+
 # ---- As God As My Witness: the right hand raised as if swearing an oath, eyes to the sky
 OATH = P(right_arm=[-168, -6, -10], left_arm=[-30, 30, -10], torso=[-6, 0, 0], head=[-22, 0, 0], right_leg=[0, 0, 5], left_leg=[0, 0, -5])
 a = Anim('as_god', 40, STAND)

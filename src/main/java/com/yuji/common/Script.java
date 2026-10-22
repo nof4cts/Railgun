@@ -144,6 +144,7 @@ public final class Script {
             case RCT -> rct(b);
             case THE_END -> theEnd(b);
             case AS_GOD -> asGod(b);
+            case FOURTH_WALL -> fourthWall(b);
             case RICOCHET -> ricochet(b);
             case RESONANCE -> resonance(b);
             case PIERCING_BLOOD -> piercingBlood(b);
@@ -269,6 +270,22 @@ public final class Script {
      * until it takes them. Then he walks back out where he started.
      */
     /** As God As My Witness: one hand raised; for thirty seconds nothing in the world can kill him. */
+    /**
+     * 4th Wall Breaker. He turns and cuts the air where the screen is - the slash runs across everyone's view, the
+     * world comes apart along the cut, and then it is over for the server. Only an operator can do this.
+     */
+    private static void fourthWall(B b) {
+        b.dark(0, 0.5, 10);
+        b.charge(0, 16, HAND, Z, 1.2);
+        b.sound(0, CASTER, S_CHARGE, 2.5, 0.8);
+        b.dark(16, 0.8, 8);
+        b.sound(18, CASTER, S_SPLITTER, 10.0, 0.8);
+        b.slash(18, EYE, Z, EYE, b.F.scale(10), 40, 24, 30, 2);
+        b.blackout(19, 2);
+        // the cut reaches the screen itself: the whole server is slashed, then goes down
+        b.add(Beat.of(22, WALL, CASTER, Z).p(50, 0, 0).d(50));
+    }
+
     private static void asGod(B b) {
         b.charge(0, 12, EYE, new Vec3(0, 0.6, 0), 0.7);
         b.sound(0, CASTER, S_CHARGE, 2.0, 1.2);
