@@ -188,6 +188,11 @@ public final class YSelfTest {
                     Y.LOG.info("[selftest] As God As My Witness: after /kill, the void and generic kill: alive={} health={}", p.isAlive(), p.getHealth());
                     p.setGameMode(GameType.CREATIVE);
                 });
+                // what the one who raised /kill would see (the screen only: nobody dies in the test)
+                step(t - 20, null, CameraType.FIRST_PERSON, p -> com.yuji.net.YNet.to(p, new com.yuji.net.YNet.Judge("Dev", 70)));
+                step(t + 18, "00_heavenly_judgement_a", CameraType.FIRST_PERSON, null);
+                step(t + 36, "00_heavenly_judgement_b", CameraType.FIRST_PERSON, null);
+                t += 90;
             }
             if (m == YMove.FINAL_JUDGMENT) {
                 // wait for the crater and the name in its floor, then look straight down on it

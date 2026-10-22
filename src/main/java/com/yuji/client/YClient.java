@@ -85,6 +85,7 @@ public final class YClient {
                 YCam.Pose p = YCam.pose();
                 if (p != null) e.setRoll(p.roll());
                 YFx.onCameraAngles(e);
+                YJudge.angles(e);
             } catch (Throwable t) {
                 safe("camera", t);
             }
@@ -100,7 +101,7 @@ public final class YClient {
 
         @SubscribeEvent
         public static void onInput(MovementInputUpdateEvent e) {
-            if (!YCam.running()) return;
+            if (!YCam.running() && !YJudge.running()) return;
             Input in = e.getInput();
             in.forwardImpulse = 0;
             in.leftImpulse = 0;
@@ -111,12 +112,12 @@ public final class YClient {
 
         @SubscribeEvent
         public static void onHand(RenderHandEvent e) {
-            if (YCam.running()) e.setCanceled(true);
+            if (YCam.running() || YJudge.running()) e.setCanceled(true);
         }
 
         @SubscribeEvent
         public static void onOverlay(RenderGuiOverlayEvent.Pre e) {
-            if (YCam.running()) e.setCanceled(true);
+            if (YCam.running() || YJudge.running()) e.setCanceled(true);
         }
 
         @SubscribeEvent
@@ -134,6 +135,7 @@ public final class YClient {
         public static void onGuiLast(RenderGuiEvent.Post e) {
             try {
                 YCam.overlay(e.getGuiGraphics());
+                YJudge.overlay(e.getGuiGraphics());
             } catch (Throwable t) {
                 safe("overlay", t);
             }
