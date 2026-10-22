@@ -1,7 +1,7 @@
 {
  "subtitles.woh.charge": "Charge",
- "subtitles.woh.black_flash": "Black Flash",
- "subtitles.woh.black_flash_big": "Black Flash erupts",
+ "subtitles.woh.black_flash": "Overwrite strike",
+ "subtitles.woh.black_flash_big": "Black flash big",
  "subtitles.woh.dash": "Dash",
  "subtitles.woh.blood_form": "Blood form",
  "subtitles.woh.blood_fire": "Blood fire",
@@ -15,10 +15,10 @@
  "subtitles.woh.domain": "Domain",
  "subtitles.woh.domain_hum": "Domain hum",
  "subtitles.woh.overdrive": "Overdrive",
- "subtitles.woh.wave": "Wave",
- "subtitles.woh.world_ender": "The world ends",
- "subtitles.woh.rumble": "Rumble",
+ "subtitles.woh.wave": "Reality cracks",
+ "subtitles.woh.world_ender": "Reality is overwritten",
+ "subtitles.woh.rumble": "Time halts",
  "subtitles.woh.impact": "Impact",
  "subtitles.woh.meteor": "Meteor",
- "subtitles.woh.card": "Technique"
+ "subtitles.woh.card": "The World Over Heaven"
 }
