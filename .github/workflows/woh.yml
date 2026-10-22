@@ -1,0 +1,52 @@
+name: Build and test The World Over Heaven
+on:
+  push:
+    branches: [world-over-heaven]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - name: Build the patched jar
+        id: build
+        continue-on-error: true
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon 2>&1 | tee build-log.txt
+          exit ${PIPESTATUS[0]}
+      - name: Play The World Over Heaven in a real Forge install (software GL) and photograph it
+        id: play
+        if: steps.build.outcome == 'success' && hashFiles('src/main/java/com/woh/client/WSelfTest.java') != ''
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          MESA_GL_VERSION_OVERRIDE: '4.5'
+          MESA_GLSL_VERSION_OVERRIDE: '450'
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1-mesa-dri > /dev/null
+          pip install -q 'portablemc<5'
+          MC=$PWD/mc; mkdir -p $MC/mods
+          cp build/out/jjk-1.0.0.jar $MC/mods/
+          GL=$(curl -sSf 'https://api.modrinth.com/v2/project/geckolib/version?game_versions=%5B%221.20.1%22%5D&loaders=%5B%22forge%22%5D' | python3 -c "import json,sys; v=json.load(sys.stdin); print(v[0]['files'][0]['url'])")
+          echo "geckolib: $GL"; curl -sSfL -o $MC/mods/geckolib.jar "$GL"
+          ls -la $MC/mods
+          curl -sSfL -o $MC/mods/player-animation-lib-forge.jar "https://maven.kosmx.dev/dev/kosmx/player-anim/player-animation-lib-forge/1.0.2-rc1+1.20/player-animation-lib-forge-1.0.2-rc1+1.20.jar"
+          printf 'onboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\njoinedFirstServer:true\nrenderDistance:12\nsimulationDistance:6\nmaxFps:60\nguiScale:2\nsoundCategory_master:0.0\nfov:0.0\n' > $MC/options.txt
+          timeout 3300 xvfb-run -a -s "-screen 0 1280x720x24" portablemc --main-dir $MC --work-dir $MC start forge:1.20.1-47.3.0 -u Dev --resolution 1280x720 --jvm "$JAVA_HOME/bin/java" --jvm-args="-Xmx3G -Dwoh.selftest=true" 2>&1 | tee play-log.txt | grep --line-buffered -E "selftest|woh|Exception|ERROR|Caused" || true
+      - name: Publish
+        if: always()
+        run: |
+          mkdir -p /tmp/out/shots
+          cp build-log.txt play-log.txt /tmp/out/ 2>/dev/null || true
+          cp build/out/jjk-1.0.0.jar /tmp/out/ 2>/dev/null || true
+          cp mc/logs/latest.log /tmp/out/game-latest.log 2>/dev/null || true
+          cp mc/screenshots/woh/*.png /tmp/out/shots/ 2>/dev/null || true
+          grep -E "\.java:[0-9]+: error:" -A2 build-log.txt > /tmp/out/ERRORS.txt 2>/dev/null || true
+          echo "${{ steps.build.outcome }} ${{ github.sha }}" > /tmp/out/STATUS
+          cd /tmp/out && git init -q -b world-over-heaven-build && git config user.name ci && git config user.email ci@users.noreply.github.com
+          git add -A && git commit -q -m "build ${{ github.sha }}" && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" world-over-heaven-build

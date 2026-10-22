@@ -16,6 +16,14 @@ public final class TeenHooks {
     /** A key press: true if an added sorcerer took it (the jar's own handling is then skipped). */
     public static boolean key(ServerPlayer p, int slot) {
         try {
+            if (p != null && com.woh.server.Woh.key(p, slot)) {
+                return true;
+            }
+        } catch (Throwable t) {
+            com.woh.W.LOG.error("[woh] key failed", t);
+            return true;
+        }
+        try {
             if (p != null && com.yuji.server.Yuji.key(p, slot)) {
                 return true;
             }
@@ -41,7 +49,7 @@ public final class TeenHooks {
     /** The selector's Stand tab with Johnny and Gyro added after Gold Experience Requiem. */
     public static Sorcerer[] withStands(Sorcerer[] list) {
         List<Sorcerer> out = new ArrayList<>(Arrays.asList(list));
-        for (String n : new String[]{"JOHNNY", "GYRO"}) {
+        for (String n : new String[]{"JOHNNY", "GYRO", "WORLD_OVER_HEAVEN"}) {
             try {
                 Sorcerer s = Sorcerer.valueOf(n);
                 if (!out.contains(s)) {
