@@ -784,6 +784,12 @@ public final class Yuji {
         return u != null && u > p.serverLevel().getGameTime();
     }
 
+    /** While As God As My Witness holds, he harms no one - his own punches and sword swings do nothing either. */
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void onGodOutgoing(LivingAttackEvent e) {
+        if (e.getSource().getEntity() instanceof ServerPlayer atk && god(atk)) e.setCanceled(true);
+    }
+
     /** Every attack on him, whatever it is (/kill, the void, other mods, bypass-everything damage) simply doesn't happen. */
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void onGodAttack(LivingAttackEvent e) {
