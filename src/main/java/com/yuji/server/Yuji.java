@@ -82,6 +82,7 @@ public final class Yuji {
     /** "Until" for permanent Overdrive (far in the future, still safe to add to). */
     static final long FOREVER = Long.MAX_VALUE / 4;
     static final String OD_TAG = "yuji_overdrive";
+    static final String GOD_TAG = "yuji_asgod";
 
     private Yuji() {}
 
@@ -142,6 +143,16 @@ public final class Yuji {
         if (m == null) return true;
         if (m == YMove.FOURTH_WALL && !p.hasPermissions(4)) {
             tell(p, "Only a server operator can break the 4th wall");
+            return true;
+        }
+        if (god(p)) {
+            // As God As My Witness holds him: he has forsaken violence. Only its own key works, to end it.
+            if (m == YMove.AS_GOD) {
+                endGod(p);
+                tell(p, "As God As My Witness ended");
+                return true;
+            }
+            tell(p, "As God As My Witness: you cannot act until you end it");
             return true;
         }
         Run run = RUNS.get(p.getUUID());
@@ -561,10 +572,10 @@ public final class Yuji {
                 if (p.hasPermissions(4)) ServerShutdown.begin(p.getServer(), p.getGameProfile().getName(), (int) b.x());
             }
             case Beat.GOD -> {
-                long until = now + (long) b.x();
-                GOD.put(p.getUUID(), until);
+                GOD.put(p.getUUID(), FOREVER);
+                p.getPersistentData().putBoolean(GOD_TAG, true);
                 p.setHealth(Math.max(p.getHealth(), 1f));
-                YNet.near(level, p.position(), 256, new YNet.God(p.getId(), until));
+                YNet.near(level, p.position(), 256, new YNet.God(p.getId(), FOREVER));
                 state(p);
             }
             case Beat.GRAB -> {
@@ -707,6 +718,7 @@ public final class Yuji {
 
     static void hurt(ServerPlayer p, LivingEntity e, double amount, boolean main, Set<Integer> skip) {
         if (amount <= 0 || e == p || !e.isAlive() || skip.contains(e.getId())) return;
+        if (e instanceof Player && god(p)) return;   // As God As My Witness: he harms no other player
         if (e instanceof Player pl && (pl.isCreative() || pl.isSpectator())) return;
         double dmg = amount, boost = 1.0;
         if (overdrive(p)) boost *= 1.6;
@@ -739,6 +751,14 @@ public final class Yuji {
     }
 
     // ------------------------------------------------------------------ As God As My Witness
+    /** End As God As My Witness: he can act again. */
+    public static void endGod(ServerPlayer p) {
+        if (GOD.remove(p.getUUID()) == null) return;
+        p.getPersistentData().remove(GOD_TAG);
+        YNet.near(p.serverLevel(), p.position(), 256, new YNet.God(p.getId(), 0));
+        state(p);
+    }
+
     public static boolean god(ServerPlayer p) {
         Long u = GOD.get(p.getUUID());
         return u != null && u > p.serverLevel().getGameTime();
@@ -831,6 +851,7 @@ public final class Yuji {
 
     /** Self-test: no cooldowns, no move running. */
     public static void testReset(ServerPlayer p) {
+        if (GOD.remove(p.getUUID()) != null) { p.getPersistentData().remove(GOD_TAG); YNet.near(p.serverLevel(), p.position(), 256, new YNet.God(p.getId(), 0)); }
         RUNS.remove(p.getUUID());
         READY.remove(p.getUUID());
         Energy.set(p, Energy.MAX);
@@ -889,6 +910,10 @@ public final class Yuji {
                 OVERDRIVE.put(p.getUUID(), FOREVER);
                 flight(p, true);
                 YNet.near(p.serverLevel(), p.position(), 256, new YNet.Aura(p.getId(), FOREVER));
+            }
+            if (p.getPersistentData().getBoolean(GOD_TAG)) {
+                GOD.put(p.getUUID(), FOREVER);
+                YNet.near(p.serverLevel(), p.position(), 256, new YNet.God(p.getId(), FOREVER));
             }
             state(p);
         }

@@ -35,6 +35,14 @@ public final class YGod {
         ON.clear();
     }
 
+    /** Is the player holding this screen under As God As My Witness? */
+    public static boolean selfOn() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return false;
+        Long u = ON.get(mc.player.getId());
+        return u != null && u > mc.level.getGameTime();
+    }
+
     public static void render(RenderLevelStageEvent e) {
         if (ON.isEmpty()) return;
         Minecraft mc = Minecraft.getInstance();

@@ -93,13 +93,15 @@ public final class YHud {
         Font font = mc.font;
         long now = mc.level.getGameTime();
         boolean dom = domainOpen(), od = overdrive();
+        boolean asGod = YGod.selfOn();
         int y = g.guiHeight() / 2 - s.moves.length * 11 / 2;
         for (int i = 0; i < s.moves.length; ++i) {
             YMove m = YMove.resolve(i, dom, od);
             float cd = m == null ? 0f : cooldown(m, now);
             String text = m != null && m.sneak ? m.label() + "  [now]" : s.moves[i];
+            if (m == YMove.AS_GOD && asGod) text = m.label() + "  [ON]";
             String line = "[" + Keys.label(i) + "] " + text;
-            int col = cd > 0.0f ? -8749176 : -986891;
+            int col = (asGod && m != YMove.AS_GOD) || cd > 0.0f ? -8749176 : -986891;
             Keys.mark(g, font, line, 6, y, i);
             g.drawString(font, line, 6, y, col, true);
             int lw = font.width(line);
