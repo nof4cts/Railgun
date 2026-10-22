@@ -132,7 +132,7 @@ public final class WDebris {
             ps.pushPose();
             ps.translate(x - cam.x, y - cam.y, z - cam.z);
             ps.mulPose(Axis.XP.rotationDegrees(Mth.lerp(pt, d.prx, d.rx)));
-            ps.mulPose(Axis.WP.rotationDegrees(Mth.lerp(pt, d.pry, d.ry)));
+            ps.mulPose(Axis.YP.rotationDegrees(Mth.lerp(pt, d.pry, d.ry)));
             ps.scale(s, s, s);
             ps.translate(-0.5, -0.5, -0.5);
             int light = LevelRenderer.getLightColor(mc.level, BlockPos.containing(x, y, z));
