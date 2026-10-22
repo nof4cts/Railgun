@@ -141,8 +141,8 @@ public final class Yuji {
         long now = p.serverLevel().getGameTime();
         YMove m = YMove.resolve(slot, domainOf(p) != null, overdrive(p));
         if (m == null) return true;
-        if (m == YMove.FOURTH_WALL && !p.hasPermissions(4)) {
-            tell(p, "Only a server operator can break the 4th wall");
+        if (m == YMove.FOURTH_WALL && !canBreakWall(p)) {
+            tell(p, "Only a server operator (or the world's host) can break the 4th wall");
             return true;
         }
         if (god(p)) {
@@ -569,7 +569,7 @@ public final class Yuji {
                 state(p);
             }
             case Beat.WALL -> {
-                if (p.hasPermissions(4)) ServerShutdown.begin(p.getServer(), p.getGameProfile().getName(), (int) b.x());
+                if (canBreakWall(p)) ServerShutdown.begin(p.getServer(), p.getGameProfile().getName(), (int) b.x());
             }
             case Beat.GOD -> {
                 GOD.put(p.getUUID(), FOREVER);
@@ -752,6 +752,12 @@ public final class Yuji {
 
     // ------------------------------------------------------------------ As God As My Witness
     /** End As God As My Witness: he can act again. */
+    /** An operator, or the host of a single-player / LAN world (who may not hold op level 4). */
+    public static boolean canBreakWall(ServerPlayer p) {
+        var s = p.getServer();
+        return p.hasPermissions(4) || (s != null && s.isSingleplayerOwner(p.getGameProfile()));
+    }
+
     public static void endGod(ServerPlayer p) {
         if (GOD.remove(p.getUUID()) == null) return;
         p.getPersistentData().remove(GOD_TAG);
