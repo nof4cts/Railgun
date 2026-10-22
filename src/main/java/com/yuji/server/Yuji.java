@@ -83,6 +83,8 @@ public final class Yuji {
     static final long FOREVER = Long.MAX_VALUE / 4;
     static final String OD_TAG = "yuji_overdrive";
     static final String GOD_TAG = "yuji_asgod";
+    /** While god holds: each attacker on him, and the recent ticks they struck (three within 30 s brings Judgement). */
+    private static final Map<UUID, Map<UUID, java.util.ArrayDeque<Long>>> GOD_HITS = new HashMap<>();
 
     private Yuji() {}
 
@@ -759,6 +761,7 @@ public final class Yuji {
     }
 
     public static void endGod(ServerPlayer p) {
+        GOD_HITS.remove(p.getUUID());
         if (GOD.remove(p.getUUID()) == null) return;
         p.getPersistentData().remove(GOD_TAG);
         YNet.near(p.serverLevel(), p.position(), 256, new YNet.God(p.getId(), 0));
@@ -773,7 +776,20 @@ public final class Yuji {
     /** Every attack on him, whatever it is (/kill, the void, other mods, bypass-everything damage) simply doesn't happen. */
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void onGodAttack(LivingAttackEvent e) {
-        if (e.getEntity() instanceof ServerPlayer p && god(p)) e.setCanceled(true);
+        if (!(e.getEntity() instanceof ServerPlayer p) || !god(p)) return;
+        e.setCanceled(true);
+        // whoever struck him: three hits inside 30 seconds and the heavens answer
+        Entity by = e.getSource().getEntity();
+        if (by == null || by == p || !(by instanceof LivingEntity)) return;
+        long now = p.serverLevel().getGameTime();
+        var perAttacker = GOD_HITS.computeIfAbsent(p.getUUID(), u -> new HashMap<>());
+        var ticks = perAttacker.computeIfAbsent(by.getUUID(), u -> new java.util.ArrayDeque<>());
+        while (!ticks.isEmpty() && now - ticks.peekFirst() > 600) ticks.pollFirst();   // keep only the last 30 s
+        ticks.addLast(now);
+        if (ticks.size() >= 3) {
+            perAttacker.remove(by.getUUID());
+            Judgement.judgeEntity(by, p);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)

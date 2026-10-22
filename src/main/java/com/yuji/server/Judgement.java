@@ -72,6 +72,23 @@ public final class Judgement {
         return null;
     }
 
+    /** Heavenly Judgement on whoever struck him three times: a player gets the full cutscene and death, a mob is struck down. */
+    public static void judgeEntity(net.minecraft.world.entity.Entity attacker, ServerPlayer yuji) {
+        if (attacker instanceof ServerPlayer sp) {
+            judge(sp, yuji);
+        } else if (attacker instanceof net.minecraft.world.entity.LivingEntity le && le.isAlive()) {
+            LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(le.level());
+            if (bolt != null) {
+                bolt.moveTo(le.getX(), le.getY(), le.getZ());
+                le.level().addFreshEntity(bolt);
+            }
+            le.invulnerableTime = 0;
+            le.hurt(le.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+            if (le.isAlive()) le.kill();
+            Y.LOG.info("[yuji] Heavenly Judgement struck down {} for striking a god thrice", le.getName().getString());
+        }
+    }
+
     static void judge(ServerPlayer sender, ServerPlayer yuji) {
         for (Object[] p : PENDING) if (p[0].equals(sender.getUUID())) return;
         ServerLevel level = sender.serverLevel();
