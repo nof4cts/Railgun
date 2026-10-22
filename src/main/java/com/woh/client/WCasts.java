@@ -124,6 +124,7 @@ public final class WCasts {
         LIVE.add(l);
         Entity caster = mc.level.getEntity(m.caster());
         if (caster instanceof AbstractClientPlayer p) WAnims.play(p, l.move);
+        WStand.surge(m.caster(), l.move);
         if (caster == mc.player && l.move.cutscene) WCam.start(l);
     }
 

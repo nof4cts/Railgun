@@ -61,6 +61,7 @@ public final class WClient {
                 else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
                     WDebris.render(e);
                     WGod.render(e);
+                    WStand.render(e);
                 }
                 else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) WPost.render(e);
             } catch (Throwable t) {
@@ -148,6 +149,7 @@ public final class WClient {
             WCasts.clear();
             WDebris.clear();
             WGod.clear();
+            WStand.clear();
             WFx.reset();
         }
     }
