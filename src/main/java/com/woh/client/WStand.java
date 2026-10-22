@@ -88,13 +88,13 @@ public final class WStand {
                 }
             }
 
-            double scale = (self && !firstPerson ? 1.45 : 1.55) * (1 + flare * 0.12);
+            double scale = (self && !firstPerson ? 1.22 : 1.3) * (1 + flare * 0.12);
             double bob = Math.sin(time * 1.7 + pl.getId()) * 0.06 + Math.sin(time * 3.1) * 0.02;
-            // the apparition floats just behind and above the shoulders, leaning forward when he acts
+            // the apparition looms just behind him, its head rising a little above his, leaning in when he acts
             Vec3 base = feet
-                    .add(f.scale(-0.55 + lunge * 1.3))
-                    .add(0, 1.15 + bob, 0);
-            if (firstPerson) base = base.add(f.scale(-0.6));   // further back out of view
+                    .add(f.scale(-0.62 + lunge * 1.3))
+                    .add(0, 0.72 + bob, 0);
+            if (firstPerson) base = base.add(f.scale(-0.55));   // further back out of view
 
             drawFigure(vc, m, base, f, r, up, scale, time, flare);
             any = true;
@@ -121,9 +121,12 @@ public final class WStand {
         Vec3 shL = chest.add(r.scale(-sw)).add(f.scale(-0.04 * scale));
         Vec3 shR = chest.add(r.scale(sw)).add(f.scale(-0.04 * scale));
         Vec3 neck = o.add(u.scale(torsoH));
-        // front and back crystal panels
-        facet(vc, m, waistL, waistR, shR, shL, CRYSTAL, a, f.scale(0.14 * scale));
-        facet(vc, m, waistL, waistR, shR, shL, CRYSTAL_DIM, a * 0.8f, f.scale(-0.14 * scale));
+        // torso as a solid tapered crystal prism (front, back and two sides), so it reads as a volume from any angle
+        Vec3 dd = f.scale(0.16 * scale);
+        facet(vc, m, waistL.add(dd), waistR.add(dd), shR.add(dd), shL.add(dd), CRYSTAL, a, Vec3.ZERO);        // front
+        facet(vc, m, waistL.subtract(dd), waistR.subtract(dd), shR.subtract(dd), shL.subtract(dd), CRYSTAL_DIM, a * 0.8f, Vec3.ZERO);  // back
+        facet(vc, m, waistL.subtract(dd), waistL.add(dd), shL.add(dd), shL.subtract(dd), CRYSTAL_DIM, a * 0.7f, Vec3.ZERO);           // left
+        facet(vc, m, waistR.add(dd), waistR.subtract(dd), shR.subtract(dd), shR.add(dd), CRYSTAL_DIM, a * 0.7f, Vec3.ZERO);           // right
         // the gold filigree running down the chest and the spine
         edge(vc, m, neck.add(f.scale(0.15 * scale)), o.add(f.scale(0.15 * scale)), GOLD, ga, 0.05 * scale, r);
         edge(vc, m, neck.add(f.scale(-0.15 * scale)), o.add(f.scale(-0.15 * scale)), GOLD, ga * 0.85f, 0.05 * scale, r);
@@ -143,13 +146,22 @@ public final class WStand {
         edge(vc, m, fistL.add(r.scale(-0.08 * scale)), fistL.add(r.scale(0.08 * scale)), GOLD, ga, 0.06 * scale, u);
         edge(vc, m, fistR.add(r.scale(-0.08 * scale)), fistR.add(r.scale(0.08 * scale)), GOLD, ga, 0.06 * scale, u);
 
-        // ---- head: a faceted crystal head with a bladed crown and a single red eye
-        Vec3 headC = neck.add(u.scale(0.26 * scale));
-        double hw = 0.2 * scale, hh = 0.24 * scale;
-        Vec3 h0 = headC.add(r.scale(-hw)).add(u.scale(-hh)), h1 = headC.add(r.scale(hw)).add(u.scale(-hh));
-        Vec3 h2 = headC.add(r.scale(hw)).add(u.scale(hh)), h3 = headC.add(r.scale(-hw)).add(u.scale(hh));
-        facet(vc, m, h0, h1, h2, h3, CRYSTAL, a + 0.1f, f.scale(0.13 * scale));
-        facet(vc, m, h0, h1, h2, h3, CRYSTAL_DIM, a, f.scale(-0.13 * scale));
+        // ---- head: a crystal volume sitting just on the shoulders (short neck), a bladed crown, a single red eye
+        Vec3 neckTop = neck.add(u.scale(0.06 * scale));
+        // a short crystal neck connecting torso to head
+        facet(vc, m, neck.add(r.scale(-0.08 * scale)).add(dd.scale(0.5)), neck.add(r.scale(0.08 * scale)).add(dd.scale(0.5)),
+                neckTop.add(r.scale(0.08 * scale)).add(dd.scale(0.5)), neckTop.add(r.scale(-0.08 * scale)).add(dd.scale(0.5)), CRYSTAL, a, Vec3.ZERO);
+        Vec3 headC = neckTop.add(u.scale(0.18 * scale));
+        double hw = 0.19 * scale, hh = 0.2 * scale, hd = 0.17 * scale;
+        Vec3 hf = f.scale(hd), hu = u.scale(hh), hr = r.scale(hw);
+        Vec3 ftl = headC.add(hf).add(hu).add(hr.scale(-1)), ftr = headC.add(hf).add(hu).add(hr);
+        Vec3 fbl = headC.add(hf).add(hu.scale(-1)).add(hr.scale(-1)), fbr = headC.add(hf).add(hu.scale(-1)).add(hr);
+        Vec3 btl = headC.add(hf.scale(-1)).add(hu).add(hr.scale(-1)), btr = headC.add(hf.scale(-1)).add(hu).add(hr);
+        Vec3 bbl = headC.add(hf.scale(-1)).add(hu.scale(-1)).add(hr.scale(-1)), bbr = headC.add(hf.scale(-1)).add(hu.scale(-1)).add(hr);
+        facet(vc, m, fbl, fbr, ftr, ftl, CRYSTAL, a + 0.12f, Vec3.ZERO);        // front
+        facet(vc, m, bbl, bbr, btr, btl, CRYSTAL_DIM, a, Vec3.ZERO);            // back
+        facet(vc, m, bbl, fbl, ftl, btl, CRYSTAL_DIM, a * 0.85f, Vec3.ZERO);    // left
+        facet(vc, m, fbr, bbr, btr, ftr, CRYSTAL_DIM, a * 0.85f, Vec3.ZERO);    // right
         // the bladed crown: three angled spikes
         spike(vc, m, headC.add(u.scale(hh)), u.add(f.scale(-0.2)).normalize(), 0.42 * scale, 0.10 * scale, GOLD, ga, r);
         spike(vc, m, headC.add(u.scale(hh)).add(r.scale(-0.14 * scale)), u.add(r.scale(-0.5)).normalize(), 0.3 * scale, 0.08 * scale, CRYSTAL, a + 0.15f, f);
