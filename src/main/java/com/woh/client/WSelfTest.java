@@ -56,10 +56,12 @@ public final class WSelfTest {
     private static String pendingShot;
     private static final List<Step> SCRIPT = new ArrayList<>();
     private static final WMove[] ORDER = {
-            WMove.AS_GOD, WMove.FOURTH_WALL, WMove.RCT, WMove.THE_END, WMove.WORLD_BREAKER, WMove.RICOCHET, WMove.RESONANCE, WMove.PIERCING_BLOOD, WMove.HOMING_BLOOD, WMove.SUPERNOVA, WMove.BLOOD_STORM,
-            WMove.CRIMSON_EXECUTION, WMove.BLOOD_APOCALYPSE, WMove.DISMANTLE, WMove.THOUSAND_SLASHES, WMove.CLEAVE,
-            WMove.WORLD_SPLITTER, WMove.METEOR, WMove.DOMAIN, WMove.DOMAIN_BARRAGE,
-            WMove.DOMAIN_FINISHER, WMove.OVERDRIVE, WMove.FINAL_JUDGMENT, WMove.DOMAIN_APOCALYPSE};
+            WMove.ASCENDED_BARRAGE, WMove.OVERWRITE_BLOW, WMove.ERASURE_HOOK, WMove.REWRITE_RUSH,
+            WMove.REALITY_OVERWRITE, WMove.WOUNDS_UNDONE, WMove.GRACE_OVER_HEAVEN, WMove.NEGATION,
+            WMove.HEAVENLY_LIGHTNING, WMove.FOURTEEN_PHRASES, WMove.REALITY_KNIVES, WMove.ROAD_TO_HEAVEN,
+            WMove.TIME_STOP, WMove.KNIFE_RAIN, WMove.STILLNESS,
+            WMove.WORLDS_TRUTH, WMove.RETURN_OVER_HEAVEN, WMove.HEAVEN_ASCENSION,
+            WMove.REALITY_COLLAPSE, WMove.COLLAPSE_FINISHER};
 
     private record Step(int at, String shot, CameraType camera, Consumer<ServerPlayer> server) {}
 
@@ -127,7 +129,8 @@ public final class WSelfTest {
         TreeSet<Integer> ts = new TreeSet<>();
         for (Beat b : Script.build(c)) {
             if (b.kind() == Beat.BF || b.kind() == Beat.IMPACT || b.kind() == Beat.CLEAVE || b.kind() == Beat.DOMAIN_ON
-                    || b.kind() == Beat.OVERDRIVE || (b.kind() == Beat.SLASH && b.t() < 10)) {
+                    || b.kind() == Beat.OVERDRIVE || b.kind() == Beat.ERASE || b.kind() == Beat.STOP || b.kind() == Beat.SHARD
+                    || (b.kind() == Beat.SLASH && b.t() < 10)) {
                 if (ts.isEmpty() || b.t() - ts.last() > 8) ts.add(b.t());
             }
         }
@@ -147,7 +150,7 @@ public final class WSelfTest {
         for (int k = 0; k < ORDER.length; k++) {
             WMove m = ORDER[k];
             int x0 = 2000 + k * 700;
-            boolean keepArena = m == WMove.DOMAIN_BARRAGE || m == WMove.DOMAIN_FINISHER || m == WMove.DOMAIN_APOCALYPSE;
+            boolean keepArena = m == WMove.COLLAPSE_FINISHER;
             CameraType cam = m.cutscene ? CameraType.FIRST_PERSON : CameraType.THIRD_PERSON_BACK;
             int base = keepArena ? 2000 + (k - 1) * 700 : x0;
             if (!keepArena) {
@@ -173,52 +176,27 @@ public final class WSelfTest {
             for (int s : moments(m)) step(t + s, String.format("%02d_%s_t%03d", k, m.name().toLowerCase(), s), cam, null);
             step(t + m.end + 30, String.format("%02d_%s_after", k, m.name().toLowerCase()), CameraType.THIRD_PERSON_BACK,
                     p -> report(p, "after " + m, cx));
-            boolean chain = k + 1 < ORDER.length && (ORDER[k + 1] == WMove.DOMAIN_BARRAGE || ORDER[k + 1] == WMove.DOMAIN_FINISHER
-                    || ORDER[k + 1] == WMove.DOMAIN_APOCALYPSE);
+            boolean chain = k + 1 < ORDER.length && ORDER[k + 1] == WMove.COLLAPSE_FINISHER;
             // big destruction takes a while to stream in
             t += m.end + (m.tier >= 2 ? 120 : 60) + (chain ? 0 : 40);
-            if (m == WMove.OVERDRIVE) t -= 20;
-            if (m == WMove.AS_GOD) {
-                // try to kill him every way there is
-                step(t - 30, null, CameraType.THIRD_PERSON_BACK, p -> {
-                    p.setGameMode(GameType.SURVIVAL);
-                    p.kill();
-                    p.hurt(p.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
-                    p.hurt(p.damageSources().genericKill(), Float.MAX_VALUE);
-                    W.LOG.info("[selftest] As God As My Witness: after /kill, the void and generic kill: alive={} health={}", p.isAlive(), p.getHealth());
-                    p.setGameMode(GameType.CREATIVE);
-                });
-                // what the one who raised /kill would see (the screen only: nobody dies in the test)
-                step(t - 20, null, CameraType.FIRST_PERSON, p -> com.woh.net.WNet.to(p, new com.woh.net.WNet.Judge("Dev", 70)));
-                step(t + 18, "00_heavenly_judgement_a", CameraType.FIRST_PERSON, null);
-                step(t + 36, "00_heavenly_judgement_b", CameraType.FIRST_PERSON, null);
-                t += 90;
+            if (m == WMove.HEAVEN_ASCENSION) {
+                // let the ascension go again before the next move, so it doesn't colour the rest of the run
+                step(t - 10, null, CameraType.THIRD_PERSON_BACK, Woh::endOverdrive);
             }
-            if (m == WMove.FOURTH_WALL) {
-                // the whole-server slash overlay (the shutdown itself is skipped under -Dwoh.selftest=true)
-                step(t - 24, null, CameraType.FIRST_PERSON, p -> com.woh.net.WNet.all(new com.woh.net.WNet.Wall("Dev", 50)));
-                step(t - 10, "20_fourth_wall_a", CameraType.FIRST_PERSON, null);
-                step(t + 6, "20_fourth_wall_b", CameraType.FIRST_PERSON, null);
-                step(t + 24, "20_fourth_wall_c", CameraType.FIRST_PERSON, null);
-                t += 70;
-            }
-            if (m == WMove.FINAL_JUDGMENT) {
-                // wait for the crater and the name in its floor, then look straight down on it
+            if (m == WMove.WORLDS_TRUTH) {
+                // the great crater takes a while to stream in; look down on it, then back to ground
                 final int gx = cx;
-                step(t + 560, null, CameraType.FIRST_PERSON, p -> {
+                step(t + 240, null, CameraType.FIRST_PERSON, p -> {
                     ServerLevel l = p.serverLevel();
                     int gy = l.getHeight(Heightmap.Types.MOTION_BLOCKING, gx, 14);
-                    Woh.endOverdrive(p);   // no aura around the camera for this one
-                    p.teleportTo(l, gx + 0.5, gy + 120, 14.5, 0.0F, 90.0F);
-                    Minecraft.getInstance().execute(() -> Minecraft.getInstance().options.hideGui = true);
+                    p.teleportTo(l, gx + 0.5, gy + 110, 14.5, 0.0F, 90.0F);
                 });
-                step(t + 620, String.format("%02d_final_judgment_name", k), CameraType.FIRST_PERSON, null);
-                step(t + 630, null, CameraType.THIRD_PERSON_BACK, p -> {
-                    Minecraft.getInstance().execute(() -> Minecraft.getInstance().options.hideGui = false);
+                step(t + 300, String.format("%02d_worlds_truth_crater", k), CameraType.FIRST_PERSON, null);
+                step(t + 320, null, CameraType.THIRD_PERSON_BACK, p -> {
                     ServerLevel l = p.serverLevel();
                     p.teleportTo(l, gx + 0.5, l.getHeight(Heightmap.Types.MOTION_BLOCKING, gx, 0), 0.5, 0.0F, 5.0F);
                 });
-                t += 660;
+                t += 360;
             }
         }
         step(t + 40, "END", CameraType.THIRD_PERSON_BACK, null);

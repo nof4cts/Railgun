@@ -1,54 +1,53 @@
 package com.woh.common;
 
 /**
- * Every move, one per key slot: five pages of 1-4 (R turns the page). No Sneak combinations. Three keys change with
- * the situation (the "sneak" flag marks these alternates): inside his domain, Domain Expansion becomes the Domain
- * Finisher and Dismantle becomes the Domain Barrage; in Overdrive, the Overdrive key becomes Domain Apocalypse.
+ * The World Over Heaven's moves, one per key slot: five pages of 1-4 (R turns the page). No Sneak combinations.
+ * Two keys change with the situation (the "sneak" flag marks these alternates): while Reality Collapse (his domain)
+ * is open, the domain key becomes the Collapse Finisher. Heaven Ascension is a toggle handled in the runner.
  *
- * canon = established in the manga (the technique itself; the cinematic staging is always our own).
- * tier  = which damage setting the move's main blow uses (0 signature, 1 heavy, 2 ultimate, 3 final).
+ * tier = which damage setting the move's main blow uses (0 signature, 1 heavy, 2 ultimate, 3 final).
  */
 public enum WMove {
-    WORLD_BREAKER(0, false, "Black Flash: World Breaker", false, 420, 900, 142, true, 2),
-    RICOCHET(1, false, "Black Flash: Ricochet", false, 240, 360, 80, true, 2),
-    RESONANCE(2, false, "Black Flash: Resonance", false, 260, 400, 96, true, 2),
-    PIERCING_BLOOD(3, false, "Piercing Blood", true, 50, 40, 30, false, 0),
-    HOMING_BLOOD(4, false, "Piercing Blood: Homing", true, 110, 120, 40, false, 1),
-    SUPERNOVA(5, false, "Supernova", true, 140, 200, 62, true, 1),
-    BLOOD_STORM(6, false, "Blood Storm", false, 220, 400, 112, true, 1),
-    CRIMSON_EXECUTION(7, false, "Crimson Execution", false, 200, 300, 64, true, 2),
-    BLOOD_APOCALYPSE(8, false, "Apocalypse", false, 420, 900, 172, true, 2),
-    DISMANTLE(9, false, "Dismantle", true, 40, 30, 30, false, 0),
-    THOUSAND_SLASHES(10, false, "Dismantle: Thousand Slashes", false, 240, 400, 92, true, 1),
-    CLEAVE(11, false, "Cleave", true, 70, 60, 30, false, 1),
-    WORLD_SPLITTER(12, false, "Cleave: World Splitter", false, 360, 700, 102, true, 2),
-    METEOR(13, false, "Meteoric Crash", false, 260, 500, 94, true, 2),
-    DOMAIN(14, false, "Domain Expansion", true, 500, 2400, 122, true, 1),
-    DOMAIN_FINISHER(14, true, "Domain Finisher", false, 300, 0, 92, true, 3),
-    DOMAIN_BARRAGE(9, true, "Domain Barrage", false, 260, 600, 102, true, 2),
-    OVERDRIVE(15, false, "Modulo Overdrive: Unrestricted", false, 300, 1800, 62, true, 0),
-    FINAL_JUDGMENT(16, false, "The Final Judgment: World Ender", false, 800, 3600, 234, true, 3),
-    RCT(17, false, "Reverse Cursed Technique x100", false, 0, 600, 44, false, 0),
-    THE_END(18, false, "The End", false, 0, 1200, 96, true, 3),
-    AS_GOD(19, false, "As God As My Witness", false, 0, 1200, 40, false, 0),
-    FOURTH_WALL(20, false, "4th Wall Breaker", false, 0, 0, 80, true, 0),
-    DOMAIN_APOCALYPSE(15, true, "Domain Apocalypse", false, 950, 4800, 286, true, 3);
+    // ---- page 1: the fists
+    ASCENDED_BARRAGE(0, false, "Ascended Barrage", 40, 70, 90, false, 1),
+    OVERWRITE_BLOW(1, false, "Overwrite Blow", 90, 150, 110, true, 2),
+    ERASURE_HOOK(2, false, "Erasure Hook", 70, 130, 72, true, 1),
+    REWRITE_RUSH(3, false, "Rewrite Rush", 60, 100, 84, false, 1),
+    // ---- page 2: reality overwrite
+    REALITY_OVERWRITE(4, false, "Reality Overwrite", 120, 220, 96, true, 2),
+    WOUNDS_UNDONE(5, false, "Wounds Undone", 0, 240, 56, false, 0),
+    GRACE_OVER_HEAVEN(6, false, "Grace Over Heaven", 0, 260, 60, false, 0),
+    NEGATION(7, false, "Negation", 0, 180, 40, false, 0),
+    // ---- page 3: heaven's judgment
+    HEAVENLY_LIGHTNING(8, false, "Heavenly Lightning", 80, 120, 70, true, 2),
+    FOURTEEN_PHRASES(9, false, "Fourteen Phrases", 160, 320, 150, true, 2),
+    REALITY_KNIVES(10, false, "Reality-Warping Knives", 50, 80, 48, false, 1),
+    ROAD_TO_HEAVEN(11, false, "Road to Heaven", 70, 130, 72, true, 1),
+    // ---- page 4: the world (time)
+    TIME_STOP(12, false, "Time Stop", 200, 420, 120, true, 1),
+    KNIFE_RAIN(13, false, "Time Stop: Knife Rain", 260, 520, 150, true, 2),
+    STILLNESS(14, false, "Stillness", 60, 160, 56, false, 0),
+    // ---- page 5: over heaven (ultimates)
+    WORLDS_TRUTH(15, false, "This Is the World's Truth", 900, 1200, 260, true, 3),
+    RETURN_OVER_HEAVEN(16, false, "Return Over Heaven", 0, 1200, 56, false, 0),
+    HEAVEN_ASCENSION(17, false, "Heaven Ascension", 200, 400, 64, true, 0),
+    REALITY_COLLAPSE(18, false, "Reality Collapse", 500, 2400, 130, true, 1),
+    // ---- situational alternate
+    COLLAPSE_FINISHER(18, true, "Reality Collapse: Overwrite", 350, 0, 110, true, 3);
 
     public final int slot;
     public final boolean sneak;
     public final String title;
-    public final boolean canon;
     public final int cost;
     public final int cooldown;
     public final int end;
     public final boolean cutscene;
     public final int tier;
 
-    WMove(int slot, boolean sneak, String title, boolean canon, int cost, int cooldown, int end, boolean cutscene, int tier) {
+    WMove(int slot, boolean sneak, String title, int cost, int cooldown, int end, boolean cutscene, int tier) {
         this.slot = slot;
         this.sneak = sneak;
         this.title = title;
-        this.canon = canon;
         this.cost = cost;
         this.cooldown = cooldown;
         this.end = end;
@@ -58,7 +57,7 @@ public enum WMove {
 
     public static WMove byId(int id) {
         WMove[] v = values();
-        return id >= 0 && id < v.length ? v[id] : DISMANTLE;
+        return id >= 0 && id < v.length ? v[id] : ASCENDED_BARRAGE;
     }
 
     public static WMove of(int slot, boolean sneak) {
@@ -71,26 +70,31 @@ public enum WMove {
         return plain;
     }
 
-    /** The move a key casts right now: one move per key, three of which change with the situation (no Sneak). */
-    public static WMove resolve(int slot, boolean inDomain, boolean overdrive) {
+    /** The move a key casts right now. The domain key gains its finisher while Reality Collapse is open. */
+    public static WMove resolve(int slot, boolean inDomain, boolean ascended) {
         WMove m = of(slot, false);
-        if (m == DOMAIN && inDomain) return DOMAIN_FINISHER;
-        if (m == DISMANTLE && inDomain) return DOMAIN_BARRAGE;
-        if (m == OVERDRIVE && overdrive) return DOMAIN_APOCALYPSE;
+        if (m == REALITY_COLLAPSE && inDomain) return COLLAPSE_FINISHER;
         return m;
     }
 
-    /** The everyday moves: each one does at most damage.signature (default 70, most of an iron golem) per target. */
+    /** The everyday moves: each one does at most damage.signature per target. */
     public boolean basic() {
-        return this == PIERCING_BLOOD || this == HOMING_BLOOD || this == SUPERNOVA || this == DISMANTLE || this == CLEAVE;
+        return this == ASCENDED_BARRAGE || this == REWRITE_RUSH || this == REALITY_KNIVES
+                || this == ROAD_TO_HEAVEN || this == STILLNESS;
     }
 
-    /** Sukuna's technique (Shrine): these cut through Gojo's Infinity. */
-    public boolean shrine() {
-        return this == DISMANTLE || this == THOUSAND_SLASHES || this == CLEAVE || this == WORLD_SPLITTER || this == DOMAIN_BARRAGE;
+    /** Reality-overwriting strikes: these are sure hits that cut through Infinity and the like. */
+    public boolean overwrites() {
+        return this == REALITY_OVERWRITE || this == OVERWRITE_BLOW || this == ERASURE_HOOK
+                || this == WORLDS_TRUTH || this == COLLAPSE_FINISHER || this == KNIFE_RAIN;
+    }
+
+    /** The execute: erases a weakened target outright. */
+    public boolean execute() {
+        return this == REALITY_OVERWRITE || this == WORLDS_TRUTH || this == COLLAPSE_FINISHER;
     }
 
     public String label() {
-        return (canon ? "" : "*") + title;
+        return title;
     }
 }

@@ -41,7 +41,14 @@ public record Beat(int t, int kind, int a0, Vec3 o0, int a1, Vec3 o1, double x, 
     public static final int GOD = 31;        // As God As My Witness: nothing can kill the caster for x ticks
     public static final int WALL = 32;       // 4th Wall Breaker: the whole server is slashed open and shut down (x ticks of warning)
     public static final int GLYPH = 26;      // the World Ender's signature carved into the crater floor at p0: x = text width
-    public static final int HEAL = 25;       // Reverse Cursed Technique x100: the caster's body rebuilt to x max health, fully healed
+    public static final int HEAL = 25;       // the caster's body rebuilt to x max health, fully healed and cleansed (y: 1 = buff nearby allies too)
+    // ---- The World Over Heaven
+    public static final int ERASE = 33;      // Reality Overwrite at p0 (radius x): a target under y*maxHP is erased outright (armour/totems/resistance ignored, As God overwritten); else i-tier damage
+    public static final int STOP = 34;       // Time Stop around the caster: radius x, held for dur ticks (everything but the caster is frozen; hits land queued on resume)
+    public static final int STRIP = 35;      // strip positive effects/absorption from everything within x of p0 (Erasure Hook, Negation)
+    public static final int SHARD = 36;      // crystalline reality-shard burst at p0: x radius, y count - a client-side look, damage is carried by DMG/BOLT beats
+    public static final int RETURN_SET = 37; // Return Over Heaven armed: the next lethal blow within dur ticks is rewritten to full health (x = max health to restore to)
+    public static final int NEGATE = 38;     // Negation: a reactive window of dur ticks in which the next technique against him is nullified and reflected
 
     // ---- anchors
     public static final int CASTER = 0, EYE = 1, TARGET = 2, POINT = 3, GROUND = 4, HAND = 5, START = 6, DOMAIN = 7, T0 = 10;

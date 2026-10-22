@@ -784,6 +784,28 @@ public final class Yuji {
         return u != null && u > p.serverLevel().getGameTime();
     }
 
+    /**
+     * The World Over Heaven's Reality Overwrite is the one thing As God As My Witness cannot refuse: his godhood is
+     * overwritten out of existence and he dies at once, past creative mode, armour, totems and invulnerability alike.
+     * Called by the WOH kit when Reality Overwrite resolves on a Modulo Yuji - no Heavenly Judgement answers it, because
+     * by the time the blow lands he is no longer a god.
+     */
+    public static void realityOverwrite(ServerPlayer victim) {
+        if (victim == null) return;
+        endGod(victim);                                   // strip As God As My Witness (state + client sync)
+        GOD.remove(victim.getUUID());
+        GOD_HITS.remove(victim.getUUID());
+        SAFE_UNTIL.remove(victim.getUUID());
+        RUNS.remove(victim.getUUID());                    // drop any protective cutscene run
+        victim.getPersistentData().remove(GOD_TAG);
+        victim.setInvulnerable(false);
+        victim.invulnerableTime = 0;
+        victim.hurt(victim.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+        if (victim.isAlive()) victim.kill();
+        if (victim.isAlive()) victim.setHealth(0);
+        Y.LOG.info("[yuji] Reality Overwrite erased {} (god overwritten) dead={}", victim.getGameProfile().getName(), !victim.isAlive());
+    }
+
     /** While As God As My Witness holds, he harms no one - his own punches and sword swings do nothing either. */
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public static void onGodOutgoing(LivingAttackEvent e) {

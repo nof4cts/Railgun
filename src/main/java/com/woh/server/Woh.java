@@ -85,6 +85,11 @@ public final class Woh {
     static final String GOD_TAG = "woh_asgod";
     /** While god holds: each attacker on him, and the recent ticks they struck (three within 30 s brings Judgement). */
     private static final Map<UUID, Map<UUID, java.util.ArrayDeque<Long>>> GOD_HITS = new HashMap<>();
+    // ---- The World Over Heaven state
+    private static final Map<UUID, long[]> STOPS = new HashMap<>();        // Time Stop: {untilTick, radius}
+    private static final Map<UUID, Long> RETURN_READY = new HashMap<>();   // Return Over Heaven armed until this tick
+    private static final Map<UUID, Double> RETURN_HP = new HashMap<>();    // health to restore to (0 = full)
+    private static final Map<UUID, Long> NEGATE_UNTIL = new HashMap<>();   // Negation / Stillness reactive window
 
     private Woh() {}
 
@@ -143,18 +148,10 @@ public final class Woh {
         long now = p.serverLevel().getGameTime();
         WMove m = WMove.resolve(slot, domainOf(p) != null, overdrive(p));
         if (m == null) return true;
-        if (m == WMove.FOURTH_WALL && !canBreakWall(p)) {
-            tell(p, "Only a server operator (or the world's host) can break the 4th wall");
-            return true;
-        }
-        if (god(p)) {
-            // As God As My Witness holds him: he has forsaken violence. Only its own key works, to end it.
-            if (m == WMove.AS_GOD) {
-                endGod(p);
-                tell(p, "As God As My Witness ended");
-                return true;
-            }
-            tell(p, "As God As My Witness: you cannot act until you end it");
+        // Heaven Ascension is a toggle: pressed while ascended, it lets the ascension go instead of recasting.
+        if (m == WMove.HEAVEN_ASCENSION && overdrive(p)) {
+            endOverdrive(p);
+            tell(p, "Heaven Ascension ended");
             return true;
         }
         Run run = RUNS.get(p.getUUID());
@@ -243,7 +240,7 @@ public final class Woh {
             point = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(24)) : hit.getLocation();
         }
         Vec3 around = dom != null ? dom.centre : point;
-        double reach = dom != null ? dom.radius : (m == WMove.PIERCING_BLOOD ? 18 : 40);
+        double reach = dom != null ? dom.radius : (m == WMove.REALITY_KNIVES ? 18 : 40);
         List<LivingEntity> near = level.getEntitiesOfClass(LivingEntity.class, new AABB(around, around).inflate(reach),
                 e -> e != p && e.isAlive() && !(e instanceof Player pl && (pl.isCreative() || pl.isSpectator())) && e.position().distanceTo(around) <= reach);
         near.sort(Comparator.comparingDouble(e -> e.distanceToSqr(around)));
@@ -251,7 +248,7 @@ public final class Woh {
             near.remove(target);
             near.add(0, target);
         }
-        int[] targets = new int[Math.min(m == WMove.PIERCING_BLOOD ? 16 : 8, near.size())];
+        int[] targets = new int[Math.min(m == WMove.REALITY_KNIVES || m == WMove.KNIFE_RAIN || m == WMove.FOURTEEN_PHRASES ? 16 : 8, near.size())];
         for (int i = 0; i < targets.length; i++) targets[i] = near.get(i).getId();
 
         boolean od = overdrive(p);
@@ -262,11 +259,6 @@ public final class Woh {
                 domainCentre, domainRadius, (float) Math.min(W.maxRadius, W.worldEnderRadius * scale),
                 (float) (W.splitterLength * scale), (float) W.dismantleLength, od, scale);
         List<Beat> beats = Script.build(c);
-        if (m == WMove.THE_END && target == null) {
-            tell(p, "The End needs someone to take");
-            ready(p)[m.ordinal()] = 0;
-            return;
-        }
         Run run = new Run(p, m, c, beats, now, Destroy.journal(level));
         RUNS.put(p.getUUID(), run);
 
@@ -340,8 +332,6 @@ public final class Woh {
             if (now - r.start >= r.m.end && r.bolts.isEmpty() && r.idx >= r.beats.size()) {
                 it.remove();
                 SAFE_UNTIL.put(p.getUUID(), now + 60);
-                // Domain Apocalypse spends everything: Overdrive burns out with it
-                if (r.m == WMove.DOMAIN_APOCALYPSE) endOverdrive(p);
             }
         }
         // domains
@@ -401,6 +391,29 @@ public final class Woh {
                 WNet.near(p.serverLevel(), p.position(), 256, new WNet.Aura(p.getId(), en.getValue()));
                 p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60, 2, false, false, false));
                 p.addEffect(new MobEffectInstance(MobEffects.JUMP, 60, 1, false, false, false));
+            }
+        }
+        // Time Stop: while a stop lasts, everything but its owner is held frozen in place
+        Iterator<Map.Entry<UUID, long[]>> sit = STOPS.entrySet().iterator();
+        while (sit.hasNext()) {
+            Map.Entry<UUID, long[]> en = sit.next();
+            ServerPlayer owner = server.getPlayerList().getPlayer(en.getKey());
+            long[] st = en.getValue();
+            if (owner == null || !owner.isAlive() || !is(owner) || owner.serverLevel().getGameTime() >= st[0]) {
+                sit.remove();
+                continue;
+            }
+            ServerLevel lvl = owner.serverLevel();
+            double radius = st[1];
+            for (LivingEntity e : lvl.getEntitiesOfClass(LivingEntity.class, owner.getBoundingBox().inflate(radius),
+                    e -> e != owner && e.isAlive() && !(e instanceof Player pl && pl.isSpectator()))) {
+                e.setDeltaMovement(Vec3.ZERO);
+                e.hurtMarked = true;
+                e.fallDistance = 0;
+                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 4, 250, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 4, 250, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 4, 250, false, false, false));
+                if (e instanceof net.minecraft.world.entity.Mob mob) mob.getNavigation().stop();
             }
         }
         // a slow heartbeat of state, so the HUD is right after reconnects; his cursed energy never runs low
@@ -630,7 +643,64 @@ public final class Woh {
                 p.removeEffect(MobEffects.BLINDNESS);
                 p.clearFire();
                 p.getFoodData().setFoodLevel(20);
-                W.LOG.info("[woh] {} used Reverse Cursed Technique x100: {} / {} health", p.getGameProfile().getName(), p.getHealth(), p.getMaxHealth());
+                if (b.y() == 1) {
+                    // Grace Over Heaven: the same grace extended to nearby allies (every non-hostile player around him)
+                    for (ServerPlayer ally : level.getEntitiesOfClass(ServerPlayer.class, p.getBoundingBox().inflate(10),
+                            a -> a != null && a.isAlive() && !a.isSpectator())) {
+                        ally.setHealth(ally.getMaxHealth());
+                        ally.clearFire();
+                        ally.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 200, 2, false, true, true));
+                        ally.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 1, false, true, true));
+                        ally.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 200, 1, false, true, true));
+                        ally.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 200, 2, false, true, true));
+                    }
+                }
+                W.LOG.info("[woh] {} restored to {} / {} health", p.getGameProfile().getName(), p.getHealth(), p.getMaxHealth());
+            }
+            case Beat.ERASE -> {
+                double threshold = b.y();   // fraction of max HP at or below which a target is erased outright
+                int tier = b.i();
+                for (LivingEntity e : around(p, p0, b.x())) {
+                    // The World Over Heaven overwrites existence itself: Modulo Yuji's As God As My Witness cannot refuse it
+                    if (e instanceof ServerPlayer sp && isYujiGod(sp)) {
+                        com.yuji.server.Yuji.realityOverwrite(sp);
+                        continue;
+                    }
+                    boolean protectedPlayer = e instanceof Player pl && (pl.isCreative() || pl.isSpectator());
+                    boolean weak = e.getHealth() <= e.getMaxHealth() * threshold;
+                    if (weak && !protectedPlayer) {
+                        // erased: past armour, totems, resistance and invulnerability
+                        e.invulnerableTime = 0;
+                        e.setInvulnerable(false);
+                        e.hurt(level.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+                        if (e.isAlive()) e.kill();
+                        if (e.isAlive()) e.setHealth(0);
+                        W.LOG.info("[woh] Reality Overwrite erased {}", e.getName().getString());
+                    } else {
+                        hurt(p, e, tierDamage(tier), e.getId() == r.c.targetId(), Set.of());
+                    }
+                }
+            }
+            case Beat.STRIP -> {
+                for (LivingEntity e : around(p, p0, b.x())) {
+                    for (MobEffectInstance eff : new java.util.ArrayList<>(e.getActiveEffects())) {
+                        if (eff.getEffect().getCategory() == net.minecraft.world.effect.MobEffectCategory.BENEFICIAL) {
+                            e.removeEffect(eff.getEffect());
+                        }
+                    }
+                    e.setAbsorptionAmount(0);
+                }
+            }
+            case Beat.STOP -> {
+                STOPS.put(p.getUUID(), new long[]{now + Math.max(1, b.dur()), (long) b.x()});
+            }
+            case Beat.RETURN_SET -> {
+                RETURN_READY.put(p.getUUID(), now + Math.max(1, b.dur()));
+                RETURN_HP.put(p.getUUID(), b.x());
+                tell(p, "Return Over Heaven: your death is rewritten");
+            }
+            case Beat.NEGATE -> {
+                NEGATE_UNTIL.put(p.getUUID(), now + Math.max(1, b.dur()));
             }
             case Beat.OVERDRIVE -> {
                 long until = W.overdriveSeconds <= 0 ? FOREVER : now + W.overdriveSeconds * 20L;
@@ -782,6 +852,52 @@ public final class Woh {
     public static boolean god(ServerPlayer p) {
         Long u = GOD.get(p.getUUID());
         return u != null && u > p.serverLevel().getGameTime();
+    }
+
+    /** Is this player a Modulo Yuji currently holding As God As My Witness? (Reality Overwrite overwrites it anyway.) */
+    private static boolean isYujiGod(ServerPlayer sp) {
+        try {
+            return com.yuji.server.Yuji.is(sp) && com.yuji.server.Yuji.god(sp);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /** Return Over Heaven: an armed death is rewritten - he comes back at full instead of dying, once. */
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void onReturnDeath(LivingDeathEvent e) {
+        if (!(e.getEntity() instanceof ServerPlayer p) || !is(p)) return;
+        Long until = RETURN_READY.get(p.getUUID());
+        if (until == null || until < p.serverLevel().getGameTime()) return;
+        RETURN_READY.remove(p.getUUID());
+        Double hp = RETURN_HP.remove(p.getUUID());
+        e.setCanceled(true);
+        p.deathTime = 0;
+        double target = (hp == null || hp <= 0) ? p.getMaxHealth() : Math.min(hp, p.getMaxHealth());
+        p.setHealth((float) target);
+        p.removeAllEffects();
+        p.clearFire();
+        p.invulnerableTime = 60;
+        SAFE_UNTIL.put(p.getUUID(), p.serverLevel().getGameTime() + 100);
+        tell(p, "Return Over Heaven: your death is undone");
+        W.LOG.info("[woh] Return Over Heaven saved {}", p.getGameProfile().getName());
+    }
+
+    /** Negation: while the window holds, the next technique thrown at him is nullified and thrown back. */
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public static void onNegateIncoming(LivingAttackEvent e) {
+        if (!(e.getEntity() instanceof ServerPlayer p) || !is(p)) return;
+        Long until = NEGATE_UNTIL.get(p.getUUID());
+        if (until == null || until < p.serverLevel().getGameTime()) return;
+        Entity by = e.getSource().getEntity();
+        if (by == p) return;
+        e.setCanceled(true);
+        NEGATE_UNTIL.remove(p.getUUID());
+        if (by instanceof LivingEntity le && le.isAlive()) {
+            le.invulnerableTime = 0;
+            le.hurt(p.damageSources().magic(), (float) Math.max(8, e.getAmount() * 1.5));
+        }
+        tell(p, "Negation");
     }
 
     /** While As God As My Witness holds, he harms no one - his own punches and sword swings do nothing either. */
