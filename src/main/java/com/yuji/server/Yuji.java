@@ -755,6 +755,17 @@ public final class Yuji {
     // ------------------------------------------------------------------ As God As My Witness
     /** End As God As My Witness: he can act again. */
     /** An operator, or the host of a single-player / LAN world (who may not hold op level 4). */
+    /** A warning across the striker's screen. */
+    private static void warn(ServerPlayer target, String text, int color, boolean bold) {
+        var comp = net.minecraft.network.chat.Component.literal(text)
+                .withStyle(st -> {
+                    st = st.withColor(net.minecraft.network.chat.TextColor.fromRgb(color));
+                    return bold ? st.withBold(true) : st;
+                });
+        target.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket(4, 26, 8));
+        target.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket(comp));
+    }
+
     public static boolean canBreakWall(ServerPlayer p) {
         var s = p.getServer();
         return p.hasPermissions(4) || (s != null && s.isSingleplayerOwner(p.getGameProfile()));
@@ -786,6 +797,10 @@ public final class Yuji {
         var ticks = perAttacker.computeIfAbsent(by.getUUID(), u -> new java.util.ArrayDeque<>());
         while (!ticks.isEmpty() && now - ticks.peekFirst() > 600) ticks.pollFirst();   // keep only the last 30 s
         ticks.addLast(now);
+        if (by instanceof ServerPlayer atk) {
+            if (ticks.size() == 1) warn(atk, "Are you sure?", 0xAA0000, false);
+            else if (ticks.size() == 2) warn(atk, "No More Chances.", 0xFF2222, true);
+        }
         if (ticks.size() >= 3) {
             perAttacker.remove(by.getUUID());
             Judgement.judgeEntity(by, p);
