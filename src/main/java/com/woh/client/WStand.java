@@ -56,7 +56,7 @@ public final class WStand {
         if (mc.level == null || mc.player == null) return;
         long gt = mc.level.getGameTime();
         float pt = e.getPartialTick();
-        float time = WFx.time();
+        double time = WFx.time();
         Vec3 cam = e.getCamera().getPosition();
         if (OWN == null) OWN = MultiBufferSource.immediate(new BufferBuilder(1 << 15));
         VertexConsumer vc = OWN.getBuffer(RenderType.lightning());
@@ -123,10 +123,10 @@ public final class WStand {
         Vec3 neck = o.add(u.scale(torsoH));
         // front and back crystal panels
         facet(vc, m, waistL, waistR, shR, shL, CRYSTAL, a, f.scale(0.14 * scale));
-        facet(vc, m, waistL, waistR, shR, shL, CRYSTAL_DIM, a * 0.8, f.scale(-0.14 * scale));
+        facet(vc, m, waistL, waistR, shR, shL, CRYSTAL_DIM, a * 0.8f, f.scale(-0.14 * scale));
         // the gold filigree running down the chest and the spine
         edge(vc, m, neck.add(f.scale(0.15 * scale)), o.add(f.scale(0.15 * scale)), GOLD, ga, 0.05 * scale, r);
-        edge(vc, m, neck.add(f.scale(-0.15 * scale)), o.add(f.scale(-0.15 * scale)), GOLD, ga * 0.85, 0.05 * scale, r);
+        edge(vc, m, neck.add(f.scale(-0.15 * scale)), o.add(f.scale(-0.15 * scale)), GOLD, ga * 0.85f, 0.05 * scale, r);
         // collar between the shoulders
         edge(vc, m, shL, shR, GOLD, ga, 0.05 * scale, u);
 

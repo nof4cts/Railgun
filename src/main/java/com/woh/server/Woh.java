@@ -405,15 +405,15 @@ public final class Woh {
             }
             ServerLevel lvl = owner.serverLevel();
             double radius = st[1];
-            for (LivingEntity e : lvl.getEntitiesOfClass(LivingEntity.class, owner.getBoundingBox().inflate(radius),
-                    e -> e != owner && e.isAlive() && !(e instanceof Player pl && pl.isSpectator()))) {
-                e.setDeltaMovement(Vec3.ZERO);
-                e.hurtMarked = true;
-                e.fallDistance = 0;
-                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 4, 250, false, false, false));
-                e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 4, 250, false, false, false));
-                e.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 4, 250, false, false, false));
-                if (e instanceof net.minecraft.world.entity.Mob mob) mob.getNavigation().stop();
+            for (LivingEntity le : lvl.getEntitiesOfClass(LivingEntity.class, owner.getBoundingBox().inflate(radius),
+                    x -> x != owner && x.isAlive() && !(x instanceof Player pl && pl.isSpectator()))) {
+                le.setDeltaMovement(Vec3.ZERO);
+                le.hurtMarked = true;
+                le.fallDistance = 0;
+                le.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 4, 250, false, false, false));
+                le.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 4, 250, false, false, false));
+                le.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 4, 250, false, false, false));
+                if (le instanceof net.minecraft.world.entity.Mob mob) mob.getNavigation().stop();
             }
         }
         // a slow heartbeat of state, so the HUD is right after reconnects; his cursed energy never runs low
@@ -782,7 +782,7 @@ public final class Woh {
     private static DamageSource source(ServerPlayer p, LivingEntity victim, Run r) {
         // with his domain open, every move he has is a sure hit: nothing blocks it, Infinity included
         boolean domain = domainOf(p) != null;
-        if (victim instanceof Player && (domain || (r != null && r.m.shrine()))) {
+        if (victim instanceof Player && (domain || (r != null && r.m.overwrites()))) {
             return new DamageSource(p.serverLevel().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.GENERIC_KILL));
         }
         return p.damageSources().playerAttack(p);

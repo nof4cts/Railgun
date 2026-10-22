@@ -242,7 +242,7 @@ public final class WCam {
         Vec3 F = l.c.f(), R = l.c.r();
         int end = l.move.end;
         switch (l.move) {
-            case DOMAIN -> {
+            case TIME_STOP -> {
                 shot(0, 48, 0, t -> look(caster(1.5f).add(rot(F, 30 + t * 0.9).scale(3.2 + t * 0.02)).add(0, -0.2, 0), caster(1.5f), 0, 60));
                 shot(48, 62, 0, t -> look(caster(1.55f).add(F.scale(1.5 - span(t, 48, 62) * 0.3)), caster(1.55f), 0, 55));
                 shot(62, end, 0, t -> {
@@ -252,14 +252,14 @@ public final class WCam {
                     return look(from.add(handheld(t, 0.2)), caster(1.2f + u * 4), 0, 70 + u * 8);
                 });
             }
-            case OVERDRIVE -> {
+            case HEAVEN_ASCENSION -> {
                 shot(0, 40, 0, t -> look(caster(1.3f).add(rot(F, 15).scale(5 - span(t, 0, 40) * 2.6)).add(0, -0.5, 0), caster(1.4f), 0, 62));
                 shot(40, end, 0, t -> {
                     float u = 1 - (float) Math.pow(1 - span(t, 40, 52), 3);
                     return look(caster(0.4f).add(rot(F, -20).scale(2.4 + u * 6)).add(handheld(t, 0.3)), caster(1.5f), -4, 75);
                 });
             }
-            case METEOR -> {
+            case HEAVENLY_LIGHTNING -> {
                 Vec3 base = l.c.origin();
                 shot(0, 28, 0, t -> look(base.add(F.scale(9)).add(R.scale(3)).add(0, 1.5, 0), caster(1f), 0, 70));
                 shot(28, 36, 0, t -> look(base.add(F.scale(4)).add(0, 1.0, 0), caster(1f), 8, 80));
@@ -269,7 +269,7 @@ public final class WCam {
                 });
                 wide(46, end, 0, 20 * l.c.ds(), 1f);
             }
-            case WORLD_SPLITTER -> {
+            case ROAD_TO_HEAVEN -> {
                 shot(0, 22, 0, t -> look(caster(1.6f).add(F.scale(-2.6)).add(R.scale(1.1)).add(0, 0.3, 0), caster(1.4f).add(F.scale(20)), 0, 66));
                 shot(22, end, 0, t -> {
                     float u = ease(span(t, 22, end));
@@ -277,7 +277,7 @@ public final class WCam {
                     return look(from.add(handheld(t, 0.4)), caster(0f).add(F.scale(40 + u * 60)), 0, 72);
                 });
             }
-            case FINAL_JUDGMENT -> {
+            case WORLDS_TRUTH -> {
                 double W = l.c.worldEnder();
                 shot(0, 40, 0, t -> look(caster(0.3f).add(rot(F, 140 + t * 0.6).scale(12)).add(0, 0.6, 0), caster(1.6f), 0, 58));
                 shot(40, 112, 12, t -> look(caster(1.3f).add(rot(F, 40 + (t - 40) * 1.6).scale(3.2)).add(0, -0.3, 0).add(handheld(t, 0.08)), caster(1.3f), 0, 60));
@@ -291,7 +291,7 @@ public final class WCam {
                     return look(from.add(handheld(t, 0.6)), g, 0, 70);
                 });
             }
-            case DOMAIN_APOCALYPSE -> {
+            case REALITY_COLLAPSE -> {
                 double r = l.c.domainRadius(), W = l.c.worldEnder() * 0.8;
                 shot(0, 40, 0, t -> look(caster(1.5f).add(rot(F, 20 + t)).scale(1).add(rot(F, 20 + t).scale(2.2)), caster(1.5f), 0, 60));
                 shot(40, 60, 0, t -> {
@@ -313,7 +313,7 @@ public final class WCam {
                     return look(from.add(handheld(t, 0.6)), g, 0, 72);
                 });
             }
-            case THE_END -> {
+            case ASCENDED_BARRAGE -> {
                 // behind them in a blink; the hold, close; the ground swallowing them, seen from above; black; and him, back
                 shot(0, 6, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(0.9)), target(), 0, 80));
                 shot(6, 22, 0, t -> {
@@ -330,7 +330,7 @@ public final class WCam {
                     return look(live.at(Beat.START, Vec3.ZERO).add(F.scale(3.2 + 1.5 * u)).add(R.scale(-1.0)).add(0, 1.2, 0), caster(1.5f), 0, 62);
                 });
             }
-            case WORLD_BREAKER -> {
+            case OVERWRITE_BLOW -> {
                 // the energy wells up: low, slow orbit; then coiled, a tight push-in on the fist; the step; the hit from
                 // three angles in a row; the second eruption seen from far above
                 shot(0, 28, 0, t -> look(caster(0.4f).add(rot(F, 150 - t * 1.8).scale(4.5)).add(0, -0.2, 0).add(handheld(t, 0.05)), caster(1.7f), 0, 60));
@@ -350,7 +350,7 @@ public final class WCam {
                     return look(g.add(F.scale(-30 - 30 * u)).add(R.scale(18)).add(0, 26 + 30 * u, 0).add(handheld(t, 0.5)), g.add(F.scale(6)), 0, 72);
                 });
             }
-            case SUPERNOVA -> {
+            case ERASURE_HOOK -> {
                 shot(0, 12, 0, t -> look(caster(1.4f).add(rot(F, 30 + t * 2).scale(2.8)), caster(1.4f), 0, 60));
                 shot(12, 20, 0, t -> look(caster(1.0f).add(F.scale(-3.5)).add(0, 1.4, 0), caster(1.8f).add(F.scale(2)), 0, 82));   // the five orbs around him
                 shot(20, 32, 0, t -> {
@@ -362,7 +362,7 @@ public final class WCam {
                 hit(32, 44, l, 2);
                 orbitImpact(44, end, 8, 120, 60);
             }
-            case BLOOD_STORM -> {
+            case FOURTEEN_PHRASES -> {
                 shot(0, 20, 0, t -> look(caster(1.2f).add(rot(F, 20 + t * 1.5).scale(3.0)).add(0, -0.4, 0), caster(1.9f), 0, 64));
                 shot(20, 60, 0, t -> {
                     float u = ease(span(t, 20, 60));
@@ -376,14 +376,14 @@ public final class WCam {
                     return look(p0.add(rot(F, 250 + 30 * u).scale(30 + 10 * u)).add(0, 22 + 10 * u, 0), p0, 0, 70);
                 });
             }
-            case CRIMSON_EXECUTION -> {
+            case REALITY_OVERWRITE -> {
                 shot(0, 20, 0, t -> look(live.at(Beat.HAND, Vec3.ZERO).add(rot(F, 120 + t * 4).scale(1.8)), live.at(Beat.HAND, Vec3.ZERO), 0, 56));  // the blood spinning in his hand
                 shot(20, 27, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(0.9)), target(), 0, 84));
                 hit(28, 38, l, 3);
                 hit(38, 50, l, 4);
                 orbitImpact(50, end, 6, 60, 50);
             }
-            case BLOOD_APOCALYPSE -> {
+            case REWRITE_RUSH -> {
                 shot(0, 40, 0, t -> look(caster(0.2f).add(rot(F, 200 - t)).scale(1).add(rot(F, 200 - t).scale(3.0)).add(0, -0.6, 0), caster(2.2f).add(0, 3 * span(t, 0, 40), 0), 0, 66));
                 shot(40, 100, 0, t -> {
                     float u = ease(span(t, 40, 100));
@@ -400,7 +400,7 @@ public final class WCam {
                 hit(116, 126, l, 4);
                 orbitImpact(126, end, 30 * l.c.ds(), 160, 80);
             }
-            case THOUSAND_SLASHES -> {
+            case KNIFE_RAIN -> {
                 shot(0, 8, 0, t -> look(caster(1.6f).add(F.scale(2.4)).add(R.scale(-0.8)), caster(1.5f), 0, 60));
                 shot(8, 30, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.2)).add(handheld(t, 0.15)), live.at(Beat.POINT, Vec3.ZERO), 0, 78));
                 shot(30, 60, 0, t -> {
@@ -414,7 +414,7 @@ public final class WCam {
                     return look(p0.add(F.scale(-20 - 14 * u)).add(0, 14 + 12 * u, 0), p0, 0, 70);
                 });
             }
-            case DOMAIN_FINISHER -> {
+            case COLLAPSE_FINISHER -> {
                 shot(0, 24, 0, t -> look(caster(1.0f).add(rot(F, 60).scale(2.6 - 0.8 * span(t, 0, 24))).add(handheld(t, 0.06)), live.at(Beat.HAND, Vec3.ZERO), 0, 58));
                 shot(24, 36, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.1)), target(), 0, 82));
                 hit(38, 46, l, 3);
@@ -426,7 +426,7 @@ public final class WCam {
                     return look(dc.add(rot(F, 200 + 50 * u).scale(r * (0.5 + 0.6 * u))).add(0, 4 + r * 0.5 * u, 0), dc, 0, 74);
                 });
             }
-            case DOMAIN_BARRAGE -> {
+            case STILLNESS -> {
                 double r = Math.max(8, l.c.domainRadius());
                 shot(0, 40, 0, t -> {
                     Vec3 dc = live.at(Beat.DOMAIN, Vec3.ZERO);
@@ -566,8 +566,7 @@ public final class WCam {
             g.drawString(mc.font, title, 0, 0, 0xFFFFFF | alpha, false);
             g.pose().popPose();
             int x = 18 + (int) (mc.font.width(title) * 1.5f) + 8;
-            g.fill(18, h - bar + 20, 18 + (int) ((x - 26) * a), h - bar + 21, 0xD9213A | alpha);
-            if (!live.move.canon) g.drawString(mc.font, "* original technique (not canon)", 18, h - bar + 24, 0xB0B0B0 | alpha, false);
+            g.fill(18, h - bar + 20, 18 + (int) ((x - 26) * a), h - bar + 21, 0xE6C867 | alpha);
         }
         String hint = "Hold " + mc.options.keyShift.getTranslatedKeyMessage().getString() + " to skip";
         g.drawString(mc.font, hint, w - mc.font.width(hint) - 10, h - bar / 2 - 4, 0x707070, false);
