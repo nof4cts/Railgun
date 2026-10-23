@@ -162,7 +162,7 @@ public final class WFx {
     public static void blackFlash(Vec3 at, float dirX, float dirY, double scale, double distance) {
         float near = (float) Mth.clamp(1.0 - (distance - 6) / 60.0, 0.25, 1.0);
         float s = (float) Math.min(1.0, 0.5 + scale * 0.2) * near;
-        accent(1f, 0.06f, 0.1f);
+        accent(1f, 0.74f, 0.26f);
         impact(at, dirX, dirY, true, scale >= 1.8, new float[][]{
                 {0.035f, 6, 1f}, {0.03f, 2, 1f}, {0.035f, 6, 1f}, {0.03f, 3, 1f}, {0.05f, 6, 0.9f},
                 {0.06f + 0.02f * (float) scale, 3, 0.8f}, {0.12f, 3, 0.35f}, {0.1f, 6, 0.12f}});

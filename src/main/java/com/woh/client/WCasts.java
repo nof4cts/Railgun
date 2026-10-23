@@ -380,19 +380,19 @@ public final class WCasts {
         float[] dir = WPost.screenDir(from, at);
         switch (preset) {
             case 1 -> { // Cleave: ink and speed lines
-                WFx.accent(1f, 0.1f, 0.1f);
+                WFx.accent(1f, 0.74f, 0.26f);
                 WFx.impact(at, dir[0], dir[1], true, false, new float[][]{{0.04f, 1, 1}, {0.04f, 2, 1}, {0.06f, 1, 0.8f}});
                 WFx.hitStop(0.05);
             }
             case 2 -> { // blood: negative, crimson
-                WFx.accent(1f, 0.02f, 0.06f);
+                WFx.accent(0.72f, 0.36f, 1f);
                 WFx.impact(at, dir[0], dir[1], true, false, new float[][]{{0.04f, 2, 1}, {0.05f, 3, 1}, {0.05f, 2, 1}, {0.1f, 3, 0.5f}});
                 WFx.punch(0.5f * strength);
                 WFx.shake(0.5f * strength);
                 WFx.hitStop(0.07);
             }
             case 3 -> { // a cataclysm: white-out, two-tone, cracks
-                WFx.accent(1f, 0.08f, 0.1f);
+                WFx.accent(1f, 0.76f, 0.3f);
                 WFx.impact(at, dir[0], dir[1], false, true, new float[][]{{0.05f, 5, 1}, {0.05f, 2, 1}, {0.06f, 3, 1}, {0.06f, 6, 1},
                         {0.12f, 3, 0.7f}, {0.2f, 3, 0.3f}});
                 WFx.shake(1.0f * strength);
@@ -402,7 +402,7 @@ public final class WCasts {
                 WFx.flash(0.6f, 1f, 0.95f, 0.9f, 1.2f);
             }
             case 4 -> { // the meteor: halftone, then white
-                WFx.accent(1f, 0.15f, 0.1f);
+                WFx.accent(1f, 0.72f, 0.22f);
                 WFx.impact(at, 0, -1, true, true, new float[][]{{0.05f, 4, 1}, {0.05f, 5, 1}, {0.05f, 2, 1}, {0.1f, 4, 0.7f}, {0.15f, 3, 0.3f}});
                 WFx.shake(1.1f * strength);
                 WFx.punch(0.9f * strength);
@@ -410,13 +410,13 @@ public final class WCasts {
                 WFx.hitStop(0.12);
             }
             case 5 -> { // the wave: a white-out washing over everything
-                WFx.accent(1f, 0.12f, 0.16f);
+                WFx.accent(0.7f, 0.34f, 1f);
                 WFx.impact(at, 0, 1, false, false, new float[][]{{0.08f, 5, 1}, {0.06f, 2, 0.8f}, {0.25f, 3, 0.5f}});
                 WFx.shake(0.9f);
                 WFx.flash(0.8f, 1f, 0.9f, 0.9f, 0.8f);
             }
             case 6 -> { // a technique unleashed: one sharp two-tone beat
-                WFx.accent(1f, 0.08f, 0.12f);
+                WFx.accent(1f, 0.78f, 0.32f);
                 WFx.impact(at, 0, 1, false, false, new float[][]{{0.05f, 2, 1}, {0.06f, 3, 1}, {0.1f, 3, 0.4f}});
                 WFx.punch(0.4f);
             }

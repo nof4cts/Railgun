@@ -209,7 +209,7 @@ void main() {
             f += vec3(1.0) * core * 0.25;
             f = mix(f, Accent, crk);
         } else if (mode < 3.5) {   // TWO-TONE
-            f = mix(vec3(0.02, 0.0, 0.0), Accent, lit);
+            f = mix(vec3(0.03, 0.02, 0.0), Accent, lit);
             f = mix(f, vec3(0.0), max(edge, lines) * 0.9);
             f = mix(f, vec3(1.0, 0.97, 0.9), smoothstep(0.75, 0.95, lc) + core * 0.5);
             f = mix(f, vec3(1.0), crk);
@@ -227,11 +227,11 @@ void main() {
             f = mix(f, Accent, lines * 0.7);
         } else {                   // BLACK FLASH: black world, crimson light, white outlines, cracked space
             f = vec3(0.0);
-            f = mix(f, vec3(0.9, 0.02, 0.08), lit);
+            f = mix(f, vec3(0.95, 0.66, 0.12), lit);
             f = mix(f, vec3(1.0), edge);
-            f = mix(f, vec3(1.0, 0.1, 0.15), lines * 0.85);
+            f = mix(f, vec3(1.0, 0.78, 0.30), lines * 0.85);
             f = mix(f, vec3(1.0), crk);
-            f += vec3(1.0, 0.2, 0.25) * core * 0.6;
+            f += vec3(1.0, 0.82, 0.42) * core * 0.6;
         }
         col = mix(col, clamp(f, 0.0, 1.0), clamp(amt, 0.0, 1.0));
     }

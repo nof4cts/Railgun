@@ -57,15 +57,15 @@ float lineCore(float d, float t, float w) {
 vec3 bloodColor(float k) {
     // deep, almost black red .. saturated crimson .. hot highlight
     k = clamp(k, 0.0, 1.0);
-    vec3 c = mix(vec3(0.08, 0.0, 0.005), vec3(0.62, 0.02, 0.05), smoothstep(0.0, 0.55, k));
-    return mix(c, vec3(1.0, 0.28, 0.25), smoothstep(0.75, 1.0, k));
+    vec3 c = mix(vec3(0.05, 0.03, 0.09), vec3(0.55, 0.33, 0.05), smoothstep(0.0, 0.55, k));
+    return mix(c, vec3(1.0, 0.83, 0.42), smoothstep(0.75, 1.0, k));
 }
 
 vec3 cursedColor(float k) {
     // black core .. crimson .. hot white rim
     k = clamp(k, 0.0, 1.0);
-    vec3 c = mix(vec3(0.0), vec3(0.85, 0.02, 0.08), smoothstep(0.2, 0.7, k));
-    return mix(c, vec3(1.0, 0.85, 0.85), smoothstep(0.85, 1.0, k));
+    vec3 c = mix(vec3(0.0), vec3(0.80, 0.50, 0.07), smoothstep(0.2, 0.7, k));
+    return mix(c, vec3(1.0, 0.95, 0.82), smoothstep(0.85, 1.0, k));
 }
 
 // ------------------------------------------------------------------ Dismantle / Cleave
@@ -100,7 +100,7 @@ vec3 slashes(vec3 rd, float sceneT, vec3 wp, bool hasSurface, inout float darken
                     float core = lineCore(best, bt, 0.05 * taper + 0.012);
                     float glow = exp(-best / (0.35 + bt * 0.004));
                     // visibility: 0 = a near-invisible distortion line, 1 = a blazing blade
-                    add += (vec3(1.0) * core * (2.0 + 6.0 * vis) + vec3(1.0, 0.75, 0.75) * glow * (0.15 + 0.5 * vis)) * taper * bladeLife;
+                    add += (vec3(1.0) * core * (2.0 + 6.0 * vis) + vec3(1.0, 0.9, 0.7) * glow * (0.15 + 0.5 * vis)) * taper * bladeLife;
                 }
                 float den = dot(rd, N);
                 if (abs(den) > 1.0e-4) {
@@ -111,7 +111,7 @@ vec3 slashes(vec3 rd, float sceneT, vec3 wp, bool hasSurface, inout float darken
                         if (a > 0.0 && a < front && abs(sv) < W * 0.5) {
                             float lane = hash12(vec2(floor(sv * 3.0), seed));
                             float streak = step(0.72, lane) * smoothstep(front - 10.0, front, a) * (1.0 - abs(sv) / (W * 0.5));
-                            add += vec3(1.0, 0.9, 0.9) * streak * (0.15 + 0.45 * vis) * bladeLife;
+                            add += vec3(1.0, 0.95, 0.8) * streak * (0.15 + 0.45 * vis) * bladeLife;
                         }
                     }
                 }
@@ -125,7 +125,7 @@ vec3 slashes(vec3 rd, float sceneT, vec3 wp, bool hasSurface, inout float darken
                     float life = 1.0 - smoothstep(1.4, 3.0, since);
                     float px = max(fwidth(n) * 1.2, 0.03);
                     float edge = exp(-(n * n) / (px * px)) * life;
-                    vec3 c = mix(vec3(0.75, 0.06, 0.04), vec3(1.0, 0.95, 0.92), hot);
+                    vec3 c = mix(vec3(0.70, 0.43, 0.05), vec3(1.0, 0.95, 0.92), hot);
                     add += c * edge * (1.5 + 6.0 * hot);
                     float px2 = max(fwidth(n) * 0.6, 0.015);
                     darken *= 1.0 - 0.85 * exp(-(n * n) / (px2 * px2)) * smoothstep(0.05, 0.25, since) * life;
@@ -140,7 +140,7 @@ vec3 slashes(vec3 rd, float sceneT, vec3 wp, bool hasSurface, inout float darken
                     float along = step(r.y, draw);
                     float core = lineCore(r.x, r.z, 0.03);
                     float glow = exp(-r.x / 0.25);
-                    add += (vec3(1.0) * core * 8.0 + vec3(1.0, 0.1, 0.06) * glow * 1.4) * life * along;
+                    add += (vec3(1.0) * core * 8.0 + vec3(1.0, 0.72, 0.22) * glow * 1.4) * life * along;
                 }
             }
         }
@@ -166,12 +166,12 @@ vec3 blackFlashes(vec2 p, float aspect, vec3 rd, float sceneT, inout float darke
             if (h.x > 0.0 && h.x < sceneT) {
                 vec3 n = normalize(rd * h.x - P);
                 float rim = pow(1.0 - max(dot(n, -rd), 0.0), 2.0);
-                darken *= 0.08 + 0.92 * (1.0 - smoothstep(0.0, 0.15, rim));
-                col += vec3(1.0, 0.05, 0.1) * rim * 6.0;
+                darken *= 0.55 + 0.45 * (1.0 - smoothstep(0.0, 0.15, rim));
+                col += vec3(1.0, 0.72, 0.22) * rim * 6.0;
             }
             vec3 oc = -P;
             float closest = length(oc - rd * dot(oc, rd));
-            col += vec3(1.0, 0.1, 0.15) * exp(-max(closest - vr, 0.0) / (0.4 * scale)) * 1.5 * inFront(P) * exp(-age * 4.0);
+            col += vec3(1.0, 0.76, 0.30) * exp(-max(closest - vr, 0.0) / (0.4 * scale)) * 1.5 * inFront(P) * exp(-age * 4.0);
         }
         if (inFront(P) < 0.5) continue;
         // ---- black lightning in screen space, branching, strobing
@@ -204,9 +204,9 @@ vec3 blackFlashes(vec2 p, float aspect, vec3 rd, float sceneT, inout float darke
             rim = max(rim, max(exp(-da / (w * 3.0)), 0.6 * exp(-db / (w * 2.5))) * lim);
         }
         float life = 1.0 - smoothstep(0.25 + 0.1 * scale, 0.6 + 0.2 * scale, age);
-        darken *= 1.0 - 0.95 * bolts * strobe * life;
+        darken *= 1.0 - 0.30 * bolts * strobe * life;
         float halo = exp(-r / (0.05 * sc)) * 0.8 + exp(-r / (0.2 * sc)) * 0.25;
-        col += vec3(1.0, 0.04, 0.09) * (rim * 4.5 * strobe + halo * max(0.0, 1.0 - age * 1.5)) * life;
+        col += vec3(1.0, 0.80, 0.32) * (bolts * 5.5 * strobe + rim * 3.5 * strobe + halo * max(0.0, 1.0 - age * 1.5)) * life;
         // the first instant: a white pinprick of overload at the point of contact
         col += vec3(1.0) * exp(-r / (0.012 * sc)) * exp(-age * 18.0) * 6.0;
     }
@@ -234,7 +234,7 @@ vec3 rings(vec3 wp, bool hasSurface, inout float darken) {
         // the wave lifts dust: a dark band just behind the bright front
         float behind = exp(-pow((r - R + w * 3.0) / (w * 2.0), 2.0)) * step(r, R);
         darken *= 1.0 - 0.35 * behind * fade;
-        col += mix(vec3(1.0, 0.35, 0.25), vec3(1.0, 0.95, 0.9), exp(-age * 3.0)) * ring * fade * 1.6;
+        col += mix(vec3(1.0, 0.83, 0.42), vec3(1.0, 0.95, 0.9), exp(-age * 3.0)) * ring * fade * 1.6;
     }
     return col;
 }
@@ -294,16 +294,16 @@ vec3 bolts(vec3 rd, float sceneT, inout float darken) {
             // blood: a dark liquid core, a wet highlight along one edge, a crimson glow
             float core = exp(-(r.x * r.x) / (px * px));
             float edge = smoothstep(px * 0.2, px, r.x) * core;
-            vec3 c3 = bloodColor(0.55 + 0.45 * core) * core * 2.2 + vec3(1.0, 0.6, 0.6) * edge * 1.2 * r.y;
+            vec3 c3 = bloodColor(0.55 + 0.45 * core) * core * 2.2 + vec3(1.0, 0.9, 0.7) * edge * 1.2 * r.y;
             darken *= 1.0 - 0.6 * core * life;
-            col += (c3 + vec3(0.9, 0.0, 0.05) * exp(-r.x / (px * 4.0)) * glow * 0.8) * life;
+            col += (c3 + vec3(0.95, 0.66, 0.13) * exp(-r.x / (px * 4.0)) * glow * 0.8) * life;
         } else {
             // cursed energy: black core, crimson body, white-hot rim
             float core = exp(-(r.x * r.x) / (px * px * 0.3));
             float body = exp(-(r.x * r.x) / (px * px * 1.5));
             darken *= 1.0 - 0.85 * core * life;
-            col += (vec3(1.0, 0.05, 0.1) * (body - core) * 3.0 + vec3(1.0, 0.85, 0.85) * exp(-r.x / (px * 0.6)) * (1.0 - core) * 0.6
-                   + vec3(1.0, 0.0, 0.08) * exp(-r.x / (px * 5.0)) * glow * 0.6) * life;
+            col += (vec3(1.0, 0.72, 0.22) * (body - core) * 3.0 + vec3(1.0, 0.95, 0.82) * exp(-r.x / (px * 0.6)) * (1.0 - core) * 0.6
+                   + vec3(1.0, 0.70, 0.20) * exp(-r.x / (px * 5.0)) * glow * 0.6) * life;
         }
     }
     return col;
@@ -320,13 +320,13 @@ vec3 orbs(vec3 rd, float sceneT, inout float occl) {
         vec2 h = sphereHit(vec3(0.0), rd, a.xyz, R);
         vec3 oc = -a.xyz;
         float closest = length(oc - rd * dot(oc, rd));
-        if (dot(a.xyz, rd) > 0.0) col += vec3(0.85, 0.0, 0.05) * exp(-max(closest - R, 0.0) / (R * 0.8)) * b.x * 0.6;
+        if (dot(a.xyz, rd) > 0.0) col += vec3(0.80, 0.50, 0.08) * exp(-max(closest - R, 0.0) / (R * 0.8)) * b.x * 0.6;
         if (h.x > 0.0 && h.x < sceneT) {
             vec3 p = rd * h.x - a.xyz;
             vec3 n = normalize(p + (vec3(noise3(p * 3.0 + Time * 2.0), noise3(p * 3.0 + 9.0 - Time * 2.0), noise3(p * 3.0 + 17.0)) - 0.5) * R * 0.6);
             float fres = pow(1.0 - max(dot(n, -rd), 0.0), 3.0);
             float spec = pow(max(dot(reflect(rd, n), normalize(vec3(0.3, 0.9, 0.2))), 0.0), 40.0);
-            vec3 c3 = bloodColor(0.35 + 0.4 * fres) * 1.2 + vec3(1.0, 0.75, 0.7) * spec * 3.0 + vec3(1.0, 0.1, 0.1) * fres * 1.5;
+            vec3 c3 = bloodColor(0.35 + 0.4 * fres) * 1.2 + vec3(1.0, 0.92, 0.78) * spec * 3.0 + vec3(1.0, 0.76, 0.30) * fres * 1.5;
             col = c3;
             occl = 0.0;
         }
@@ -361,7 +361,7 @@ vec3 shells(vec3 rd, float sceneT, vec3 wp, bool hasSurface, inout float darken)
             vec3 q = wp - a.xyz;
             float rr = length(q.xz);
             float front = exp(-pow((rr - R) / (thick + 1.0), 2.0)) * step(abs(q.y), R * 0.4 + 3.0);
-            col += vec3(1.0, 0.15, 0.1) * front * 2.0 * strength;
+            col += vec3(1.0, 0.74, 0.26) * front * 2.0 * strength;
         }
     }
     return col;
@@ -386,11 +386,11 @@ vec3 charges(vec2 p, float aspect, inout float darken) {
         float lane = step(0.6, hsh) * smoothstep(0.35, 0.0, abs(fract(ang * 90.0) - 0.5));
         float flow = fract(r * 6.0 / sc + Time * 4.0 * (0.7 + hsh));
         float streak = lane * smoothstep(0.0, 0.25, flow) * smoothstep(1.0, 0.6, flow) * smoothstep(0.6 * sc, 0.04 * sc, r);
-        col += vec3(1.0, 0.25, 0.3) * streak * amt * 1.2;
+        col += vec3(1.0, 0.76, 0.3) * streak * amt * 1.2;
         // a black point with a crimson corona, tightening as it fills
         float core = exp(-r / (0.006 + 0.02 * sc * (1.0 - 0.6 * amt)));
         darken *= 1.0 - 0.9 * core * amt;
-        col += vec3(1.0, 0.05, 0.1) * exp(-r / (0.03 * sc + 0.03 * sc * amt)) * amt * 2.0;
+        col += vec3(1.0, 0.72, 0.22) * exp(-r / (0.03 * sc + 0.03 * sc * amt)) * amt * 2.0;
         // the rest of the frame dims, as if the light were being drawn in
         darken *= 1.0 - 0.25 * amt * smoothstep(0.1, 0.8, r);
     }
@@ -427,7 +427,7 @@ vec3 auras(vec3 rd, float sceneT, inout float darken) {
             float tongues = smoothstep(0.45, 0.8, n * 0.7 + n2 * 0.5);
             float inner = smoothstep(shell * 0.8, shell * 0.45, rr);
             float e = flame * tongues * (1.0 - inner * 0.9);
-            acc += (vec3(1.0, 0.04, 0.1) * e * 1.6 + vec3(1.0, 0.8, 0.8) * e * smoothstep(0.85, 1.0, n2) * 2.0) * dt;
+            acc += (vec3(1.0, 0.72, 0.22) * e * 1.6 + vec3(1.0, 0.93, 0.62) * e * smoothstep(0.85, 1.0, n2) * 2.0) * dt;
             dk += flame * tongues * dt * 0.5;
         }
         darken *= 1.0 - clamp(dk, 0.0, 0.5) * amt;
@@ -450,11 +450,11 @@ vec3 marks(vec3 rd, float sceneT, vec3 wp, bool hasSurface) {
                 float ring = exp(-pow((r - 1.3) / 0.08, 2.0)) + 0.5 * exp(-pow((r - 0.8 - 0.3 * fract(Time)) / 0.06, 2.0));
                 float ang = atan(q.z, q.x);
                 float ticks = step(0.8, fract(ang / (2.0 * PI) * 12.0 + Time * 0.3)) * exp(-pow((r - 1.6) / 0.12, 2.0));
-                col += vec3(1.0, 0.1, 0.12) * (ring + ticks) * 2.0 * a.w;
+                col += vec3(1.0, 0.72, 0.24) * (ring + ticks) * 2.0 * a.w;
             }
         }
         vec3 s = raySegment(vec3(0.0), rd, a.xyz, a.xyz + vec3(0.0, 6.0, 0.0));
-        if (s.z < sceneT) col += vec3(1.0, 0.1, 0.15) * exp(-s.x / 0.08) * (1.0 - s.y) * 0.8 * a.w;
+        if (s.z < sceneT) col += vec3(1.0, 0.76, 0.30) * exp(-s.x / 0.08) * (1.0 - s.y) * 0.8 * a.w;
     }
     return col;
 }
@@ -483,7 +483,7 @@ vec3 trenches(vec3 wp, bool hasSurface) {
         float w = W * 0.5 + 0.3;
         float seam = exp(-pow(max(off - W * 0.5, 0.0) / 0.6, 2.0)) * smoothstep(W * 0.5 + 2.5, W * 0.5, off);
         float crack = 0.6 + 0.4 * noise3(vec3(al * 0.4, off * 0.8, 1.0));
-        col += mix(vec3(0.8, 0.05, 0.04), vec3(1.0, 0.85, 0.75), hot) * seam * crack * (1.0 + 5.0 * hot) * life * step(abs(q.y), 20.0);
+        col += mix(vec3(0.7, 0.45, 0.06), vec3(1.0, 0.85, 0.75), hot) * seam * crack * (1.0 + 5.0 * hot) * life * step(abs(q.y), 20.0);
         // the wave racing ahead of the cut
         col += vec3(1.0, 0.9, 0.85) * exp(-pow((al - front) / 2.5, 2.0)) * exp(-pow(off / (w + 2.0), 2.0)) * 3.0 * step(age * speed, L + 4.0);
     }
@@ -516,7 +516,7 @@ vec3 bloodSphere(vec3 rd, float sceneT, inout float occl, inout float darken) {
     vec2 h = sphereHit(vec3(0.0), rd, a.xyz, R);
     vec3 oc = -a.xyz;
     float closest = length(oc - rd * dot(oc, rd));
-    if (dot(a.xyz, rd) > 0.0) col += vec3(0.8, 0.0, 0.04) * exp(-max(closest - R, 0.0) / (R * 0.6)) * strength * 1.2;
+    if (dot(a.xyz, rd) > 0.0) col += vec3(0.72, 0.46, 0.06) * exp(-max(closest - R, 0.0) / (R * 0.6)) * strength * 1.2;
     if (h.x > 0.0 && h.x < sceneT) {
         vec3 p = rd * h.x - a.xyz;
         vec3 pn = p / R;
@@ -525,7 +525,7 @@ vec3 bloodSphere(vec3 rd, float sceneT, inout float occl, inout float darken) {
         float fres = pow(1.0 - max(dot(n, -rd), 0.0), 3.0);
         float spec = pow(max(dot(reflect(rd, n), normalize(vec3(0.3, 0.9, 0.2))), 0.0), 30.0);
         float veins = exp(-pow((n1 - 0.5) / 0.03, 2.0));
-        col = bloodColor(0.25 + 0.5 * fres) * 1.3 + vec3(1.0, 0.7, 0.65) * spec * 2.5 + vec3(1.0, 0.15, 0.1) * (fres * 1.5 + veins * 1.2);
+        col = bloodColor(0.25 + 0.5 * fres) * 1.3 + vec3(1.0, 0.92, 0.76) * spec * 2.5 + vec3(1.0, 0.74, 0.26) * (fres * 1.5 + veins * 1.2);
         occl = 0.0;
     }
     darken *= 1.0 - 0.35 * strength;
@@ -536,12 +536,12 @@ vec3 bloodSphere(vec3 rd, float sceneT, inout float occl, inout float darken) {
 vec3 domainSky(vec3 rd, float strength) {
     float up = clamp(rd.y, -0.1, 1.0);
     // dusk: a burning horizon, violet overhead
-    vec3 sky = mix(vec3(1.0, 0.45, 0.18), vec3(0.32, 0.12, 0.35), smoothstep(0.0, 0.45, up));
+    vec3 sky = mix(vec3(0.95, 0.68, 0.22), vec3(0.32, 0.12, 0.35), smoothstep(0.0, 0.45, up));
     sky = mix(sky, vec3(0.06, 0.03, 0.12), smoothstep(0.4, 1.0, up));
     // a low sun, swollen and red, and long bands of cloud
     vec3 sunDir = normalize(vec3(0.7, 0.06, 0.3));
     float sd = max(dot(rd, sunDir), 0.0);
-    sky += vec3(1.0, 0.35, 0.15) * (pow(sd, 400.0) * 6.0 + pow(sd, 12.0) * 0.6);
+    sky += vec3(1.0, 0.82, 0.42) * (pow(sd, 400.0) * 6.0 + pow(sd, 12.0) * 0.6);
     float bands = fbm3(vec3(rd.xz / max(rd.y + 0.12, 0.03) * vec2(0.5, 2.0), Time * 0.02));
     sky = mix(sky, sky * vec3(0.55, 0.35, 0.45), smoothstep(0.5, 0.75, bands) * smoothstep(0.03, 0.25, up));
     // a far city skyline along the horizon, towers silhouetted against the dusk, windows lit
@@ -552,7 +552,7 @@ vec3 domainSky(vec3 rd, float strength) {
         vec3 bld = vec3(0.05, 0.03, 0.08);
         vec2 win = vec2(fract(az * 160.0 / PI * 4.0), fract(rd.y * 600.0));
         float lit = step(0.55, hash12(vec2(floor(az * 640.0 / PI), floor(rd.y * 600.0)))) * step(0.3, win.x) * step(0.4, win.y);
-        bld += vec3(1.0, 0.7, 0.35) * lit * 0.6;
+        bld += vec3(1.0, 0.86, 0.46) * lit * 0.6;
         sky = mix(sky, bld, strength);
     }
     return sky;
@@ -571,7 +571,7 @@ vec3 domain(vec3 rd, float sceneT, vec3 wp, bool hasSurface, vec3 col, inout flo
         float inside = 1.0 - smoothstep(R - 1.0, R + 1.0, length(wp - C));
         // the domain's light: warm dusk on everything inside it
         float l = luminance(col);
-        vec3 graded = mix(vec3(l), col, 0.55) * vec3(1.15, 0.72, 0.6);
+        vec3 graded = mix(vec3(l), col, 0.55) * vec3(1.1, 0.96, 0.62);
         col = mix(col, graded, inside * s);
         // the floor is alive: lines of crimson energy flowing outward through the ground
         vec3 q = wp - C;
@@ -581,9 +581,9 @@ vec3 domain(vec3 rd, float sceneT, vec3 wp, bool hasSurface, vec3 col, inout flo
         float fw = max(fwidth(flow) * 1.2, 0.002);
         float vein = exp(-pow((flow - 0.5) / min(fw, 0.018), 2.0)) * step(abs(q.y), 6.0);
         float pulse = exp(-pow(fract(rr / 24.0 - Time * 0.25) - 0.5, 2.0) * 60.0);
-        col += vec3(1.0, 0.12, 0.1) * (vein * (0.8 + 1.5 * pulse)) * inside * s;
+        col += vec3(1.0, 0.72, 0.24) * (vein * (0.8 + 1.5 * pulse)) * inside * s;
         // the boundary where it meets the ground
-        col += vec3(1.0, 0.35, 0.2) * exp(-pow((rr - R) / 1.2, 2.0)) * 2.5 * s * step(abs(q.y), 8.0);
+        col += vec3(1.0, 0.78, 0.34) * exp(-pow((rr - R) / 1.2, 2.0)) * 2.5 * s * step(abs(q.y), 8.0);
     }
     // the boundary dome: a thin shimmering skin, brightest at the edges
     for (int k = 0; k < 2; k++) {
@@ -595,7 +595,7 @@ vec3 domain(vec3 rd, float sceneT, vec3 wp, bool hasSurface, vec3 col, inout flo
         float fres = pow(1.0 - abs(dot(n, rd)), 3.0);
         float pat = fbm3(n * 9.0 + vec3(0.0, Time * 0.3, 0.0));
         float lines = exp(-pow((fract(pat * 6.0) - 0.5) / 0.05, 2.0));
-        vec3 c = vec3(1.0, 0.4, 0.25) * (fres * 1.4 + lines * 0.25) + vec3(1.0, 0.1, 0.12) * fres * fres;
+        vec3 c = vec3(1.0, 0.78, 0.36) * (fres * 1.4 + lines * 0.25) + vec3(1.0, 0.72, 0.24) * fres * fres;
         col += c * s * (camIn > 0.5 ? 0.12 * fres : 1.0);
         if (camIn < 0.5 && k == 0) {
             // seen from outside, the dusk shows through the skin
