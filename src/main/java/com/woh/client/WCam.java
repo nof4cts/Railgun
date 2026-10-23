@@ -337,8 +337,8 @@ public final class WCam {
                 // C2. still locked, but now on the frozen one: the Stand stands over them throwing every blow
                 //     into a body that cannot fall yet. The frame does not move between blows.
                 shot(29, 96, 0, t -> {
-                    Vec3 mid = standAt().lerp(target(), 0.45).add(0, 0.25, 0);
-                    return look(mid.add(perp().scale(3.9)).add(flat().scale(-0.9)).add(0, 0.55, 0), mid, 0, 54);
+                    Vec3 mid = standAt().lerp(target(), 0.35).add(0, 0.2, 0);
+                    return look(mid.add(perp().scale(5.6)).add(flat().scale(-1.6)).add(0, 0.7, 0), mid, 0, 58);
                 });
                 // D. still locked off. He walks through a world that cannot move; the lens only turns to keep him.
                 shot(96, 114, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0),

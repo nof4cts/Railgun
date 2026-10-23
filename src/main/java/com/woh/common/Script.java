@@ -386,7 +386,7 @@ public final class Script {
         // he walks through the stopped world and marks his blows; none of them land until time runs again
         for (int i = 0; i < 4; i++) {
             int tt = 34 + i * 18;
-            b.bf(tt, TARGET, b.jitter(0.6), 1.2, 0.0, 20 + i, 1);
+            b.bf(tt, TARGET, b.jitter(0.6), 0.8, 0.0, 20 + i, 1);   // quiet marks: no frames until the release
             b.dmg(114, TARGET, b.jitter(0.6), 3.0, 0.6, 1);   // all of them arrive at once as time resumes
         }
         b.impact(114, TARGET, 4, 1.4);
