@@ -65,9 +65,11 @@ public final class WStand {
 
         for (Player pl : mc.level.players()) {
             if (!isStandUser(pl) || pl.isInvisible()) continue;
-            // first-person on your own stand: keep it behind you so it doesn't fill the screen
+            // first-person on your own stand: keep it behind you so it doesn't fill the screen.
+            // A cutscene reports first person too, but the camera is detached and watching him from outside,
+            // so the apparition must stay where it is or it gets shoved out of the shot.
             boolean self = pl == mc.player;
-            boolean firstPerson = self && mc.options.getCameraType().isFirstPerson();
+            boolean firstPerson = self && mc.options.getCameraType().isFirstPerson() && !WCam.running();
 
             float yaw = Mth.lerp(pt, pl.yBodyRotO, pl.yBodyRot) * Mth.DEG_TO_RAD;
             Vec3 feet = pl.getPosition(pt).subtract(cam);
@@ -111,8 +113,10 @@ public final class WStand {
     /** Build the whole figure from facets and edges, bottom (waist) to the crown. */
     private static void drawFigure(VertexConsumer vc, Matrix4f m, Vec3 o, Vec3 f, Vec3 r, Vec3 u,
                                    double scale, double time, double flare) {
-        float a = (float) (0.42 + 0.10 * Math.sin(time * 5.0) + flare * 0.35);
-        float ga = (float) (0.65 + 0.15 * Math.sin(time * 7.0 + 1.0) + flare * 0.35);
+        // kept bright on purpose: while a stop drains the world to gold monochrome, a dim apparition
+        // flattens into the background, so it has to out-glow the drain to stay readable
+        float a = (float) (0.60 + 0.12 * Math.sin(time * 5.0) + flare * 0.35);
+        float ga = (float) (0.85 + 0.15 * Math.sin(time * 7.0 + 1.0) + flare * 0.35);
         double sw = 0.42 * scale, torsoH = 1.15 * scale;
 
         // ---- torso: a tapered crystalline column of facets (wider shoulders, narrow waist)
