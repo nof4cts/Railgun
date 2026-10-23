@@ -115,7 +115,7 @@ public final class WStand {
         Vec3 r = new Vec3(-f.z, 0, f.x);
         Vec3 feet = pl.getPosition(pt);
         double bob = Math.sin(time * 1.7 + pl.getId()) * 0.05;
-        Vec3 home = feet.add(f.scale(-0.55)).add(r.scale(0.3)).add(0, 0.95 + bob, 0);
+        Vec3 home = feet.add(f.scale(-0.4)).add(r.scale(0.95)).add(0, 0.95 + bob, 0);   // beside his right shoulder
         P.root = home;
         P.face = f;
         double[] sg = SURGE.get(pl.getId());
@@ -218,6 +218,8 @@ public final class WStand {
             dir = new Vec3(dir.x * Math.cos(a) - dir.z * Math.sin(a), 0, dir.x * Math.sin(a) + dir.z * Math.cos(a));
         }
         Vec3 strikePos = T.subtract(dir.scale(1.35)).add(0, -0.55, 0);
+        double ahead = new Vec3(strikePos.x - feet.x, 0, strikePos.z - feet.z).dot(dir);
+        if (ahead < 1.8) strikePos = strikePos.add(dir.scale(1.8 - ahead));   // a point at his feet: it steps out in front
         P.root = home.lerp(strikePos, w);
         Vec3 fl = f.lerp(dir, smooth(w * 2));
         Vec3 fc = fl.lengthSqr() < 1e-4 ? dir : fl.normalize();
@@ -329,12 +331,12 @@ public final class WStand {
             double a = Math.toRadians(18 + i * 24);
             Vec3 d = new Vec3(Math.cos(a), Math.sin(a), 0);
             double len = 0.3 + 0.07 * (i % 2);
-            limb(vc, m, nm, wp(B, root, cam, crown.add(d.scale(0.15))), wp(B, root, cam, crown.add(d.scale(len))), 0.016 * S, true, light, 1f);
+            limb(vc, m, nm, wp(B, root, cam, crown.add(d.scale(0.15))), wp(B, root, cam, crown.add(d.scale(len))), 0.03 * S, true, BRIGHT, 1f);
         }
         for (int i = 0; i < 16; i++) {
             double a0 = i * Math.PI * 2 / 16, a1 = (i + 1) * Math.PI * 2 / 16;
             limb(vc, m, nm, wp(B, root, cam, crown.add(new Vec3(Math.cos(a0), Math.sin(a0), 0).scale(0.19))),
-                    wp(B, root, cam, crown.add(new Vec3(Math.cos(a1), Math.sin(a1), 0).scale(0.19))), 0.01 * S, true, BRIGHT, 1f);
+                    wp(B, root, cam, crown.add(new Vec3(Math.cos(a1), Math.sin(a1), 0).scale(0.19))), 0.022 * S, true, BRIGHT, 1f);
         }
         // kintsugi: the marble is cracked, and the cracks are filled with glowing gold
         seam(vc, m, nm, B, root, cam, new double[][]{{0.06, 0.79, 0.152}, {-0.05, 0.68, 0.152}, {0.05, 0.58, 0.152}, {-0.03, 0.49, 0.152}});

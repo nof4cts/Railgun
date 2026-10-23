@@ -58,7 +58,7 @@ public final class WHud {
         if (ClientSorcerers.mine() != Sorcerer.WORLD_OVER_HEAVEN || mc.screen instanceof com.jjk.mod.client.SelectorScreen) return;
         Font font = mc.font;
         int w = g.guiWidth();
-        int pw = 150, px = w - pw - 4, py = 14;
+        int pw = 200, px = w - pw - 4, py = 14;   // wide enough to cover the kit's energy readout
         float t = (System.nanoTime() / 1.0e9f) % 1000f;
         g.pose().pushPose();
         g.pose().translate(0, 0, 450);

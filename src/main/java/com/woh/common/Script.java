@@ -211,7 +211,7 @@ public final class Script {
             boolean big = i == at.length - 1;
             b.bf(at[i], TARGET, off, big ? 1.6 : 0.8, big ? 0.9 : 0.35, 20 + (i % 4), 1);
             b.dmg(at[i], TARGET, off, 2.6, big ? 1.0 : 0.34, 1);
-            b.impact(at[i], TARGET, i % 3, big ? 1.1 : 0.5);
+            if (big || i % 4 == 0) b.impact(at[i], TARGET, big ? 2 : 0, big ? 1.1 : 0.5);   // the frame breaks on the beats that matter
         }
         b.ring(37, GROUND, Z, 10, 60, 0.9);
         shove(b, 37, b.F, 0.7, 4.2);
@@ -220,7 +220,8 @@ public final class Script {
     /** A single charged overwrite-fist: reality folds into his hand, then one colossal blow that craters the ground. */
     private static void overwriteBlow(B b) {
         b.charge(0, 24, HAND, Z, 1.4);
-        b.dark(10, 0.3, 24);
+        b.dark(10, 0.3, 14);
+        b.dark(30, 0.0, 8);
         b.sound(22, CASTER, S_BLINK, 2.0, 0.9);
         b.smear(26, CASTER, TARGET);
         b.bf(28, TARGET, Z, 3.0, 1.0, 40, 2);
@@ -269,7 +270,8 @@ public final class Script {
      *  overwrite-blow lands. */
     private static void realityOverwrite(B b) {
         b.charge(0, 18, HAND, Z, 1.2);
-        b.dark(6, 0.45, 30);
+        b.dark(6, 0.45, 10);
+        b.dark(24, 0.0, 10);
         b.shard(16, TARGET, Z, 3.0, 18);
         b.blackout(18, 2);
         b.erase(20, TARGET, Z, 3.2, 0.5, 2);     // threshold: under 50% max HP is erased outright
@@ -320,7 +322,8 @@ public final class Script {
     /** Fourteen Phrases: fourteen crystalline sigils set in a ring around the point, lit one by one, then detonated
      *  together in a cascade. */
     private static void fourteenPhrases(B b) {
-        b.dark(0, 0.35, 150);
+        b.dark(0, 0.35, 20);
+        b.dark(125, 0.0, 20);
         int t = 6;
         for (int i = 0; i < 14; i++) {
             double a = i * Math.PI * 2 / 14;
@@ -336,7 +339,7 @@ public final class Script {
             int tt = 70 + i * 3;
             b.dmg(tt, POINT, off, 3.0, 0.5, 2);
             b.ring(tt, POINT, off, 5, 50, 0.6);
-            b.impact(tt, POINT, i % 3, 0.6);
+            if (i % 4 == 0) b.impact(tt, POINT, 0, 0.6);
         }
         b.erase(118, POINT, Z, 7.0, 0.35, 2);
         b.blast(118, POINT, Z, 8, 0.4, 0, 1.0);
@@ -375,7 +378,8 @@ public final class Script {
      *  lands inside the stop are held, and all land at once when time resumes. */
     private static void timeStop(B b) {
         b.sound(0, CASTER, S_TRUTH, 4.0, 0.8);
-        b.dark(0, 0.45, 150);
+        b.dark(0, 0.45, 5);       // the world drains the instant he calls it
+        b.dark(112, 0.0, 6);      // and the colour comes back when time does
         // the halt is held long enough for the call to finish: the world stays stopped for the whole line
         b.stop(2, 112, 40);
         b.sound(15, CASTER, S_VOICE, 4.0, 1.0);   // lands on the exact frame the camera locks off
@@ -393,7 +397,8 @@ public final class Script {
      *  strikes in the same instant. */
     private static void knifeRain(B b) {
         b.sound(0, CASTER, S_TRUTH, 4.5, 0.75);
-        b.dark(0, 0.45, 90);
+        b.dark(0, 0.45, 5);
+        b.dark(72, 0.0, 6);
         b.stop(2, 70, 44);
         for (int i = 0; i < 24; i++) {
             Vec3 off = b.around(10).add(0, 4 + b.r.nextDouble() * 6, 0);
@@ -412,7 +417,8 @@ public final class Script {
     /** Stillness: a short, defensive halt - he stops time just long enough to step out of harm. */
     private static void stillness(B b) {
         b.sound(0, CASTER, S_HALT, 3.0, 0.9);
-        b.dark(0, 0.35, 22);
+        b.dark(0, 0.35, 3);
+        b.dark(19, 0.0, 4);
         b.stop(1, 18, 24);
         b.negate(1, 20);
     }
@@ -423,7 +429,8 @@ public final class Script {
      *  world - a catastrophic erase-and-crater that nothing weakened survives. */
     private static void worldsTruth(B b) {
         b.sound(0, CASTER, S_TRUTH, 6.0, 0.6);
-        b.dark(2, 0.6, 120);
+        b.dark(2, 0.6, 12);
+        b.dark(90, 0.0, 16);
         b.stop(4, 80, 64);
         b.blackout(6, 2);
         // the sky cracks in waves
@@ -457,14 +464,16 @@ public final class Script {
         b.add(Beat.of(2, OVERDRIVE, CASTER, Z));   // reuse the Overdrive state machine (aura, flight, boosts)
         b.shell(2, CASTER, Z, 4.5, 40, 1);
         b.ring(4, GROUND, Z, 10, 60, 1.2);
-        b.dark(2, 0.2, 30);
+        b.dark(2, 0.2, 10);
+        b.dark(40, 0.0, 15);
     }
 
     /** Reality Collapse (domain): a field of overwritten reality - inside it his moves cannot miss and everything else
      *  is weakened and slowed. */
     private static void realityCollapse(B b) {
         b.sound(0, CASTER, S_COLLAPSE, 6.0, 0.8);
-        b.dark(2, 0.4, 40);
+        b.dark(2, 0.4, 8);
+        b.dark(40, 0.0, 30);
         b.add(Beat.of(6, DOMAIN_ON, CASTER, Z));
         b.shell(6, CASTER, Z, 20, 40, 1);
         b.ring(6, GROUND, Z, 40, 100, 2.0);

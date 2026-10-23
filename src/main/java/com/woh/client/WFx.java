@@ -170,9 +170,9 @@ public final class WFx {
         if (scale >= 1.8) {
             impact(at, dirX, dirY, false, true, new float[][]{
                     {0.05f, 6, 1f}, {0.04f, 1, 1f}, {0.05f, 3, 1f}, {0.05f, 1, 0.9f}, {0.1f + 0.02f * (float) scale, 3, 0.6f}, {0.14f, 1, 0.25f}});
-        } else {
+        } else if (scale >= 1.0) {
             impact(at, dirX, dirY, false, true, new float[][]{{0.035f, 1, 1f}, {0.04f, 3, 0.8f}, {0.06f, 1, 0.35f}});
-        }
+        }   // the light blows of a barrage land without breaking the frame: only the seal, the shake and the shock
         shake(0.35f + 0.15f * (float) scale * near);
         punch(0.6f * s);
         aberration(0.5f * s);
