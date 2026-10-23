@@ -17,15 +17,15 @@
       "0.100": {
        "vector": [
         0,
-        -12,
+        -5,
         0
        ],
        "easing": "easeOutCubic"
       },
       "0.150": {
        "vector": [
-        1.6,
-        20.0,
+        1.64,
+        13.86,
         0.0
        ],
        "easing": "easeInCubic"
@@ -33,47 +33,47 @@
       "0.200": {
        "vector": [
         2,
-        28.0,
+        18,
         0
        ],
        "easing": "easeOutExpo"
       },
       "0.300": {
        "vector": [
-        2.2,
-        32.0,
+        2.24,
+        20.76,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "0.500": {
        "vector": [
-        1.6,
-        -24.8,
+        4.92,
+        -0.9,
         0.0
        ],
        "easing": "easeInCubic"
       },
       "0.550": {
        "vector": [
-        2,
-        -28.0,
+        6,
+        0,
         0
        ],
        "easing": "easeOutExpo"
       },
       "0.650": {
        "vector": [
-        2.2,
-        -29.6,
+        6.72,
+        0.6,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "0.850": {
        "vector": [
-        1.6,
-        20.0,
+        1.64,
+        13.86,
         0.0
        ],
        "easing": "easeInCubic"
@@ -81,47 +81,47 @@
       "0.900": {
        "vector": [
         2,
-        28.0,
+        18,
         0
        ],
        "easing": "easeOutExpo"
       },
       "1.000": {
        "vector": [
-        2.2,
-        32.0,
+        2.24,
+        20.76,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "1.200": {
        "vector": [
-        1.6,
-        -24.8,
+        4.92,
+        -0.9,
         0.0
        ],
        "easing": "easeInCubic"
       },
       "1.250": {
        "vector": [
-        2,
-        -28.0,
+        6,
+        0,
         0
        ],
        "easing": "easeOutExpo"
       },
       "1.350": {
        "vector": [
-        2.2,
-        -29.6,
+        6.72,
+        0.6,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "1.550": {
        "vector": [
-        1.6,
-        20.0,
+        1.64,
+        13.86,
         0.0
        ],
        "easing": "easeInCubic"
@@ -129,15 +129,15 @@
       "1.600": {
        "vector": [
         2,
-        28.0,
+        18,
         0
        ],
        "easing": "easeOutExpo"
       },
       "1.700": {
        "vector": [
-        2.2,
-        32.0,
+        2.24,
+        20.76,
         0.0
        ],
        "easing": "easeOutCubic"
@@ -145,7 +145,7 @@
       "1.850": {
        "vector": [
         0.0,
-        -12,
+        -5,
         0
        ],
        "easing": "easeInOutSine"
@@ -153,7 +153,7 @@
       "2.050": {
        "vector": [
         0.5,
-        -12,
+        -5,
         0
        ],
        "easing": "easeInOutSine"
@@ -161,7 +161,7 @@
       "2.250": {
        "vector": [
         -0.13,
-        -12,
+        -5,
         0
        ],
        "easing": "easeInOutSine"
@@ -169,7 +169,7 @@
       "2.450": {
        "vector": [
         -0.46,
-        -12,
+        -5,
         0
        ],
        "easing": "easeInOutSine"
@@ -188,176 +188,176 @@
      "rotation": {
       "0.000": {
        "vector": [
-        4,
+        3,
         0,
-        6
+        5
        ]
       },
       "0.100": {
        "vector": [
-        -42,
-        18,
-        8
+        -16,
+        0,
+        9
        ],
        "easing": "easeOutCubic"
       },
       "0.150": {
        "vector": [
-        -83.6,
-        -1.2,
-        1.6
+        -78.32,
+        -6.56,
+        1.62
        ],
        "easing": "easeInCubic"
       },
       "0.200": {
        "vector": [
-        -94,
-        -6,
+        -92,
+        -8,
         0
        ],
        "easing": "easeOutExpo"
       },
       "0.300": {
        "vector": [
-        -99.2,
-        -8.4,
-        -0.8
+        -101.12,
+        -8.96,
+        -1.08
        ],
        "easing": "easeOutCubic"
       },
       "0.500": {
        "vector": [
-        15.6,
-        -1.2,
-        20.8
+        -78.32,
+        -8.2,
+        1.62
        ],
        "easing": "easeInCubic"
       },
       "0.550": {
        "vector": [
-        30,
-        -6,
-        24
+        -92,
+        -10,
+        0
        ],
        "easing": "easeOutExpo"
       },
       "0.650": {
        "vector": [
-        37.2,
-        -8.4,
-        25.6
+        -101.12,
+        -11.2,
+        -1.08
        ],
        "easing": "easeOutCubic"
       },
       "0.850": {
        "vector": [
-        -83.6,
-        -1.2,
-        1.6
+        -78.32,
+        -6.56,
+        1.62
        ],
        "easing": "easeInCubic"
       },
       "0.900": {
        "vector": [
-        -94,
-        -6,
+        -92,
+        -8,
         0
        ],
        "easing": "easeOutExpo"
       },
       "1.000": {
        "vector": [
-        -99.2,
-        -8.4,
-        -0.8
+        -101.12,
+        -8.96,
+        -1.08
        ],
        "easing": "easeOutCubic"
       },
       "1.200": {
        "vector": [
-        15.6,
-        -1.2,
-        20.8
+        -78.32,
+        -8.2,
+        1.62
        ],
        "easing": "easeInCubic"
       },
       "1.250": {
        "vector": [
-        30,
-        -6,
-        24
+        -92,
+        -10,
+        0
        ],
        "easing": "easeOutExpo"
       },
       "1.350": {
        "vector": [
-        37.2,
-        -8.4,
-        25.6
+        -101.12,
+        -11.2,
+        -1.08
        ],
        "easing": "easeOutCubic"
       },
       "1.550": {
        "vector": [
-        -83.6,
-        -1.2,
-        1.6
+        -78.32,
+        -6.56,
+        1.62
        ],
        "easing": "easeInCubic"
       },
       "1.600": {
        "vector": [
-        -94,
-        -6,
+        -92,
+        -8,
         0
        ],
        "easing": "easeOutExpo"
       },
       "1.700": {
        "vector": [
-        -99.2,
-        -8.4,
-        -0.8
+        -101.12,
+        -8.96,
+        -1.08
        ],
        "easing": "easeOutCubic"
       },
       "1.850": {
        "vector": [
-        -42.0,
-        18,
-        8
+        -16.0,
+        0,
+        9
        ],
        "easing": "easeInOutSine"
       },
       "2.050": {
        "vector": [
-        -41.01,
-        18,
-        8
+        -15.01,
+        0,
+        9
        ],
        "easing": "easeInOutSine"
       },
       "2.250": {
        "vector": [
-        -42.26,
-        18,
-        8
+        -16.26,
+        0,
+        9
        ],
        "easing": "easeInOutSine"
       },
       "2.450": {
        "vector": [
-        -42.93,
-        18,
-        8
+        -16.93,
+        0,
+        9
        ],
        "easing": "easeInOutSine"
       },
       "4.100": {
        "vector": [
-        4,
+        3,
         0,
-        6
+        5
        ],
        "easing": "easeOutCubic"
       }
@@ -367,176 +367,176 @@
      "rotation": {
       "0.000": {
        "vector": [
-        4,
+        3,
         0,
-        -6
+        -5
        ]
       },
       "0.100": {
        "vector": [
-        -58,
-        -22,
-        -8
+        -10,
+        0,
+        -6
        ],
        "easing": "easeOutCubic"
       },
       "0.150": {
        "vector": [
-        12.4,
-        0.4,
-        -20.8
+        -34.6,
+        -14.76,
+        -7.64
        ],
        "easing": "easeInCubic"
       },
       "0.200": {
        "vector": [
-        30,
-        6,
-        -24
+        -40,
+        -18,
+        -8
        ],
        "easing": "easeOutExpo"
       },
       "0.300": {
        "vector": [
-        38.8,
-        8.8,
-        -25.6
+        -43.6,
+        -20.16,
+        -8.24
        ],
        "easing": "easeOutCubic"
       },
       "0.500": {
        "vector": [
-        -86.8,
-        0.4,
-        -1.6
+        -77.24,
+        8.2,
+        -1.08
        ],
        "easing": "easeInCubic"
       },
       "0.550": {
        "vector": [
-        -94,
-        6,
+        -92,
+        10,
         0
        ],
        "easing": "easeOutExpo"
       },
       "0.650": {
        "vector": [
-        -97.6,
-        8.8,
-        0.8
+        -101.84,
+        11.2,
+        0.72
        ],
        "easing": "easeOutCubic"
       },
       "0.850": {
        "vector": [
-        12.4,
-        0.4,
-        -20.8
+        -34.6,
+        -14.76,
+        -7.64
        ],
        "easing": "easeInCubic"
       },
       "0.900": {
        "vector": [
-        30,
-        6,
-        -24
+        -40,
+        -18,
+        -8
        ],
        "easing": "easeOutExpo"
       },
       "1.000": {
        "vector": [
-        38.8,
-        8.8,
-        -25.6
+        -43.6,
+        -20.16,
+        -8.24
        ],
        "easing": "easeOutCubic"
       },
       "1.200": {
        "vector": [
-        -86.8,
-        0.4,
-        -1.6
+        -77.24,
+        8.2,
+        -1.08
        ],
        "easing": "easeInCubic"
       },
       "1.250": {
        "vector": [
-        -94,
-        6,
+        -92,
+        10,
         0
        ],
        "easing": "easeOutExpo"
       },
       "1.350": {
        "vector": [
-        -97.6,
-        8.8,
-        0.8
+        -101.84,
+        11.2,
+        0.72
        ],
        "easing": "easeOutCubic"
       },
       "1.550": {
        "vector": [
-        12.4,
-        0.4,
-        -20.8
+        -34.6,
+        -14.76,
+        -7.64
        ],
        "easing": "easeInCubic"
       },
       "1.600": {
        "vector": [
-        30,
-        6,
-        -24
+        -40,
+        -18,
+        -8
        ],
        "easing": "easeOutExpo"
       },
       "1.700": {
        "vector": [
-        38.8,
-        8.8,
-        -25.6
+        -43.6,
+        -20.16,
+        -8.24
        ],
        "easing": "easeOutCubic"
       },
       "1.850": {
        "vector": [
-        -58.0,
-        -22,
-        -8
+        -10.0,
+        0,
+        -6
        ],
        "easing": "easeInOutSine"
       },
       "2.050": {
        "vector": [
-        -58.99,
-        -22,
-        -8
+        -10.99,
+        0,
+        -6
        ],
        "easing": "easeInOutSine"
       },
       "2.250": {
        "vector": [
-        -57.74,
-        -22,
-        -8
+        -9.74,
+        0,
+        -6
        ],
        "easing": "easeInOutSine"
       },
       "2.450": {
        "vector": [
-        -57.07,
-        -22,
-        -8
+        -9.07,
+        0,
+        -6
        ],
        "easing": "easeInOutSine"
       },
       "4.100": {
        "vector": [
-        4,
+        3,
         0,
-        -6
+        -5
        ],
        "easing": "easeOutCubic"
       }
@@ -553,161 +553,161 @@
       },
       "0.100": {
        "vector": [
-        -10,
+        -6,
         0,
-        5
+        4
        ],
        "easing": "easeOutCubic"
       },
       "0.150": {
        "vector": [
-        -18.0,
+        -10.92,
         0.0,
-        5.8
+        4.82
        ],
        "easing": "easeInCubic"
       },
       "0.200": {
        "vector": [
-        -20,
+        -12,
         0,
-        6
+        5
        ],
        "easing": "easeOutExpo"
       },
       "0.300": {
        "vector": [
-        -21.0,
+        -12.72,
         0.0,
-        6.1
+        5.12
        ],
        "easing": "easeOutCubic"
       },
       "0.500": {
        "vector": [
-        25.2,
+        -12.56,
         0.0,
-        5.8
+        4.82
        ],
        "easing": "easeInCubic"
       },
       "0.550": {
        "vector": [
-        34.0,
+        -14,
         0,
-        6
+        5
        ],
        "easing": "easeOutExpo"
       },
       "0.650": {
        "vector": [
-        38.4,
+        -14.96,
         0.0,
-        6.1
+        5.12
        ],
        "easing": "easeOutCubic"
       },
       "0.850": {
        "vector": [
-        -18.0,
+        -10.92,
         0.0,
-        5.8
+        4.82
        ],
        "easing": "easeInCubic"
       },
       "0.900": {
        "vector": [
-        -20,
+        -12,
         0,
-        6
+        5
        ],
        "easing": "easeOutExpo"
       },
       "1.000": {
        "vector": [
-        -21.0,
+        -12.72,
         0.0,
-        6.1
+        5.12
        ],
        "easing": "easeOutCubic"
       },
       "1.200": {
        "vector": [
-        25.2,
+        -12.56,
         0.0,
-        5.8
+        4.82
        ],
        "easing": "easeInCubic"
       },
       "1.250": {
        "vector": [
-        34.0,
+        -14,
         0,
-        6
+        5
        ],
        "easing": "easeOutExpo"
       },
       "1.350": {
        "vector": [
-        38.4,
+        -14.96,
         0.0,
-        6.1
+        5.12
        ],
        "easing": "easeOutCubic"
       },
       "1.550": {
        "vector": [
-        -18.0,
+        -10.92,
         0.0,
-        5.8
+        4.82
        ],
        "easing": "easeInCubic"
       },
       "1.600": {
        "vector": [
-        -20,
+        -12,
         0,
-        6
+        5
        ],
        "easing": "easeOutExpo"
       },
       "1.700": {
        "vector": [
-        -21.0,
+        -12.72,
         0.0,
-        6.1
+        5.12
        ],
        "easing": "easeOutCubic"
       },
       "1.850": {
        "vector": [
-        -10,
+        -6,
         0,
-        5
+        4
        ],
        "easing": "easeInOutSine"
       },
       "2.050": {
        "vector": [
-        -10,
+        -6,
         0,
-        5
+        4
        ],
        "easing": "easeInOutSine"
       },
       "2.250": {
        "vector": [
-        -10,
+        -6,
         0,
-        5
+        4
        ],
        "easing": "easeInOutSine"
       },
       "2.450": {
        "vector": [
-        -10,
+        -6,
         0,
-        5
+        4
        ],
        "easing": "easeInOutSine"
       },
@@ -732,161 +732,161 @@
       },
       "0.100": {
        "vector": [
-        12,
+        6,
         0,
-        -5
+        -4
        ],
        "easing": "easeOutCubic"
       },
       "0.150": {
        "vector": [
-        29.6,
+        14.2,
         0.0,
-        -5.8
+        -4.82
        ],
        "easing": "easeInCubic"
       },
       "0.200": {
        "vector": [
-        34.0,
+        16,
         0,
-        -6
+        -5
        ],
        "easing": "easeOutExpo"
       },
       "0.300": {
        "vector": [
-        36.2,
+        17.2,
         0.0,
-        -6.1
+        -5.12
        ],
        "easing": "easeOutCubic"
       },
       "0.500": {
        "vector": [
-        -13.6,
+        14.2,
         0.0,
-        -5.8
+        -4.82
        ],
        "easing": "easeInCubic"
       },
       "0.550": {
        "vector": [
-        -20,
+        16,
         0,
-        -6
+        -5
        ],
        "easing": "easeOutExpo"
       },
       "0.650": {
        "vector": [
-        -23.2,
+        17.2,
         0.0,
-        -6.1
+        -5.12
        ],
        "easing": "easeOutCubic"
       },
       "0.850": {
        "vector": [
-        29.6,
+        14.2,
         0.0,
-        -5.8
+        -4.82
        ],
        "easing": "easeInCubic"
       },
       "0.900": {
        "vector": [
-        34.0,
+        16,
         0,
-        -6
+        -5
        ],
        "easing": "easeOutExpo"
       },
       "1.000": {
        "vector": [
-        36.2,
+        17.2,
         0.0,
-        -6.1
+        -5.12
        ],
        "easing": "easeOutCubic"
       },
       "1.200": {
        "vector": [
-        -13.6,
+        14.2,
         0.0,
-        -5.8
+        -4.82
        ],
        "easing": "easeInCubic"
       },
       "1.250": {
        "vector": [
-        -20,
+        16,
         0,
-        -6
+        -5
        ],
        "easing": "easeOutExpo"
       },
       "1.350": {
        "vector": [
-        -23.2,
+        17.2,
         0.0,
-        -6.1
+        -5.12
        ],
        "easing": "easeOutCubic"
       },
       "1.550": {
        "vector": [
-        29.6,
+        14.2,
         0.0,
-        -5.8
+        -4.82
        ],
        "easing": "easeInCubic"
       },
       "1.600": {
        "vector": [
-        34.0,
+        16,
         0,
-        -6
+        -5
        ],
        "easing": "easeOutExpo"
       },
       "1.700": {
        "vector": [
-        36.2,
+        17.2,
         0.0,
-        -6.1
+        -5.12
        ],
        "easing": "easeOutCubic"
       },
       "1.850": {
        "vector": [
-        12,
+        6,
         0,
-        -5
+        -4
        ],
        "easing": "easeInOutSine"
       },
       "2.050": {
        "vector": [
-        12,
+        6,
         0,
-        -5
+        -4
        ],
        "easing": "easeInOutSine"
       },
       "2.250": {
        "vector": [
-        12,
+        6,
         0,
-        -5
+        -4
        ],
        "easing": "easeInOutSine"
       },
       "2.450": {
        "vector": [
-        12,
+        6,
         0,
-        -5
+        -4
        ],
        "easing": "easeInOutSine"
       },
@@ -911,160 +911,160 @@
       },
       "0.100": {
        "vector": [
-        4.2,
-        14,
+        1.4,
+        7,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "0.150": {
        "vector": [
-        8.68,
-        -24.4,
+        4.84,
+        -16.78,
         0.0
        ],
        "easing": "easeInCubic"
       },
       "0.200": {
        "vector": [
-        9.8,
-        -34.0,
+        5.6,
+        -22,
         0.0
        ],
        "easing": "easeOutExpo"
       },
       "0.300": {
        "vector": [
-        10.36,
-        -38.8,
+        6.1,
+        -25.48,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "0.500": {
        "vector": [
-        8.68,
-        30.0,
+        3.7,
+        1.26,
         0.0
        ],
        "easing": "easeInCubic"
       },
       "0.550": {
        "vector": [
-        9.8,
-        34.0,
+        4.2,
+        0,
         0.0
        ],
        "easing": "easeOutExpo"
       },
       "0.650": {
        "vector": [
-        10.36,
-        36.0,
+        4.54,
+        -0.84,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "0.850": {
        "vector": [
-        8.68,
-        -24.4,
+        4.84,
+        -16.78,
         0.0
        ],
        "easing": "easeInCubic"
       },
       "0.900": {
        "vector": [
-        9.8,
-        -34.0,
+        5.6,
+        -22,
         0.0
        ],
        "easing": "easeOutExpo"
       },
       "1.000": {
        "vector": [
-        10.36,
-        -38.8,
+        6.1,
+        -25.48,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "1.200": {
        "vector": [
-        8.68,
-        30.0,
+        3.7,
+        1.26,
         0.0
        ],
        "easing": "easeInCubic"
       },
       "1.250": {
        "vector": [
-        9.8,
-        34.0,
+        4.2,
+        0,
         0.0
        ],
        "easing": "easeOutExpo"
       },
       "1.350": {
        "vector": [
-        10.36,
-        36.0,
+        4.54,
+        -0.84,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "1.550": {
        "vector": [
-        8.68,
-        -24.4,
+        4.84,
+        -16.78,
         0.0
        ],
        "easing": "easeInCubic"
       },
       "1.600": {
        "vector": [
-        9.8,
-        -34.0,
+        5.6,
+        -22,
         0.0
        ],
        "easing": "easeOutExpo"
       },
       "1.700": {
        "vector": [
-        10.36,
-        -38.8,
+        6.1,
+        -25.48,
         0.0
        ],
        "easing": "easeOutCubic"
       },
       "1.850": {
        "vector": [
-        4.2,
-        14.0,
+        1.4,
+        7.0,
         0.0
        ],
        "easing": "easeInOutSine"
       },
       "2.050": {
        "vector": [
-        4.62,
-        14.3,
+        1.82,
+        7.3,
         0.0
        ],
        "easing": "easeInOutSine"
       },
       "2.250": {
        "vector": [
-        4.09,
-        13.92,
+        1.29,
+        6.92,
         0.0
        ],
        "easing": "easeInOutSine"
       },
       "2.450": {
        "vector": [
-        3.81,
-        13.72,
+        1.01,
+        6.72,
         0.0
        ],
        "easing": "easeInOutSine"
@@ -1089,7 +1089,7 @@
       "0.100": {
        "vector": [
         0,
-        -0.7,
+        -0.3,
         0
        ],
        "easing": "easeOutCubic"
@@ -1097,39 +1097,39 @@
       "0.150": {
        "vector": [
         0.0,
-        -1.26,
-        -0.8
+        -0.55,
+        -0.74
        ],
        "easing": "easeInCubic"
       },
       "0.200": {
        "vector": [
         0,
-        -1.4,
-        -1.0
+        -0.6,
+        -0.9
        ],
        "easing": "easeOutExpo"
       },
       "0.300": {
        "vector": [
         0.0,
-        -1.47,
-        -1.1
+        -0.64,
+        -1.01
        ],
        "easing": "easeOutCubic"
       },
       "0.500": {
        "vector": [
         0.0,
-        -1.26,
-        -0.8
+        -0.71,
+        -0.82
        ],
        "easing": "easeInCubic"
       },
       "0.550": {
        "vector": [
         0,
-        -1.4,
+        -0.8,
         -1.0
        ],
        "easing": "easeOutExpo"
@@ -1137,47 +1137,47 @@
       "0.650": {
        "vector": [
         0.0,
-        -1.47,
-        -1.1
+        -0.86,
+        -1.12
        ],
        "easing": "easeOutCubic"
       },
       "0.850": {
        "vector": [
         0.0,
-        -1.26,
-        -0.8
+        -0.55,
+        -0.74
        ],
        "easing": "easeInCubic"
       },
       "0.900": {
        "vector": [
         0,
-        -1.4,
-        -1.0
+        -0.6,
+        -0.9
        ],
        "easing": "easeOutExpo"
       },
       "1.000": {
        "vector": [
         0.0,
-        -1.47,
-        -1.1
+        -0.64,
+        -1.01
        ],
        "easing": "easeOutCubic"
       },
       "1.200": {
        "vector": [
         0.0,
-        -1.26,
-        -0.8
+        -0.71,
+        -0.82
        ],
        "easing": "easeInCubic"
       },
       "1.250": {
        "vector": [
         0,
-        -1.4,
+        -0.8,
         -1.0
        ],
        "easing": "easeOutExpo"
@@ -1185,39 +1185,39 @@
       "1.350": {
        "vector": [
         0.0,
-        -1.47,
-        -1.1
+        -0.86,
+        -1.12
        ],
        "easing": "easeOutCubic"
       },
       "1.550": {
        "vector": [
         0.0,
-        -1.26,
-        -0.8
+        -0.55,
+        -0.74
        ],
        "easing": "easeInCubic"
       },
       "1.600": {
        "vector": [
         0,
-        -1.4,
-        -1.0
+        -0.6,
+        -0.9
        ],
        "easing": "easeOutExpo"
       },
       "1.700": {
        "vector": [
         0.0,
-        -1.47,
-        -1.1
+        -0.64,
+        -1.01
        ],
        "easing": "easeOutCubic"
       },
       "1.850": {
        "vector": [
         0,
-        -0.7,
+        -0.3,
         0
        ],
        "easing": "easeInOutSine"
@@ -1225,7 +1225,7 @@
       "2.050": {
        "vector": [
         0,
-        -0.7,
+        -0.3,
         0
        ],
        "easing": "easeInOutSine"
@@ -1233,7 +1233,7 @@
       "2.250": {
        "vector": [
         0,
-        -0.7,
+        -0.3,
         0
        ],
        "easing": "easeInOutSine"
@@ -1241,7 +1241,7 @@
       "2.450": {
        "vector": [
         0,
-        -0.7,
+        -0.3,
         0
        ],
        "easing": "easeInOutSine"

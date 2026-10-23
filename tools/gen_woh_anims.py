@@ -168,152 +168,163 @@ def slash_l(side, height=0):
 
 
 # ================================================================== The World Over Heaven
-# Each move's choreography is keyed to the ticks of its timeline in common/Script.java.
-# Shared extra poses (reality-overwrite vocabulary):
-GRIP   = P(right_arm=[-60, 40, 10], left_arm=[-60, -40, -10], torso=[18, 0, 0], head=[14, 0, 0], right_leg=[-24, 0, 6], left_leg=[-24, 0, -6], pos=[0, -1.8, 0])
-DECREE = P(right_arm=[-100, -8, 0], left_arm=[-30, -12, -10], torso=[4, -22, 0], head=[2, 18, 0], right_leg=[-12, 0, 5], left_leg=[16, 0, -5], pos=[0, -0.8, -0.8])
-GUARD  = P(right_arm=[-96, 40, 0], left_arm=[-96, -40, 0], torso=[10, 0, 0], head=[8, 0, 0], right_leg=[-8, 0, 5], left_leg=[8, 0, -5], pos=[0, -0.6, 0])
-GRACE  = P(right_arm=[-30, 0, 60], left_arm=[-30, 0, -60], torso=[-8, 0, 0], head=[-16, 0, 0], right_leg=[0, 0, 8], left_leg=[0, 0, -8], pos=[0, -0.4, 0])
-HALT   = P(right_arm=[-100, -20, 0], left_arm=[-20, -10, -10], torso=[2, -16, 0], head=[2, 14, 0], right_leg=[-8, 0, 5], left_leg=[10, 0, -5], pos=[0, -0.4, 0])
-OPEN   = P(right_arm=[-30, 0, 80], left_arm=[-30, 0, -80], torso=[-10, 0, 0], head=[-18, 0, 0], right_leg=[0, 0, 10], left_leg=[0, 0, -10], pos=[0, -0.6, 0])
-SLAM   = P(right_arm=[-10, 0, 30], left_arm=[-10, 0, -30], torso=[26, 0, 0], head=[20, 0, 0], right_leg=[-30, 0, 6], left_leg=[-30, 0, -6], pos=[0, -2.4, 0])
+# An original pose vocabulary for a reality-overwriting Stand user: deliberate, imperious,
+# hand-extended "decrees" and time-halts rather than a brawler's punches. Nothing carried
+# over from Modulo Yuji's motion set. Keyed to each move's timeline in common/Script.java.
 
-# --- page 1: the fists
-a = Anim('ascended_barrage', 90, STAND)
-a.k(6, STANCE, OUT_)
+REST   = P(right_arm=[3, 0, 5], left_arm=[3, 0, -5])                                                   # calm stand
+READY  = P(right_arm=[-16, 0, 9], left_arm=[-10, 0, -6], torso=[2, 7, 0], head=[0, -5, 0], right_leg=[-6, 0, 4], left_leg=[6, 0, -4], pos=[0, -0.3, 0])
+DECREE = P(right_arm=[-92, -8, 0], left_arm=[-40, -18, -8], torso=[8, -22, 0], head=[2, 18, 0], right_leg=[-12, 0, 5], left_leg=[16, 0, -5], pos=[0, -0.6, -0.9])
+DECR2  = P(right_arm=[-92, -10, 0], left_arm=[-92, 10, 0], torso=[6, 0, 0], head=[6, 0, 0], right_leg=[-14, 0, 5], left_leg=[16, 0, -5], pos=[0, -0.8, -1.0])
+HALT   = P(right_arm=[-104, -22, 0], left_arm=[-24, -10, -8], torso=[2, -14, 0], head=[2, 12, 0], right_leg=[-8, 0, 5], left_leg=[10, 0, -5])
+RAISE  = P(right_arm=[-164, 0, 14], left_arm=[-164, 0, -14], torso=[-12, 0, 0], head=[-26, 0, 0], right_leg=[0, 0, 6], left_leg=[0, 0, -6])
+REND   = P(right_arm=[-68, 34, 42], left_arm=[-68, -34, -42], torso=[0, 0, 0], head=[-8, 0, 0], right_leg=[-6, 0, 6], left_leg=[6, 0, -6], pos=[0, -0.4, 0])
+SLAMD  = P(right_arm=[-8, 0, 22], left_arm=[-8, 0, -22], torso=[26, 0, 0], head=[20, 0, 0], right_leg=[-30, 0, 6], left_leg=[-30, 0, -6], pos=[0, -2.2, 0])
+GATHER = P(right_arm=[-62, 36, 10], left_arm=[-62, -36, -10], torso=[16, 0, 0], head=[12, 0, 0], right_leg=[-26, 0, 6], left_leg=[-26, 0, -6], pos=[0, -1.4, 0])
+FLICK  = P(right_arm=[-84, -44, 22], left_arm=[-34, -16, -10], torso=[6, -26, 0], head=[0, 22, 0], right_leg=[-8, 0, 5], left_leg=[12, 0, -5])
+ASCEND = P(right_arm=[-128, 0, 30], left_arm=[-128, 0, -30], torso=[-14, 0, 0], head=[-28, 0, 0], right_leg=[2, 0, 6], left_leg=[2, 0, -6], pos=[0, 0.9, 0])
+WARD   = P(right_arm=[-106, 34, 0], left_arm=[-106, -34, 0], torso=[10, 0, 0], head=[8, 0, 0], right_leg=[-8, 0, 5], left_leg=[8, 0, -5], pos=[0, -0.5, 0])
+OPENF  = P(right_arm=[-24, 0, 78], left_arm=[-24, 0, -78], torso=[-8, 0, 0], head=[-14, 0, 0], right_leg=[0, 0, 10], left_leg=[0, 0, -10], pos=[0, -0.5, 0])
+VOW    = P(right_arm=[-116, 28, 0], left_arm=[-70, -28, 0], torso=[6, 0, 0], head=[8, 0, 0], right_leg=[-6, 0, 5], left_leg=[8, 0, -5], pos=[0, -0.3, 0])
+GRACE  = P(right_arm=[-34, 0, 54], left_arm=[-34, 0, -54], torso=[-8, 0, 0], head=[-14, 0, 0], right_leg=[0, 0, 7], left_leg=[0, 0, -7], pos=[0, -0.3, 0])
+POINTU = P(right_arm=[-150, -10, 10], left_arm=[16, 0, -14], torso=[-10, -14, 0], head=[-20, 10, 0], right_leg=[-6, 0, 5], left_leg=[8, 0, -5])
+
+def decree_snap(a, t, pose, wind=GATHER, over=1.12, hold=8, rec=REST):
+    """A WOH decree: gather -> palm thrust snaps on tick t -> overshoot -> hold -> settle."""
+    a.k(t - 4, wind, OUT_).k(t - 2, push(READY, wind, 1.05), INOUT)
+    a.k(t - 1, push(READY, pose, 0.82), IN).k(t, pose, SNAP).k(t + 2, push(READY, pose, over), OUT_).k(t + 4, pose, INOUT)
+    if hold: a.hold(t + 6, t + 4 + hold, pose, 1.0, 5)
+    if rec is not None: a.k(t + 6 + hold, rec, OUT_)
+    return a
+
+# --- page 1: the fists (overwrite strikes)
+a = Anim('ascended_barrage', 90, REST)
+a.k(6, READY, OUT_)
 for i, t in enumerate([8, 11, 14, 17, 20, 23, 26, 29, 33, 37]):
-    pose = punch_r(1.0) if i % 2 == 0 else punch_l(1.0)
-    a.k(t - 1, push(STANCE, pose, 0.8), IN).k(t, pose, SNAP).k(t + 1, push(STANCE, pose, 1.1), OUT_)
-a.k(40, add(punch_r(1.3), pos=[0, -1.2, -1.4]), OUT_)
-a.hold(46, 72, STANCE, 1.0, 5).k(88, STAND, OUT_)
+    pose = DECREE if i % 2 == 0 else DECR2
+    a.k(t - 1, push(READY, pose, 0.82), IN).k(t, pose, SNAP).k(t + 1, push(READY, pose, 1.12), OUT_)
+a.k(40, add(DECR2, pos=[0, -1.0, -1.4]), OUT_)
+a.hold(46, 72, READY, 1.0, 5).k(88, REST, OUT_)
 a.write()
 
-a = Anim('overwrite_blow', 110, STAND)
-a.k(6, STANCE, OUT_).k(10, GRIP, OUT_).tremble(10, 24, GRIP, 2.0)
-a.strike(28, add(punch_r(1.4), pos=[0, -1.6, -1.8]), STANCE, wind=wind_r(1.3), over=1.15, hold=10, recover=STAND)
+a = Anim('overwrite_blow', 110, REST)
+a.k(6, READY, OUT_).k(10, GATHER, OUT_).tremble(10, 24, GATHER, 2.0)
+decree_snap(a, 28, add(DECREE, pos=[0, -1.4, -1.9]), wind=GATHER, over=1.15, hold=12, rec=REST)
 a.write()
 
-a = Anim('erasure_hook', 72, STAND)
-a.k(5, STANCE, OUT_)
-REACH = P(right_arm=[-96, -10, 0], left_arm=[-70, -30, 0], torso=[6, -18, 0], head=[0, 14, 0], right_leg=[-10, 0, 5], left_leg=[12, 0, -5], pos=[0, -0.6, 0])
-a.k(6, REACH, OUT_).hold(8, 12, REACH, 1.0, 3)
-a.strike(12, add(punch_r(1.1), right_arm=[-70, -40, 20]), STANCE, wind=wind_r(0.9), over=1.12, hold=8, recover=STAND)
+a = Anim('erasure_hook', 72, REST)
+a.k(5, READY, OUT_).k(6, add(DECREE, right_arm=[-70, -40, 24]), OUT_).hold(8, 12, add(DECREE, right_arm=[-70, -40, 24]), 1.0, 3)
+decree_snap(a, 14, add(DECREE, right_arm=[-96, -20, 10]), wind=READY, over=1.1, hold=8, rec=REST)
 a.write()
 
-a = Anim('rewrite_rush', 84, STAND)
-a.k(2, STANCE, OUT_)
+a = Anim('rewrite_rush', 84, REST)
+a.k(2, READY, OUT_)
 t = 0
 for i in range(5):
-    pose = punch_r(1.0) if i % 2 == 0 else punch_l(1.0)
-    a.k(t + 3, push(STANCE, pose, 0.8), IN).k(t + 4, pose, SNAP).k(t + 6, push(STANCE, pose, 1.1), OUT_)
+    pose = DECREE if i % 2 == 0 else DECR2
+    a.k(t + 3, push(READY, pose, 0.82), IN).k(t + 4, pose, SNAP).k(t + 6, push(READY, pose, 1.12), OUT_)
     t += 7
-a.hold(t + 2, min(82, t + 18), STANCE, 1.0, 4).k(82, STAND, OUT_)
+a.hold(t + 2, min(82, t + 18), READY, 1.0, 4).k(82, REST, OUT_)
 a.write()
 
 # --- page 2: reality overwrite
-a = Anim('reality_overwrite', 96, STAND)
-a.k(6, STANCE, OUT_).k(10, GRIP, OUT_).tremble(10, 18, GRIP, 2.2)
-a.k(19, push(STANCE, DECREE, 0.8), IN).k(20, DECREE, SNAP).k(22, push(STANCE, DECREE, 1.12), OUT_)
-a.hold(26, 60, DECREE, 1.0, 5).k(94, STAND, OUT_)
+a = Anim('reality_overwrite', 96, REST)
+a.k(6, READY, OUT_).k(10, GATHER, OUT_).tremble(10, 18, GATHER, 2.2)
+a.k(19, push(READY, DECR2, 0.8), IN).k(20, add(DECR2, pos=[0, -0.8, -1.1]), SNAP).k(22, push(READY, DECR2, 1.14), OUT_)
+a.hold(26, 60, DECR2, 1.0, 5).k(94, REST, OUT_)
 a.write()
 
-a = Anim('wounds_undone', 56, STAND)
-a.k(4, CLASP, OUT_).hold(8, 44, CLASP, 1.4, 6).k(54, STAND, OUT_)
+a = Anim('wounds_undone', 56, REST)
+a.k(4, VOW, OUT_).hold(8, 44, VOW, 1.3, 6).k(54, REST, OUT_)
 a.write()
 
-a = Anim('grace_over_heaven', 60, STAND)
-a.k(4, GRACE, OUT_).hold(8, 48, GRACE, 1.6, 7).k(58, STAND, OUT_)
+a = Anim('grace_over_heaven', 60, REST)
+a.k(4, GRACE, OUT_).hold(8, 48, GRACE, 1.6, 7).k(58, REST, OUT_)
 a.write()
 
-a = Anim('negation', 40, STAND)
-a.k(2, push(STANCE, GUARD, 0.9), IN).k(3, GUARD, SNAP).hold(6, 34, GUARD, 1.2, 5).k(38, STAND, OUT_)
+a = Anim('negation', 40, REST)
+a.k(2, push(READY, WARD, 0.9), IN).k(3, WARD, SNAP).hold(6, 34, WARD, 1.1, 5).k(38, REST, OUT_)
 a.write()
 
 # --- page 3: heaven's judgment
-a = Anim('heavenly_lightning', 70, STAND)
-a.k(4, STANCE, OUT_)
-POINT_UP = P(right_arm=[-150, -10, 10], left_arm=[20, 0, -16], torso=[-10, -14, 0], head=[-20, 10, 0], right_leg=[-6, 0, 5], left_leg=[8, 0, -5])
-a.k(6, POINT_UP, OUT_).tremble(8, 12, POINT_UP, 1.4)
-SMITE = P(right_arm=[-70, -20, 0], left_arm=[20, 0, -16], torso=[14, -20, 0], head=[6, 16, 0], right_leg=[-18, 0, 6], left_leg=[22, 0, -6], pos=[0, -1.0, -0.6])
-a.k(15, push(STANCE, SMITE, 0.85), IN).k(16, SMITE, SNAP).k(18, push(STANCE, SMITE, 1.1), OUT_)
-a.hold(20, 60, SMITE, 1.0, 5).k(68, STAND, OUT_)
+a = Anim('heavenly_lightning', 70, REST)
+a.k(4, READY, OUT_).k(6, POINTU, OUT_).tremble(8, 12, POINTU, 1.4)
+SMITE = P(right_arm=[-70, -20, 0], left_arm=[18, 0, -14], torso=[14, -20, 0], head=[6, 16, 0], right_leg=[-18, 0, 6], left_leg=[22, 0, -6], pos=[0, -1.0, -0.6])
+a.k(15, push(READY, SMITE, 0.85), IN).k(16, SMITE, SNAP).k(18, push(READY, SMITE, 1.1), OUT_)
+a.hold(20, 60, SMITE, 1.0, 5).k(68, REST, OUT_)
 a.write()
 
-a = Anim('fourteen_phrases', 150, STAND)
-a.k(6, SIGN, OUT_).hold(10, 66, SIGN, 1.8, 6)
-THRUST = add(punch_r(1.0), left_arm=[-94, -30, 0], torso=[6, -6, 0], pos=[0, -1.0, -1.0])
-a.k(70, push(SIGN, THRUST, 0.85), IN).k(72, THRUST, SNAP).k(74, push(SIGN, THRUST, 1.1), OUT_)
-a.hold(80, 140, THRUST, 1.0, 6).k(148, STAND, OUT_)
+a = Anim('fourteen_phrases', 150, REST)
+a.k(6, REND, OUT_).hold(10, 66, REND, 1.6, 6)
+a.k(70, push(REND, DECR2, 0.85), IN).k(72, add(DECR2, pos=[0, -1.0, -1.0]), SNAP).k(74, push(REND, DECR2, 1.1), OUT_)
+a.hold(80, 140, DECR2, 1.0, 6).k(148, REST, OUT_)
 a.write()
 
-a = Anim('reality_knives', 48, STAND)
-a.k(1, STANCE, OUT_)
-THROW = P(right_arm=[-88, -40, 20], left_arm=[-40, -20, -10], torso=[6, -24, 0], head=[0, 20, 0], right_leg=[-8, 0, 5], left_leg=[12, 0, -5])
+a = Anim('reality_knives', 48, REST)
+a.k(1, READY, OUT_)
 for i in range(7):
     tt = 2 + i
-    a.k(tt, add(THROW, right_arm=[-88 + (i % 2) * 8, -40 + i * 4, 20], torso=[6, -24 + i * 2, 0]), SNAP if i % 2 == 0 else OUT_)
-a.k(14, STANCE, OUT_).hold(18, 44, STANCE, 1.0, 5).k(46, STAND, OUT_)
+    a.k(tt, add(FLICK, right_arm=[-84 + (i % 2) * 8, -44 + i * 4, 22], torso=[6, -26 + i * 2, 0]), SNAP if i % 2 == 0 else OUT_)
+a.k(14, READY, OUT_).hold(18, 44, READY, 1.0, 5).k(46, REST, OUT_)
 a.write()
 
-a = Anim('road_to_heaven', 72, STAND)
-a.k(2, add(CROUCH, pos=[0, -2.0, 0]), IN)
-LIFT = P(right_arm=[-175, 0, 12], left_arm=[-175, 0, -12], torso=[-16, 0, 0], head=[-30, 0, 0], right_leg=[-6, 0, 7], left_leg=[-6, 0, -7], pos=[0, 0.6, 0])
-a.k(6, LIFT, SNAP).k(10, push(STAND, LIFT, 1.1), OUT_).hold(14, 60, LIFT, 1.0, 5).k(70, STAND, OUT_)
+a = Anim('road_to_heaven', 72, REST)
+a.k(2, add(GATHER, pos=[0, -1.8, 0]), IN)
+LIFT = P(right_arm=[-172, 0, 12], left_arm=[-172, 0, -12], torso=[-16, 0, 0], head=[-30, 0, 0], right_leg=[-6, 0, 7], left_leg=[-6, 0, -7], pos=[0, 0.6, 0])
+a.k(6, LIFT, SNAP).k(10, push(REST, LIFT, 1.1), OUT_).hold(14, 60, LIFT, 1.0, 5).k(70, REST, OUT_)
 a.write()
 
 # --- page 4: the world (time)
-a = Anim('time_stop', 120, STAND)
-a.k(2, push(STANCE, HALT, 0.9), IN).k(3, HALT, SNAP)
+a = Anim('time_stop', 120, REST)
+a.k(2, push(READY, HALT, 0.9), IN).k(3, HALT, SNAP)
 for i, t in enumerate([8, 18, 28, 38]):
-    pose = punch_r(1.0) if i % 2 == 0 else punch_l(1.0)
-    a.k(t - 1, push(HALT, pose, 0.8), IN).k(t, pose, SNAP).k(t + 2, push(HALT, pose, 1.05), OUT_)
-a.k(60, add(punch_r(1.2), pos=[0, -1.0, -1.2]), OUT_)
-a.hold(66, 110, STANCE, 1.0, 5).k(118, STAND, OUT_)
+    pose = DECREE if i % 2 == 0 else DECR2
+    a.k(t - 1, push(HALT, pose, 0.82), IN).k(t, pose, SNAP).k(t + 2, push(HALT, pose, 1.05), OUT_)
+a.k(60, add(DECR2, pos=[0, -1.0, -1.2]), OUT_)
+a.hold(66, 110, READY, 1.0, 5).k(118, REST, OUT_)
 a.write()
 
-a = Anim('knife_rain', 150, STAND)
-a.k(2, SKY, SNAP).hold(6, 66, SKY, 1.4, 6)
-DOWN = P(right_arm=[-20, 0, 40], left_arm=[-20, 0, -40], torso=[20, 0, 0], head=[16, 0, 0], right_leg=[-20, 0, 6], left_leg=[-20, 0, -6], pos=[0, -1.2, 0])
-a.k(70, push(SKY, DOWN, 0.85), IN).k(72, DOWN, SNAP).k(75, push(SKY, DOWN, 1.1), OUT_)
-a.hold(80, 140, DOWN, 1.0, 6).k(148, STAND, OUT_)
+a = Anim('knife_rain', 150, REST)
+a.k(2, RAISE, SNAP).hold(6, 66, RAISE, 1.3, 6)
+a.k(70, push(RAISE, SLAMD, 0.85), IN).k(72, SLAMD, SNAP).k(75, push(RAISE, SLAMD, 1.1), OUT_)
+a.hold(80, 140, SLAMD, 1.0, 6).k(148, REST, OUT_)
 a.write()
 
-a = Anim('stillness', 56, STAND)
-a.k(1, push(STANCE, GUARD, 0.9), IN).k(2, GUARD, SNAP).hold(5, 50, GUARD, 0.8, 5).k(54, STAND, OUT_)
+a = Anim('stillness', 56, REST)
+a.k(1, push(READY, HALT, 0.9), IN).k(2, HALT, SNAP).hold(5, 50, HALT, 0.8, 5).k(54, REST, OUT_)
 a.write()
 
 # --- page 5: over heaven (ultimates)
-a = Anim('worlds_truth', 260, STAND)
-a.k(4, SKY, OUT_).hold(10, 40, SKY, 1.2, 6).tremble(40, 84, SKY, 2.5)
-a.k(84, push(SKY, SLAM, 0.85), IN).k(86, SLAM, SNAP).k(89, push(SKY, SLAM, 1.12), OUT_)
-a.hold(94, 250, SLAM, 1.0, 7).k(258, STAND, OUT_)
+a = Anim('worlds_truth', 260, REST)
+a.k(4, RAISE, OUT_).hold(10, 40, RAISE, 1.2, 6).tremble(40, 84, RAISE, 2.4)
+a.k(84, push(RAISE, SLAMD, 0.85), IN).k(86, SLAMD, SNAP).k(89, push(RAISE, SLAMD, 1.12), OUT_)
+a.hold(94, 250, SLAMD, 1.0, 7).k(258, REST, OUT_)
 a.write()
 
-a = Anim('return_over_heaven', 56, STAND)
-VOW = P(right_arm=[-120, 30, 0], left_arm=[-70, -30, 0], torso=[6, 0, 0], head=[10, 0, 0], right_leg=[-6, 0, 5], left_leg=[8, 0, -5], pos=[0, -0.4, 0])
-a.k(2, VOW, OUT_).hold(6, 44, VOW, 1.2, 6).k(54, STAND, OUT_)
+a = Anim('return_over_heaven', 56, REST)
+a.k(2, VOW, OUT_).hold(6, 44, VOW, 1.2, 6).k(54, REST, OUT_)
 a.write()
 
-a = Anim('heaven_ascension', 64, STAND)
-a.k(2, add(FLEX_IN, pos=[0, -2.0, 0]), IN).k(6, ROAR, SNAP).k(10, push(STAND, ROAR, 1.1), OUT_)
-a.hold(14, 56, ROAR, 1.6, 6).k(62, STAND, OUT_)
+a = Anim('heaven_ascension', 64, REST)
+a.k(2, add(GATHER, pos=[0, -1.6, 0]), IN).k(6, ASCEND, SNAP).k(10, push(REST, ASCEND, 1.1), OUT_)
+a.hold(14, 56, ASCEND, 1.4, 6).k(62, REST, OUT_)
 a.write()
 
-a = Anim('reality_collapse', 130, STAND)
-a.k(2, CLASP, IN).k(6, add(SIGN, torso=[-6, 0, 0]), OUT_)
-a.k(8, push(SIGN, OPEN, 0.9), IN).k(10, OPEN, SNAP).hold(14, 120, OPEN, 1.4, 7).k(128, STAND, OUT_)
+a = Anim('reality_collapse', 130, REST)
+a.k(2, GATHER, IN).k(6, add(REND, torso=[-6, 0, 0]), OUT_)
+a.k(8, push(REND, OPENF, 0.9), IN).k(10, OPENF, SNAP).hold(14, 120, OPENF, 1.4, 7).k(128, REST, OUT_)
 a.write()
 
-a = Anim('collapse_finisher', 110, STAND)
-a.k(2, SKY, OUT_)
-a.k(5, push(SKY, SLAM, 0.85), IN).k(6, SLAM, SNAP).k(9, push(SKY, SLAM, 1.12), OUT_)
-a.hold(12, 100, SLAM, 1.0, 6).k(108, STAND, OUT_)
+a = Anim('collapse_finisher', 110, REST)
+a.k(2, RAISE, OUT_)
+a.k(5, push(RAISE, SLAMD, 0.85), IN).k(6, SLAMD, SNAP).k(9, push(RAISE, SLAMD, 1.12), OUT_)
+a.hold(12, 100, SLAMD, 1.0, 6).k(108, REST, OUT_)
 a.write()
 
-# subtitles (the sound set is reused; keys live under subtitles.woh.*)
+# subtitles
 names = ["charge", "black_flash", "black_flash_big", "dash", "blood_form", "blood_fire", "blood_hit", "blood_rain", "dismantle", "cleave",
          "world_splitter", "crater", "eruption", "domain", "domain_hum", "overdrive", "wave", "world_ender", "rumble", "impact", "meteor", "card"]
-pretty = {"black_flash": "Overwrite strike", "world_ender": "Reality is overwritten", "wave": "Reality cracks", "rumble": "Time halts", "card": "The World Over Heaven"}
+pretty = {"black_flash": "Reality overwrite", "world_ender": "The world is overwritten", "wave": "Reality cracks", "rumble": "Time halts", "card": "The World Over Heaven"}
 lang = {"subtitles.woh." + n: pretty.get(n, n.replace("_", " ").capitalize()) for n in names}
 os.makedirs(os.path.join(ROOT, "lang"), exist_ok=True)
 with open(os.path.join(ROOT, "lang", "en_us.json"), "w") as f:
