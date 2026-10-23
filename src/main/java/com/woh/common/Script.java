@@ -21,7 +21,7 @@ public final class Script {
     public static final int S_CHARGE = 0, S_BF = 1, S_BF_BIG = 2, S_DASH = 3, S_FORM = 4, S_FIRE = 5,
             S_HIT = 6, S_RAIN = 7, S_SLASH = 8, S_CLEAVE = 9, S_SPLITTER = 10, S_CRATER = 11, S_ERUPT = 12,
             S_DOMAIN = 13, S_DOMAIN_HUM = 14, S_ASCEND = 15, S_WAVE = 16, S_TRUTH = 17, S_RUMBLE = 18,
-            S_METEOR = 20;
+            S_METEOR = 20, S_VOICE = 22;
 
     private static final class B {
         final List<Beat> l = new ArrayList<>();
@@ -375,16 +375,18 @@ public final class Script {
      *  lands inside the stop are held, and all land at once when time resumes. */
     private static void timeStop(B b) {
         b.sound(0, CASTER, S_TRUTH, 4.0, 0.8);
-        b.dark(0, 0.45, 70);
-        b.stop(2, 60, 40);
-        // he walks in and lands a handful of marked blows that detonate on resume
+        b.dark(0, 0.45, 150);
+        // the halt is held long enough for the call to finish: the world stays stopped for the whole line
+        b.stop(2, 112, 40);
+        b.sound(15, CASTER, S_VOICE, 4.0, 1.0);   // lands on the exact frame the camera locks off
+        // he walks through the stopped world and marks his blows; none of them land until time runs again
         for (int i = 0; i < 4; i++) {
-            int tt = 8 + i * 10;
+            int tt = 34 + i * 18;
             b.bf(tt, TARGET, b.jitter(0.6), 1.2, 0.0, 20 + i, 1);
-            b.dmg(62, TARGET, b.jitter(0.6), 3.0, 0.6, 1);   // all land as time resumes at t=62
+            b.dmg(114, TARGET, b.jitter(0.6), 3.0, 0.6, 1);   // all of them arrive at once as time resumes
         }
-        b.impact(62, TARGET, 4, 1.4);
-        b.ring(62, GROUND, Z, 14, 70, 1.1);
+        b.impact(114, TARGET, 4, 1.4);
+        b.ring(114, GROUND, Z, 14, 70, 1.1);
     }
 
     /** Time Stop: Knife Rain - time halts and the air fills with suspended crystal knives; when it resumes, every one

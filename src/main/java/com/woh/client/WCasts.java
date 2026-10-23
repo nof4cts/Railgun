@@ -40,7 +40,7 @@ public final class WCasts {
 
     static final String[] SOUNDS = {"charge", "black_flash", "black_flash_big", "dash", "blood_form", "blood_fire", "blood_hit",
             "blood_rain", "dismantle", "cleave", "world_splitter", "crater", "eruption", "domain", "domain_hum", "overdrive",
-            "wave", "world_ender", "rumble", "impact", "meteor", "card"};
+            "wave", "world_ender", "rumble", "impact", "meteor", "card", "time_stop_voice"};
     private static final Map<String, SoundEvent> SOUND_CACHE = new HashMap<>();
 
     static final List<Live> LIVE = new ArrayList<>();

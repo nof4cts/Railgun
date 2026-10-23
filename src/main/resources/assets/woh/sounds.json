@@ -196,5 +196,14 @@
         "stream": false
       }
     ]
+  },
+  "time_stop_voice": {
+    "subtitle": "subtitles.woh.time_stop_voice",
+    "sounds": [
+      {
+        "name": "woh:time_stop_voice",
+        "stream": false
+      }
+    ]
   }
 }

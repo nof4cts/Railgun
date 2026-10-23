@@ -323,8 +323,8 @@ a.write()
 
 # subtitles
 names = ["charge", "black_flash", "black_flash_big", "dash", "blood_form", "blood_fire", "blood_hit", "blood_rain", "dismantle", "cleave",
-         "world_splitter", "crater", "eruption", "domain", "domain_hum", "overdrive", "wave", "world_ender", "rumble", "impact", "meteor", "card"]
-pretty = {"black_flash": "Reality overwrite", "world_ender": "The world is overwritten", "wave": "Reality cracks", "rumble": "Time halts", "card": "The World Over Heaven"}
+         "world_splitter", "crater", "eruption", "domain", "domain_hum", "overdrive", "wave", "world_ender", "rumble", "impact", "meteor", "card", "time_stop_voice"]
+pretty = {"black_flash": "Reality overwrite", "world_ender": "The world is overwritten", "wave": "Reality cracks", "rumble": "Time halts", "card": "The World Over Heaven", "time_stop_voice": "The world stops"}
 lang = {"subtitles.woh." + n: pretty.get(n, n.replace("_", " ").capitalize()) for n in names}
 os.makedirs(os.path.join(ROOT, "lang"), exist_ok=True)
 with open(os.path.join(ROOT, "lang", "en_us.json"), "w") as f:

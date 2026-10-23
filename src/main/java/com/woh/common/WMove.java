@@ -24,7 +24,7 @@ public enum WMove {
     REALITY_KNIVES(10, false, "Reality-Warping Knives", 50, 80, 48, false, 1),
     ROAD_TO_HEAVEN(11, false, "Road to Heaven", 70, 130, 72, true, 1),
     // ---- page 4: the world (time)
-    TIME_STOP(12, false, "Time Stop", 200, 420, 120, true, 1),
+    TIME_STOP(12, false, "Time Stop", 200, 420, 150, true, 1),
     KNIFE_RAIN(13, false, "Time Stop: Knife Rain", 260, 520, 150, true, 2),
     STILLNESS(14, false, "Stillness", 60, 160, 56, false, 0),
     // ---- page 5: over heaven (ultimates)

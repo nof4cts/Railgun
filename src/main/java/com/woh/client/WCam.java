@@ -255,14 +255,15 @@ public final class WCam {
                 // B. the call: a hard cut to a tight profile, the camera still breathing
                 shot(7, 15, 0, t -> look(caster(1.55f).add(rot(F, 104).scale(1.45)).add(0, 0.05, 0).add(handheld(t, 0.15)),
                         caster(1.5f), 0, 50));
-                // C. TIME STOPS. The camera stops with it: a fixed frame, absolutely still, for two seconds.
-                shot(15, 44, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0), eyeline, 0, 56));
+                // C. TIME STOPS. The camera stops with it: a fixed frame, absolutely still, held for the
+                //    whole of the call - nothing in it moves but him.
+                shot(15, 96, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0), eyeline, 0, 56));
                 // D. still locked off. He walks through a world that cannot move; the lens only turns to keep him.
-                shot(44, 62, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0),
-                        eyeline.lerp(caster(1.3f), ease(span(t, 44, 62))), 0, 56));
+                shot(96, 114, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0),
+                        eyeline.lerp(caster(1.3f), ease(span(t, 96, 114))), 0, 56));
                 // E. time resumes: the camera comes back to life, recoiling as every held blow lands at once
-                shot(62, end, 0, t -> {
-                    float u = ease(span(t, 62, end));
+                shot(114, end, 0, t -> {
+                    float u = ease(span(t, 114, end));
                     Vec3 from = caster(1.45f).add(rot(F, 148 + u * 130).scale(5.4 - u * 2.4)).add(0, 2.1 - u * 0.8, 0);
                     return look(from.add(handheld(t, 0.55 * (1 - u))), target(), 0, 56 + u * 20);
                 });
