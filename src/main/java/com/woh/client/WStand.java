@@ -127,11 +127,15 @@ public final class WStand {
         facet(vc, m, waistL.subtract(dd), waistR.subtract(dd), shR.subtract(dd), shL.subtract(dd), CRYSTAL_DIM, a * 0.8f, Vec3.ZERO);  // back
         facet(vc, m, waistL.subtract(dd), waistL.add(dd), shL.add(dd), shL.subtract(dd), CRYSTAL_DIM, a * 0.7f, Vec3.ZERO);           // left
         facet(vc, m, waistR.add(dd), waistR.subtract(dd), shR.subtract(dd), shR.add(dd), CRYSTAL_DIM, a * 0.7f, Vec3.ZERO);           // right
-        // the gold filigree running down the chest and the spine
-        edge(vc, m, neck.add(f.scale(0.15 * scale)), o.add(f.scale(0.15 * scale)), GOLD, ga, 0.05 * scale, r);
-        edge(vc, m, neck.add(f.scale(-0.15 * scale)), o.add(f.scale(-0.15 * scale)), GOLD, ga * 0.85f, 0.05 * scale, r);
-        // collar between the shoulders
-        edge(vc, m, shL, shR, GOLD, ga, 0.05 * scale, u);
+        // gold filigree: twin veins down the chest and the spine, and a V at the collar (never a centred cross)
+        Vec3 vL = r.scale(-0.13 * scale), vR = r.scale(0.13 * scale);
+        edge(vc, m, neck.add(dd).add(vL), o.add(dd).add(vL), GOLD, ga, 0.035 * scale, r);
+        edge(vc, m, neck.add(dd).add(vR), o.add(dd).add(vR), GOLD, ga, 0.035 * scale, r);
+        edge(vc, m, neck.subtract(dd).add(vL), o.subtract(dd).add(vL), GOLD, ga * 0.8f, 0.035 * scale, r);
+        edge(vc, m, neck.subtract(dd).add(vR), o.subtract(dd).add(vR), GOLD, ga * 0.8f, 0.035 * scale, r);
+        // a V of filigree sweeping from the throat out to each shoulder
+        edge(vc, m, neck, shL, GOLD, ga, 0.04 * scale, u);
+        edge(vc, m, neck, shR, GOLD, ga, 0.04 * scale, u);
 
         // ---- shoulders and arms: tapered facets angled outward and down
         Vec3 elbowL = shL.add(r.scale(-0.34 * scale)).add(u.scale(-0.46 * scale)).add(f.scale(0.1 * scale));

@@ -226,7 +226,7 @@ public final class WPost {
             p.set("DomC", 0, 0, 0, 0);
             p.set("DomP", 0, 0, 0, 0);
         }
-        p.set("Dark", fx.dark, 0.85f, 0.62f, 0.66f);
+        p.set("Dark", fx.dark, 1.0f, 0.86f, 0.55f);   // the quiet before a move tints gold, not red
         p.set("Overdrive", fx.overdrive);
         tri();
 
@@ -277,7 +277,7 @@ public final class WPost {
         float[] fc = WFx.flashColor();
         c.set("Flash", fc[0], fc[1], fc[2], WFx.flashAmount());
         c.set("Afterimage", WFx.afterimageAmount());
-        c.set("Desaturate", Math.min(0.6f, fx.dark * 0.5f));
+        c.set("Desaturate", Math.min(0.9f, fx.dark * 1.8f));   // time-stop reads as a near-monochrome world
         c.set("Vignette", 0.25f + 0.35f * fx.dark + 0.2f * fx.domStrength + 0.15f * fx.overdrive);
         c.set("Grain", 0.18f);
         float shock = WFx.shockStrength();

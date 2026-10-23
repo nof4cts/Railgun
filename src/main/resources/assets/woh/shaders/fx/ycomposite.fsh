@@ -168,7 +168,7 @@ void main() {
         col = mix(col, col * 0.55 + burned * 0.25, Afterimage * 0.6);
     }
     float l = luminance(col);
-    col = mix(col, vec3(l) * vec3(1.02, 0.98, 0.95), Desaturate);
+    col = mix(col, vec3(l) * vec3(1.1, 0.98, 0.72), Desaturate);   // desaturate toward gold, not grey
     vec2 vq = (uv - 0.5) * vec2(aspect, 1.0);
     col *= 1.0 - Vignette * smoothstep(0.35, 1.1, length(vq));
     if (Grain > 0.0) {
