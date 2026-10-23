@@ -326,14 +326,20 @@ public final class WCam {
                 final Vec3 mark = l.c.origin();
                 final Vec3 eyeline = mark.add(0, 1.3, 0);
                 // A. time still running: a quick breathing push-in onto the rising hand
-                shot(0, 7, 0, t -> look(caster(1.25f).add(rot(F, 58).scale(2.7 - 0.6 * span(t, 0, 7))).add(0, 0.15, 0).add(handheld(t, 0.24)),
+                shot(0, 7, 0, t -> look(caster(1.25f).add(rot(F, -58).scale(3.4 - 0.6 * span(t, 0, 7))).add(0, 0.15, 0).add(handheld(t, 0.24)),
                         live.at(Beat.HAND, Vec3.ZERO), 0, 64));
                 // B. the call: a hard cut to a tight profile, the camera still breathing
-                shot(7, 15, 0, t -> look(caster(1.55f).add(rot(F, 104).scale(1.45)).add(0, 0.05, 0).add(handheld(t, 0.15)),
+                shot(7, 15, 0, t -> look(caster(1.55f).add(rot(F, -104).scale(1.9)).add(0, 0.05, 0).add(handheld(t, 0.15)),
                         caster(1.5f), 0, 50));
                 // C. TIME STOPS. The camera stops with it: a fixed frame, absolutely still, held for the
                 //    whole of the call - nothing in it moves but him.
-                shot(15, 96, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0), eyeline, 0, 56));
+                shot(15, 29, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0), eyeline, 0, 56));
+                // C2. still locked, but now on the frozen one: the Stand stands over them throwing every blow
+                //     into a body that cannot fall yet. The frame does not move between blows.
+                shot(29, 96, 0, t -> {
+                    Vec3 mid = standAt().lerp(target(), 0.45).add(0, 0.25, 0);
+                    return look(mid.add(perp().scale(3.9)).add(flat().scale(-0.9)).add(0, 0.55, 0), mid, 0, 54);
+                });
                 // D. still locked off. He walks through a world that cannot move; the lens only turns to keep him.
                 shot(96, 114, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0),
                         eyeline.lerp(caster(1.3f), ease(span(t, 96, 114))), 0, 56));
