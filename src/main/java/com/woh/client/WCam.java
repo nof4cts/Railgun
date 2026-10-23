@@ -243,13 +243,28 @@ public final class WCam {
         int end = l.move.end;
         switch (l.move) {
             case TIME_STOP -> {
-                shot(0, 48, 0, t -> look(caster(1.5f).add(rot(F, 30 + t * 0.9).scale(3.2 + t * 0.02)).add(0, -0.2, 0), caster(1.5f), 0, 60));
-                shot(48, 62, 0, t -> look(caster(1.55f).add(F.scale(1.5 - span(t, 48, 62) * 0.3)), caster(1.55f), 0, 55));
+                // The camera itself is the storytelling: while time runs it is alive, handheld, pushing in.
+                // The instant he halts the world, the camera stops dead - locked off, no drift, no breath -
+                // and holds there while he is the only thing in the frame still moving. When time resumes it
+                // snaps back to life. The mark is where he stood when he called it, so the lock never follows him.
+                final Vec3 mark = l.c.origin();
+                final Vec3 eyeline = mark.add(0, 1.3, 0);
+                // A. time still running: a quick breathing push-in onto the rising hand
+                shot(0, 7, 0, t -> look(caster(1.25f).add(rot(F, 58).scale(2.7 - 0.6 * span(t, 0, 7))).add(0, 0.15, 0).add(handheld(t, 0.24)),
+                        live.at(Beat.HAND, Vec3.ZERO), 0, 64));
+                // B. the call: a hard cut to a tight profile, the camera still breathing
+                shot(7, 15, 0, t -> look(caster(1.55f).add(rot(F, 104).scale(1.45)).add(0, 0.05, 0).add(handheld(t, 0.15)),
+                        caster(1.5f), 0, 50));
+                // C. TIME STOPS. The camera stops with it: a fixed frame, absolutely still, for two seconds.
+                shot(15, 44, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0), eyeline, 0, 56));
+                // D. still locked off. He walks through a world that cannot move; the lens only turns to keep him.
+                shot(44, 62, 0, t -> look(mark.add(rot(F, 148).scale(5.4)).add(0, 2.1, 0),
+                        eyeline.lerp(caster(1.3f), ease(span(t, 44, 62))), 0, 56));
+                // E. time resumes: the camera comes back to life, recoiling as every held blow lands at once
                 shot(62, end, 0, t -> {
                     float u = ease(span(t, 62, end));
-                    double r = l.c.domainRadius();
-                    Vec3 from = caster(1.4f).add(rot(F, 160 + u * 50).scale(4 + u * r * 1.1)).add(0, 1 + u * r * 0.55, 0);
-                    return look(from.add(handheld(t, 0.2)), caster(1.2f + u * 4), 0, 70 + u * 8);
+                    Vec3 from = caster(1.45f).add(rot(F, 148 + u * 130).scale(5.4 - u * 2.4)).add(0, 2.1 - u * 0.8, 0);
+                    return look(from.add(handheld(t, 0.55 * (1 - u))), target(), 0, 56 + u * 20);
                 });
             }
             case HEAVEN_ASCENSION -> {

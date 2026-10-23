@@ -375,7 +375,7 @@ public final class Script {
      *  lands inside the stop are held, and all land at once when time resumes. */
     private static void timeStop(B b) {
         b.sound(0, CASTER, S_TRUTH, 4.0, 0.8);
-        b.dark(0, 0.2, 70);
+        b.dark(0, 0.45, 70);
         b.stop(2, 60, 40);
         // he walks in and lands a handful of marked blows that detonate on resume
         for (int i = 0; i < 4; i++) {
@@ -391,7 +391,7 @@ public final class Script {
      *  strikes in the same instant. */
     private static void knifeRain(B b) {
         b.sound(0, CASTER, S_TRUTH, 4.5, 0.75);
-        b.dark(0, 0.25, 90);
+        b.dark(0, 0.45, 90);
         b.stop(2, 70, 44);
         for (int i = 0; i < 24; i++) {
             Vec3 off = b.around(10).add(0, 4 + b.r.nextDouble() * 6, 0);
@@ -410,7 +410,7 @@ public final class Script {
     /** Stillness: a short, defensive halt - he stops time just long enough to step out of harm. */
     private static void stillness(B b) {
         b.sound(0, CASTER, S_RUMBLE, 3.0, 0.9);
-        b.dark(0, 0.15, 22);
+        b.dark(0, 0.35, 22);
         b.stop(1, 18, 24);
         b.negate(1, 20);
     }
