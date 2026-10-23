@@ -335,32 +335,30 @@ public final class WStand {
         ALPHA = 1f;
 
         // ---- the torso: a heroic V, carved like a temple statue
-        ell(0, 0.07, 0, 0.17, 0.11, 0.115, MARBLE);                 // pelvis
-        ell(0, 0.3, 0.005, 0.135, 0.17, 0.1, MARBLE);               // abdomen
+        ell(0, 0.07, 0, 0.158, 0.105, 0.108, MARBLE);               // pelvis
+        ell(0, 0.3, 0.005, 0.125, 0.17, 0.095, MARBLE);             // abdomen
         for (int k = 0; k < 3; k++) {                               // the abdominal wall
             double y = 0.2 + 0.08 * k;
             for (int sx = -1; sx <= 1; sx += 2) {
                 double x = 0.045 * sx;
-                ell(x, y, frontZ(x, y) - 0.024, 0.042, 0.034, 0.034, MARBLE);
+                ell(x, y, frontZ(x, y) - 0.012, 0.04, 0.032, 0.02, MARBLE);
             }
         }
-        for (int sx = -1; sx <= 1; sx += 2) ell(0.12 * sx, 0.27, 0, 0.05, 0.12, 0.08, MARBLE);   // obliques
-        ell(0, 0.6, -0.005, 0.23, 0.2, 0.135, MARBLE);              // ribcage
-        ell(0, 0.56, -0.03, 0.27, 0.15, 0.11, MARBLE);              // the lats, flaring
+        for (int sx = -1; sx <= 1; sx += 2) ell(0.11 * sx, 0.27, -0.01, 0.04, 0.12, 0.075, MARBLE);   // obliques
+        ell(0, 0.6, 0, 0.21, 0.19, 0.12, MARBLE);                   // ribcage
+        ell(0, 0.56, -0.02, 0.24, 0.13, 0.08, MARBLE);              // the lats
         for (int sx = -1; sx <= 1; sx += 2) {
-            ell(0.1 * sx, 0.65, 0.075, 0.11, 0.075, 0.07, MARBLE);  // pectorals
-            tube(mw(0.07 * sx, 0.84, -0.02), mw(0.3 * sx, 0.76, -0.01), 0.06 * S, 0.05 * S, MARBLE);   // trapezius
-            ell(0.36 * sx, 0.72, 0, 0.105, 0.11, 0.1, MARBLE);      // deltoids
+            ell(0.095 * sx, 0.66, 0.085, 0.1, 0.065, 0.045, MARBLE);  // pectorals
+            tube(mw(0.07 * sx, 0.84, -0.02), mw(0.3 * sx, 0.76, -0.01), 0.05 * S, 0.04 * S, MARBLE);   // trapezius
+            ell(0.34 * sx, 0.73, 0, 0.09, 0.095, 0.09, MARBLE);      // deltoids
         }
 
         // ---- the drape: a marble sash from the left shoulder to the right hip, front and back
         double[][] sash = {{-0.27, 0.8}, {-0.15, 0.66}, {-0.03, 0.52}, {0.07, 0.38}, {0.14, 0.25}, {0.18, 0.13}};
         for (int i = 0; i + 1 < sash.length; i++) {
             double[] a = sash[i], b = sash[i + 1];
-            tube(mw(a[0], a[1], frontZ(a[0], a[1]) + 0.012), mw(b[0], b[1], frontZ(b[0], b[1]) + 0.012), 0.032 * S, 0.032 * S, MARBLE);
-            ell(b[0], b[1], frontZ(b[0], b[1]) + 0.012, 0.032, 0.032, 0.032, MARBLE);
-            tube(mw(a[0], a[1], backZ(a[0], a[1]) - 0.012), mw(b[0], b[1], backZ(b[0], b[1]) - 0.012), 0.032 * S, 0.032 * S, MARBLE);
-            ell(b[0], b[1], backZ(b[0], b[1]) - 0.012, 0.032, 0.032, 0.032, MARBLE);
+            band(mw(a[0], a[1], frontZ(a[0], a[1]) + 0.01), mw(b[0], b[1], frontZ(b[0], b[1]) + 0.01), BAS[2]);
+            band(mw(a[0], a[1], backZ(a[0], a[1]) - 0.01), mw(b[0], b[1], backZ(b[0], b[1]) - 0.01), BAS[2].scale(-1));
         }
 
         // ---- the belt: a gold band, a gold clasp with a burning gem; cloth panels hanging fore and aft
@@ -402,10 +400,20 @@ public final class WStand {
         leg(HIP_R, -sway);
     }
 
+    /** A flat strip of cloth from a to b lying on a surface facing `out` (overlapping lozenges, so it reads as one band). */
+    private static void band(Vec3 a, Vec3 b, Vec3 out) {
+        Vec3 d = b.subtract(a);
+        double len = d.length();
+        if (len < 1e-6) return;
+        Vec3 ay = d.scale(1 / len);
+        Vec3 ax = ay.cross(out).normalize(), az = ax.cross(ay);
+        ellW(a.lerp(b, 0.5), ax, ay, az, 0.042 * S, len * 0.62, 0.012 * S, MARBLE, 12, 6);
+    }
+
     /** Front (or back) surface of the torso at (x, y): the outermost of the carved forms there. */
     private static final double[][] TORSO = {
-            {0, 0.07, 0, 0.17, 0.11, 0.115}, {0, 0.3, 0.005, 0.135, 0.17, 0.1}, {0, 0.6, -0.005, 0.23, 0.2, 0.135},
-            {0.1, 0.65, 0.075, 0.11, 0.075, 0.07}, {-0.1, 0.65, 0.075, 0.11, 0.075, 0.07}, {0, 0.56, -0.03, 0.27, 0.15, 0.11}};
+            {0, 0.07, 0, 0.158, 0.105, 0.108}, {0, 0.3, 0.005, 0.125, 0.17, 0.095}, {0, 0.6, 0, 0.21, 0.19, 0.12},
+            {0.095, 0.66, 0.085, 0.1, 0.065, 0.045}, {-0.095, 0.66, 0.085, 0.1, 0.065, 0.045}, {0, 0.56, -0.02, 0.24, 0.13, 0.08}};
 
     private static double frontZ(double x, double y) {
         double z = 0.05;
