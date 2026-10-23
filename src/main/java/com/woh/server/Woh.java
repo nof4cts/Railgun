@@ -76,15 +76,11 @@ public final class Woh {
     private static final Map<UUID, Long> SAFE_UNTIL = new HashMap<>();
     private static Run CURRENT;
     /** As God As My Witness: until when nothing can kill him. */
-    private static final Map<UUID, Long> GOD = new HashMap<>();
     /** The extra max health from Reverse Cursed Technique x100 (one fixed id, so it never stacks). */
     static final UUID RCT_HP = UUID.fromString("6f3c7a1e-2b54-4d8e-9c1f-7a0d5e3b9c21");
     /** "Until" for permanent Overdrive (far in the future, still safe to add to). */
     static final long FOREVER = Long.MAX_VALUE / 4;
     static final String OD_TAG = "woh_overdrive";
-    static final String GOD_TAG = "woh_asgod";
-    /** While god holds: each attacker on him, and the recent ticks they struck (three within 30 s brings Judgement). */
-    private static final Map<UUID, Map<UUID, java.util.ArrayDeque<Long>>> GOD_HITS = new HashMap<>();
     // ---- The World Over Heaven state
     private static final Map<UUID, long[]> STOPS = new HashMap<>();        // Time Stop: {untilTick, radius}
     private static final Map<UUID, Long> RETURN_READY = new HashMap<>();   // Return Over Heaven armed until this tick
@@ -105,10 +101,6 @@ public final class Woh {
         long dashStart;
         Vec3 dashFrom;
         // The End: who is held, until when; the descent
-        int grabbed = -1;
-        long grabUntil, sinkStart;
-        int sinkDur;
-        double sinkFrom, sinkTo;
         final List<Object[]> bolts = new ArrayList<>();   // {impactTick(Long), Beat}
         final Map<Integer, Double> dealt = new HashMap<>();
 
@@ -164,40 +156,6 @@ public final class Woh {
         // infinite cursed energy: nothing is ever spent
         cast(p, m);
         return true;
-    }
-
-    /** The End, every tick: the chokehold keeps them pinned in front of him, and the two of them sink. */
-    private static void theEndTick(Run r, ServerLevel level, long now) {
-        ServerPlayer p = r.p;
-        if (r.sinkDur > 0) {
-            double u = Math.min(1.0, (now - r.sinkStart) / (double) r.sinkDur);
-            double e = u * u * (3 - 2 * u);
-            double y = r.sinkFrom + (r.sinkTo - r.sinkFrom) * e;
-            p.teleportTo(level, p.getX(), y, p.getZ(), p.getYRot(), p.getXRot());
-            p.setDeltaMovement(Vec3.ZERO);
-            p.fallDistance = 0;
-        }
-        if (r.grabbed >= 0 && now <= r.grabUntil) {
-            Entity t = level.getEntity(r.grabbed);
-            if (t == null || !t.isAlive()) {
-                r.grabbed = -1;
-                return;
-            }
-            Vec3 f = r.c.f();
-            Vec3 at = p.position().add(f.scale(0.75));
-            if (t instanceof ServerPlayer tp) {
-                tp.teleportTo(level, at.x, at.y, at.z, p.getYRot(), tp.getXRot());
-            } else {
-                t.teleportTo(at.x, at.y, at.z);
-            }
-            t.setDeltaMovement(Vec3.ZERO);
-            t.hurtMarked = true;
-            t.fallDistance = 0;
-            if (t instanceof LivingEntity le) {
-                le.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 10, false, false, false));
-                le.addEffect(new MobEffectInstance(MobEffects.JUMP, 10, 250, false, false, false));
-            }
-        }
     }
 
     private static void tell(ServerPlayer p, String s) {
@@ -429,11 +387,6 @@ public final class Woh {
                     continue;
                 }
                 if (Energy.get(p) < Energy.MAX) Energy.set(p, Energy.MAX);
-                Long gu = GOD.get(p.getUUID());
-                if (gu != null && gu <= p.serverLevel().getGameTime()) {
-                    GOD.remove(p.getUUID());
-                    WNet.near(p.serverLevel(), p.position(), 256, new WNet.God(p.getId(), 0));
-                }
                 if (server.getTickCount() % 40 == 0) state(p);
             }
         }
@@ -459,7 +412,6 @@ public final class Woh {
                 W.LOG.error("[woh] beat {} of {} failed (skipped)", b.kind(), r.m, e);
             }
         }
-        theEndTick(r, level, now);
         // dash
         if (r.dash != null) {
             Beat b = r.dash;
@@ -528,31 +480,6 @@ public final class Woh {
                 Vec3 f = new Vec3(dir.x, 0, dir.z);
                 if (f.lengthSqr() > 1e-6) damageLine(r, p0, f.normalize(), b.x(), b.y() * 0.5 + 1.5, 6, 0.5);
             }
-            case Beat.SLASH -> {
-                Vec3 p1 = Anchors.at(level, r.c, p.getId(), b.a1(), b.o1());
-                Vec3 d = p1.subtract(p0);
-                if (d.lengthSqr() < 1e-6) d = r.c.dir();
-                d = d.normalize();
-                Vec3 side = Anchors.side(d, b.z());
-                Vec3 n = d.cross(side).normalize();
-                double len = b.x(), w = b.y();
-                Set<Integer> hit = new HashSet<>();
-                for (LivingEntity e : around(p, p0.add(d.scale(len * 0.5)), len * 0.5 + w)) {
-                    Vec3 q = Anchors.centre(e).subtract(p0);
-                    double a = q.dot(d), s = q.dot(side), nn = q.dot(n);
-                    if (a < 0 || a > len || Math.abs(s) > w * 0.5 || Math.abs(nn) > 1.2 + e.getBbWidth()) continue;
-                    if (hit.add(e.getId())) hurt(p, e, tierDamage(b.i()), false, Set.of());
-                }
-                Destroy.slab(level, p, r.journal, p0, d, side, len, w * 0.8);
-            }
-            case Beat.CLEAVE -> {
-                LivingEntity e = nearest(p, p0, Math.max(3.0, b.x() + 1.5));
-                if (e != null) {
-                    // adaptive: the tougher the target, the deeper the cut
-                    double dmg = tierDamage(r.m.tier) * b.y() + e.getMaxHealth() * 0.5 * b.y() + e.getArmorValue() * 40;
-                    hurt(p, e, dmg, true, Set.of());
-                }
-            }
             case Beat.BOLT -> r.bolts.add(new Object[]{now + Math.max(1, b.dur()), b});
             case Beat.KNOCK -> {
                 for (LivingEntity e : around(p, p0, b.y())) {
@@ -583,56 +510,12 @@ public final class Woh {
                 if (d != null) WNet.near(level, d.centre, 512, new WNet.Domain(p.getId(), d.centre, d.radius, 0, new int[0]));
                 state(p);
             }
-            case Beat.WALL -> {
-                if (canBreakWall(p)) ServerShutdown.begin(p.getServer(), p.getGameProfile().getName(), (int) b.x());
-            }
-            case Beat.GOD -> {
-                GOD.put(p.getUUID(), FOREVER);
-                p.getPersistentData().putBoolean(GOD_TAG, true);
-                p.setHealth(Math.max(p.getHealth(), 1f));
-                WNet.near(level, p.position(), 256, new WNet.God(p.getId(), FOREVER));
-                state(p);
-            }
-            case Beat.GRAB -> {
-                Entity t = Anchors.entity(level, r.c.targetId());
-                if (t instanceof LivingEntity && t.isAlive()) {
-                    r.grabbed = t.getId();
-                    r.grabUntil = now + Math.max(1, b.dur());
-                }
-            }
-            case Beat.SINK -> {
-                r.sinkStart = now;
-                r.sinkDur = Math.max(1, b.dur());
-                r.sinkFrom = p.getY();
-                r.sinkTo = level.getMinBuildHeight() - b.x();
-            }
-            case Beat.KILL -> {
-                Entity t = r.grabbed >= 0 ? level.getEntity(r.grabbed) : Anchors.entity(level, r.c.targetId());
-                if (t instanceof LivingEntity le && le.isAlive() && !(le instanceof ServerPlayer sp && god(sp))) {
-                    // the void takes them: it ignores creative mode, armour, totems and invulnerability
-                    le.invulnerableTime = 0;
-                    le.hurt(level.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
-                    if (le.isAlive()) le.kill();
-                    if (le.isAlive()) le.setHealth(0);
-                    W.LOG.info("[woh] The End: {} dead={}", le.getName().getString(), !le.isAlive());
-                }
-                r.grabbed = -1;
-            }
-            case Beat.RETURN -> {
-                r.sinkDur = 0;
-                Vec3 home = r.c.origin();
-                p.teleportTo(level, home.x, home.y, home.z, p.getYRot(), p.getXRot());
-                p.setDeltaMovement(Vec3.ZERO);
-                p.fallDistance = 0;
-                SAFE_UNTIL.put(p.getUUID(), now + 100);
-            }
-            case Beat.GLYPH -> Destroy.glyph(level, p, r.journal, p0, r.c.f(), r.c.r(), b.x());
             case Beat.HEAL -> {
                 AttributeInstance hp = p.getAttribute(Attributes.MAX_HEALTH);
                 if (hp != null) {
                     hp.removeModifier(RCT_HP);
                     double extra = Math.max(0, b.x() - hp.getBaseValue());
-                    if (extra > 0) hp.addPermanentModifier(new AttributeModifier(RCT_HP, "Reverse Cursed Technique x100", extra, AttributeModifier.Operation.ADDITION));
+                    if (extra > 0) hp.addPermanentModifier(new AttributeModifier(RCT_HP, "Wounds Undone", extra, AttributeModifier.Operation.ADDITION));
                 }
                 p.setHealth(p.getMaxHealth());
                 p.removeEffect(MobEffects.POISON);
@@ -790,7 +673,6 @@ public final class Woh {
 
     static void hurt(ServerPlayer p, LivingEntity e, double amount, boolean main, Set<Integer> skip) {
         if (amount <= 0 || e == p || !e.isAlive() || skip.contains(e.getId())) return;
-        if (e instanceof Player && god(p)) return;   // As God As My Witness: he harms no other player
         if (e instanceof Player pl && (pl.isCreative() || pl.isSpectator())) return;
         double dmg = amount, boost = 1.0;
         if (overdrive(p)) boost *= 1.6;
@@ -820,38 +702,6 @@ public final class Woh {
             Run r = RUNS.get(p.getUUID());
             if (r != null && r.m.cutscene && !e.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) e.setCanceled(true);
         }
-    }
-
-    // ------------------------------------------------------------------ As God As My Witness
-    /** End As God As My Witness: he can act again. */
-    /** An operator, or the host of a single-player / LAN world (who may not hold op level 4). */
-    /** A warning across the striker's screen. */
-    private static void warn(ServerPlayer target, String text, int color, boolean bold) {
-        var comp = net.minecraft.network.chat.Component.literal(text)
-                .withStyle(st -> {
-                    st = st.withColor(net.minecraft.network.chat.TextColor.fromRgb(color));
-                    return bold ? st.withBold(true) : st;
-                });
-        target.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket(4, 26, 8));
-        target.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket(comp));
-    }
-
-    public static boolean canBreakWall(ServerPlayer p) {
-        var s = p.getServer();
-        return p.hasPermissions(4) || (s != null && s.isSingleplayerOwner(p.getGameProfile()));
-    }
-
-    public static void endGod(ServerPlayer p) {
-        GOD_HITS.remove(p.getUUID());
-        if (GOD.remove(p.getUUID()) == null) return;
-        p.getPersistentData().remove(GOD_TAG);
-        WNet.near(p.serverLevel(), p.position(), 256, new WNet.God(p.getId(), 0));
-        state(p);
-    }
-
-    public static boolean god(ServerPlayer p) {
-        Long u = GOD.get(p.getUUID());
-        return u != null && u > p.serverLevel().getGameTime();
     }
 
     /** Is this player a Modulo Yuji currently holding As God As My Witness? (Reality Overwrite overwrites it anyway.) */
@@ -900,84 +750,6 @@ public final class Woh {
         tell(p, "Negation");
     }
 
-    /** While As God As My Witness holds, he harms no one - his own punches and sword swings do nothing either. */
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public static void onGodOutgoing(LivingAttackEvent e) {
-        if (e.getSource().getEntity() instanceof ServerPlayer atk && god(atk)) e.setCanceled(true);
-    }
-
-    /** Every attack on him, whatever it is (/kill, the void, other mods, bypass-everything damage) simply doesn't happen. */
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public static void onGodAttack(LivingAttackEvent e) {
-        if (!(e.getEntity() instanceof ServerPlayer p) || !god(p)) return;
-        e.setCanceled(true);
-        // whoever struck him: three hits inside 30 seconds and the heavens answer
-        Entity by = e.getSource().getEntity();
-        if (by == null || by == p || !(by instanceof LivingEntity)) return;
-        long now = p.serverLevel().getGameTime();
-        var perAttacker = GOD_HITS.computeIfAbsent(p.getUUID(), u -> new HashMap<>());
-        var ticks = perAttacker.computeIfAbsent(by.getUUID(), u -> new java.util.ArrayDeque<>());
-        while (!ticks.isEmpty() && now - ticks.peekFirst() > 600) ticks.pollFirst();   // keep only the last 30 s
-        ticks.addLast(now);
-        if (by instanceof ServerPlayer atk) {
-            if (ticks.size() == 1) warn(atk, "Are you sure?", 0xAA0000, false);
-            else if (ticks.size() == 2) warn(atk, "No More Chances.", 0xFF2222, true);
-        }
-        if (ticks.size() >= 3) {
-            perAttacker.remove(by.getUUID());
-            Judgement.judgeEntity(by, p);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public static void onGodHurt(LivingHurtEvent e) {
-        if (e.getEntity() instanceof ServerPlayer p && god(p)) {
-            e.setAmount(0);
-            e.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public static void onGodDamage(LivingDamageEvent e) {
-        if (e.getEntity() instanceof ServerPlayer p && god(p)) {
-            e.setAmount(0);
-            e.setCanceled(true);
-        }
-    }
-
-    /** If anything gets him to death anyway (health set straight to zero), death is refused. */
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public static void onGodDeath(LivingDeathEvent e) {
-        if (e.getEntity() instanceof ServerPlayer p && god(p)) {
-            e.setCanceled(true);
-            p.setHealth(Math.max(1f, p.getMaxHealth() * 0.25f));
-            p.deathTime = 0;
-        }
-    }
-
-    /** Before he ticks: undo anything that zeroed his health, and pull him out of the void. */
-    @SubscribeEvent
-    public static void onGodTick(TickEvent.PlayerTickEvent e) {
-        if (e.phase != TickEvent.Phase.START || !(e.player instanceof ServerPlayer p) || !god(p)) return;
-        if (p.getHealth() < 1f || p.isDeadOrDying()) {
-            p.setHealth(Math.max(1f, p.getMaxHealth() * 0.25f));
-            p.deathTime = 0;
-        }
-        if (p.getY() < p.serverLevel().getMinBuildHeight() - 32 && !RUNS.containsKey(p.getUUID())) {
-            var spawn = p.serverLevel().getSharedSpawnPos();
-            int y = p.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, p.getBlockX(), p.getBlockZ());
-            if (y <= p.serverLevel().getMinBuildHeight()) {
-                p.teleportTo(p.serverLevel(), spawn.getX() + 0.5, p.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, spawn.getX(), spawn.getZ()) + 1, spawn.getZ() + 0.5, p.getYRot(), p.getXRot());
-            } else {
-                p.teleportTo(p.serverLevel(), p.getX(), y + 1, p.getZ(), p.getYRot(), p.getXRot());
-            }
-            p.setDeltaMovement(Vec3.ZERO);
-            p.fallDistance = 0;
-        }
-        long now = p.serverLevel().getGameTime();
-        if (now % 40 == 0) WNet.near(p.serverLevel(), p.position(), 256, new WNet.God(p.getId(), GOD.get(p.getUUID())));
-    }
-
     /** In Overdrive no harmful effect can take hold of him (poison, wither, slowness, weakness, blindness...). */
     @SubscribeEvent
     public static void onEffect(MobEffectEvent.Applicable e) {
@@ -1010,7 +782,6 @@ public final class Woh {
 
     /** Self-test: no cooldowns, no move running. */
     public static void testReset(ServerPlayer p) {
-        if (GOD.remove(p.getUUID()) != null) { p.getPersistentData().remove(GOD_TAG); WNet.near(p.serverLevel(), p.position(), 256, new WNet.God(p.getId(), 0)); }
         RUNS.remove(p.getUUID());
         READY.remove(p.getUUID());
         Energy.set(p, Energy.MAX);
@@ -1069,10 +840,6 @@ public final class Woh {
                 OVERDRIVE.put(p.getUUID(), FOREVER);
                 flight(p, true);
                 WNet.near(p.serverLevel(), p.position(), 256, new WNet.Aura(p.getId(), FOREVER));
-            }
-            if (p.getPersistentData().getBoolean(GOD_TAG)) {
-                GOD.put(p.getUUID(), FOREVER);
-                WNet.near(p.serverLevel(), p.position(), 256, new WNet.God(p.getId(), FOREVER));
             }
             state(p);
         }

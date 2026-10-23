@@ -30,7 +30,7 @@ import java.nio.FloatBuffer;
 
 /**
  * Woh's picture: his effects are drawn into the finished frame by one world-space shader (woh.fsh) reading the
- * depth buffer, then bloomed, then composited (ycomposite.fsh) with the impact frames, ink, smears, cracks,
+ * depth buffer, then bloomed, then composited (frames.fsh) with the impact frames, ink, smears, cracks,
  * shockwave and grade. Nothing here uses Minecraft particles.
  */
 public final class WPost {
@@ -57,7 +57,7 @@ public final class WPost {
             world = GlProgram.load(rm, "fullscreen.vsh", "woh.fsh");
             down = GlProgram.load(rm, "fullscreen.vsh", "bloom_down.fsh");
             up = GlProgram.load(rm, "fullscreen.vsh", "bloom_up.fsh");
-            composite = GlProgram.load(rm, "fullscreen.vsh", "ycomposite.fsh");
+            composite = GlProgram.load(rm, "fullscreen.vsh", "frames.fsh");
             failure = null;
             warned = false;
             W.LOG.info("[woh] effect shaders compiled");

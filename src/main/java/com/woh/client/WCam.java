@@ -238,6 +238,82 @@ public final class WCam {
     }
 
     // ------------------------------------------------------------------ shot lists
+    // ------------------------------------------------------------------ his camera language
+    // Still, symmetrical frames; slow cranes toward the sky; hard cuts on the beat. When the Stand is out striking,
+    // the camera frames the Stand and the one it strikes, never him chasing them.
+
+    /** The line from him to his target, flat. */
+    private static Vec3 flat() {
+        Vec3 d = target().subtract(caster(0f));
+        d = new Vec3(d.x, 0, d.z);
+        return d.lengthSqr() < 1.0e-4 ? live.c.f() : d.normalize();
+    }
+
+    private static Vec3 perp() {
+        Vec3 f = flat();
+        return new Vec3(-f.z, 0, f.x);
+    }
+
+    /** Where the Stand stands when it is out striking: in front of the target, on his side of it. */
+    private static Vec3 standAt() {
+        return target().subtract(flat().scale(1.35)).add(0, 0.4, 0);
+    }
+
+    /** Him, dead centre and level, the camera easing in from dist0 to dist1. */
+    private static void icon(int t0, int t1, double dist0, double dist1, float fov) {
+        shot(t0, t1, 0, t -> {
+            Vec3 f = live.c.f();
+            double d = dist0 + (dist1 - dist0) * ease(span(t, t0, t1));
+            return look(caster(1.45f).add(f.scale(d)), caster(1.45f), 0, fov);
+        });
+    }
+
+    /** A level profile two-shot of the Stand and the one it strikes, from one side of the line of action. */
+    private static void twoShot(int t0, int t1, double side, double dist, float fov, double drift) {
+        shot(t0, t1, 0, t -> {
+            Vec3 mid = standAt().lerp(target(), 0.5);
+            double d = dist - drift * span(t, t0, t1);
+            return look(mid.add(perp().scale(side * d)).add(0, 0.2, 0), mid, 0, fov);
+        });
+    }
+
+    /** Over the Stand's shoulder onto the one it strikes. */
+    private static void overStand(int t0, int t1, float fov) {
+        shot(t0, t1, 0, t -> look(standAt().subtract(flat().scale(1.5)).add(perp().scale(0.7)).add(0, 0.9, 0), target(), 0, fov));
+    }
+
+    /** From the ground just past them, looking up past them at the sky. */
+    private static void worm(int t0, int t1, float roll, float fov) {
+        shot(t0, t1, 0, t -> look(target().add(flat().scale(1.8)).add(perp().scale(0.8)).add(0, -0.7, 0), target().add(0, 1.2, 0), roll, fov));
+    }
+
+    /** A slow crane straight up behind him, looking down at him. */
+    private static void crane(int t0, int t1, double h0, double h1, double behind, float fov) {
+        shot(t0, t1, 0, t -> {
+            double h = h0 + (h1 - h0) * ease(span(t, t0, t1));
+            return look(caster(1.0f).subtract(live.c.f().scale(behind)).add(0, h, 0), caster(1.0f), 0, fov);
+        });
+    }
+
+    /** Anything without its own staging: him in a still frame, then the Stand on its target (or heaven's view). */
+    private static void fallback(WCasts.Live l) {
+        int end = l.move.end;
+        int first = end / 2;
+        for (Beat b : l.beats) {
+            if ((b.kind() == Beat.BF || b.kind() == Beat.ERASE) && (b.a0() == Beat.TARGET || b.a0() >= Beat.T0)) {
+                first = Math.min(first, b.t());
+            }
+        }
+        int lead = Math.max(3, first - 6);
+        icon(0, lead, 4.4, 3.6, 50f);
+        if (l.c.targetId() >= 0) {
+            overStand(lead, first + 2, 68f);
+            twoShot(first + 2, end, 1, 4.4, 58f, 0.8);
+        } else {
+            crane(lead, end, 3, 12, 3, 60f);
+        }
+    }
+
     private static void build(WCasts.Live l) {
         Vec3 F = l.c.f(), R = l.c.r();
         int end = l.move.end;
@@ -268,296 +344,108 @@ public final class WCam {
                     return look(from.add(handheld(t, 0.55 * (1 - u))), target(), 0, 56 + u * 20);
                 });
             }
-            case HEAVEN_ASCENSION -> {
-                shot(0, 40, 0, t -> look(caster(1.3f).add(rot(F, 15).scale(5 - span(t, 0, 40) * 2.6)).add(0, -0.5, 0), caster(1.4f), 0, 62));
-                shot(40, end, 0, t -> {
-                    float u = 1 - (float) Math.pow(1 - span(t, 40, 52), 3);
-                    return look(caster(0.4f).add(rot(F, -20).scale(2.4 + u * 6)).add(handheld(t, 0.3)), caster(1.5f), -4, 75);
-                });
-            }
-            case HEAVENLY_LIGHTNING -> {
-                Vec3 base = l.c.origin();
-                shot(0, 28, 0, t -> look(base.add(F.scale(9)).add(R.scale(3)).add(0, 1.5, 0), caster(1f), 0, 70));
-                shot(28, 36, 0, t -> look(base.add(F.scale(4)).add(0, 1.0, 0), caster(1f), 8, 80));
-                shot(36, 46, 0, t -> {
-                    Vec3 g = ground();
-                    return look(g.add(R.scale(26)).add(F.scale(-8)).add(0, 4, 0), caster(0.5f).lerp(g, 0.35), 0, 72);
-                });
-                wide(46, end, 0, 20 * l.c.ds(), 1f);
-            }
-            case ROAD_TO_HEAVEN -> {
-                shot(0, 22, 0, t -> look(caster(1.6f).add(F.scale(-2.6)).add(R.scale(1.1)).add(0, 0.3, 0), caster(1.4f).add(F.scale(20)), 0, 66));
-                shot(22, end, 0, t -> {
-                    float u = ease(span(t, 22, end));
-                    Vec3 from = caster(1f).add(F.scale(-6 - u * 10)).add(R.scale(3)).add(0, 4 + u * 14, 0);
-                    return look(from.add(handheld(t, 0.4)), caster(0f).add(F.scale(40 + u * 60)), 0, 72);
-                });
-            }
-            case WORLDS_TRUTH -> {
-                double W = l.c.worldEnder();
-                shot(0, 40, 0, t -> look(caster(0.3f).add(rot(F, 140 + t * 0.6).scale(12)).add(0, 0.6, 0), caster(1.6f), 0, 58));
-                shot(40, 112, 12, t -> look(caster(1.3f).add(rot(F, 40 + (t - 40) * 1.6).scale(3.2)).add(0, -0.3, 0).add(handheld(t, 0.08)), caster(1.3f), 0, 60));
-                shot(112, 120, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(1.0)), target(), 0, 78));
-                hit(120, 126, l, 3);
-                hit(126, 136, l, 2);
-                shot(136, end, 0, t -> {
-                    float u = ease(span(t, 136, end));
-                    Vec3 g = ground();
-                    Vec3 from = g.add(F.scale(-W * (0.3 + 0.6 * u))).add(R.scale(W * 0.2)).add(0, 12 + W * (0.25 + 0.6 * u), 0);
-                    return look(from.add(handheld(t, 0.6)), g, 0, 70);
-                });
-            }
-            case REALITY_COLLAPSE -> {
-                double r = l.c.domainRadius(), W = l.c.worldEnder() * 0.8;
-                shot(0, 40, 0, t -> look(caster(1.5f).add(rot(F, 20 + t)).scale(1).add(rot(F, 20 + t).scale(2.2)), caster(1.5f), 0, 60));
-                shot(40, 60, 0, t -> {
-                    float u = ease(span(t, 40, 60));
-                    return look(caster(1f).add(rot(F, 170).scale(4 + u * r)).add(0, 2 + u * r * 0.5, 0), caster(1.5f), 0, 72);
-                });
-                shot(60, 110, 10, t -> look(live.at(Beat.DOMAIN, Vec3.ZERO).add(rot(F, 120 + (t - 60) * 0.8).scale(r * 0.9)).add(0, r * 0.5, 0),
-                        live.at(Beat.DOMAIN, Vec3.ZERO), 0, 75));
-                shot(110, 146, 0, t -> look(live.at(Beat.DOMAIN, Vec3.ZERO).add(rot(F, -60 - (t - 110) * 1.2).scale(r * 0.6)).add(0, 6, 0),
-                        live.at(Beat.DOMAIN, new Vec3(0, 2, 0)), 0, 72));
-                shot(146, 152, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(1.0)), target(), 0, 74));
-                hit(152, 160, l, -1);
-                shot(160, 176, 4, t -> look(caster(1.3f).add(rot(F, 60 + (t - 160) * 2).scale(3.0)), caster(1.3f), 0, 62));
-                hit(176, 190, l, 1);
-                shot(190, end, 0, t -> {
-                    float u = ease(span(t, 190, end));
-                    Vec3 g = live.at(Beat.DOMAIN, Vec3.ZERO);
-                    Vec3 from = g.add(F.scale(-W * (0.4 + 0.5 * u))).add(0, 14 + W * (0.3 + 0.5 * u), 0);
-                    return look(from.add(handheld(t, 0.6)), g, 0, 72);
-                });
-            }
-            case ASCENDED_BARRAGE -> {
-                // behind them in a blink; the hold, close; the ground swallowing them, seen from above; black; and him, back
-                shot(0, 6, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(0.9)), target(), 0, 80));
-                shot(6, 22, 0, t -> {
-                    float u = span(t, 6, 22);
-                    return look(caster(1.2f).add(rot(F, 70 + 20 * u).scale(2.2 - 0.4 * u)).add(handheld(t, 0.06)), target().add(0, 0.5, 0), -4, 58);
-                });
-                shot(22, 63, 0, t -> {
-                    Vec3 hole = live.at(Beat.START, Vec3.ZERO);
-                    float u = ease(span(t, 22, 63));
-                    return look(hole.add(F.scale(-3.5)).add(R.scale(1.5)).add(0, 7 + 3 * u, 0).add(handheld(t, 0.1)), hole.add(0, -4 * u, 0), 0, 70);
-                });
-                shot(66, end, 0, t -> {
-                    float u = ease(span(t, 66, end));
-                    return look(live.at(Beat.START, Vec3.ZERO).add(F.scale(3.2 + 1.5 * u)).add(R.scale(-1.0)).add(0, 1.2, 0), caster(1.5f), 0, 62);
-                });
-            }
             case OVERWRITE_BLOW -> {
-                // the energy wells up: low, slow orbit; then coiled, a tight push-in on the fist; the step; the hit from
-                // three angles in a row; the second eruption seen from far above
-                shot(0, 28, 0, t -> look(caster(0.4f).add(rot(F, 150 - t * 1.8).scale(4.5)).add(0, -0.2, 0).add(handheld(t, 0.05)), caster(1.7f), 0, 60));
-                shot(28, 56, 0, t -> {
-                    float u = ease(span(t, 28, 56));
-                    Vec3 fist = live.at(Beat.HAND, Vec3.ZERO);
-                    return look(caster(1.1f).add(rot(F, 75).scale(2.6 - 1.2 * u)).add(handheld(t, 0.05 + 0.1 * u)), fist, 0, 62 - 10 * u);
-                });
-                shot(56, 64, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.1)), target(), 0, 80));
-                hit(66, 72, l, 3);
-                hit(72, 80, l, 2);
-                hit(80, 94, l, 1);
-                orbitImpact(94, 106, 26 * l.c.ds(), 200, 70);
-                shot(106, end, 0, t -> {
-                    float u = ease(span(t, 106, end));
-                    Vec3 g = ground();
-                    return look(g.add(F.scale(-30 - 30 * u)).add(R.scale(18)).add(0, 26 + 30 * u, 0).add(handheld(t, 0.5)), g.add(F.scale(6)), 0, 72);
-                });
+                icon(0, 12, 4.6, 3.3, 50f);                                   // him, dead centre, gathering it
+                shot(12, 22, 0, t -> look(live.at(Beat.HAND, Vec3.ZERO).add(R.scale(0.85)).add(F.scale(0.55)).add(0, 0.1, 0),
+                        live.at(Beat.HAND, Vec3.ZERO), 0, 42));               // the hand, close
+                overStand(22, 27, 70f);                                       // the Stand arriving on them
+                twoShot(27, 34, 1, 4.2, 58f, 0.8);                            // the blow, level, in profile
+                worm(34, 48, -8f, 80f);                                       // from the ground, as they go
+                crane(48, end, 6, 22, 6, 62f);                                // heaven's view of the crater
             }
             case ERASURE_HOOK -> {
-                shot(0, 12, 0, t -> look(caster(1.4f).add(rot(F, 30 + t * 2).scale(2.8)), caster(1.4f), 0, 60));
-                shot(12, 20, 0, t -> look(caster(1.0f).add(F.scale(-3.5)).add(0, 1.4, 0), caster(1.8f).add(F.scale(2)), 0, 82));   // the five orbs around him
-                shot(20, 32, 0, t -> {
-                    float u = span(t, 20, 32);
-                    Vec3 tg = target();
-                    Vec3 orb = caster(1.6f).lerp(tg, u);
-                    return look(orb.add(R.scale(3)).add(0, 1, 0), orb.add(F.scale(2)), 0, 76);     // riding with the orbs
-                });
-                hit(32, 44, l, 2);
-                orbitImpact(44, end, 8, 120, 60);
-            }
-            case FOURTEEN_PHRASES -> {
-                shot(0, 20, 0, t -> look(caster(1.2f).add(rot(F, 20 + t * 1.5).scale(3.0)).add(0, -0.4, 0), caster(1.9f), 0, 64));
-                shot(20, 60, 0, t -> {
-                    float u = ease(span(t, 20, 60));
-                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
-                    return look(p0.add(rot(F, 180 + 40 * u).scale(26)).add(0, 5 + 10 * u, 0).add(handheld(t, 0.3)), p0.add(0, 6, 0), 0, 74);
-                });
-                shot(60, 84, 0, t -> look(live.at(Beat.POINT, new Vec3(0, 1.0, 0)).add(R.scale(6)).add(F.scale(-4)), live.at(Beat.POINT, new Vec3(0, 18, 0)), -6, 84));  // looking up into the rain
-                shot(84, end, 0, t -> {
-                    float u = ease(span(t, 84, end));
-                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
-                    return look(p0.add(rot(F, 250 + 30 * u).scale(30 + 10 * u)).add(0, 22 + 10 * u, 0), p0, 0, 70);
-                });
+                icon(0, 5, 4.0, 3.6, 52f);
+                overStand(5, 11, 66f);
+                twoShot(11, 18, -1, 3.2, 56f, 0.5);
+                worm(18, end, 6f, 76f);
             }
             case REALITY_OVERWRITE -> {
-                shot(0, 20, 0, t -> look(live.at(Beat.HAND, Vec3.ZERO).add(rot(F, 120 + t * 4).scale(1.8)), live.at(Beat.HAND, Vec3.ZERO), 0, 56));  // the blood spinning in his hand
-                shot(20, 27, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(0.9)), target(), 0, 84));
-                hit(28, 38, l, 3);
-                hit(38, 50, l, 4);
-                orbitImpact(50, end, 6, 60, 50);
+                icon(0, 10, 4.4, 3.4, 48f);
+                // the condemned, close and airless
+                shot(10, 17, 0, t -> look(target().subtract(flat().scale(2.2)).add(0, 0.3, 0), target().add(0, 0.4, 0), 0, 44));
+                overStand(17, 20, 72f);                                       // the decree arrives
+                twoShot(20, 32, 1, 5.0, 54f, 1.0);                            // and they are erased
+                crane(32, end, 4, 14, 3, 60f);
             }
-            case REWRITE_RUSH -> {
-                shot(0, 40, 0, t -> look(caster(0.2f).add(rot(F, 200 - t)).scale(1).add(rot(F, 200 - t).scale(3.0)).add(0, -0.6, 0), caster(2.2f).add(0, 3 * span(t, 0, 40), 0), 0, 66));
-                shot(40, 100, 0, t -> {
-                    float u = ease(span(t, 40, 100));
-                    Vec3 sky = live.at(Beat.POINT, new Vec3(0, 40, 0));
-                    return look(caster(0.5f).add(F.scale(-12 - 20 * u)).add(R.scale(10)).add(0, 3 + 8 * u, 0), sky.lerp(live.at(Beat.POINT, Vec3.ZERO), 0.3), 0, 76);
-                });
-                shot(100, 116, 0, t -> {
-                    float u = span(t, 100, 116);
-                    Vec3 sky = live.at(Beat.POINT, new Vec3(0, 40, 0));
-                    Vec3 g = ground();
-                    Vec3 drop = sky.lerp(g, u * u);
-                    return look(g.add(R.scale(34)).add(F.scale(-10)).add(0, 6, 0), drop, 0, 70);   // following it down
-                });
-                hit(116, 126, l, 4);
-                orbitImpact(126, end, 30 * l.c.ds(), 160, 80);
+            case HEAVENLY_LIGHTNING -> {
+                final Vec3 P = l.at(Beat.POINT, Vec3.ZERO);
+                // under him, looking up past his raised hand into the sky
+                shot(0, 12, 0, t -> look(caster(0.2f).add(F.scale(1.4)), caster(4.0f), 0, 70));
+                // from where it will fall, straight up at it coming
+                shot(12, 16, 0, t -> look(P.add(R.scale(1.2)).add(0, 1.0, 0), P.add(0, 30, 0), 0, 72));
+                shot(16, 30, 0, t -> look(P.subtract(F.scale(12)).add(0, 4, 0), P.add(0, 1, 0), 0, 58));
+                shot(30, end, 0, t -> look(P.add(F.scale(0.01)).add(0, 8 + 12 * ease(span(t, 30, end)), 0), P, 0, 60));
+            }
+            case FOURTEEN_PHRASES -> {
+                final Vec3 P = l.at(Beat.POINT, Vec3.ZERO);
+                // a slow walk round the ring as the sigils are set, one by one
+                shot(0, 60, 0, t -> look(P.add(rot(F, 180 + 120 * span(t, 0, 60)).scale(13)).add(0, 5, 0), P, 0, 60));
+                icon(60, 70, 3.6, 3.2, 48f);
+                // from straight above: the ring detonating round on itself
+                shot(70, 112, 0, t -> look(P.add(F.scale(0.01)).add(0, 18, 0), P, 25f * span(t, 70, 112), 64));
+                shot(112, 125, 0, t -> look(P.add(R.scale(2.0)).add(0, -0.4, 0), P.add(0, 6, 0), 10, 80));
+                shot(125, end, 0, t -> look(P.add(F.scale(0.01)).add(0, 10 + 16 * ease(span(t, 125, end)), 0), P, 0, 62));
+            }
+            case ROAD_TO_HEAVEN -> {
+                shot(0, 6, 0, t -> look(target().add(perp().scale(3.5)).add(0, -0.6, 0), target(), 0, 64));
+                // rising with them
+                shot(6, 30, 0, t -> look(target().add(perp().scale(4.2)).add(0, -0.4, 0), target().add(0, 0.3, 0), 0, 62));
+                // far below, looking up at them hanging in the air
+                shot(30, end, 0, t -> look(ground().add(perp().scale(2.2)).add(0, 0.3, 0), target(), 0, 60));
             }
             case KNIFE_RAIN -> {
-                shot(0, 8, 0, t -> look(caster(1.6f).add(F.scale(2.4)).add(R.scale(-0.8)), caster(1.5f), 0, 60));
-                shot(8, 30, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.2)).add(handheld(t, 0.15)), live.at(Beat.POINT, Vec3.ZERO), 0, 78));
-                shot(30, 60, 0, t -> {
-                    float u = ease(span(t, 30, 60));
-                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
-                    return look(p0.add(rot(F, 90 + 120 * u).scale(14)).add(0, 3, 0).add(handheld(t, 0.25)), p0, 0, 74);   // circling the storm of cuts
+                final Vec3 P = l.at(Beat.POINT, Vec3.ZERO);
+                final Vec3 lockFrom = P.subtract(F.scale(10)).add(0, 9, 0), lockAt = P.add(0, 3, 0);
+                icon(0, 8, 4.4, 4.0, 52f);
+                // time is held, and so is the camera: the knives hang in a frame where nothing moves
+                shot(8, 70, 0, t -> look(lockFrom, lockAt, 0, 60));
+                shot(70, 76, 0, t -> look(P.add(R.scale(1.6)).add(0, -0.3, 0), P.add(0, 9, 0), 12, 80));
+                shot(76, end, 0, t -> look(P.add(F.scale(0.01)).add(0, 8 + 12 * ease(span(t, 76, end)), 0), P, 0, 62));
+            }
+            case WORLDS_TRUTH -> {
+                final Vec3 c0 = l.c.origin();
+                icon(0, 10, 5.0, 4.0, 50f);
+                // locked off, low and far: the sky over him cracking like glass
+                shot(10, 46, 0, t -> look(c0.add(F.scale(14)).add(0, 1.0, 0), c0.add(0, 14, 0), 0, 70));
+                // the camera rises behind him as the Stand lifts its arms
+                shot(46, 80, 0, t -> look(caster(1.5f + 5.5f * ease(span(t, 46, 80))).subtract(F.scale(3)), caster(2.0f), 0, 58));
+                icon(80, 86, 1.6, 1.4, 38f);                                  // his face, close, before it lands
+                // heaven's view: the world below being overwritten
+                shot(86, 110, 0, t -> look(c0.add(F.scale(0.01)).add(0, 45, 0), c0, 0, 62));
+                shot(110, end, 0, t -> {
+                    float u = ease(span(t, 110, end));
+                    return look(c0.subtract(F.scale(20 + 30 * u)).add(0, 20 + 20 * u, 0), c0, 0, 62);
                 });
-                shot(60, end, 0, t -> {
-                    float u = ease(span(t, 60, end));
-                    Vec3 p0 = live.at(Beat.POINT, Vec3.ZERO);
-                    return look(p0.add(F.scale(-20 - 14 * u)).add(0, 14 + 12 * u, 0), p0, 0, 70);
-                });
+            }
+            case HEAVEN_ASCENSION -> {
+                shot(0, 14, 0, t -> look(caster(0.15f).add(F.scale(1.2)), caster(4.0f), 0, 70));   // from beneath him, up
+                shot(14, 40, 0, t -> look(caster(2.0f + 4.0f * ease(span(t, 14, 40))).add(F.scale(5.0)), caster(1.6f), 0, 54));
+                icon(40, end, 4.2, 4.0, 50f);
+            }
+            case REALITY_COLLAPSE -> {
+                final Vec3 c0 = l.c.origin();
+                final double Rd = Math.max(8, l.c.domainRadius());
+                icon(0, 6, 2.6, 2.4, 44f);
+                // straight up over him as the lattice spreads
+                shot(6, 40, 0, t -> look(c0.add(F.scale(0.01)).add(0, 2 + 28 * ease(span(t, 6, 40)), 0), c0, 0, 66));
+                // inside it: a slow circuit over the pulsing grid
+                shot(40, 90, 0, t -> look(c0.add(rot(F, 200 + 60 * span(t, 40, 90)).scale(Rd * 0.8)).add(0, 6, 0), caster(1.2f), 0, 62));
+                // low and still, looking up into the lattice sky
+                shot(90, end, 0, t -> look(c0.add(F.scale(8)).add(0, 0.5, 0), c0.add(0, 12, 0), 0, 70));
             }
             case COLLAPSE_FINISHER -> {
-                shot(0, 24, 0, t -> look(caster(1.0f).add(rot(F, 60).scale(2.6 - 0.8 * span(t, 0, 24))).add(handheld(t, 0.06)), live.at(Beat.HAND, Vec3.ZERO), 0, 58));
-                shot(24, 36, 0, t -> look(caster(1.7f).add(F.scale(-2.6)).add(R.scale(1.1)), target(), 0, 82));
-                hit(38, 46, l, 3);
-                hit(46, 56, l, 2);
-                shot(56, end, 0, t -> {
-                    float u = ease(span(t, 56, end));
-                    Vec3 dc = live.at(Beat.DOMAIN, Vec3.ZERO);
-                    double r = l.c.domainRadius();
-                    return look(dc.add(rot(F, 200 + 50 * u).scale(r * (0.5 + 0.6 * u))).add(0, 4 + r * 0.5 * u, 0), dc, 0, 74);
+                final Vec3 D = l.at(Beat.DOMAIN, Vec3.ZERO);
+                icon(0, 6, 1.8, 1.6, 40f);
+                shot(6, 30, 0, t -> look(D.add(F.scale(0.01)).add(0, 60, 0), D, 0, 64));
+                shot(30, end, 0, t -> {
+                    float u = ease(span(t, 30, end));
+                    return look(D.add(rot(F, 40 * u).scale(0.01 + 18 * u)).add(0, 60 - 46 * u, 0), D, 0, 64);
                 });
             }
-            case STILLNESS -> {
-                double r = Math.max(8, l.c.domainRadius());
-                shot(0, 40, 0, t -> {
-                    Vec3 dc = live.at(Beat.DOMAIN, Vec3.ZERO);
-                    return look(dc.add(rot(F, 40 + t * 3).scale(r * 0.55)).add(0, 5, 0).add(handheld(t, 0.2)), dc.add(0, 2, 0), 0, 76);
-                });
-                shot(40, 70, 0, t -> look(caster(1.6f).add(F.scale(-2.4)).add(R.scale(1.0)).add(handheld(t, 0.2)), target(), 0, 80));
-                hit(74, 84, l, 4);
-                shot(84, end, 0, t -> {
-                    float u = ease(span(t, 84, end));
-                    Vec3 dc = live.at(Beat.DOMAIN, Vec3.ZERO);
-                    return look(dc.add(rot(F, 300 + 40 * u).scale(r * (0.6 + 0.4 * u))).add(0, r * (0.3 + 0.4 * u), 0), dc, 0, 72);
-                });
-            }
-            default -> generic(l);
+            default -> fallback(l);
         }
         SHOTS.sort((a, b) -> Integer.compare(a.t0, b.t0));
-        if (SHOTS.isEmpty()) generic(l);
-    }
-
-    /**
-     * A blow landing, cut in on the frame of the hit. Framings rotate so no two hits look alike:
-     * side (+1 / -1): profile of the exchange, drifting in;
-     * 2: low hero angle from behind the target, looking up past it into his face;
-     * 3: over his shoulder, tight, rolling into the punch;
-     * 4: a high crash-zoom down onto the contact point.
-     */
-    private static void hit(int t0, int t1, WCasts.Live l, int side) {
-        shot(t0 - 2, t1, 0, t -> {
-            Vec3 c = caster(1.2f), tg = target();
-            Vec3 d = tg.subtract(c);
-            Vec3 flat = new Vec3(d.x, 0, d.z);
-            if (flat.lengthSqr() < 1e-4) flat = l.c.f();
-            flat = flat.normalize();
-            Vec3 perp = new Vec3(-flat.z, 0, flat.x);
-            Vec3 mid = c.lerp(tg, 0.55);
-            float u = span(t, t0, t1);
-            float e = 1 - (float) Math.pow(1 - u, 3);
-            switch (side) {
-                case 2 -> {
-                    Vec3 from = tg.add(flat.scale(2.6 + 1.2 * e)).add(perp.scale(1.1)).add(0, -0.9, 0);
-                    return look(from.add(handheld(t, 0.12)), c.add(0, 0.35, 0), -4, 82 - 6 * e);
-                }
-                case 3 -> {
-                    Vec3 from = c.add(flat.scale(-1.9 + 0.5 * e)).add(perp.scale(0.9)).add(0, 0.55, 0);
-                    return look(from.add(handheld(t, 0.1)), tg, 6 * (1 - e), 78 + 8 * e);
-                }
-                case 4 -> {
-                    double h = 9 - 4 * e;
-                    Vec3 from = mid.add(flat.scale(-2.0)).add(perp.scale(2.5)).add(0, h, 0);
-                    return look(from, tg.add(0, -0.5, 0), 0, 70 - 10 * e);
-                }
-                default -> {
-                    double dist = 4.5 + d.length() * 0.4;
-                    Vec3 from = mid.add(perp.scale(side * dist * (1 - 0.14 * e))).add(flat.scale(-1.2)).add(0, 0.5, 0);
-                    return look(from.add(handheld(t, 0.15)), mid.add(flat.scale(0.6)), side * 3, 74);
-                }
-            }
-        });
-    }
-
-    /** After a blow: the camera circles the impact as the dust rises, pulling out to show the damage. */
-    private static void orbitImpact(int t0, int t1, double radius, double startDeg, double sweep) {
-        shot(t0, t1, 0, t -> {
-            float u = ease(span(t, t0, t1));
-            Vec3 g = ground();
-            Vec3 F = live.c.f();
-            double d = 6 + radius * (0.9 + 0.9 * u);
-            Vec3 from = g.add(rot(F, startDeg + sweep * u).scale(d)).add(0, 2.5 + radius * (0.35 + 0.45 * u), 0);
-            return look(from.add(handheld(t, 0.3)), g.add(0, 1.0 + radius * 0.1, 0), 0, 72);
-        });
-    }
-
-    private static void wide(int t0, int t1, int blend, double radius, float side) {
-        shot(t0, t1, blend, t -> {
-            float u = ease(span(t, t0, t1));
-            Vec3 g = ground();
-            Vec3 F = live.c.f(), R = live.c.r();
-            double d = 8 + radius * (1.1 + 0.8 * u);
-            Vec3 from = g.add(F.scale(-d * 0.7)).add(R.scale(side * d * 0.7)).add(0, 4 + radius * (0.5 + 0.5 * u), 0);
-            return look(from.add(handheld(t, 0.4)), g.add(0, 1, 0), 0, 70);
-        });
-    }
-
-    /** Any other move: build-up on him, a cut in on every blow, and a pull-back over what is left. */
-    private static void generic(WCasts.Live l) {
-        Vec3 F = l.c.f();
-        List<Integer> hits = new ArrayList<>();
-        int firstDash = -1;
-        double radius = 6;
-        for (Beat b : l.beats) {
-            if (b.kind() == Beat.BF || b.kind() == Beat.CLEAVE || b.kind() == Beat.IMPACT) {
-                if (hits.isEmpty() || b.t() - hits.get(hits.size() - 1) >= 6) hits.add(b.t());
-            }
-            if (b.kind() == Beat.DASH && firstDash < 0) firstDash = b.t();
-            if (b.kind() == Beat.BLAST || b.kind() == Beat.SHELL) radius = Math.max(radius, b.x());
-            if (b.kind() == Beat.RING) radius = Math.max(radius, b.x() * 0.35);
-        }
-        int end = l.move.end;
-        int first = hits.isEmpty() ? (int) (end * 0.5) : hits.get(0);
-        int lead = Math.max(2, first - 8);
-        // build-up
-        shot(0, lead, 0, t -> look(caster(1.4f).add(rot(F, 55 - t * 0.8).scale(3.8)).add(0, -0.1, 0).add(handheld(t, 0.08)), caster(1.3f), 0, 62));
-        if (firstDash >= 0 && firstDash < first - 4) {
-            shot(Math.max(firstDash, 1), first - 2, 3, t -> look(caster(1.7f).add(F.scale(-2.8)).add(l.c.r().scale(1.0)), target(), 0, 76));
-        }
-        // the blows
-        for (int i = 0; i < hits.size(); i++) {
-            int h = hits.get(i);
-            int next = i + 1 < hits.size() ? hits.get(i + 1) - 2 : Math.min(end, h + 16);
-            int[] styles = {3, 1, 2, -1, 4};
-            hit(h, Math.max(h + 4, next), l, styles[i % styles.length]);
-        }
-        // what is left
-        int last = hits.isEmpty() ? first : hits.get(hits.size() - 1) + 12;
-        if (last < end) wide(Math.min(last, end - 4), end, 4, radius, hits.size() % 2 == 0 ? 1 : -1);
+        if (SHOTS.isEmpty()) fallback(l);
     }
 
     // ------------------------------------------------------------------ letterbox and title card

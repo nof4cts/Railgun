@@ -1,171 +1,171 @@
 {
-  "charge": {
-    "subtitle": "subtitles.woh.charge",
+  "gather": {
+    "subtitle": "subtitles.woh.gather",
     "sounds": [
       {
-        "name": "woh:charge",
+        "name": "woh:gather",
         "stream": false
       }
     ]
   },
-  "black_flash": {
-    "subtitle": "subtitles.woh.black_flash",
+  "overwrite": {
+    "subtitle": "subtitles.woh.overwrite",
     "sounds": [
       {
-        "name": "woh:black_flash",
+        "name": "woh:overwrite",
         "stream": false
       }
     ]
   },
-  "black_flash_big": {
-    "subtitle": "subtitles.woh.black_flash_big",
+  "overwrite_big": {
+    "subtitle": "subtitles.woh.overwrite_big",
     "sounds": [
       {
-        "name": "woh:black_flash_big",
+        "name": "woh:overwrite_big",
         "stream": false
       }
     ]
   },
-  "dash": {
-    "subtitle": "subtitles.woh.dash",
+  "blink": {
+    "subtitle": "subtitles.woh.blink",
     "sounds": [
       {
-        "name": "woh:dash",
+        "name": "woh:blink",
         "stream": false
       }
     ]
   },
-  "blood_form": {
-    "subtitle": "subtitles.woh.blood_form",
+  "crystallize": {
+    "subtitle": "subtitles.woh.crystallize",
     "sounds": [
       {
-        "name": "woh:blood_form",
+        "name": "woh:crystallize",
         "stream": false
       }
     ]
   },
-  "blood_fire": {
-    "subtitle": "subtitles.woh.blood_fire",
+  "shard_throw": {
+    "subtitle": "subtitles.woh.shard_throw",
     "sounds": [
       {
-        "name": "woh:blood_fire",
+        "name": "woh:shard_throw",
         "stream": false
       }
     ]
   },
-  "blood_hit": {
-    "subtitle": "subtitles.woh.blood_hit",
+  "shard_hit": {
+    "subtitle": "subtitles.woh.shard_hit",
     "sounds": [
       {
-        "name": "woh:blood_hit",
+        "name": "woh:shard_hit",
         "stream": false
       }
     ]
   },
-  "blood_rain": {
-    "subtitle": "subtitles.woh.blood_rain",
+  "shard_rain": {
+    "subtitle": "subtitles.woh.shard_rain",
     "sounds": [
       {
-        "name": "woh:blood_rain",
+        "name": "woh:shard_rain",
         "stream": false
       }
     ]
   },
-  "dismantle": {
-    "subtitle": "subtitles.woh.dismantle",
+  "rend": {
+    "subtitle": "subtitles.woh.rend",
     "sounds": [
       {
-        "name": "woh:dismantle",
+        "name": "woh:rend",
         "stream": false
       }
     ]
   },
-  "cleave": {
-    "subtitle": "subtitles.woh.cleave",
+  "seal": {
+    "subtitle": "subtitles.woh.seal",
     "sounds": [
       {
-        "name": "woh:cleave",
+        "name": "woh:seal",
         "stream": false
       }
     ]
   },
-  "world_splitter": {
-    "subtitle": "subtitles.woh.world_splitter",
+  "fissure": {
+    "subtitle": "subtitles.woh.fissure",
     "sounds": [
       {
-        "name": "woh:world_splitter",
+        "name": "woh:fissure",
         "stream": false
       }
     ]
   },
-  "crater": {
-    "subtitle": "subtitles.woh.crater",
+  "slam": {
+    "subtitle": "subtitles.woh.slam",
     "sounds": [
       {
-        "name": "woh:crater",
+        "name": "woh:slam",
         "stream": false
       }
     ]
   },
-  "eruption": {
-    "subtitle": "subtitles.woh.eruption",
+  "rupture": {
+    "subtitle": "subtitles.woh.rupture",
     "sounds": [
       {
-        "name": "woh:eruption",
-        "stream": true
-      }
-    ]
-  },
-  "domain": {
-    "subtitle": "subtitles.woh.domain",
-    "sounds": [
-      {
-        "name": "woh:domain",
-        "stream": true
-      }
-    ]
-  },
-  "domain_hum": {
-    "subtitle": "subtitles.woh.domain_hum",
-    "sounds": [
-      {
-        "name": "woh:domain_hum",
+        "name": "woh:rupture",
         "stream": false
       }
     ]
   },
-  "overdrive": {
-    "subtitle": "subtitles.woh.overdrive",
+  "collapse": {
+    "subtitle": "subtitles.woh.collapse",
     "sounds": [
       {
-        "name": "woh:overdrive",
+        "name": "woh:collapse",
         "stream": false
       }
     ]
   },
-  "wave": {
-    "subtitle": "subtitles.woh.wave",
+  "lattice_hum": {
+    "subtitle": "subtitles.woh.lattice_hum",
     "sounds": [
       {
-        "name": "woh:wave",
+        "name": "woh:lattice_hum",
         "stream": false
       }
     ]
   },
-  "world_ender": {
-    "subtitle": "subtitles.woh.world_ender",
+  "ascend": {
+    "subtitle": "subtitles.woh.ascend",
     "sounds": [
       {
-        "name": "woh:world_ender",
-        "stream": true
+        "name": "woh:ascend",
+        "stream": false
       }
     ]
   },
-  "rumble": {
-    "subtitle": "subtitles.woh.rumble",
+  "crack": {
+    "subtitle": "subtitles.woh.crack",
     "sounds": [
       {
-        "name": "woh:rumble",
+        "name": "woh:crack",
+        "stream": false
+      }
+    ]
+  },
+  "truth": {
+    "subtitle": "subtitles.woh.truth",
+    "sounds": [
+      {
+        "name": "woh:truth",
+        "stream": false
+      }
+    ]
+  },
+  "halt": {
+    "subtitle": "subtitles.woh.halt",
+    "sounds": [
+      {
+        "name": "woh:halt",
         "stream": false
       }
     ]
@@ -179,20 +179,20 @@
       }
     ]
   },
-  "meteor": {
-    "subtitle": "subtitles.woh.meteor",
+  "judgment": {
+    "subtitle": "subtitles.woh.judgment",
     "sounds": [
       {
-        "name": "woh:meteor",
+        "name": "woh:judgment",
         "stream": false
       }
     ]
   },
-  "card": {
-    "subtitle": "subtitles.woh.card",
+  "chime": {
+    "subtitle": "subtitles.woh.chime",
     "sounds": [
       {
-        "name": "woh:card",
+        "name": "woh:chime",
         "stream": false
       }
     ]

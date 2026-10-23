@@ -38,9 +38,9 @@ public final class WCasts {
     static final int[] BASE = {B_SLASH, B_FLASH, B_RING, B_DUST, B_BOLT, B_ORB, B_SHELL, B_CHARGE, B_AURA, B_MARK, B_TRENCH, B_SPHERE};
     static final int[] CAP = {48, 8, 16, 8, 128, 16, 4, 4, 8, 16, 16, 1};
 
-    static final String[] SOUNDS = {"charge", "black_flash", "black_flash_big", "dash", "blood_form", "blood_fire", "blood_hit",
-            "blood_rain", "dismantle", "cleave", "world_splitter", "crater", "eruption", "domain", "domain_hum", "overdrive",
-            "wave", "world_ender", "rumble", "impact", "meteor", "card", "time_stop_voice"};
+    static final String[] SOUNDS = {"gather", "overwrite", "overwrite_big", "blink", "crystallize", "shard_throw", "shard_hit",
+            "shard_rain", "rend", "seal", "fissure", "slam", "rupture", "collapse", "lattice_hum", "ascend",
+            "crack", "truth", "halt", "impact", "judgment", "chime", "time_stop_voice"};
     private static final Map<String, SoundEvent> SOUND_CACHE = new HashMap<>();
 
     static final List<Live> LIVE = new ArrayList<>();
@@ -229,13 +229,13 @@ public final class WCasts {
         double dist = p0.distanceTo(cam);
         float near = (float) Mth.clamp(1.0 - (dist - 8) / 90.0, 0.15, 1.0);
         switch (b.kind()) {
-            case Beat.BF -> {
+            case Beat.BF -> {   // an overwrite blow: a seal stamped into reality where the fist lands
                 Inst in = new Inst(l, b, K_FLASH, (0.9 + 0.25 * b.x()) * 20 + 2);
                 in.p0 = p0;
                 INST.add(in);
                 Vec3 from = l.at(Beat.CASTER, new Vec3(0, 1.2, 0));
                 float[] dir = WPost.screenDir(from, p0);
-                WFx.blackFlash(p0, dir[0], dir[1], b.x(), dist);
+                WFx.overwrite(p0, dir[0], dir[1], b.x(), dist);
                 WAnims.freeze(l.m.caster(), Math.min(0.2, 0.06 + 0.03 * b.x()));
             }
             case Beat.RING -> {
@@ -248,7 +248,7 @@ public final class WCasts {
                 WFx.shake(Math.min(0.9f, 0.15f + r / 40f) * near);
                 if (r >= 12) {
                     WFx.shockwave(p0, Math.min(1.0f, r / 30f) * near, 0.9f);
-                    WFx.flash(0.35f * near, 1f, 0.92f, 0.85f, 3f);
+                    WFx.flash(0.35f * near, 1f, 0.92f, 0.7f, 3f);
                 }
             }
             case Beat.TRENCH -> {
@@ -264,46 +264,6 @@ public final class WCasts {
                 in.s = (float) (b.x() / Math.max(1, b.dur()) * 20.0);
                 INST.add(in);
                 WFx.shake(0.25f * near);
-            }
-            case Beat.SLASH -> {
-                Vec3 p1 = l.at(b.a1(), b.o1());
-                Vec3 d = p1.subtract(p0);
-                if (d.lengthSqr() < 1e-6) d = l.c.dir();
-                d = d.normalize();
-                double L = b.x();
-                double speed = Math.max(260, L / 0.22);
-                Inst in = new Inst(l, b, K_SLASH, (L / speed + 3.4) * 20);
-                in.p0 = p0;
-                in.d = d;
-                in.p1 = Anchors.side(d, b.z());
-                in.a = (float) L;
-                in.w = (float) b.y();
-                in.s = (float) speed;
-                INST.add(in);
-                if (b.i() >= 2) {
-                    WFx.flash(0.6f, 1f, 1f, 1f, 2.5f);
-                    WFx.shake(0.6f);
-                    WFx.impact(p0.add(d.scale(8)), (float) d.x, (float) d.y, true, false, new float[][]{{0.04f, 1, 1}, {0.05f, 5, 1}, {0.06f, 1, 1}, {0.12f, 3, 0.5f}});
-                } else {
-                    WFx.shake(0.06f * near);
-                }
-            }
-            case Beat.CLEAVE -> {
-                java.util.Random r = new java.util.Random(l.c.seed() + b.t() * 31L);
-                double len = 3 + b.x() * 1.6;
-                for (int k = 0; k < 3; k++) {
-                    Vec3 d = new Vec3(r.nextGaussian(), r.nextGaussian() * 0.8, r.nextGaussian()).normalize();
-                    Inst in = new Inst(l, b, K_SLASH, 24);
-                    in.p0 = p0.subtract(d.scale(len * 0.5));
-                    in.d = d;
-                    in.p1 = Anchors.side(d, 0);
-                    in.a = (float) len;
-                    in.w = 0.1f;
-                    in.s = -1;    // marks a Cleave cut
-                    INST.add(in);
-                }
-                WFx.shake(0.25f * near);
-                WFx.punch(0.25f * near);
             }
             case Beat.BOLT -> {
                 Inst in = new Inst(l, b, K_BOLT, Math.max(1, b.dur()) + 3);
@@ -326,29 +286,71 @@ public final class WCasts {
                 in.p0 = p0;
                 INST.add(in);
             }
-            case Beat.ORB -> {
-                Inst in = new Inst(l, b, K_ORB, Math.max(1, b.dur()) + 1);
-                in.p0 = p0;
-                INST.add(in);
-            }
             case Beat.CHARGE -> INST.add(new Inst(l, b, K_CHARGE, Math.max(1, b.dur()) + 4));
-            case Beat.SPHERE -> {
-                Inst in = new Inst(l, b, K_SPHERE, Math.max(1, b.dur()));
+            case Beat.SHARD -> {   // reality breaking into crystal: faceted shards burst out from the point and wink out
+                java.util.Random r = new java.util.Random(l.c.seed() * 7 + b.t() * 131L);
+                int count = (int) Mth.clamp(b.y(), 1, 24);
+                double rad = Math.max(0.6, b.x());
+                for (int k = 0; k < count; k++) {
+                    Vec3 d = new Vec3(r.nextGaussian(), r.nextGaussian() * 0.7 + 0.3, r.nextGaussian()).normalize();
+                    Vec3 off = b.o0().add(d.scale(rad * (1.2 + r.nextDouble())));
+                    Beat sb = Beat.of(b.t(), Beat.BOLT, b.a0(), b.o0()).to(b.a0(), off).p(0.08 + 0.06 * r.nextDouble(), 0, 2).d(5 + r.nextInt(5));
+                    Inst in = new Inst(l, sb, K_BOLT, sb.dur() + 6);
+                    in.p0 = p0;
+                    INST.add(in);
+                }
+            }
+            case Beat.ERASE -> {   // existence overwritten: a great seal flares where the target stood
+                double scale = Math.min(3.6, 1.6 + b.x() * 0.06);
+                Beat fb = Beat.of(b.t(), Beat.BF, b.a0(), b.o0()).p(scale, 0, 50);
+                Inst in = new Inst(l, fb, K_FLASH, (0.9 + 0.25 * scale) * 20 + 10);
                 in.p0 = p0;
                 INST.add(in);
+                WFx.flash(0.7f * near, 1f, 0.95f, 0.75f, 2.0f);
+                WFx.shake(0.7f * near);
+                WFx.afterimage(0.7f);
             }
-            case Beat.STREAK -> INST.add(new Inst(l, b, K_BOLT, Math.max(1, b.dur()) + 2));
+            case Beat.STOP -> {   // time halts: a clock-face sphere sweeps out from him and tick-rings race over the ground
+                Vec3 g = Anchors.ground(level, l.at(Beat.CASTER, Vec3.ZERO));
+                double R = Math.max(8, b.x());
+                Beat sh = Beat.of(b.t(), Beat.SHELL, Beat.CASTER, new Vec3(0, 1, 0)).p(R, 0, 2).d(14);
+                Inst s0 = new Inst(l, sh, K_SHELL, 14 + 12);
+                s0.p0 = l.at(Beat.CASTER, new Vec3(0, 1, 0));
+                INST.add(s0);
+                for (int k = 0; k < 3; k++) {
+                    Beat rb = Beat.of(b.t() + k * 4, Beat.RING, Beat.GROUND, Vec3.ZERO).p(R * (0.6 + 0.2 * k), 40 + 10 * k, 0.6);
+                    Inst ri = new Inst(l, rb, K_RING, 100);
+                    ri.p0 = g;
+                    INST.add(ri);
+                }
+                WFx.flash(0.55f, 1f, 0.88f, 0.55f, 1.4f);
+                WFx.shockwave(p0, 0.9f, 1.6f);
+                WFx.shake(0.4f);
+                WFx.punch(0.5f);
+            }
+            case Beat.NEGATE -> {
+                WFx.flash(0.4f, 1f, 0.95f, 0.8f, 2.5f);
+                WFx.punch(0.3f);
+            }
+            case Beat.RETURN_SET -> {
+                WFx.flash(0.5f, 1f, 0.9f, 0.6f, 1.8f);
+                WFx.shockwave(p0, 0.6f, 1.0f);
+            }
+            case Beat.STRIP -> {
+                WFx.aberration(0.6f);
+                WFx.afterimage(0.4f);
+            }
             case Beat.DOMAIN_ON -> {
-                WFx.flash(0.8f, 1f, 0.85f, 0.7f, 1.6f);
+                WFx.flash(0.8f, 1f, 0.88f, 0.6f, 1.6f);
                 WFx.shockwave(p0, 0.8f, 0.8f);
                 WFx.shake(0.5f);
             }
             case Beat.HEAL -> {
-                WFx.flash(0.5f, 0.85f, 1f, 0.9f, 2.2f);
+                WFx.flash(0.5f, 1f, 0.96f, 0.8f, 2.2f);
                 WFx.punch(0.25f);
             }
-            case Beat.OVERDRIVE -> {
-                WFx.flash(0.7f, 1f, 0.1f, 0.12f, 2.0f);
+            case Beat.OVERDRIVE -> {   // Heaven Ascension
+                WFx.flash(0.7f, 1f, 0.85f, 0.45f, 2.0f);
                 WFx.shockwave(p0, 0.9f, 1.4f);
                 WFx.shake(0.6f);
                 WFx.punch(0.6f);
@@ -375,50 +377,48 @@ public final class WCasts {
         }
     }
 
+    /**
+     * His impact frames. Frame styles (composite shader): 1 shattered glass, 2 gold negative, 3 gilt two-tone,
+     * 4 engraving, 5 white flare, 6 the seal.
+     */
     private static void impactPreset(int preset, Vec3 at, float strength, Live l) {
         Vec3 from = l.at(Beat.CASTER, new Vec3(0, 1.2, 0));
         float[] dir = WPost.screenDir(from, at);
         switch (preset) {
-            case 1 -> { // Cleave: ink and speed lines
-                WFx.accent(1f, 0.74f, 0.26f);
-                WFx.impact(at, dir[0], dir[1], true, false, new float[][]{{0.04f, 1, 1}, {0.04f, 2, 1}, {0.06f, 1, 0.8f}});
+            case 0 -> { // a light overwrite: one shattered-glass beat
+                WFx.accent(1f, 0.82f, 0.4f);
+                WFx.impact(at, dir[0], dir[1], false, true, new float[][]{{0.04f, 1, 1}, {0.05f, 1, 0.5f}});
+                WFx.hitStop(0.04);
+            }
+            case 1 -> { // a crack: glass, then the engraving
+                WFx.accent(1f, 0.8f, 0.36f);
+                WFx.impact(at, dir[0], dir[1], true, true, new float[][]{{0.04f, 1, 1}, {0.04f, 4, 1}, {0.06f, 1, 0.6f}});
                 WFx.hitStop(0.05);
             }
-            case 2 -> { // blood: negative, crimson
-                WFx.accent(0.72f, 0.36f, 1f);
-                WFx.impact(at, dir[0], dir[1], true, false, new float[][]{{0.04f, 2, 1}, {0.05f, 3, 1}, {0.05f, 2, 1}, {0.1f, 3, 0.5f}});
+            case 2 -> { // gold negative
+                WFx.accent(1f, 0.78f, 0.3f);
+                WFx.impact(at, dir[0], dir[1], true, false, new float[][]{{0.04f, 2, 1}, {0.05f, 1, 1}, {0.08f, 2, 0.5f}});
                 WFx.punch(0.5f * strength);
                 WFx.shake(0.5f * strength);
                 WFx.hitStop(0.07);
             }
-            case 3 -> { // a cataclysm: white-out, two-tone, cracks
-                WFx.accent(1f, 0.76f, 0.3f);
-                WFx.impact(at, dir[0], dir[1], false, true, new float[][]{{0.05f, 5, 1}, {0.05f, 2, 1}, {0.06f, 3, 1}, {0.06f, 6, 1},
-                        {0.12f, 3, 0.7f}, {0.2f, 3, 0.3f}});
+            case 3 -> { // judgment: a white flare that burns down to gilt two-tone
+                WFx.accent(1f, 0.84f, 0.42f);
+                WFx.impact(at, 0, -1, false, true, new float[][]{{0.05f, 5, 1}, {0.05f, 3, 1}, {0.06f, 1, 1}, {0.14f, 3, 0.5f}});
+                WFx.shake(0.9f * strength);
+                WFx.punch(0.7f * strength);
+                WFx.shockwave(at, 1.0f, 0.8f);
+            }
+            case 4 -> { // the world overwritten: the seal, the glass breaking, the gilt afterimage
+                WFx.accent(1f, 0.8f, 0.34f);
+                WFx.impact(at, dir[0], dir[1], true, true, new float[][]{{0.06f, 6, 1}, {0.05f, 1, 1}, {0.05f, 2, 1}, {0.06f, 6, 1},
+                        {0.12f, 3, 0.6f}, {0.18f, 1, 0.3f}});
                 WFx.shake(1.0f * strength);
                 WFx.punch(0.8f * strength);
                 WFx.afterimage(0.8f);
-                WFx.shockwave(at, 1.0f, 0.7f);
-                WFx.flash(0.6f, 1f, 0.95f, 0.9f, 1.2f);
-            }
-            case 4 -> { // the meteor: halftone, then white
-                WFx.accent(1f, 0.72f, 0.22f);
-                WFx.impact(at, 0, -1, true, true, new float[][]{{0.05f, 4, 1}, {0.05f, 5, 1}, {0.05f, 2, 1}, {0.1f, 4, 0.7f}, {0.15f, 3, 0.3f}});
-                WFx.shake(1.1f * strength);
-                WFx.punch(0.9f * strength);
-                WFx.shockwave(at, 1.0f, 0.9f);
-                WFx.hitStop(0.12);
-            }
-            case 5 -> { // the wave: a white-out washing over everything
-                WFx.accent(0.7f, 0.34f, 1f);
-                WFx.impact(at, 0, 1, false, false, new float[][]{{0.08f, 5, 1}, {0.06f, 2, 0.8f}, {0.25f, 3, 0.5f}});
-                WFx.shake(0.9f);
-                WFx.flash(0.8f, 1f, 0.9f, 0.9f, 0.8f);
-            }
-            case 6 -> { // a technique unleashed: one sharp two-tone beat
-                WFx.accent(1f, 0.78f, 0.32f);
-                WFx.impact(at, 0, 1, false, false, new float[][]{{0.05f, 2, 1}, {0.06f, 3, 1}, {0.1f, 3, 0.4f}});
-                WFx.punch(0.4f);
+                WFx.shockwave(at, 1.0f, 0.8f);
+                WFx.flash(0.5f, 1f, 0.95f, 0.8f, 1.4f);
+                WFx.hitStop(0.1);
             }
             default -> {
             }
@@ -494,13 +494,6 @@ public final class WCasts {
                     Vec3 p = in.p0.subtract(cam);
                     fr.put(K_TRENCH, cam, f(p.x), f(p.y), f(p.z), f(sec), f(in.d.x), 0, f(in.d.z), in.a, in.w, in.s, 0, 0);
                 }
-                case K_SLASH -> {
-                    Vec3 p = in.p0.subtract(cam);
-                    boolean cleave = in.s < 0;
-                    float vis = (float) (b.i() >= 2 ? 1.0 : W.slashVisibility);
-                    fr.put(K_SLASH, cam, f(p.x), f(p.y), f(p.z), f(sec), f(in.d.x), f(in.d.y), f(in.d.z), in.a,
-                            f(in.p1.x), f(in.p1.y), f(in.p1.z), in.w, cleave ? 1 : 0, cleave ? 0 : in.s, in.seed, vis);
-                }
                 case K_BOLT -> {
                     if (b.kind() == Beat.STREAK) {
                         Vec3 head = in.l.at(Beat.CASTER, new Vec3(0, 0.9, 0));
@@ -521,16 +514,6 @@ public final class WCasts {
                     Vec3 h = head.subtract(cam), t = tail.subtract(cam);
                     fr.put(K_BOLT, cam, f(h.x), f(h.y), f(h.z), f(b.x()), f(t.x), f(t.y), f(t.z), 1.0f, f(b.z()), life, 0, 0);
                 }
-                case K_ORB -> {
-                    Vec3 to = in.l.at(b.a1(), b.o1());
-                    Vec3 from = b.a0() == b.a1() && b.o0().equals(b.o1()) ? to : in.p0;
-                    double dur = Math.max(1, b.dur());
-                    double u = Mth.clamp(age / dur, 0, 1);
-                    double e = u * u * (3 - 2 * u);
-                    Vec3 p = from.lerp(to, e).subtract(cam);
-                    float grow = (float) Mth.clamp(age / 5.0, 0, 1);
-                    fr.put(K_ORB, cam, f(p.x), f(p.y), f(p.z), f(b.x() * grow), 1, 0, 0, 0);
-                }
                 case K_SHELL -> {
                     Vec3 p = in.p0.subtract(cam);
                     double dur = Math.max(1, b.dur());
@@ -544,12 +527,6 @@ public final class WCasts {
                     double dur = Math.max(1, b.dur());
                     double amt = b.x() * Mth.clamp(age / dur, 0, 1) * (age > dur ? Mth.clamp(1 - (age - dur) / 4.0, 0, 1) : 1);
                     fr.put(K_CHARGE, cam, f(p.x), f(p.y), f(p.z), f(amt));
-                }
-                case K_SPHERE -> {
-                    Vec3 p = in.p0.subtract(cam);
-                    double dur = Math.max(1, b.dur());
-                    float strength = (float) (Mth.clamp(age / 20.0, 0, 1) * Mth.clamp((dur - age) / 8.0, 0, 1));
-                    fr.put(K_SPHERE, cam, f(p.x), f(p.y), f(p.z), f(b.x()), f(sec), strength, 0, 0);
                 }
                 default -> {
                 }

@@ -4,14 +4,16 @@
 // smear -> punch-in zoom -> shockwave refraction -> chromatic aberration -> bloom -> exposure -> roll-off ->
 // flash / afterimage -> grade -> vignette -> grain -> IMPACT FRAMES -> blackout.
 //
-// Impact frames, second generation. A hit is a stutter of stark graphic frames, and now:
-//  - the linework is traced from the DEPTH buffer as well as brightness, so silhouettes get clean, continuous
-//    manga outlines (bodies against the ground, the ground against the sky) instead of blotchy shapes;
-//  - speed lines follow the direction of the blow (parallel streaks) or converge on the hit (radial), per frame;
-//  - a smear frame stretches the image along the strike just before contact;
-//  - Black Flash has its own frame: black, everything lit cut out in crimson, outlines in white, cracks of
-//    distorted space radiating from the point of contact;
-//  - a blackout frame (a true black frame with only the brightest light left) for the void before the hit.
+// The World Over Heaven's impact frames. A blow does not smear the picture, it breaks it: the frame shatters
+// like a mirror and every pane slips a little out of place, then the world is redrawn in his colours for a
+// stutter of stark frames. Styles (Impact.x):
+//   1 SHATTERED GLASS  the picture in gilt two-tone, panes offset, seams of light between them
+//   2 GOLD NEGATIVE    light and dark swapped onto a black-to-gold-to-ivory ramp
+//   3 GILT             umber and gold split at the frame's own threshold, ivory highlights, black ink
+//   4 ENGRAVING        black, the picture cut in fine gold lines whose weight follows the light
+//   5 WHITE FLARE      ivory, outlines in dark gold, a seal burning at the point of the blow
+//   6 THE SEAL         black, lit things in deep gold, a great geometric seal stamped over the hit
+// Silhouettes are traced from the depth buffer as well as brightness, so outlines stay clean and continuous.
 
 #include "common.glsl"
 
@@ -72,53 +74,60 @@ float inkEdges(vec2 p) {
     return max(depthEdge, lumEdge * 0.8);
 }
 
-float radialLines(vec2 p, vec2 c, float aspect, float seed) {
-    vec2 d = (p - c) * vec2(aspect, 1.0);
-    float r = length(d);
-    float a = atan(d.y, d.x) / 6.2831853 + 0.5;
-    float n = 240.0;
-    float cell = floor(a * n);
-    float h = hash12(vec2(cell, seed));
-    float w = 0.15 + 0.6 * hash12(vec2(cell, seed + 7.0));
-    float f = abs(fract(a * n) - 0.5) * 2.0;
-    float line = step(0.55, h) * smoothstep(w, w * 0.6, f);
-    float start = 0.16 + 0.35 * hash12(vec2(cell, seed + 3.0));
-    return line * smoothstep(start, start + 0.12, r);
+vec2 hash22(vec2 p, float s) {
+    return hash33(vec3(p, s)).xy;
 }
 
-/** Streaks parallel to the blow: the whole frame rushing past in one direction. */
-float directionalLines(vec2 p, vec2 dir, vec2 c, float aspect, float seed) {
-    vec2 q = (p - c) * vec2(aspect, 1.0);
-    vec2 d = normalize(dir * vec2(aspect, 1.0) + 1.0e-5);
-    vec2 n = vec2(-d.y, d.x);
-    float across = dot(q, n) * 260.0;
-    float along = dot(q, d);
-    float cell = floor(across);
-    float h = hash12(vec2(cell, seed));
-    float w = 0.2 + 0.5 * hash12(vec2(cell, seed + 5.0));
-    float f = abs(fract(across) - 0.5) * 2.0;
-    float len = 0.25 + 0.6 * hash12(vec2(cell, seed + 9.0));
-    float start = (hash12(vec2(cell, seed + 11.0)) - 0.5) * 1.6;
-    float seg = smoothstep(start, start + 0.05, along) * smoothstep(start + len, start + len - 0.08, along);
-    float clear = smoothstep(0.08, 0.22, length(q));
-    return step(0.6, h) * smoothstep(w, w * 0.5, f) * seg * clear;
-}
-
-/** Jagged cracks of distorted space radiating from c. */
-float cracks(vec2 p, vec2 c, float aspect, float seed) {
-    vec2 d = (p - c) * vec2(aspect, 1.0);
-    float r = length(d);
-    float th = atan(d.y, d.x);
-    float best = 0.0;
-    for (int k = 0; k < 9; k++) {
-        float a0 = hash12(vec2(float(k), seed)) * 6.2831853;
-        float jag = (fbm3(vec3(r * 14.0, float(k) * 3.0, seed)) - 0.5) * 0.5;
-        float ang = mod(th - a0 - jag + 3.14159, 6.2831853) - 3.14159;
-        float len = 0.25 + 0.45 * hash12(vec2(float(k), seed + 1.0));
-        float w = 0.004 + 0.006 * (1.0 - r / len);
-        best = max(best, exp(-pow(ang * r / w, 2.0)) * step(r, len));
+/** The frame as glass: x = distance to the nearest pane edge, y = pane id, zw = the pane's own random vector. */
+vec4 panes(vec2 q, float seed) {
+    vec2 c = floor(q), f = fract(q);
+    float d1 = 8.0, d2 = 8.0;
+    vec2 best = vec2(0.0);
+    for (int j = -1; j <= 1; j++) {
+        for (int i = -1; i <= 1; i++) {
+            vec2 g = vec2(float(i), float(j));
+            vec2 r = g + hash22(c + g, seed) - f;
+            float d = dot(r, r);
+            if (d < d1) {
+                d2 = d1;
+                d1 = d;
+                best = c + g;
+            } else if (d < d2) {
+                d2 = d;
+            }
+        }
     }
-    return best;
+    vec2 rv = hash22(best, seed + 17.0) - 0.5;
+    return vec4(sqrt(d2) - sqrt(d1), hash12(best + vec2(seed)), rv);
+}
+
+float ngon(float r, float th, float n, float R, float rot) {
+    float a = mod(th + rot, 6.2831853 / n) - 3.14159265 / n;
+    return r * cos(a) - R * cos(3.14159265 / n);
+}
+
+/** A geometric seal centred on c (screen uv): circles, a hexagram, a hexagon, dial ticks. */
+float seal(vec2 p, vec2 c, float aspect, float R, float spin) {
+    vec2 d = (p - c) * vec2(aspect, 1.0);
+    float r = length(d), th = atan(d.y, d.x);
+    float w = 0.0025;
+    float s = exp(-pow((r - R) / w, 2.0)) + 0.7 * exp(-pow((r - R * 1.1) / w, 2.0));
+    s += exp(-pow(ngon(r, th, 3.0, R * 0.86, spin) / w, 2.0));
+    s += exp(-pow(ngon(r, th, 3.0, R * 0.86, spin + 1.0471976) / w, 2.0));
+    s += 0.8 * exp(-pow(ngon(r, th, 6.0, R * 0.46, -spin * 1.5) / w, 2.0));
+    float tick = 1.0 - smoothstep(0.0, 0.012, abs(mod(th - spin * 0.3, 6.2831853 / 36.0) - 3.14159265 / 36.0));
+    s += 0.8 * tick * step(R, r) * step(r, R * 1.1);
+    return clamp(s, 0.0, 1.0);
+}
+
+/** Engraving: fine parallel lines whose weight follows the light, cut along direction dir. */
+float engrave(vec2 p, vec2 dir, float aspect, float lum) {
+    vec2 d = normalize(dir * vec2(aspect, 1.0) + vec2(1.0e-5));
+    vec2 n = vec2(-d.y, d.x);
+    float across = dot(p * vec2(aspect, 1.0), n) * ScreenSize.y / 4.0;
+    float f = abs(fract(across) - 0.5) * 2.0;
+    float weight = clamp(lum, 0.0, 1.0) * 0.9;
+    return 1.0 - smoothstep(weight, weight + 0.15, f);
 }
 
 void main() {
@@ -128,11 +137,12 @@ void main() {
     float amt = Impact.y;
     vec2 ic = Impact.zw;
 
-    // impact tear: slices of the image jump sideways
+    // the frame shatters: every pane of the picture slips a little out of place
+    vec4 pn = vec4(1.0, 0.0, 0.0, 0.0);
     if (mode > 0.5 && amt > 0.0) {
-        float band = floor(p.y * 18.0 + hash12(vec2(ImpactSeed, 1.0)) * 4.0);
-        float jump = hash12(vec2(band, ImpactSeed)) - 0.5;
-        p.x += jump * step(0.62, abs(jump) * 2.0) * 0.045 * amt;
+        pn = panes((p - ic) * vec2(aspect, 1.0) * 7.0, ImpactSeed);
+        float near = 1.0 - smoothstep(0.0, 0.9, length((p - ic) * vec2(aspect, 1.0)));
+        p += pn.zw * 0.03 * amt * (0.4 + 0.6 * near) * (ImpactDir.w > 0.0 ? 1.0 : 0.5);
     }
     if (Shockwave.w > 0.0) {
         vec2 d = (p - Shockwave.xy) * vec2(aspect, 1.0);
@@ -194,44 +204,43 @@ void main() {
         float sd = sqrt(max(sum2 / 35.0 - mean * mean, 0.0));
         float th = clamp(mean + 0.5 * sd, 0.08, 0.92) - 0.05 * exp(-r * 3.0);
         float lit = smoothstep(th - 0.012, th + 0.012, lc);
-        float lines = ImpactDir.z > 0.5 ? directionalLines(p, ImpactDir.xy, ic, aspect, ImpactSeed)
-                                        : radialLines(p, ic, aspect, ImpactSeed);
-        float crk = ImpactDir.w > 0.0 ? cracks(p, ic, aspect, ImpactSeed * 0.37) * ImpactDir.w : 0.0;
+        float seam = exp(-pow(pn.x / 0.035, 2.0)) * (ImpactDir.w > 0.0 ? 1.0 : 0.6);
         float core = exp(-r * 6.0);
+        vec3 ink = vec3(0.02, 0.015, 0.0);
+        vec3 umber = vec3(0.16, 0.09, 0.02);
+        vec3 ivory = vec3(1.0, 0.97, 0.9);
+        float spin = ImpactSeed + Time * 1.5;
         vec3 f;
-        if (mode < 1.5) {          // INK: paper and ink
-            float ink = max(1.0 - lit, edge);
-            f = vec3(1.0 - ink);
-            f = mix(f, vec3(0.0), max(lines * (1.0 - core), crk));
-        } else if (mode < 2.5) {   // NEGATIVE
-            f = vec3(lit) + Accent * edge * 1.2;
-            f = mix(f, vec3(1.0), lines * 0.9);
-            f += vec3(1.0) * core * 0.25;
-            f = mix(f, Accent, crk);
-        } else if (mode < 3.5) {   // TWO-TONE
-            f = mix(vec3(0.03, 0.02, 0.0), Accent, lit);
-            f = mix(f, vec3(0.0), max(edge, lines) * 0.9);
-            f = mix(f, vec3(1.0, 0.97, 0.9), smoothstep(0.75, 0.95, lc) + core * 0.5);
-            f = mix(f, vec3(1.0), crk);
-        } else if (mode < 4.5) {   // HALFTONE
-            vec2 g = gl_FragCoord.xy / 6.0;
-            mat2 rot = mat2(0.7071, -0.7071, 0.7071, 0.7071);
-            vec2 cell = fract(rot * g) - 0.5;
-            float dotR = sqrt(clamp(lc, 0.0, 1.0)) * 0.62;
-            float dotM = smoothstep(dotR + 0.06, dotR - 0.06, length(cell));
-            f = mix(vec3(0.0), Accent * 1.2, dotM);
-            f = mix(f, vec3(1.0), edge * 0.8 + lines * 0.6 + crk);
-        } else if (mode < 5.5) {   // WHITE-OUT
-            f = vec3(smoothstep(0.03, 0.12, lc));
-            f = mix(f, vec3(0.0), max(edge, crk));
-            f = mix(f, Accent, lines * 0.7);
-        } else {                   // BLACK FLASH: black world, crimson light, white outlines, cracked space
-            f = vec3(0.0);
-            f = mix(f, vec3(0.95, 0.66, 0.12), lit);
-            f = mix(f, vec3(1.0), edge);
-            f = mix(f, vec3(1.0, 0.78, 0.30), lines * 0.85);
-            f = mix(f, vec3(1.0), crk);
-            f += vec3(1.0, 0.82, 0.42) * core * 0.6;
+        if (mode < 1.5) {          // SHATTERED GLASS
+            f = mix(umber, Accent, lit) * (0.85 + 0.3 * pn.y);
+            f = mix(f, ink, edge * 0.9);
+            f = mix(f, ivory, seam);
+        } else if (mode < 2.5) {   // GOLD NEGATIVE
+            float inv = 1.0 - clamp(lc, 0.0, 1.0);
+            f = mix(ink, Accent, smoothstep(0.1, 0.6, inv));
+            f = mix(f, ivory, smoothstep(0.7, 0.95, inv));
+            f = mix(f, ivory, edge * 0.8);
+            f = mix(f, Accent, seam);
+        } else if (mode < 3.5) {   // GILT
+            f = mix(umber, Accent, lit);
+            f = mix(f, ink, edge * 0.9);
+            f = mix(f, ivory, smoothstep(0.75, 0.95, lc) + core * 0.5);
+            f = mix(f, ivory, seam * 0.7);
+        } else if (mode < 4.5) {   // ENGRAVING
+            vec2 dir = ImpactDir.z > 0.5 ? ImpactDir.xy : vec2(0.7071, 0.7071);
+            f = mix(ink, Accent, engrave(p, dir, aspect, lc));
+            f = mix(f, ivory, edge * 0.85);
+            f = mix(f, ivory, seam * 0.5);
+        } else if (mode < 5.5) {   // WHITE FLARE
+            f = ivory;
+            f = mix(f, Accent * 0.45, max(edge, seam));
+            f = mix(f, Accent, seal(p, ic, aspect, 0.16, spin));
+        } else {                   // THE SEAL
+            f = mix(ink, Accent * 0.75, lit);
+            f = mix(f, ivory, edge * 0.7);
+            f = mix(f, Accent * 1.2, seal(p, ic, aspect, 0.3, spin));
+            f = mix(f, ivory, seal(p, ic, aspect, 0.12, -spin * 1.3));
+            f += Accent * core * 0.5;
         }
         col = mix(col, clamp(f, 0.0, 1.0), clamp(amt, 0.0, 1.0));
     }

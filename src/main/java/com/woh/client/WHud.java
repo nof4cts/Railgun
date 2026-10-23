@@ -11,9 +11,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
- * His move list, drawn exactly the way the kit draws every sorcerer's: the left edge, vertically centred,
- * "[key] move" with the key highlight, and a cooldown underline in his colour. (The name tag and the cursed-energy
- * bar on the right are the kit's own.)
+ * His move list on the left edge, in the kit's key convention ("[key] move", the current page highlighted), set in
+ * gold: a hairline between each page of four, cooling moves greyed with a gold line that refills as they return.
  */
 public final class WHud {
     private static long[] readyAt = new long[WMove.values().length];
@@ -50,8 +49,8 @@ public final class WHud {
     }
 
     /**
-     * His cursed energy is infinite: the kit's bar (top right) is covered with a full, slowly shimmering bar and
-     * "CE INFINITE". Drawn high in the GUI's depth so it stays on top whichever HUD draws last.
+     * The Stand's plate, top right, over the kit's energy readout (a Stand has no cursed energy): a small gold dial
+     * whose hand turns, and what the Stand is doing right now - at his side, striking, ascended, holding the field.
      */
     public static void infinite(GuiGraphics g) {
         Minecraft mc = Minecraft.getInstance();
@@ -59,29 +58,31 @@ public final class WHud {
         if (ClientSorcerers.mine() != Sorcerer.WORLD_OVER_HEAVEN || mc.screen instanceof com.jjk.mod.client.SelectorScreen) return;
         Font font = mc.font;
         int w = g.guiWidth();
-        int barW = 90, bx = w - barW - 4, by = 19;
-        int color = Sorcerer.WORLD_OVER_HEAVEN.color;
+        int pw = 150, px = w - pw - 4, py = 14;
         float t = (System.nanoTime() / 1.0e9f) % 1000f;
         g.pose().pushPose();
         g.pose().translate(0, 0, 450);
-        // cover the kit's numbers
-        String old = "CE 1000 / 1000";
-        int ow = font.width(old) + 8;
-        g.fill(bx - ow - 2, by - 3, bx - 2, by + 9, 0xFF0C0608);
-        // the bar: always full, a highlight sweeping along it
-        g.fill(bx - 1, by - 1, bx + barW + 1, by + 6, 0xFF000000);
-        g.fill(bx, by, bx + barW, by + 5, 0xFF000000 | color);
-        int sweep = (int) ((t * 45) % (barW + 30)) - 15;
+        // the plate (covers the kit's energy numbers and bar)
+        g.fill(px, py, px + pw, py + 14, 0xE00C0904);
+        g.fill(px, py + 13, px + pw, py + 14, 0xFFE6C867);
+        // a tiny dial: twelve gold ticks round a dark face, one hand turning
+        int cx = px + 8, cy = py + 7;
         for (int i = 0; i < 12; i++) {
-            int x = bx + sweep + i;
-            if (x < bx || x >= bx + barW) continue;
-            int a = (int) (110 * Math.sin(Math.PI * i / 12.0));
-            g.fill(x, by, x + 1, by + 5, (a << 24) | 0xFFFFFF);
+            double a = i * Math.PI / 6;
+            int x = cx + (int) Math.round(Math.cos(a) * 5), y = cy + (int) Math.round(Math.sin(a) * 5);
+            g.fill(x, y, x + 1, y + 1, 0xFFE6C867);
         }
-        String text = "CE INFINITE";
-        float pulse = 0.75f + 0.25f * (float) Math.sin(t * 3.0);
-        int tc = 0xFF000000 | ((int) (255 * pulse) << 16) | ((int) (60 * pulse) << 8) | (int) (70 * pulse);
-        g.drawString(font, text, bx - font.width(text) - 4, by - 1, tc, true);
+        double ha = t * 1.4;
+        for (int k = 1; k <= 4; k++) {
+            int x = cx + (int) Math.round(Math.cos(ha) * k), y = cy + (int) Math.round(Math.sin(ha) * k);
+            g.fill(x, y, x + 1, y + 1, 0xFFFFF4D6);
+        }
+        String state;
+        if (domainOpen()) state = "REALITY COLLAPSE";
+        else if (overdrive()) state = "ASCENDED";
+        else if (WStand.active(mc.player.getId()) != null) state = "STAND: STRIKING";
+        else state = "STAND: AT HIS SIDE";
+        g.drawString(font, state, px + 18, py + 3, 0xFFF2DFA6, true);
         g.pose().popPose();
     }
 
@@ -100,7 +101,8 @@ public final class WHud {
             String text = m != null && m.sneak ? m.label() + "  [now]" : s.moves[i];
             if (m == WMove.HEAVEN_ASCENSION && od) text = m.label() + "  [ON]";
             String line = "[" + Keys.label(i) + "] " + text;
-            int col = cd > 0.0f ? -8749176 : -986891;
+            int col = cd > 0.0f ? 0xFF6E6658 : 0xFFF2E6C8;
+            if (i > 0 && i % 4 == 0) g.fill(6, y - 2, 120, y - 1, 0x60E6C867);
             Keys.mark(g, font, line, 6, y, i);
             g.drawString(font, line, 6, y, col, true);
             int lw = font.width(line);

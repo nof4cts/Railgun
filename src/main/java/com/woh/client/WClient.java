@@ -60,7 +60,6 @@ public final class WClient {
                 if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) WPost.begin(e);
                 else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
                     WDebris.render(e);
-                    WGod.render(e);
                     WStand.render(e);
                 }
                 else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) WPost.render(e);
@@ -86,7 +85,6 @@ public final class WClient {
                 WCam.Pose p = WCam.pose();
                 if (p != null) e.setRoll(p.roll());
                 WFx.onCameraAngles(e);
-                WJudge.angles(e);
             } catch (Throwable t) {
                 safe("camera", t);
             }
@@ -102,7 +100,7 @@ public final class WClient {
 
         @SubscribeEvent
         public static void onInput(MovementInputUpdateEvent e) {
-            if (!WCam.running() && !WJudge.running() && !WWall.running()) return;
+            if (!WCam.running()) return;
             Input in = e.getInput();
             in.forwardImpulse = 0;
             in.leftImpulse = 0;
@@ -113,12 +111,12 @@ public final class WClient {
 
         @SubscribeEvent
         public static void onHand(RenderHandEvent e) {
-            if (WCam.running() || WJudge.running() || WWall.running()) e.setCanceled(true);
+            if (WCam.running()) e.setCanceled(true);
         }
 
         @SubscribeEvent
         public static void onOverlay(RenderGuiOverlayEvent.Pre e) {
-            if (WCam.running() || WJudge.running() || WWall.running()) e.setCanceled(true);
+            if (WCam.running()) e.setCanceled(true);
         }
 
         @SubscribeEvent
@@ -136,8 +134,6 @@ public final class WClient {
         public static void onGuiLast(RenderGuiEvent.Post e) {
             try {
                 WCam.overlay(e.getGuiGraphics());
-                WJudge.overlay(e.getGuiGraphics());
-                WWall.overlay(e.getGuiGraphics());
             } catch (Throwable t) {
                 safe("overlay", t);
             }
@@ -148,7 +144,6 @@ public final class WClient {
             WCam.stop();
             WCasts.clear();
             WDebris.clear();
-            WGod.clear();
             WStand.clear();
             WFx.reset();
         }

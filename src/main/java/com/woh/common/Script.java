@@ -18,10 +18,10 @@ public final class Script {
     private Script() {}
 
     // sound indices (Snd.NAMES) - reused from the shared sound set
-    public static final int S_CHARGE = 0, S_BF = 1, S_BF_BIG = 2, S_DASH = 3, S_FORM = 4, S_FIRE = 5,
-            S_HIT = 6, S_RAIN = 7, S_SLASH = 8, S_CLEAVE = 9, S_SPLITTER = 10, S_CRATER = 11, S_ERUPT = 12,
-            S_DOMAIN = 13, S_DOMAIN_HUM = 14, S_ASCEND = 15, S_WAVE = 16, S_TRUTH = 17, S_RUMBLE = 18,
-            S_METEOR = 20, S_VOICE = 22;
+    public static final int S_GATHER = 0, S_OVERWRITE = 1, S_OVERWRITE_BIG = 2, S_BLINK = 3, S_CRYSTALLIZE = 4, S_SHARD_THROW = 5,
+            S_SHARD_HIT = 6, S_SHARD_RAIN = 7, S_REND = 8, S_SEAL = 9, S_FISSURE = 10, S_SLAM = 11, S_RUPTURE = 12,
+            S_COLLAPSE = 13, S_LATTICE = 14, S_ASCEND = 15, S_CRACK = 16, S_TRUTH = 17, S_HALT = 18,
+            S_IMPACT = 19, S_JUDGMENT = 20, S_CHIME = 21, S_VOICE = 22;
 
     private static final class B {
         final List<Beat> l = new ArrayList<>();
@@ -48,12 +48,12 @@ public final class Script {
 
         void dash(int t, int dur, int anchor, Vec3 off, double standoff) {
             add(Beat.of(t, DASH, CASTER, Vec3.ZERO).to(anchor, off).p(standoff, 0, 0).d(dur));
-            sound(t, CASTER, S_DASH, 2.0, 0.9 + r.nextDouble() * 0.3);
+            sound(t, CASTER, S_BLINK, 2.0, 0.9 + r.nextDouble() * 0.3);
         }
 
         void bf(int t, int anchor, Vec3 off, double scale, double mult, int variant, int tier) {
             add(Beat.of(t, BF, anchor, off).p(scale, mult, variant).n(tier));
-            sound(t, anchor, scale >= 2.5 ? S_BF_BIG : S_BF, 3.0 + scale * 2, 1.0 / Math.max(0.6, Math.sqrt(scale * 0.7)));
+            sound(t, anchor, scale >= 2.5 ? S_OVERWRITE_BIG : S_OVERWRITE, 3.0 + scale * 2, 1.0 / Math.max(0.6, Math.sqrt(scale * 0.7)));
         }
 
         void ring(int t, int anchor, Vec3 off, double maxR, double speed, double width) {
@@ -62,7 +62,7 @@ public final class Script {
 
         void blast(int t, int anchor, Vec3 off, double radius, double depth, int style, double dmgMult) {
             add(Beat.of(t, BLAST, anchor, off).p(radius * c.ds(), depth, dmgMult).n(style));
-            sound(t, anchor, radius > 18 ? S_ERUPT : S_CRATER, 4 + radius * 0.4, 1.0 / Math.max(0.7, Math.sqrt(radius / 8)));
+            sound(t, anchor, radius > 18 ? S_RUPTURE : S_SLAM, 4 + radius * 0.4, 1.0 / Math.max(0.7, Math.sqrt(radius / 8)));
         }
 
         void trench(int t, int anchor, Vec3 off, Vec3 toward, double len, double width, double depth, int dur) {
@@ -91,7 +91,7 @@ public final class Script {
 
         void charge(int t, int dur, int anchor, Vec3 off, double amount) {
             add(Beat.of(t, CHARGE, anchor, off).p(amount, 0, 0).d(dur));
-            sound(t, anchor, S_CHARGE, 1.5 + amount, 0.8 + 20.0 / (dur + 20.0));
+            sound(t, anchor, S_GATHER, 1.5 + amount, 0.8 + 20.0 / (dur + 20.0));
         }
 
         void bolt(int t, int dur, int a0, Vec3 o0, int a1, Vec3 o1, double radius, double mult, int kind, int curve) {
@@ -122,7 +122,7 @@ public final class Script {
 
         void stop(int t, int dur, double radius) {
             add(Beat.of(t, STOP, CASTER, Vec3.ZERO).p(radius, 0, 0).d(dur));
-            sound(t, CASTER, S_RUMBLE, 4.0, 0.55);
+            sound(t, CASTER, S_HALT, 4.0, 0.55);
         }
 
         void strip(int t, int anchor, Vec3 off, double radius) {
@@ -131,7 +131,7 @@ public final class Script {
 
         void shard(int t, int anchor, Vec3 off, double radius, double count) {
             add(Beat.of(t, SHARD, anchor, off).p(radius, count, 0));
-            sound(t, anchor, S_WAVE, 2.5, 1.2);
+            sound(t, anchor, S_CRACK, 2.5, 1.2);
         }
 
         void returnSet(int t, int dur, double hp) {
@@ -203,7 +203,7 @@ public final class Script {
     /** A flurry of reality-rewriting fists: he blinks onto the target and lands a frame-accurate barrage, each punch
      *  a small white-gold crack in the air, the last one a launching blow. */
     private static void ascendedBarrage(B b) {
-        b.dash(0, 6, TARGET, Z, 1.2);
+        b.sound(0, CASTER, S_BLINK, 2.0, 1.1);   // the Stand goes; he stays where he is
         b.smear(5, CASTER, TARGET);
         int[] at = {8, 11, 14, 17, 20, 23, 26, 29, 33, 37};
         for (int i = 0; i < at.length; i++) {
@@ -221,7 +221,7 @@ public final class Script {
     private static void overwriteBlow(B b) {
         b.charge(0, 24, HAND, Z, 1.4);
         b.dark(10, 0.3, 24);
-        b.dash(22, 5, TARGET, Z, 1.4);
+        b.sound(22, CASTER, S_BLINK, 2.0, 0.9);
         b.smear(26, CASTER, TARGET);
         b.bf(28, TARGET, Z, 3.0, 1.0, 40, 2);
         b.blast(29, GROUND, Z, 9, 0.5, 0, 1.0);
@@ -236,10 +236,10 @@ public final class Script {
     /** Erasure Hook: reality strips the target of every ward - buffs, shields, resistances - and then a heavy hook lands
      *  on what is left. */
     private static void erasureHook(B b) {
-        b.dash(0, 5, TARGET, Z, 1.3);
+        b.sound(0, CASTER, S_BLINK, 2.0, 1.0);
         b.shard(4, TARGET, Z, 2.0, 10);
         b.strip(6, TARGET, Z, 3.0);
-        b.sound(6, TARGET, S_WAVE, 3.0, 0.8);
+        b.sound(6, TARGET, S_CRACK, 3.0, 0.8);
         b.bf(12, TARGET, Z, 1.8, 1.0, 24, 1);
         b.dmg(12, TARGET, Z, 3.0, 1.0, 1);
         b.impact(12, TARGET, 2, 1.1);
@@ -252,7 +252,7 @@ public final class Script {
         Vec3[] offs = {b.R.scale(1.8), b.R.scale(-1.8), b.F.scale(-1.6), new Vec3(0, 0, 0), b.F.scale(1.2)};
         int t = 0;
         for (int i = 0; i < offs.length; i++) {
-            b.dash(t, 3, TARGET, offs[i], 0.1);
+            b.sound(t, TARGET, S_BLINK, 1.6, 1.0 + 0.08 * i);   // the Stand steps through reality to another side
             b.smear(t + 2, CASTER, TARGET);
             b.bf(t + 4, TARGET, b.jitter(0.4), i == offs.length - 1 ? 1.5 : 0.7, i == offs.length - 1 ? 0.9 : 0.3, 21 + i, 1);
             b.dmg(t + 4, TARGET, Z, 2.6, i == offs.length - 1 ? 0.9 : 0.3, 1);
@@ -281,7 +281,7 @@ public final class Script {
 
     /** Wounds Undone: reality is told he was never hurt. Full heal, every ailment cleansed, a gold shell blooming out. */
     private static void woundsUndone(B b) {
-        b.sound(0, CASTER, S_CHARGE, 2.0, 1.1);
+        b.sound(0, CASTER, S_GATHER, 2.0, 1.1);
         b.shell(2, CASTER, Z, 3.0, 24, 1);
         b.heal(6, 0, false);
         b.ring(6, GROUND, Z, 6, 40, 0.8);
@@ -289,7 +289,7 @@ public final class Script {
 
     /** Grace Over Heaven: the same grace extended outward - nearby allies healed and strengthened. */
     private static void graceOverHeaven(B b) {
-        b.sound(0, CASTER, S_DOMAIN_HUM, 2.5, 1.0);
+        b.sound(0, CASTER, S_LATTICE, 2.5, 1.0);
         b.shell(2, CASTER, Z, 10.0, 30, 1);
         b.heal(8, 0, true);
         b.ring(8, GROUND, Z, 12, 45, 1.0);
@@ -298,7 +298,7 @@ public final class Script {
     /** Negation: a thin pane of overwritten reality held before him - the next technique thrown at him is nullified
      *  and thrown back. */
     private static void negation(B b) {
-        b.sound(0, CASTER, S_WAVE, 2.5, 0.9);
+        b.sound(0, CASTER, S_CRACK, 2.5, 0.9);
         b.shell(1, CASTER, Z, 3.5, 36, 1);
         b.negate(2, 40);
     }
@@ -309,7 +309,7 @@ public final class Script {
     private static void heavenlyLightning(B b) {
         b.charge(0, 12, EYE, Z, 0.8);
         b.bolt(12, 4, POINT, new Vec3(0, 40, 0), POINT, Z, 1.0, 1.0, 1, 0);
-        b.sound(16, POINT, S_ERUPT, 6, 0.8);
+        b.sound(16, POINT, S_JUDGMENT, 6, 1.0);
         b.dmg(16, POINT, Z, 5.0, 1.0, 2);
         b.knock(16, POINT, 0.9, 3.5, 5.0);
         b.ring(16, POINT, Z, 16, 80, 1.3);
@@ -326,7 +326,7 @@ public final class Script {
             double a = i * Math.PI * 2 / 14;
             Vec3 off = new Vec3(Math.cos(a) * 6, 0, Math.sin(a) * 6);
             b.shard(t, POINT, off, 1.4, 3);
-            b.sound(t, POINT, S_WAVE, 1.6, 1.3 + i * 0.03);
+            b.sound(t, POINT, S_CRACK, 1.6, 1.3 + i * 0.03);
             t += 4;
         }
         // the cascade
@@ -347,7 +347,7 @@ public final class Script {
     /** Reality-Warping Knives: a fan of crystal shards that ignore the target's dodges and bite harder the weaker it
      *  is (the server scales each hit by the target's missing health). */
     private static void realityKnives(B b) {
-        b.sound(0, CASTER, S_SLASH, 2.5, 1.3);
+        b.sound(0, CASTER, S_REND, 2.5, 1.3);
         for (int i = 0; i < 7; i++) {
             double spread = (i - 3) * 0.14;
             Vec3 aim = b.F.scale(Math.cos(spread)).add(b.R.scale(Math.sin(spread)));
@@ -360,7 +360,7 @@ public final class Script {
 
     /** Road to Heaven: a pillar of overwritten reality rises under the target, hurling it up into a brief hover. */
     private static void roadToHeaven(B b) {
-        b.sound(0, GROUND, S_RUMBLE, 3.0, 0.9);
+        b.sound(0, GROUND, S_FISSURE, 3.0, 1.0);
         b.trench(2, GROUND, Z, b.U.scale(0), 2.5, 2.5, 6, 6);
         b.shell(2, TARGET, Z, 2.5, 20, 1);
         b.knock(6, TARGET, 1.4, 0.0, 3.0);
@@ -411,7 +411,7 @@ public final class Script {
 
     /** Stillness: a short, defensive halt - he stops time just long enough to step out of harm. */
     private static void stillness(B b) {
-        b.sound(0, CASTER, S_RUMBLE, 3.0, 0.9);
+        b.sound(0, CASTER, S_HALT, 3.0, 0.9);
         b.dark(0, 0.35, 22);
         b.stop(1, 18, 24);
         b.negate(1, 20);
@@ -463,7 +463,7 @@ public final class Script {
     /** Reality Collapse (domain): a field of overwritten reality - inside it his moves cannot miss and everything else
      *  is weakened and slowed. */
     private static void realityCollapse(B b) {
-        b.sound(0, CASTER, S_DOMAIN, 6.0, 0.8);
+        b.sound(0, CASTER, S_COLLAPSE, 6.0, 0.8);
         b.dark(2, 0.4, 40);
         b.add(Beat.of(6, DOMAIN_ON, CASTER, Z));
         b.shell(6, CASTER, Z, 20, 40, 1);

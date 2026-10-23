@@ -159,21 +159,28 @@ public final class WFx {
     }
 
     /** The Black Flash itself: sparks of black, the world turned inside out, then the two-tone afterglow. */
-    public static void blackFlash(Vec3 at, float dirX, float dirY, double scale, double distance) {
+    /**
+     * An overwrite blow landing: the seal frame, the glass breaking around it, a gilt afterimage; a short
+     * stillness as reality is rewritten, then the shock rolls out.
+     */
+    public static void overwrite(Vec3 at, float dirX, float dirY, double scale, double distance) {
         float near = (float) Mth.clamp(1.0 - (distance - 6) / 60.0, 0.25, 1.0);
         float s = (float) Math.min(1.0, 0.5 + scale * 0.2) * near;
-        accent(1f, 0.74f, 0.26f);
-        impact(at, dirX, dirY, true, scale >= 1.8, new float[][]{
-                {0.035f, 6, 1f}, {0.03f, 2, 1f}, {0.035f, 6, 1f}, {0.03f, 3, 1f}, {0.05f, 6, 0.9f},
-                {0.06f + 0.02f * (float) scale, 3, 0.8f}, {0.12f, 3, 0.35f}, {0.1f, 6, 0.12f}});
-        shake(0.45f + 0.18f * (float) scale * near);
-        punch(0.7f * s);
-        aberration(0.9f * s);
-        afterimage(0.6f * s);
-        fovKick(-6f * s);
-        shockwave(at, 1.0f * s, 1.2f + 0.2f * (float) scale);
-        flash(0.25f * s, 0.9f, 0.05f, 0.1f, 5f);
-        hitStop(Math.min(0.2, 0.06 + 0.03 * scale));
+        accent(1f, 0.8f, 0.34f);
+        if (scale >= 1.8) {
+            impact(at, dirX, dirY, false, true, new float[][]{
+                    {0.05f, 6, 1f}, {0.04f, 1, 1f}, {0.05f, 3, 1f}, {0.05f, 1, 0.9f}, {0.1f + 0.02f * (float) scale, 3, 0.6f}, {0.14f, 1, 0.25f}});
+        } else {
+            impact(at, dirX, dirY, false, true, new float[][]{{0.035f, 1, 1f}, {0.04f, 3, 0.8f}, {0.06f, 1, 0.35f}});
+        }
+        shake(0.35f + 0.15f * (float) scale * near);
+        punch(0.6f * s);
+        aberration(0.5f * s);
+        afterimage(0.5f * s);
+        fovKick(-4f * s);
+        shockwave(at, 0.9f * s, 1.1f + 0.2f * (float) scale);
+        flash(0.3f * s, 1f, 0.93f, 0.72f, 5f);
+        hitStop(Math.min(0.18, 0.05 + 0.03 * scale));
     }
 
     // ------------------------------------------------------------------ read by the pipeline

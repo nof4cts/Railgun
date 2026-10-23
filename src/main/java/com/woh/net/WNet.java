@@ -49,9 +49,6 @@ public final class WNet {
         CHANNEL.registerMessage(id++, State.class, State::encode, State::decode, State::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, Domain.class, Domain::encode, Domain::decode, Domain::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         CHANNEL.registerMessage(id++, Aura.class, Aura::encode, Aura::decode, Aura::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, God.class, God::encode, God::decode, God::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, Judge.class, Judge::encode, Judge::decode, Judge::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(id++, Wall.class, Wall::encode, Wall::decode, Wall::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     /** To every player on the server, wherever they are. */
@@ -218,57 +215,6 @@ public final class WNet {
 
         static void handle(Domain m, Supplier<NetworkEvent.Context> ctx) {
             ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.woh.client.WCasts.domain(m))));
-            ctx.get().setPacketHandled(true);
-        }
-    }
-
-    /** 4th Wall Breaker: the whole server's screens are slashed open, then it goes down. Carries who did it. */
-    public record Wall(String by, int ticks) {
-        static void encode(Wall m, FriendlyByteBuf b) {
-            b.writeUtf(m.by, 64);
-            b.writeVarInt(m.ticks);
-        }
-
-        static Wall decode(FriendlyByteBuf b) {
-            return new Wall(b.readUtf(64), b.readVarInt());
-        }
-
-        static void handle(Wall m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.woh.client.WWall.start(m))));
-            ctx.get().setPacketHandled(true);
-        }
-    }
-
-    /** Heavenly Judgement, sent only to the one who raised /kill against him: plays on their screen for ticks. */
-    public record Judge(String by, int ticks) {
-        static void encode(Judge m, FriendlyByteBuf b) {
-            b.writeUtf(m.by, 64);
-            b.writeVarInt(m.ticks);
-        }
-
-        static Judge decode(FriendlyByteBuf b) {
-            return new Judge(b.readUtf(64), b.readVarInt());
-        }
-
-        static void handle(Judge m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.woh.client.WJudge.start(m))));
-            ctx.get().setPacketHandled(true);
-        }
-    }
-
-    /** "As God As My Witness" on (until > now) or off for an entity: his eyes burn red, a red halo over him. */
-    public record God(int entity, long until) {
-        static void encode(God m, FriendlyByteBuf b) {
-            b.writeVarInt(m.entity);
-            b.writeLong(m.until);
-        }
-
-        static God decode(FriendlyByteBuf b) {
-            return new God(b.readVarInt(), b.readLong());
-        }
-
-        static void handle(God m, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() -> safe(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.woh.client.WGod.set(m))));
             ctx.get().setPacketHandled(true);
         }
     }
