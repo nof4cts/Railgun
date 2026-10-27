@@ -5,6 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,3 +36,18 @@ jobs:
             build/libs/*.jar
             !build/libs/*-sources.jar
           if-no-files-found: error
+
+      - name: Publish jar to the ironlung-build branch
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p /tmp/out
+          cp build/libs/ironlung-*.jar /tmp/out/
+          rm -f /tmp/out/*-sources.jar
+          cd /tmp/out
+          git init -q -b ironlung-build
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          printf '# Iron Lung mod jar\n\nBuilt from commit %s. Put the jar in .minecraft/mods (Forge 1.20.1).\n' "$GITHUB_SHA" > README.md
+          git add -A
+          git commit -q -m "Build of $GITHUB_SHA"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" ironlung-build
