@@ -7,7 +7,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /** Everything about one pilot's dive. Persisted through {@link MissionSavedData}. */
@@ -15,7 +17,51 @@ public final class Mission {
     public enum Power { ONLINE, TRIPPED, RESTORING }
     public enum Phase { DIVING, ASCENDING, IMPLODING, DONE }
 
-    public final UUID owner;
+    /** Where a crew member goes back to when the dive ends. */
+    public static final class ReturnPoint {
+        public String dim = "minecraft:overworld";
+        public double x, y, z;
+        public float yaw, pitch;
+
+        public CompoundTag save() {
+            CompoundTag t = new CompoundTag();
+            t.putString("dim", dim);
+            t.putDouble("x", x);
+            t.putDouble("y", y);
+            t.putDouble("z", z);
+            t.putFloat("yaw", yaw);
+            t.putFloat("pitch", pitch);
+            return t;
+        }
+
+        public static ReturnPoint load(CompoundTag t) {
+            ReturnPoint r = new ReturnPoint();
+            r.dim = t.getString("dim");
+            r.x = t.getDouble("x");
+            r.y = t.getDouble("y");
+            r.z = t.getDouble("z");
+            r.yaw = t.getFloat("yaw");
+            r.pitch = t.getFloat("pitch");
+            return r;
+        }
+    }
+
+    public static final class CrewMember {
+        public final UUID id;
+        public String name;
+        public ReturnPoint ret = new ReturnPoint();
+        public transient float throttle, turn, ballast;
+
+        public CrewMember(UUID id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
+
+    public final UUID id;
+    public UUID leader;
+    public final Map<UUID, CrewMember> crew = new LinkedHashMap<>();
+    public transient UUID camOperator;
     public final int slot;
     public final long seed;
     public final int mapSize, objectiveCount, hiddenCount;
@@ -23,7 +69,6 @@ public final class Mission {
 
     // submarine
     public double x, z, heading, depth, speed, turnRate, vertSpeed;
-    public float throttleIn, turnIn, ballastIn;
     public float hull = 1.0f;
     public Power power = Power.ONLINE;
     public int restoreTicks;
@@ -31,6 +76,7 @@ public final class Mission {
     public float cameraCondition = 1.0f;
     public int sealant;
     public int weldTicks;
+    public transient UUID welder;
     public int photoCooldown;
     public int glitchTicks;
     public int collisionCooldown;
@@ -69,13 +115,10 @@ public final class Mission {
     public transient Boolean appliedLamps, appliedConsoles;
     public transient final float[] prox = {99, 99, 99, 99};
 
-    // where to put the pilot back
-    public String returnDim = "minecraft:overworld";
-    public double returnX, returnY, returnZ;
-    public float returnYaw, returnPitch;
 
-    public Mission(UUID owner, int slot, long seed, int mapSize, int objectiveCount, int hiddenCount) {
-        this.owner = owner;
+    public Mission(UUID id, UUID leader, int slot, long seed, int mapSize, int objectiveCount, int hiddenCount) {
+        this.id = id;
+        this.leader = leader;
         this.slot = slot;
         this.seed = seed;
         this.mapSize = mapSize;
@@ -108,13 +151,44 @@ public final class Mission {
         return objectivesComplete() >= objectiveDone.length;
     }
 
+    public float throttle() {
+        float v = 0;
+        for (CrewMember c : crew.values()) v += c.throttle;
+        return Math.max(-1, Math.min(1, v));
+    }
+
+    public float turn() {
+        float v = 0;
+        for (CrewMember c : crew.values()) v += c.turn;
+        return Math.max(-1, Math.min(1, v));
+    }
+
+    public float ballast() {
+        float v = 0;
+        for (CrewMember c : crew.values()) v += c.ballast;
+        return Math.max(-1, Math.min(1, v));
+    }
+
+    public void clearInputs() {
+        for (CrewMember c : crew.values()) c.throttle = c.turn = c.ballast = 0;
+    }
+
     public boolean powered() {
         return power == Power.ONLINE;
     }
 
     public CompoundTag save() {
         CompoundTag t = new CompoundTag();
-        t.putUUID("owner", owner);
+        t.putUUID("id", id);
+        t.putUUID("leader", leader);
+        ListTag cl = new ListTag();
+        for (CrewMember c : crew.values()) {
+            CompoundTag ct = c.ret.save();
+            ct.putUUID("uuid", c.id);
+            ct.putString("name", c.name);
+            cl.add(ct);
+        }
+        t.put("crew", cl);
         t.putInt("slot", slot);
         t.putLong("seed", seed);
         t.putInt("mapSize", mapSize);
@@ -149,18 +223,19 @@ public final class Mission {
         int[] an = new int[anomaliesFound.size()];
         for (int i = 0; i < an.length; i++) an[i] = anomaliesFound.get(i);
         t.putIntArray("anomalies", an);
-        t.putString("retDim", returnDim);
-        t.putDouble("retX", returnX);
-        t.putDouble("retY", returnY);
-        t.putDouble("retZ", returnZ);
-        t.putFloat("retYaw", returnYaw);
-        t.putFloat("retPitch", returnPitch);
         return t;
     }
 
     public static Mission load(CompoundTag t) {
-        Mission m = new Mission(t.getUUID("owner"), t.getInt("slot"), t.getLong("seed"),
+        Mission m = new Mission(t.getUUID("id"), t.getUUID("leader"), t.getInt("slot"), t.getLong("seed"),
                 t.getInt("mapSize"), t.getInt("objCount"), t.getInt("hidden"));
+        ListTag cl = t.getList("crew", Tag.TAG_COMPOUND);
+        for (int i = 0; i < cl.size(); i++) {
+            CompoundTag ct = cl.getCompound(i);
+            CrewMember c = new CrewMember(ct.getUUID("uuid"), ct.getString("name"));
+            c.ret = ReturnPoint.load(ct);
+            m.crew.put(c.id, c);
+        }
         m.x = t.getDouble("x");
         m.z = t.getDouble("z");
         m.heading = t.getDouble("heading");
@@ -188,12 +263,6 @@ public final class Mission {
         ListTag ph = t.getList("photos", Tag.TAG_COMPOUND);
         for (int i = 0; i < ph.size(); i++) m.photos.add(PhotoRecord.load(ph.getCompound(i)));
         for (int a : t.getIntArray("anomalies")) m.anomaliesFound.add(a);
-        m.returnDim = t.getString("retDim");
-        m.returnX = t.getDouble("retX");
-        m.returnY = t.getDouble("retY");
-        m.returnZ = t.getDouble("retZ");
-        m.returnYaw = t.getFloat("retYaw");
-        m.returnPitch = t.getFloat("retPitch");
         m.map();
         return m;
     }

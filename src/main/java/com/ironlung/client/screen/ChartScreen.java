@@ -42,10 +42,11 @@ public class ChartScreen extends SubScreen {
             ModNetwork.toServer(new Packets.Surface(false));
             onClose();
         }).bounds(colX, by, 150, 20).build());
-        abort = addRenderableWidget(Button.builder(Component.translatable("screen.ironlung.abort"), b -> {
+        boolean lead = ClientMissionState.leader;
+        abort = addRenderableWidget(Button.builder(Component.translatable(lead ? "screen.ironlung.abort" : "screen.ironlung.leave"), b -> {
             if (!confirmAbort) {
                 confirmAbort = true;
-                b.setMessage(Component.translatable("screen.ironlung.abort_confirm"));
+                b.setMessage(Component.translatable(lead ? "screen.ironlung.abort_confirm" : "screen.ironlung.leave_confirm"));
             } else {
                 ModNetwork.toServer(new Packets.Surface(true));
                 onClose();
@@ -130,6 +131,11 @@ public class ChartScreen extends SubScreen {
         String[] brief = {"Photograph each site.", "Report coordinates as", "read at the helm.", "Rated to " + (int) OceanMap.CRUSH_DEPTH + " m."};
         for (String b : brief) {
             text(g, b, colX, y, TEXT_DIM);
+            y += 10;
+        }
+        if (ClientMissionState.crew.size() > 1) {
+            y += 4;
+            text(g, "CREW  " + String.join(", ", ClientMissionState.crew), colX, y, TEXT_DIM);
             y += 10;
         }
         y += 8;

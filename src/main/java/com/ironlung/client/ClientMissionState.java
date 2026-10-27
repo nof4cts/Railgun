@@ -28,6 +28,10 @@ public final class ClientMissionState {
     public static boolean[] done = new boolean[0];
     public static final List<PhotoRecord> photos = new ArrayList<>();
     public static final List<Integer> newlyLogged = new ArrayList<>();
+    public static final List<String> crew = new ArrayList<>();
+    public static boolean leader = true;
+    /** Last time the local player steered the camera; while recent, local aim wins over the server's. */
+    public static long lastCamInputNanos;
 
     // interpolated submarine state
     public static Packets.SubState prev, cur;
@@ -79,6 +83,9 @@ public final class ClientMissionState {
             camTilt = 0;
         }
         done = m.done;
+        crew.clear();
+        crew.addAll(m.crew);
+        leader = m.leader;
         photos.clear();
         photos.addAll(m.photos);
         if (fresh) introTicks = m.ticks < 40 ? 160 : 0;
@@ -90,6 +97,7 @@ public final class ClientMissionState {
         map = null;
         prev = cur = null;
         photos.clear();
+        crew.clear();
         transients.clear();
         done = new boolean[0];
         glitchTicks = silenceTicks = flashTicks = spikeTicks = shakeLongTicks = introTicks = 0;
@@ -101,6 +109,12 @@ public final class ClientMissionState {
         prev = cur == null ? s : cur;
         cur = s;
         curArrival = System.nanoTime();
+        boolean steeringRecently = System.nanoTime() - lastCamInputNanos < 600_000_000L;
+        if (!s.youOperate && !steeringRecently) {
+            camMount = s.camMount;
+            camPan = s.camPan;
+            camTilt = s.camTilt;
+        }
         for (int i = 0; i < done.length; i++) {
             boolean d = (s.doneMask & (1 << i)) != 0;
             done[i] = d;

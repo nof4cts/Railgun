@@ -2,13 +2,11 @@ package com.ironlung.mission;
 
 import com.ironlung.block.ControlType;
 import com.ironlung.config.IronLungConfig;
-import com.ironlung.network.ModNetwork;
 import com.ironlung.network.Packets;
 import com.ironlung.ocean.Poi;
 import com.ironlung.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -21,7 +19,7 @@ import net.minecraft.util.RandomSource;
 public final class HorrorDirector {
     private HorrorDirector() {}
 
-    public static void tick(Mission m, ServerPlayer p, ServerLevel lvl) {
+    public static void tick(Mission m, ServerLevel lvl) {
         RandomSource r = lvl.getRandom();
         updateTension(m);
 
@@ -46,12 +44,12 @@ public final class HorrorDirector {
         if (m.chainedEvent >= 0 && m.ticks >= m.chainedEventTick) {
             int t = m.chainedEvent;
             m.chainedEvent = -1;
-            trigger(m, p, lvl, HorrorType.byId(t));
+            trigger(m, lvl, HorrorType.byId(t));
         }
 
         if (m.ticks < m.nextEventTick) return;
         HorrorType type = pick(m, r);
-        if (type != null) trigger(m, p, lvl, type);
+        if (type != null) trigger(m, lvl, type);
         double freq = IronLungConfig.EVENT_FREQUENCY.get();
         double interval = (800 + r.nextInt(1500)) * (1.0 - 0.45 * m.tension) / freq;
         m.nextEventTick = m.ticks + (long) Math.max(160, interval);
@@ -119,7 +117,7 @@ public final class HorrorDirector {
         m.chainedEventTick = m.ticks + delayTicks;
     }
 
-    public static void trigger(Mission m, ServerPlayer p, ServerLevel lvl, HorrorType type) {
+    public static void trigger(Mission m, ServerLevel lvl, HorrorType type) {
         RandomSource r = lvl.getRandom();
         m.eventsTotal++;
         if (type.major) m.lastMajorTick = m.ticks;
@@ -211,7 +209,7 @@ public final class HorrorDirector {
             case PHOTO_ANOMALY -> m.photoAnomalyArmed = true;
             case COLLISION -> {}
         }
-        ModNetwork.toPlayer(p, new Packets.HorrorEvent(type.ordinal(), shake, r.nextLong(), a, b));
+        MissionManager.broadcast(m, new Packets.HorrorEvent(type.ordinal(), shake, r.nextLong(), a, b));
     }
 
     public static void tripPower(Mission m, ServerLevel lvl) {
@@ -219,7 +217,7 @@ public final class HorrorDirector {
         m.powerFailures++;
         m.lastPowerFailTick = m.ticks;
         m.flickerTicks = 0;
-        m.throttleIn = m.turnIn = m.ballastIn = 0;
+        m.clearInputs();
         playAtControl(m, lvl, ControlType.BREAKER, ModSounds.POWER_DOWN.get(), 1.2f, 1.0f);
     }
 

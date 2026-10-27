@@ -24,6 +24,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -32,6 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Runs every dive. A dive has a crew of 1..maxCrew players sharing one submarine, one ocean,
+ * one camera and one hull. Each crew member keeps their own return point.
+ */
 public final class MissionManager {
     private MissionManager() {}
 
@@ -39,17 +44,100 @@ public final class MissionManager {
     private static final DustParticleOptions BLOOD = new DustParticleOptions(new Vector3f(0.35f, 0.0f, 0.0f), 0.9f);
     private static final Map<UUID, Packets.MissionEnd> PENDING_SUMMARIES = new HashMap<>();
 
+    /** Spawn spots inside the 3x5 interior, one per crew slot. */
+    private static final double[][] SPAWNS = {{1.5, 2.5}, {0.6, 3.6}, {2.4, 3.6}, {1.5, 4.4}};
+
     private static MissionSavedData data(MinecraftServer server) {
         return MissionSavedData.get(server);
     }
 
     public static Mission get(ServerPlayer p) {
-        return data(p.server).missions.get(p.getUUID());
+        return data(p.server).missionOf(p.getUUID());
     }
 
     public static boolean hasMission(ServerPlayer p) {
         Mission m = get(p);
         return m != null && m.phase != Mission.Phase.DONE;
+    }
+
+    public static boolean isLeader(ServerPlayer p, Mission m) {
+        return m.leader.equals(p.getUUID());
+    }
+
+    // ------------------------------------------------------------------ crew helpers
+
+    /** Crew members who are online and inside the submarine dimension. */
+    public static List<ServerPlayer> aboard(Mission m) {
+        List<ServerPlayer> out = new ArrayList<>();
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) return out;
+        for (UUID u : m.crew.keySet()) {
+            ServerPlayer p = server.getPlayerList().getPlayer(u);
+            if (p != null && p.level().dimension().equals(IronLungMod.DIMENSION)) out.add(p);
+        }
+        return out;
+    }
+
+    public static void broadcast(Mission m, Object msg) {
+        for (ServerPlayer p : aboard(m)) ModNetwork.toPlayer(p, msg);
+    }
+
+    public static void tellCrew(Mission m, Component c, boolean actionBar) {
+        for (ServerPlayer p : aboard(m)) p.displayClientMessage(c, actionBar);
+    }
+
+    private static Mission.ReturnPoint returnPointOf(ServerPlayer p) {
+        Mission.ReturnPoint r = new Mission.ReturnPoint();
+        r.dim = p.level().dimension().location().toString();
+        r.x = p.getX();
+        r.y = p.getY();
+        r.z = p.getZ();
+        r.yaw = p.getYRot();
+        r.pitch = p.getXRot();
+        return r;
+    }
+
+    private static void sendHome(ServerPlayer p, Mission.ReturnPoint r) {
+        MinecraftServer server = p.server;
+        ServerLevel target = r == null ? null : server.getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(r.dim)));
+        if (target == null || target.dimension().equals(IronLungMod.DIMENSION)) {
+            ServerLevel ow = server.overworld();
+            BlockPos s = ow.getSharedSpawnPos();
+            p.teleportTo(ow, s.getX() + 0.5, s.getY(), s.getZ() + 0.5, 0f, 0f);
+        } else {
+            p.teleportTo(target, r.x, r.y, r.z, r.yaw, r.pitch);
+        }
+    }
+
+    private static void boardAt(ServerPlayer p, Mission m, ServerLevel sub, int index) {
+        BlockPos base = m.base();
+        double[] s = SPAWNS[Math.min(SPAWNS.length - 1, index)];
+        p.teleportTo(sub, base.getX() + s[0], base.getY() + SubInterior.SPAWN_Y, base.getZ() + s[1], 180f, 0f);
+    }
+
+    private static int indexOf(Mission m, UUID u) {
+        int i = 0;
+        for (UUID k : m.crew.keySet()) {
+            if (k.equals(u)) return i;
+            i++;
+        }
+        return 0;
+    }
+
+    private static List<String> crewNames(Mission m) {
+        List<String> out = new ArrayList<>();
+        for (Mission.CrewMember c : m.crew.values()) out.add(c.name);
+        return out;
+    }
+
+    public static void sendInit(ServerPlayer p, Mission m) {
+        m.map();
+        ModNetwork.toPlayer(p, new Packets.MissionInit(true, m.seed, m.mapSize, m.objectiveCount, m.hiddenCount, m.slot,
+                m.objectiveDone.clone(), new ArrayList<>(m.photos), m.ticks, crewNames(m), isLeader(p, m)));
+    }
+
+    private static void resyncCrew(Mission m) {
+        for (ServerPlayer p : aboard(m)) sendInit(p, m);
     }
 
     // ------------------------------------------------------------------ lifecycle
@@ -62,9 +150,9 @@ public final class MissionManager {
             return false;
         }
         MissionSavedData d = data(server);
-        if (d.missions.containsKey(p.getUUID())) return false;
+        if (d.missionOf(p.getUUID()) != null) return false;
         int slot = d.nextSlot++;
-        Mission m = new Mission(p.getUUID(), slot, seed, IronLungConfig.MAP_SIZE.get(),
+        Mission m = new Mission(UUID.randomUUID(), p.getUUID(), slot, seed, IronLungConfig.MAP_SIZE.get(),
                 IronLungConfig.OBJECTIVES.get(), IronLungConfig.HIDDEN_ANOMALIES.get());
         OceanMap map = m.map();
         m.x = map.startX;
@@ -73,53 +161,106 @@ public final class MissionManager {
         m.depth = Math.max(OceanMap.MIN_SUB_DEPTH + 5, map.floorDepth(m.x, m.z) - 22);
         m.sealant = IronLungConfig.SEALANT_CHARGES.get();
         m.nextEventTick = 700 + p.getRandom().nextInt(700);
-        m.returnDim = p.level().dimension().location().toString();
-        m.returnX = p.getX();
-        m.returnY = p.getY();
-        m.returnZ = p.getZ();
-        m.returnYaw = p.getYRot();
-        m.returnPitch = p.getXRot();
+        Mission.CrewMember c = new Mission.CrewMember(p.getUUID(), p.getGameProfile().getName());
+        c.ret = returnPointOf(p);
+        m.crew.put(c.id, c);
 
         BlockPos base = m.base();
         SubInterior.build(sub, base);
-        d.missions.put(p.getUUID(), m);
+        d.missions.put(m.id, m);
+        d.reindex();
         d.setDirty();
 
-        p.teleportTo(sub, base.getX() + SubInterior.SPAWN_X, base.getY() + SubInterior.SPAWN_Y, base.getZ() + SubInterior.SPAWN_Z, 180f, 0f);
+        boardAt(p, m, sub, 0);
         sendInit(p, m);
         sub.playSound(null, base.getX() + 1.5, base.getY() + 1.5, base.getZ() + 5.5, ModSounds.BREAKER_CLUNK.get(), SoundSource.BLOCKS, 1.5f, 0.6f);
         sub.playSound(null, base.getX() + 1.5, base.getY() + 1.5, base.getZ() + 2.5, ModSounds.HULL_GROAN.get(), SoundSource.AMBIENT, 1.0f, 0.7f);
-        IronLungMod.LOGGER.info("{} began a dive (seed {}, slot {})", p.getGameProfile().getName(), seed, slot);
+        IronLungMod.LOGGER.info("{} began a dive (seed {}, slot {})", c.name, seed, slot);
         return true;
     }
 
-    public static void sendInit(ServerPlayer p, Mission m) {
-        m.map();
-        ModNetwork.toPlayer(p, new Packets.MissionInit(true, m.seed, m.mapSize, m.objectiveCount, m.hiddenCount, m.slot,
-                m.objectiveDone.clone(), new ArrayList<>(m.photos), m.ticks));
+    /** Bring another player aboard a dive already under way. */
+    public static boolean joinMission(ServerPlayer p, Mission m) {
+        MinecraftServer server = p.server;
+        ServerLevel sub = server.getLevel(IronLungMod.DIMENSION);
+        if (sub == null || m.phase != Mission.Phase.DIVING) {
+            p.sendSystemMessage(Component.translatable("ironlung.msg.join_closed").withStyle(ChatFormatting.DARK_RED));
+            return false;
+        }
+        if (m.crew.size() >= IronLungConfig.MAX_CREW.get()) {
+            p.sendSystemMessage(Component.translatable("ironlung.msg.join_full").withStyle(ChatFormatting.DARK_RED));
+            return false;
+        }
+        MissionSavedData d = data(server);
+        if (d.missionOf(p.getUUID()) != null) return false;
+        Mission.CrewMember c = new Mission.CrewMember(p.getUUID(), p.getGameProfile().getName());
+        c.ret = returnPointOf(p);
+        m.crew.put(c.id, c);
+        d.reindex();
+        d.setDirty();
+        boardAt(p, m, sub, m.crew.size() - 1);
+        BlockPos b = m.base();
+        sub.playSound(null, b.getX() + 1.5, b.getY() + 1.5, b.getZ() + 5.5, ModSounds.BREAKER_CLUNK.get(), SoundSource.BLOCKS, 1.2f, 0.7f);
+        tellCrew(m, Component.translatable("ironlung.msg.crew_joined", c.name).withStyle(ChatFormatting.GRAY), false);
+        resyncCrew(m);
+        sendInit(p, m);
+        return true;
     }
 
-    public static void endMission(ServerPlayer p, Mission m, int outcome, boolean teleportBack) {
-        MinecraftServer server = p.server;
+    /** One crew member leaves; the dive continues for the rest. */
+    public static void leaveMission(ServerPlayer p, Mission m, boolean teleportBack) {
+        Mission.CrewMember c = m.crew.remove(p.getUUID());
+        if (c == null) return;
+        MissionSavedData d = data(p.server);
+        d.reindex();
+        d.setDirty();
+        if (p.getUUID().equals(m.camOperator)) m.camOperator = null;
+        if (p.getUUID().equals(m.welder)) m.weldTicks = 0;
+        Packets.MissionEnd summary = summary(m, Packets.MissionEnd.ABORTED);
+        if (teleportBack) sendHome(p, c.ret);
+        ModNetwork.toPlayer(p, Packets.MissionInit.inactive());
+        if (p.isAlive()) ModNetwork.toPlayer(p, summary);
+        else PENDING_SUMMARIES.put(p.getUUID(), summary);
+        if (m.crew.isEmpty()) {
+            finish(p.server, m, Packets.MissionEnd.ABORTED, true);
+            return;
+        }
+        if (m.leader.equals(p.getUUID())) m.leader = m.crew.keySet().iterator().next();
+        tellCrew(m, Component.translatable("ironlung.msg.crew_left", c.name).withStyle(ChatFormatting.GRAY), false);
+        resyncCrew(m);
+    }
+
+    private static Packets.MissionEnd summary(Mission m, int outcome) {
+        return new Packets.MissionEnd(outcome, m.ticks, m.objectivesComplete(), m.objectiveDone.length,
+                m.photos.size(), m.anomaliesFound.size(), Math.max(0, m.hull), m.collisions, m.powerFailures, m.sightings);
+    }
+
+    /** End the dive for everyone aboard. Offline crew are sent home when they next log in. */
+    public static void finish(MinecraftServer server, Mission m, int outcome, boolean teleportBack) {
         MissionSavedData d = data(server);
         m.phase = Mission.Phase.DONE;
-        d.missions.remove(m.owner);
+        Packets.MissionEnd summary = summary(m, outcome);
+        for (Mission.CrewMember c : new ArrayList<>(m.crew.values())) {
+            ServerPlayer p = server.getPlayerList().getPlayer(c.id);
+            if (p == null) {
+                d.pendingReturns.put(c.id, c.ret);
+                continue;
+            }
+            if (p.isAlive()) {
+                if (teleportBack || p.level().dimension().equals(IronLungMod.DIMENSION)) sendHome(p, c.ret);
+                ModNetwork.toPlayer(p, Packets.MissionInit.inactive());
+                ModNetwork.toPlayer(p, summary);
+            } else {
+                ModNetwork.toPlayer(p, Packets.MissionInit.inactive());
+                PENDING_SUMMARIES.put(p.getUUID(), summary);
+            }
+        }
+        m.crew.clear();
+        d.missions.remove(m.id);
+        d.reindex();
         d.setDirty();
-        Packets.MissionEnd summary = new Packets.MissionEnd(outcome, m.ticks, m.objectivesComplete(), m.objectiveDone.length,
-                m.photos.size(), m.anomaliesFound.size(), Math.max(0, m.hull), m.collisions, m.powerFailures, m.sightings);
         ServerLevel sub = server.getLevel(IronLungMod.DIMENSION);
-        if (teleportBack) {
-            ServerLevel target = server.getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(m.returnDim)));
-            if (target == null) target = server.overworld();
-            p.teleportTo(target, m.returnX, m.returnY, m.returnZ, m.returnYaw, m.returnPitch);
-        }
         if (sub != null) SubInterior.clear(sub, m.base());
-        ModNetwork.toPlayer(p, Packets.MissionInit.inactive());
-        if (p.isAlive()) {
-            ModNetwork.toPlayer(p, summary);
-        } else {
-            PENDING_SUMMARIES.put(p.getUUID(), summary);
-        }
     }
 
     public static void onRespawn(ServerPlayer p) {
@@ -132,21 +273,51 @@ public final class MissionManager {
 
     public static void onDeath(ServerPlayer p) {
         Mission m = get(p);
-        if (m != null && m.phase != Mission.Phase.DONE) endMission(p, m, Packets.MissionEnd.LOST, false);
+        if (m == null || m.phase == Mission.Phase.DONE) return;
+        if (m.phase == Mission.Phase.IMPLODING) return; // the implosion ends the dive for everyone
+        if (m.crew.size() <= 1) {
+            finish(p.server, m, Packets.MissionEnd.LOST, false);
+        } else {
+            tellCrew(m, Component.translatable("ironlung.msg.crew_died", p.getGameProfile().getName()).withStyle(ChatFormatting.DARK_RED), false);
+            leaveMission(p, m, false);
+        }
     }
 
     public static void onLogin(ServerPlayer p) {
-        Mission m = get(p);
-        if (m == null) return;
-        if (!p.level().dimension().equals(IronLungMod.DIMENSION)) {
-            // logged in somewhere else: the dive is forfeit
-            endMission(p, m, Packets.MissionEnd.ABORTED, false);
+        MissionSavedData d = data(p.server);
+        Mission.ReturnPoint pending = d.pendingReturns.remove(p.getUUID());
+        if (pending != null) {
+            d.setDirty();
+            if (p.level().dimension().equals(IronLungMod.DIMENSION)) sendHome(p, pending);
+            ModNetwork.toPlayer(p, Packets.MissionInit.inactive());
+            p.sendSystemMessage(Component.translatable("ironlung.msg.dive_ended_offline").withStyle(ChatFormatting.GRAY));
             return;
         }
+        Mission m = d.missionOf(p.getUUID());
+        if (m == null) {
+            if (p.level().dimension().equals(IronLungMod.DIMENSION)) {
+                sendHome(p, null);
+                ModNetwork.toPlayer(p, Packets.MissionInit.inactive());
+            }
+            return;
+        }
+        if (!p.level().dimension().equals(IronLungMod.DIMENSION)) {
+            leaveMission(p, m, false);
+            return;
+        }
+        m.crew.get(p.getUUID()).throttle = 0;
         m.appliedLamps = null;
         m.appliedConsoles = null;
-        m.throttleIn = m.turnIn = m.ballastIn = 0;
         sendInit(p, m);
+    }
+
+    public static void onLogout(ServerPlayer p) {
+        Mission m = get(p);
+        if (m == null) return;
+        Mission.CrewMember c = m.crew.get(p.getUUID());
+        if (c != null) c.throttle = c.turn = c.ballast = 0;
+        if (p.getUUID().equals(m.camOperator)) m.camOperator = null;
+        if (p.getUUID().equals(m.welder)) m.weldTicks = 0;
     }
 
     // ------------------------------------------------------------------ ticking
@@ -157,57 +328,61 @@ public final class MissionManager {
         ServerLevel sub = server.getLevel(IronLungMod.DIMENSION);
         if (sub == null) return;
         for (Mission m : new ArrayList<>(d.missions.values())) {
-            ServerPlayer p = server.getPlayerList().getPlayer(m.owner);
-            if (p == null || !p.isAlive()) continue; // paused while the pilot is away
-            if (!p.level().dimension().equals(IronLungMod.DIMENSION)) {
-                endMission(p, m, Packets.MissionEnd.ABORTED, false);
-                continue;
+            // anyone who walked out of the dimension by other means has left the crew
+            for (UUID u : new ArrayList<>(m.crew.keySet())) {
+                ServerPlayer p = server.getPlayerList().getPlayer(u);
+                if (p != null && p.isAlive() && !p.level().dimension().equals(IronLungMod.DIMENSION)) leaveMission(p, m, false);
             }
+            if (m.phase == Mission.Phase.DONE) continue;
+            List<ServerPlayer> crew = aboard(m);
+            crew.removeIf(p -> !p.isAlive());
+            if (crew.isEmpty()) continue; // paused while nobody is aboard
             try {
-                tickMission(p, m, sub);
+                tickMission(m, crew, sub);
             } catch (Exception e) {
                 IronLungMod.LOGGER.error("Dive tick failed; ending dive safely", e);
-                endMission(p, m, Packets.MissionEnd.ABORTED, true);
+                finish(server, m, Packets.MissionEnd.ABORTED, true);
                 continue;
             }
             if (m.ticks % 200 == 0) d.setDirty();
         }
     }
 
-    private static void tickMission(ServerPlayer p, Mission m, ServerLevel lvl) {
+    private static void tickMission(Mission m, List<ServerPlayer> crew, ServerLevel lvl) {
         if (m.phase == Mission.Phase.DONE) return;
         m.ticks++;
         m.phaseTicks++;
         RandomSource r = lvl.getRandom();
         switch (m.phase) {
             case DIVING -> {
-                physics(p, m, lvl, r);
-                systems(p, m, lvl, r);
-                if (m.phase == Mission.Phase.DIVING) HorrorDirector.tick(m, p, lvl);
+                physics(m, lvl, r);
+                systems(m, lvl, r);
+                if (m.phase == Mission.Phase.DIVING) HorrorDirector.tick(m, lvl);
             }
-            case ASCENDING -> ascend(p, m, lvl, r);
-            case IMPLODING -> implode(p, m, lvl, r);
+            case ASCENDING -> ascend(m, lvl, r);
+            case IMPLODING -> implode(m, crew, lvl, r);
             default -> {}
         }
         if (m.phase == Mission.Phase.DONE) return;
         applyPowerVisuals(m, lvl, r);
         if (m.ticks % 4 == 0) updateProximity(m);
-        if (m.ticks % 2 == 0) sendState(p, m);
-        keepPilotInside(p, m);
+        if (m.ticks % 2 == 0) for (ServerPlayer p : crew) sendState(p, m);
+        for (ServerPlayer p : crew) keepInside(p, m);
     }
 
-    private static void keepPilotInside(ServerPlayer p, Mission m) {
+    private static void keepInside(ServerPlayer p, Mission m) {
         BlockPos b = m.base();
         double rx = p.getX() - b.getX(), ry = p.getY() - b.getY(), rz = p.getZ() - b.getZ();
         if (rx < -0.5 || rx > 3.5 || ry < -1.5 || ry > 3.5 || rz < -0.5 || rz > 5.5) {
-            p.teleportTo(b.getX() + SubInterior.SPAWN_X, b.getY() + SubInterior.SPAWN_Y, b.getZ() + SubInterior.SPAWN_Z);
+            double[] s = SPAWNS[Math.min(SPAWNS.length - 1, indexOf(m, p.getUUID()))];
+            p.teleportTo(b.getX() + s[0], b.getY() + SubInterior.SPAWN_Y, b.getZ() + s[1]);
         }
     }
 
-    private static void physics(ServerPlayer p, Mission m, ServerLevel lvl, RandomSource r) {
+    private static void physics(Mission m, ServerLevel lvl, RandomSource r) {
         OceanMap map = m.map();
         boolean pw = m.powered();
-        double thr = pw ? m.throttleIn : 0, turn = pw ? m.turnIn : 0, bal = pw ? m.ballastIn : 0;
+        double thr = pw ? m.throttle() : 0, turn = pw ? m.turn() : 0, bal = pw ? m.ballast() : 0;
         double maxSpd = IronLungConfig.MAX_SPEED.get();
         double target = thr >= 0 ? thr * maxSpd : thr * maxSpd * 0.5;
         m.speed += (target - m.speed) * 0.015;
@@ -223,7 +398,6 @@ public final class MissionManager {
 
         double severity = 0;
         BlockPos hitAt = null;
-        // keel against the floor directly below
         double floorHere = map.floorDepth(nx, nz);
         if (floorHere < nd + 1.8) {
             severity += Math.abs(m.vertSpeed) * 1.2 + 0.05;
@@ -231,7 +405,6 @@ public final class MissionManager {
             m.vertSpeed = Math.min(0, m.vertSpeed) * -0.2;
             hitAt = new BlockPos(1, -1, 2);
         }
-        // nose / tail against rock
         double dir = m.speed >= 0 ? 1 : -1;
         double px = nx + fx * 3.6 * dir, pz = nz + fz * 3.6 * dir;
         if (map.floorDepth(px, pz) < nd + 1.6) {
@@ -255,16 +428,15 @@ public final class MissionManager {
             BlockPos at = m.base().offset(hitAt);
             lvl.playSound(null, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, ModSounds.HULL_IMPACT.get(), SoundSource.AMBIENT,
                     (float) Math.min(1.8, 0.6 + severity), 0.9f + r.nextFloat() * 0.2f);
-            ModNetwork.toPlayer(p, new Packets.HorrorEvent(HorrorType.COLLISION.ordinal(), (float) Math.min(1.2, severity * 0.8), r.nextLong(), 0, 0));
+            broadcast(m, new Packets.HorrorEvent(HorrorType.COLLISION.ordinal(), (float) Math.min(1.2, severity * 0.8), r.nextLong(), 0, 0));
             if (severity > 1.0 && m.powered() && r.nextFloat() < 0.3f) HorrorDirector.tripPower(m, lvl);
             else if (severity > 0.5 && m.powered() && r.nextFloat() < 0.4f) m.flickerTicks = 20 + r.nextInt(20);
         }
     }
 
-    private static void systems(ServerPlayer p, Mission m, ServerLevel lvl, RandomSource r) {
+    private static void systems(Mission m, ServerLevel lvl, RandomSource r) {
         BlockPos base = m.base();
         double dmgMul = IronLungConfig.HULL_DAMAGE.get();
-        // pressure
         if (m.depth > OceanMap.CRUSH_DEPTH) {
             m.hull -= (float) ((m.depth - OceanMap.CRUSH_DEPTH) * 0.00004 * dmgMul);
             if (m.ticks % 50 == 0) {
@@ -274,7 +446,6 @@ public final class MissionManager {
         } else if (m.depth > OceanMap.WARN_DEPTH && m.ticks % 220 == 0) {
             HorrorDirector.playHull(m, lvl, r, ModSounds.HULL_CREAK.get(), 0.9f, 0.6f);
         }
-        // power
         if (m.power == Mission.Power.RESTORING) {
             if (--m.restoreTicks <= 0) {
                 m.power = Mission.Power.ONLINE;
@@ -289,12 +460,12 @@ public final class MissionManager {
         if (m.cameraCondition < 0.6f && m.powered() && m.glitchTicks == 0 && r.nextFloat() < (0.6f - m.cameraCondition) * 0.004f) {
             m.glitchTicks = 20 + r.nextInt(40);
         }
-        // welding a breach
         if (m.weldTicks > 0) {
             BlockPos st = base.offset(SubInterior.CONTROL_POS.get(ControlType.SEALANT));
-            if (p.distanceToSqr(st.getX() + 0.5, st.getY() + 0.5, st.getZ() + 0.5) > 3.2 * 3.2) {
+            ServerPlayer welder = m.welder == null ? null : lvl.getServer().getPlayerList().getPlayer(m.welder);
+            if (welder == null || welder.distanceToSqr(st.getX() + 0.5, st.getY() + 0.5, st.getZ() + 0.5) > 3.2 * 3.2) {
                 m.weldTicks = 0;
-                p.displayClientMessage(Component.translatable("ironlung.msg.weld_abandoned").withStyle(ChatFormatting.GRAY), true);
+                if (welder != null) welder.displayClientMessage(Component.translatable("ironlung.msg.weld_abandoned").withStyle(ChatFormatting.GRAY), true);
             } else {
                 m.weldTicks--;
                 if (m.weldTicks % 8 == 0) {
@@ -306,11 +477,10 @@ public final class MissionManager {
                 if (m.weldTicks == 0) {
                     m.sealant--;
                     m.hull = Math.min(1.0f, m.hull + 0.22f);
-                    p.displayClientMessage(Component.translatable("ironlung.msg.weld_done", m.sealant).withStyle(ChatFormatting.GRAY), true);
+                    tellCrew(m, Component.translatable("ironlung.msg.weld_done", m.sealant).withStyle(ChatFormatting.GRAY), true);
                 }
             }
         }
-        // leaks
         if (m.hull < 0.6f && r.nextFloat() < (0.6f - m.hull) * 0.12f) {
             double lx = base.getX() + 0.2 + r.nextDouble() * 2.6, lz = base.getZ() + 0.2 + r.nextDouble() * 4.6;
             lvl.sendParticles(BLOOD, lx, base.getY() + 2.9, lz, 1, 0, 0, 0, 0);
@@ -350,7 +520,7 @@ public final class MissionManager {
 
     private static void updateProximity(Mission m) {
         OceanMap map = m.map();
-        double[] angles = {0, Math.PI / 2, Math.PI, -Math.PI / 2}; // fore, starboard, aft, port
+        double[] angles = {0, Math.PI / 2, Math.PI, -Math.PI / 2};
         for (int i = 0; i < 4; i++) {
             double a = m.heading + angles[i];
             double fx = Math.sin(a), fz = -Math.cos(a);
@@ -371,37 +541,38 @@ public final class MissionManager {
         for (int i = 0; i < m.objectiveDone.length; i++) if (m.objectiveDone[i]) mask |= 1 << i;
         float restore = m.power == Mission.Power.RESTORING ? 1f - m.restoreTicks / 70f : 0f;
         ModNetwork.toPlayer(p, new Packets.SubState(m.x, m.z, m.heading, m.depth, (float) m.speed, m.hull, m.power.ordinal(), restore,
-                m.cameraCondition, m.prox.clone(), mask, m.phase.ordinal(), m.sealant, m.weldTicks > 0, m.glitchTicks, m.photoCooldown));
+                m.cameraCondition, m.prox.clone(), mask, m.phase.ordinal(), m.sealant, m.weldTicks > 0, m.glitchTicks, m.photoCooldown,
+                m.camMount, m.camPan, m.camTilt, p.getUUID().equals(m.camOperator)));
     }
 
     // ------------------------------------------------------------------ endings
 
-    private static void ascend(ServerPlayer p, Mission m, ServerLevel lvl, RandomSource r) {
+    private static void ascend(Mission m, ServerLevel lvl, RandomSource r) {
         int t = m.phaseTicks;
         m.depth = Math.max(OceanMap.MIN_SUB_DEPTH, m.depth - 0.06);
         m.speed *= 0.95;
         switch (t) {
             case 1 -> {
                 HorrorDirector.playAtControl(m, lvl, ControlType.BALLAST, ModSounds.PRESSURE_HISS.get(), 1.4f, 0.7f);
-                p.displayClientMessage(Component.translatable("ironlung.msg.ascending").withStyle(ChatFormatting.DARK_RED), true);
+                tellCrew(m, Component.translatable("ironlung.msg.ascending").withStyle(ChatFormatting.DARK_RED), true);
             }
-            case 90 -> HorrorDirector.trigger(m, p, lvl, HorrorType.GROAN);
+            case 90 -> HorrorDirector.trigger(m, lvl, HorrorType.GROAN);
             case 170 -> m.flickerTicks = 50;
             case 240 -> {
                 HorrorDirector.tripPower(m, lvl);
-                HorrorDirector.trigger(m, p, lvl, HorrorType.SILENCE);
+                HorrorDirector.trigger(m, lvl, HorrorType.SILENCE);
                 m.chainedEvent = -1;
             }
             case 330 -> {
                 BlockPos at = m.base().offset(1, 1, -2);
                 lvl.playSound(null, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, ModSounds.LEVIATHAN.get(), SoundSource.AMBIENT, 3.0f, 0.75f);
-                ModNetwork.toPlayer(p, new Packets.HorrorEvent(HorrorType.LEVIATHAN.ordinal(), 1.0f, r.nextLong(), 7f, 1f));
+                broadcast(m, new Packets.HorrorEvent(HorrorType.LEVIATHAN.ordinal(), 1.0f, r.nextLong(), 7f, 1f));
             }
             case 400 -> {
                 HorrorDirector.playHull(m, lvl, r, ModSounds.HULL_IMPACT.get(), 2.0f, 0.6f);
-                ModNetwork.toPlayer(p, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 1.3f, r.nextLong(), 0, 0));
+                broadcast(m, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 1.3f, r.nextLong(), 0, 0));
             }
-            case 430 -> HorrorDirector.trigger(m, p, lvl, HorrorType.SILENCE);
+            case 430 -> HorrorDirector.trigger(m, lvl, HorrorType.SILENCE);
             case 520 -> HorrorDirector.playAtControl(m, lvl, ControlType.HATCH, ModSounds.HATCH_KNOCK.get(), 1.2f, 0.8f);
             case 600 -> {
                 m.power = Mission.Power.RESTORING;
@@ -413,27 +584,28 @@ public final class MissionManager {
             m.power = Mission.Power.ONLINE;
             m.flickerTicks = 40;
         }
-        if (t >= 680) endMission(p, m, Packets.MissionEnd.RECOVERED, true);
+        if (t >= 680) finish(lvl.getServer(), m, Packets.MissionEnd.RECOVERED, true);
     }
 
-    private static void implode(ServerPlayer p, Mission m, ServerLevel lvl, RandomSource r) {
+    private static void implode(Mission m, List<ServerPlayer> crew, ServerLevel lvl, RandomSource r) {
         int t = m.phaseTicks;
         if (t == 1) {
             if (m.powered()) HorrorDirector.tripPower(m, lvl);
             HorrorDirector.playAtControl(m, lvl, ControlType.PRESSURE_GAUGE, ModSounds.ALARM.get(), 1.5f, 0.7f);
             HorrorDirector.playHull(m, lvl, r, ModSounds.HULL_GROAN.get(), 2.0f, 0.5f);
-            ModNetwork.toPlayer(p, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 0.6f, r.nextLong(), 0, 0));
+            broadcast(m, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 0.6f, r.nextLong(), 0, 0));
         } else if (t == 35) {
             BlockPos b = m.base();
             lvl.playSound(null, b.getX() + 1.5, b.getY() + 1.5, b.getZ() + 2.5, ModSounds.IMPLOSION.get(), SoundSource.AMBIENT, 3.0f, 1.0f);
-            ModNetwork.toPlayer(p, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 2.0f, r.nextLong(), 1, 0));
+            broadcast(m, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 2.0f, r.nextLong(), 1, 0));
         } else if (t == 50) {
-            boolean lethal = IronLungConfig.LETHAL_IMPLOSION.get() && !p.isCreative() && !p.isSpectator();
-            if (lethal) {
+            if (IronLungConfig.LETHAL_IMPLOSION.get()) {
                 DamageSource src = new DamageSource(lvl.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(CRUSHED));
-                p.hurt(src, Float.MAX_VALUE);
+                for (ServerPlayer p : crew) {
+                    if (!p.isCreative() && !p.isSpectator()) p.hurt(src, Float.MAX_VALUE);
+                }
             }
-            if (p.isAlive()) endMission(p, m, Packets.MissionEnd.LOST, true);
+            finish(lvl.getServer(), m, Packets.MissionEnd.LOST, true);
         }
     }
 
@@ -442,18 +614,28 @@ public final class MissionManager {
     public static void onHelmInput(ServerPlayer p, float throttle, float turn, float ballast) {
         Mission m = get(p);
         if (m == null || m.phase != Mission.Phase.DIVING) return;
-        m.throttleIn = (float) clamp(throttle, -1, 1);
-        m.turnIn = (float) clamp(turn, -1, 1);
-        m.ballastIn = (float) clamp(ballast, -1, 1);
+        Mission.CrewMember c = m.crew.get(p.getUUID());
+        if (c == null) return;
+        c.throttle = (float) clamp(throttle, -1, 1);
+        c.turn = (float) clamp(turn, -1, 1);
+        c.ballast = (float) clamp(ballast, -1, 1);
     }
 
-    public static void onCamera(ServerPlayer p, int mount, float pan, float tilt, boolean capture) {
+    /**
+     * There is one camera. Whoever is actively steering it (or just took a photo) is its operator;
+     * everyone else's monitor follows what the operator is looking at.
+     */
+    public static void onCamera(ServerPlayer p, int mount, float pan, float tilt, boolean capture, boolean steering) {
         Mission m = get(p);
         if (m == null) return;
-        m.camMount = Math.floorMod(mount, CameraMount.values().length);
-        m.camPan = (float) clamp(pan, -CameraMount.MAX_PAN, CameraMount.MAX_PAN);
-        m.camTilt = (float) clamp(tilt, -CameraMount.MAX_TILT, CameraMount.MAX_TILT);
         m.cameraActiveUntil = m.ticks + 50;
+        boolean operatorAway = m.camOperator == null || p.server.getPlayerList().getPlayer(m.camOperator) == null;
+        if (steering || operatorAway || p.getUUID().equals(m.camOperator)) {
+            m.camOperator = p.getUUID();
+            m.camMount = Math.floorMod(mount, CameraMount.values().length);
+            m.camPan = (float) clamp(pan, -CameraMount.MAX_PAN, CameraMount.MAX_PAN);
+            m.camTilt = (float) clamp(tilt, -CameraMount.MAX_TILT, CameraMount.MAX_TILT);
+        }
         if (capture) capture(p, m);
     }
 
@@ -491,7 +673,6 @@ public final class MissionManager {
                 double dist = Math.sqrt(vx * vx + vy * vy + vz * vz);
                 if (dist > 40 + poi.radius * 0.4) continue;
                 double cos = (vx * dx + vy * dy + vz * dz) / Math.max(1e-6, dist);
-                // large objects count even when only partly in frame
                 double slack = Math.atan2(poi.radius * 0.5, Math.max(1, dist));
                 if (Math.acos(Math.max(-1, Math.min(1, cos))) > Math.acos(cosLimit) + slack) continue;
                 if (!map.lineOfSight(pose[0], pose[1], pose[2], poi.x, poi.centerY(), poi.z)) continue;
@@ -517,10 +698,9 @@ public final class MissionManager {
         PhotoRecord rec = new PhotoRecord(m.photos.size() + 1, pose[0], pose[1], pose[2], pose[3], pose[4], m.ticks, flags, r.nextLong(), hitArr);
         m.photos.add(rec);
         HorrorDirector.playAtControl(m, lvl, ControlType.CAMERA, ModSounds.CAMERA_SHUTTER.get(), 1.0f, 1.0f);
-        ModNetwork.toPlayer(p, new Packets.PhotoResult(rec, newly.stream().mapToInt(Integer::intValue).toArray(), anomaly));
+        broadcast(m, new Packets.PhotoResult(rec, newly.stream().mapToInt(Integer::intValue).toArray(), anomaly));
         data(p.server).setDirty();
 
-        // the worst possible moment
         double nearTarget = 0;
         for (Poi o : map.objectives) nearTarget = Math.max(nearTarget, 1 - Math.hypot(o.x - m.x, o.z - m.z) / 60.0);
         double failChance = 0.03 + m.tension * 0.10 + Math.max(0, nearTarget) * 0.06;
@@ -528,16 +708,18 @@ public final class MissionManager {
             HorrorDirector.chain(m, r.nextFloat() < 0.35f && m.ticks - m.lastPowerFailTick > 3000 ? HorrorType.BLACKOUT : HorrorType.FLICKER, 12 + r.nextInt(25));
         }
         if (!newly.isEmpty() && m.allObjectivesDone()) {
-            p.displayClientMessage(Component.translatable("ironlung.msg.all_logged").withStyle(ChatFormatting.DARK_RED), true);
+            tellCrew(m, Component.translatable("ironlung.msg.all_logged").withStyle(ChatFormatting.DARK_RED), true);
             m.nextEventTick = Math.min(m.nextEventTick, m.ticks + 300);
         }
     }
 
+    /** Surface (anyone, once the survey is complete) or abort (leader ends it for all; crew just leave). */
     public static void onSurface(ServerPlayer p, boolean abort) {
         Mission m = get(p);
         if (m == null || m.phase != Mission.Phase.DIVING) return;
         if (abort) {
-            endMission(p, m, Packets.MissionEnd.ABORTED, true);
+            if (isLeader(p, m)) finish(p.server, m, Packets.MissionEnd.ABORTED, true);
+            else leaveMission(p, m, true);
             return;
         }
         if (!m.allObjectivesDone()) {
@@ -546,7 +728,7 @@ public final class MissionManager {
         }
         m.phase = Mission.Phase.ASCENDING;
         m.phaseTicks = 0;
-        m.throttleIn = m.turnIn = m.ballastIn = 0;
+        m.clearInputs();
     }
 
     public static void onControlUsed(ServerPlayer p, ControlType type, BlockPos pos) {
@@ -562,7 +744,7 @@ public final class MissionManager {
                 } else if (m.power == Mission.Power.TRIPPED) {
                     m.power = Mission.Power.RESTORING;
                     m.restoreTicks = 70;
-                    say(p, "ironlung.msg.breaker_reset", ChatFormatting.GRAY);
+                    tellCrew(m, Component.translatable("ironlung.msg.breaker_reset").withStyle(ChatFormatting.GRAY), true);
                 } else if (m.power == Mission.Power.RESTORING) {
                     say(p, "ironlung.msg.breaker_busy", ChatFormatting.GRAY);
                 } else {
@@ -572,11 +754,8 @@ public final class MissionManager {
             case PRESSURE_GAUGE -> {
                 double atm = 1 + m.depth / 10.0;
                 ChatFormatting c = m.depth > OceanMap.CRUSH_DEPTH ? ChatFormatting.RED : m.depth > OceanMap.WARN_DEPTH ? ChatFormatting.GOLD : ChatFormatting.GRAY;
-                if (!m.powered()) {
-                    say(p, "ironlung.msg.gauge_dead", ChatFormatting.DARK_GRAY);
-                } else {
-                    p.displayClientMessage(Component.translatable("ironlung.msg.pressure", String.format("%.1f", atm), Math.round(m.hull * 100)).withStyle(c), true);
-                }
+                if (!m.powered()) say(p, "ironlung.msg.gauge_dead", ChatFormatting.DARK_GRAY);
+                else p.displayClientMessage(Component.translatable("ironlung.msg.pressure", String.format("%.1f", atm), Math.round(m.hull * 100)).withStyle(c), true);
             }
             case DEPTH_GAUGE -> {
                 if (!m.powered()) {
@@ -588,11 +767,8 @@ public final class MissionManager {
                 }
             }
             case PROXIMITY -> {
-                if (!m.powered()) {
-                    say(p, "ironlung.msg.gauge_dead", ChatFormatting.DARK_GRAY);
-                } else {
-                    p.displayClientMessage(Component.translatable("ironlung.msg.proximity", fmt(m.prox[0]), fmt(m.prox[1]), fmt(m.prox[2]), fmt(m.prox[3])).withStyle(ChatFormatting.GRAY), true);
-                }
+                if (!m.powered()) say(p, "ironlung.msg.gauge_dead", ChatFormatting.DARK_GRAY);
+                else p.displayClientMessage(Component.translatable("ironlung.msg.proximity", fmt(m.prox[0]), fmt(m.prox[1]), fmt(m.prox[2]), fmt(m.prox[3])).withStyle(ChatFormatting.GRAY), true);
             }
             case SEALANT -> {
                 if (m.weldTicks > 0) say(p, "ironlung.msg.weld_busy", ChatFormatting.GRAY);
@@ -600,6 +776,7 @@ public final class MissionManager {
                 else if (m.hull >= 0.97f) say(p, "ironlung.msg.weld_none", ChatFormatting.GRAY);
                 else {
                     m.weldTicks = 100;
+                    m.welder = p.getUUID();
                     say(p, "ironlung.msg.weld_start", ChatFormatting.GRAY);
                 }
             }

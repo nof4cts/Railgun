@@ -80,5 +80,19 @@
   "subtitles.ironlung.helm_click": "Switch clicks",
   "subtitles.ironlung.implosion": "Hull collapses",
   "subtitles.ironlung.distant_wail": "Distant call",
-  "subtitles.ironlung.hatch_knock": "Knocking at the hatch"
+  "subtitles.ironlung.hatch_knock": "Knocking at the hatch",
+  "screen.ironlung.leave": "LEAVE DIVE",
+  "screen.ironlung.leave_confirm": "CONFIRM LEAVE",
+  "ironlung.msg.join_closed": "That dive is no longer taking crew.",
+  "ironlung.msg.join_full": "There is no room left in the vessel.",
+  "ironlung.msg.crew_joined": "%s has come aboard.",
+  "ironlung.msg.crew_left": "%s has left the vessel.",
+  "ironlung.msg.crew_died": "%s is gone.",
+  "ironlung.msg.dive_ended_offline": "Your dive ended while you were away. You have been recovered.",
+  "ironlung.cmd.target_diving": "That player is already on a dive.",
+  "ironlung.cmd.invite_link": "[Join dive]",
+  "ironlung.cmd.invited": "%s is asking you to crew their submarine.",
+  "ironlung.cmd.invite_sent": "Invite sent to %s. It expires in 2 minutes.",
+  "ironlung.cmd.host_not_diving": "That player is not on a dive.",
+  "ironlung.cmd.no_invite": "You need an invite. Ask them to run /ironlung invite <you>."
 }

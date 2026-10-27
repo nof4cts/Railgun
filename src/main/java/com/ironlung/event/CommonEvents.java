@@ -11,7 +11,11 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -22,11 +26,18 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = IronLungMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class CommonEvents {
     private CommonEvents() {}
+
+    /** invitee -> (mission id, expiry millis) */
+    private static final Map<UUID, Object[]> INVITES = new HashMap<>();
+    private static final long INVITE_MS = 120_000;
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
@@ -36,6 +47,11 @@ public final class CommonEvents {
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer sp) MissionManager.onLogin(sp);
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp) MissionManager.onLogout(sp);
     }
 
     @SubscribeEvent
@@ -80,9 +96,63 @@ public final class CommonEvents {
                         ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.not_diving"));
                         return 0;
                     }
-                    MissionManager.endMission(p, m, Packets.MissionEnd.ABORTED, true);
+                    if (MissionManager.isLeader(p, m)) MissionManager.finish(p.server, m, Packets.MissionEnd.ABORTED, true);
+                    else MissionManager.leaveMission(p, m, true);
                     return 1;
                 }))
+                .then(Commands.literal("leave").executes(ctx -> {
+                    ServerPlayer p = ctx.getSource().getPlayerOrException();
+                    Mission m = MissionManager.get(p);
+                    if (m == null) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.not_diving"));
+                        return 0;
+                    }
+                    MissionManager.leaveMission(p, m, true);
+                    return 1;
+                }))
+                .then(Commands.literal("invite").then(Commands.argument("player", EntityArgument.player()).executes(ctx -> {
+                    ServerPlayer p = ctx.getSource().getPlayerOrException();
+                    ServerPlayer target = EntityArgument.getPlayer(ctx, "player");
+                    Mission m = MissionManager.get(p);
+                    if (m == null) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.not_diving"));
+                        return 0;
+                    }
+                    if (MissionManager.get(target) != null) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.target_diving"));
+                        return 0;
+                    }
+                    INVITES.put(target.getUUID(), new Object[]{m.id, System.currentTimeMillis() + INVITE_MS});
+                    String name = p.getGameProfile().getName();
+                    MutableComponent link = Component.translatable("ironlung.cmd.invite_link").withStyle(st -> st
+                            .withColor(ChatFormatting.DARK_RED).withUnderlined(true)
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ironlung join " + name))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("/ironlung join " + name))));
+                    target.sendSystemMessage(Component.translatable("ironlung.cmd.invited", name).withStyle(ChatFormatting.GRAY).append(" ").append(link));
+                    ctx.getSource().sendSuccess(() -> Component.translatable("ironlung.cmd.invite_sent", target.getGameProfile().getName()), false);
+                    return 1;
+                })))
+                .then(Commands.literal("join").then(Commands.argument("player", EntityArgument.player()).executes(ctx -> {
+                    ServerPlayer p = ctx.getSource().getPlayerOrException();
+                    ServerPlayer host = EntityArgument.getPlayer(ctx, "player");
+                    if (MissionManager.get(p) != null) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.msg.already_diving"));
+                        return 0;
+                    }
+                    Mission m = MissionManager.get(host);
+                    if (m == null) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.host_not_diving"));
+                        return 0;
+                    }
+                    Object[] inv = INVITES.get(p.getUUID());
+                    boolean invited = inv != null && m.id.equals(inv[0]) && System.currentTimeMillis() < (Long) inv[1];
+                    if (!invited && !com.ironlung.config.IronLungConfig.OPEN_JOIN.get() && !p.hasPermissions(2)) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.no_invite"));
+                        return 0;
+                    }
+                    INVITES.remove(p.getUUID());
+                    return MissionManager.joinMission(p, m) ? 1 : 0;
+                })))
                 .then(Commands.literal("status").executes(ctx -> {
                     ServerPlayer p = ctx.getSource().getPlayerOrException();
                     Mission m = MissionManager.get(p);
@@ -91,8 +161,8 @@ public final class CommonEvents {
                         return 0;
                     }
                     ctx.getSource().sendSuccess(() -> Component.literal(String.format(Locale.ROOT,
-                            "seed %d | X %.1f Y %.1f | depth %.1f m | hull %d%% | power %s | sites %d/%d | tension %.2f",
-                            m.seed, m.x, m.z, m.depth, Math.round(m.hull * 100), m.power, m.objectivesComplete(), m.objectiveDone.length, m.tension)), false);
+                            "seed %d | crew %d | X %.1f Y %.1f | depth %.1f m | hull %d%% | power %s | sites %d/%d | tension %.2f",
+                            m.seed, m.crew.size(), m.x, m.z, m.depth, Math.round(m.hull * 100), m.power, m.objectivesComplete(), m.objectiveDone.length, m.tension)), false);
                     return 1;
                 }))
                 .then(Commands.literal("event").requires(s -> s.hasPermission(2))
@@ -116,7 +186,7 @@ public final class CommonEvents {
                                         return 0;
                                     }
                                     if (t == HorrorType.SILHOUETTE || t == HorrorType.EYES || t == HorrorType.LEVIATHAN) m.cameraActiveUntil = m.ticks + 40;
-                                    HorrorDirector.trigger(m, p, (ServerLevel) p.level(), t);
+                                    HorrorDirector.trigger(m, (ServerLevel) p.level(), t);
                                     return 1;
                                 }))));
     }

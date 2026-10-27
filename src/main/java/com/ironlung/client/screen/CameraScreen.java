@@ -56,12 +56,13 @@ public class CameraScreen extends SubScreen {
             ClientMissionState.camTilt = (float) Math.max(-CameraMount.MAX_TILT, Math.min(CameraMount.MAX_TILT, ClientMissionState.camTilt));
         }
         if (servoCooldown > 0) servoCooldown--;
+        if (moved) ClientMissionState.lastCamInputNanos = System.nanoTime();
         if (moved && servoCooldown == 0) {
             ClientSounds.playAt(ControlType.CAMERA, ModSounds.CAMERA_SERVO.get(), 0.35f, 0.9f + (float) Math.random() * 0.2f);
             servoCooldown = 9;
         }
         if (--heartbeat <= 0 || moved) {
-            sendCamera(false);
+            sendCamera(false, moved);
             heartbeat = 10;
         }
         if (ClientMissionState.lastPhotoId != reviewId) {
@@ -71,8 +72,8 @@ public class CameraScreen extends SubScreen {
         }
     }
 
-    private void sendCamera(boolean capture) {
-        ModNetwork.toServer(new Packets.CameraState(ClientMissionState.camMount, ClientMissionState.camPan, ClientMissionState.camTilt, capture));
+    private void sendCamera(boolean capture, boolean steering) {
+        ModNetwork.toServer(new Packets.CameraState(ClientMissionState.camMount, ClientMissionState.camPan, ClientMissionState.camTilt, capture, steering));
     }
 
     @Override
@@ -89,7 +90,8 @@ public class CameraScreen extends SubScreen {
             return super.keyPressed(key, scan, mods);
         }
         if (key == GLFW.GLFW_KEY_SPACE || key == GLFW.GLFW_KEY_ENTER) {
-            sendCamera(true);
+            ClientMissionState.lastCamInputNanos = System.nanoTime();
+            sendCamera(true, true);
             return true;
         }
         if (key == GLFW.GLFW_KEY_Q || key == GLFW.GLFW_KEY_E) {
@@ -100,7 +102,8 @@ public class CameraScreen extends SubScreen {
             ClientMissionState.camTilt = 0;
             ClientSounds.playAt(ControlType.CAMERA, ModSounds.CAMERA_SERVO.get(), 0.6f, 0.6f);
             ClientMissionState.glitchTicks = Math.max(ClientMissionState.glitchTicks, 8);
-            sendCamera(false);
+            ClientMissionState.lastCamInputNanos = System.nanoTime();
+            sendCamera(false, true);
             return true;
         }
         return super.keyPressed(key, scan, mods);

@@ -65,12 +65,23 @@ Survival:
 - Config (`config/ironlung-common.toml`, `ironlung-client.toml`): sites per dive, uncatalogued count, map size,
   speed, sealant, event frequency, hull damage, leviathan on/off, lethal implosion; feed resolution/fps, photo
   resolution, shake, distortion, HUD, ambient volume.
-- Commands: `/ironlung start [seed|player]`, `/ironlung abort`, `/ironlung status`, `/ironlung event <type>` (op).
+- Commands: `/ironlung start [seed|player]`, `/ironlung invite <player>`, `/ironlung join <player>`, `/ironlung leave`, `/ironlung abort`, `/ironlung status`, `/ironlung event <type>` (op).
 
 ## Multiplayer
 
-Each player gets their own submarine and their own ocean (separate interiors in the same dimension).
-State is per-player and saved with the world; logging out mid-dive pauses it. Co-op crews in one boat are not supported.
+Up to 4 players (config `maxCrew`) crew one submarine together: one ocean, one hull, one camera, one fate.
+
+- Start a dive, then `/ironlung invite <player>`. They get a clickable **[Join dive]** link (valid 2 minutes),
+  or can type `/ironlung join <you>`. Ops can join without an invite; `openJoin = true` lets anyone join.
+- Helm input from everyone is combined, so two people can steer and work the ballast at once.
+- There is one camera: whoever is steering it is the operator, and everyone else's monitor shows what they see.
+  Photos, logged sites and events are shared by the whole crew.
+- `/ironlung leave` (or LEAVE DIVE on the chart) takes just you home. The leader's ABORT ends the dive for
+  everyone. If the leader leaves, leadership passes on.
+- If a crew member dies, the rest carry on. If the hull implodes, nobody does.
+- Logging out mid-dive is fine: you rejoin where you were. If the dive ends while you're offline, you're sent
+  home the next time you log in. The dive pauses only when nobody is aboard.
+- Works on dedicated servers (install the jar on the server and on every client).
 
 ## Honest notes
 

@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public final class ModNetwork {
     private ModNetwork() {}
 
-    private static final String VERSION = "1";
+    private static final String VERSION = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             IronLungMod.id("main"), () -> VERSION, VERSION::equals, VERSION::equals);
 

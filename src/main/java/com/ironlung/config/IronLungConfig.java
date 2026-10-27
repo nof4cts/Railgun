@@ -18,6 +18,8 @@ public final class IronLungConfig {
     public static ForgeConfigSpec.IntValue SEALANT_CHARGES;
     public static ForgeConfigSpec.BooleanValue ENABLE_LEVIATHAN;
     public static ForgeConfigSpec.BooleanValue LETHAL_IMPLOSION;
+    public static ForgeConfigSpec.IntValue MAX_CREW;
+    public static ForgeConfigSpec.BooleanValue OPEN_JOIN;
 
     // ---- client / presentation ----
     public static ForgeConfigSpec.IntValue FEED_WIDTH;
@@ -37,6 +39,10 @@ public final class IronLungConfig {
         MAP_SIZE = c.comment("Width of the survey area in metres.").defineInRange("mapSize", 1100, 600, 3000);
         MAX_SPEED = c.comment("Maximum submarine speed in metres per second.").defineInRange("maxSpeed", 2.2, 0.5, 6.0);
         SEALANT_CHARGES = c.comment("Hull sealant charges available per dive.").defineInRange("sealantCharges", 3, 0, 10);
+        c.pop();
+        c.push("multiplayer");
+        MAX_CREW = c.comment("How many players can crew one submarine.").defineInRange("maxCrew", 4, 1, 4);
+        OPEN_JOIN = c.comment("If true, anyone can /ironlung join a diving player without an invite.").define("openJoin", false);
         c.pop();
         c.push("horror");
         EVENT_FREQUENCY = c.comment("Multiplier for how often unsettling events occur. 1.0 = default pacing.").defineInRange("eventFrequency", 1.0, 0.1, 4.0);

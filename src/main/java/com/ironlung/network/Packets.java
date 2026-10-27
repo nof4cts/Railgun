@@ -25,9 +25,13 @@ public final class Packets {
         public final boolean[] done;
         public final List<PhotoRecord> photos;
         public final long ticks;
+        public final List<String> crew;
+        public final boolean leader;
 
         public MissionInit(boolean active, long seed, int mapSize, int objectiveCount, int hiddenCount, int slot,
-                           boolean[] done, List<PhotoRecord> photos, long ticks) {
+                           boolean[] done, List<PhotoRecord> photos, long ticks, List<String> crew, boolean leader) {
+            this.crew = crew;
+            this.leader = leader;
             this.active = active;
             this.seed = seed;
             this.mapSize = mapSize;
@@ -40,7 +44,7 @@ public final class Packets {
         }
 
         public static MissionInit inactive() {
-            return new MissionInit(false, 0, 0, 0, 0, 0, new boolean[0], new ArrayList<>(), 0);
+            return new MissionInit(false, 0, 0, 0, 0, 0, new boolean[0], new ArrayList<>(), 0, new ArrayList<>(), false);
         }
 
         public void encode(FriendlyByteBuf b) {
@@ -55,6 +59,9 @@ public final class Packets {
             b.writeVarInt(photos.size());
             for (PhotoRecord p : photos) p.write(b);
             b.writeLong(ticks);
+            b.writeVarInt(crew.size());
+            for (String c : crew) b.writeUtf(c, 64);
+            b.writeBoolean(leader);
         }
 
         public static MissionInit decode(FriendlyByteBuf b) {
@@ -66,7 +73,11 @@ public final class Packets {
             int n = b.readVarInt();
             List<PhotoRecord> photos = new ArrayList<>();
             for (int i = 0; i < n; i++) photos.add(PhotoRecord.read(b));
-            return new MissionInit(active, seed, ms, oc, hc, slot, done, photos, b.readLong());
+            long ticks = b.readLong();
+            int cn = b.readVarInt();
+            List<String> crew = new ArrayList<>();
+            for (int i = 0; i < cn; i++) crew.add(b.readUtf(64));
+            return new MissionInit(active, seed, ms, oc, hc, slot, done, photos, ticks, crew, b.readBoolean());
         }
 
         public static void handle(MissionInit m, Supplier<NetworkEvent.Context> ctx) {
@@ -81,9 +92,17 @@ public final class Packets {
         public final int power, phase, sealant, doneMask, glitch, photoCooldown;
         public final boolean welding;
         public final float[] prox;
+        public final int camMount;
+        public final float camPan, camTilt;
+        public final boolean youOperate;
 
         public SubState(double x, double z, double heading, double depth, float speed, float hull, int power, float restore,
-                        float cameraCondition, float[] prox, int doneMask, int phase, int sealant, boolean welding, int glitch, int photoCooldown) {
+                        float cameraCondition, float[] prox, int doneMask, int phase, int sealant, boolean welding, int glitch, int photoCooldown,
+                        int camMount, float camPan, float camTilt, boolean youOperate) {
+            this.camMount = camMount;
+            this.camPan = camPan;
+            this.camTilt = camTilt;
+            this.youOperate = youOperate;
             this.x = x;
             this.z = z;
             this.heading = heading;
@@ -119,6 +138,10 @@ public final class Packets {
             b.writeBoolean(welding);
             b.writeVarInt(glitch);
             b.writeVarInt(photoCooldown);
+            b.writeVarInt(camMount);
+            b.writeFloat(camPan);
+            b.writeFloat(camTilt);
+            b.writeBoolean(youOperate);
         }
 
         public static SubState decode(FriendlyByteBuf b) {
@@ -131,7 +154,9 @@ public final class Packets {
             int mask = b.readVarInt(), phase = b.readVarInt(), seal = b.readVarInt();
             boolean weld = b.readBoolean();
             int glitch = b.readVarInt(), cd = b.readVarInt();
-            return new SubState(x, z, h, d, sp, hull, pw, rs, cc, prox, mask, phase, seal, weld, glitch, cd);
+            int cm = b.readVarInt();
+            float cp = b.readFloat(), ct = b.readFloat();
+            return new SubState(x, z, h, d, sp, hull, pw, rs, cc, prox, mask, phase, seal, weld, glitch, cd, cm, cp, ct, b.readBoolean());
         }
 
         public static void handle(SubState m, Supplier<NetworkEvent.Context> ctx) {
@@ -276,8 +301,10 @@ public final class Packets {
         public final int mount;
         public final float pan, tilt;
         public final boolean capture;
+        public final boolean steering;
 
-        public CameraState(int mount, float pan, float tilt, boolean capture) {
+        public CameraState(int mount, float pan, float tilt, boolean capture, boolean steering) {
+            this.steering = steering;
             this.mount = mount;
             this.pan = pan;
             this.tilt = tilt;
@@ -289,15 +316,16 @@ public final class Packets {
             b.writeFloat(pan);
             b.writeFloat(tilt);
             b.writeBoolean(capture);
+            b.writeBoolean(steering);
         }
 
         public static CameraState decode(FriendlyByteBuf b) {
-            return new CameraState(b.readVarInt(), b.readFloat(), b.readFloat(), b.readBoolean());
+            return new CameraState(b.readVarInt(), b.readFloat(), b.readFloat(), b.readBoolean(), b.readBoolean());
         }
 
         public static void handle(CameraState m, Supplier<NetworkEvent.Context> ctx) {
             ServerPlayer sp = ctx.get().getSender();
-            if (sp != null) MissionManager.onCamera(sp, m.mount, m.pan, m.tilt, m.capture);
+            if (sp != null) MissionManager.onCamera(sp, m.mount, m.pan, m.tilt, m.capture, m.steering);
             ctx.get().setPacketHandled(true);
         }
     }
