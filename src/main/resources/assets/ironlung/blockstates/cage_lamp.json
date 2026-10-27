@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "ironlung:block/cage_lamp_on"
+    },
+    "lit=false": {
+      "model": "ironlung:block/cage_lamp_off"
+    }
+  }
+}

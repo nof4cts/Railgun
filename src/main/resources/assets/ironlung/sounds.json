@@ -1,0 +1,265 @@
+{
+  "ambient_drone": {
+    "sounds": [
+      {
+        "name": "ironlung:ambient_drone",
+        "stream": true
+      }
+    ]
+  },
+  "engine_hum": {
+    "sounds": [
+      {
+        "name": "ironlung:engine_hum",
+        "stream": false
+      }
+    ]
+  },
+  "electric_buzz": {
+    "sounds": [
+      {
+        "name": "ironlung:electric_buzz",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.electric_buzz"
+  },
+  "hull_groan": {
+    "sounds": [
+      {
+        "name": "ironlung:hull_groan1",
+        "stream": false
+      },
+      {
+        "name": "ironlung:hull_groan2",
+        "stream": false
+      },
+      {
+        "name": "ironlung:hull_groan3",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.hull_groan"
+  },
+  "hull_creak": {
+    "sounds": [
+      {
+        "name": "ironlung:hull_creak1",
+        "stream": false
+      },
+      {
+        "name": "ironlung:hull_creak2",
+        "stream": false
+      },
+      {
+        "name": "ironlung:hull_creak3",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.hull_creak"
+  },
+  "hull_knock": {
+    "sounds": [
+      {
+        "name": "ironlung:hull_knock1",
+        "stream": false
+      },
+      {
+        "name": "ironlung:hull_knock2",
+        "stream": false
+      },
+      {
+        "name": "ironlung:hull_knock3",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.hull_knock"
+  },
+  "hull_impact": {
+    "sounds": [
+      {
+        "name": "ironlung:hull_impact1",
+        "stream": false
+      },
+      {
+        "name": "ironlung:hull_impact2",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.hull_impact"
+  },
+  "hull_scrape": {
+    "sounds": [
+      {
+        "name": "ironlung:hull_scrape",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.hull_scrape"
+  },
+  "pressure_hiss": {
+    "sounds": [
+      {
+        "name": "ironlung:pressure_hiss",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.pressure_hiss"
+  },
+  "drip": {
+    "sounds": [
+      {
+        "name": "ironlung:drip1",
+        "stream": false
+      },
+      {
+        "name": "ironlung:drip2",
+        "stream": false
+      },
+      {
+        "name": "ironlung:drip3",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.drip"
+  },
+  "power_down": {
+    "sounds": [
+      {
+        "name": "ironlung:power_down",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.power_down"
+  },
+  "power_up": {
+    "sounds": [
+      {
+        "name": "ironlung:power_up",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.power_up"
+  },
+  "breaker_clunk": {
+    "sounds": [
+      {
+        "name": "ironlung:breaker_clunk",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.breaker_clunk"
+  },
+  "helm_click": {
+    "sounds": [
+      {
+        "name": "ironlung:helm_click",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.helm_click"
+  },
+  "static_burst": {
+    "sounds": [
+      {
+        "name": "ironlung:static_burst",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.static_burst"
+  },
+  "camera_shutter": {
+    "sounds": [
+      {
+        "name": "ironlung:camera_shutter",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.camera_shutter"
+  },
+  "camera_develop": {
+    "sounds": [
+      {
+        "name": "ironlung:camera_develop",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.camera_develop"
+  },
+  "camera_servo": {
+    "sounds": [
+      {
+        "name": "ironlung:camera_servo",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.camera_servo"
+  },
+  "proximity_ping": {
+    "sounds": [
+      {
+        "name": "ironlung:proximity_ping",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.proximity_ping"
+  },
+  "alarm": {
+    "sounds": [
+      {
+        "name": "ironlung:alarm",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.alarm"
+  },
+  "weld": {
+    "sounds": [
+      {
+        "name": "ironlung:weld",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.weld"
+  },
+  "leviathan": {
+    "sounds": [
+      {
+        "name": "ironlung:leviathan",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.ironlung.leviathan"
+  },
+  "distant_wail": {
+    "sounds": [
+      {
+        "name": "ironlung:distant_wail1",
+        "stream": true
+      },
+      {
+        "name": "ironlung:distant_wail2",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.ironlung.distant_wail"
+  },
+  "hatch_knock": {
+    "sounds": [
+      {
+        "name": "ironlung:hatch_knock",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.hatch_knock"
+  },
+  "implosion": {
+    "sounds": [
+      {
+        "name": "ironlung:implosion",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.implosion"
+  }
+}

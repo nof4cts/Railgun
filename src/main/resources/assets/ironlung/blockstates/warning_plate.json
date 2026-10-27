@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "ironlung:block/warning_plate",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "ironlung:block/warning_plate",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "ironlung:block/warning_plate",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "ironlung:block/warning_plate",
+      "y": 270
+    }
+  }
+}

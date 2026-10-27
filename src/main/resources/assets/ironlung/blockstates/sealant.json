@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=north,powered=true": {
+      "model": "ironlung:block/sealant",
+      "y": 0
+    },
+    "facing=north,powered=false": {
+      "model": "ironlung:block/sealant",
+      "y": 0
+    },
+    "facing=east,powered=true": {
+      "model": "ironlung:block/sealant",
+      "y": 90
+    },
+    "facing=east,powered=false": {
+      "model": "ironlung:block/sealant",
+      "y": 90
+    },
+    "facing=south,powered=true": {
+      "model": "ironlung:block/sealant",
+      "y": 180
+    },
+    "facing=south,powered=false": {
+      "model": "ironlung:block/sealant",
+      "y": 180
+    },
+    "facing=west,powered=true": {
+      "model": "ironlung:block/sealant",
+      "y": 270
+    },
+    "facing=west,powered=false": {
+      "model": "ironlung:block/sealant",
+      "y": 270
+    }
+  }
+}

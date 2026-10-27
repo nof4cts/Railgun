@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "ironlung:hull_plate",
+    "ironlung:hull_riveted",
+    "ironlung:hull_seam",
+    "ironlung:bolted_panel",
+    "ironlung:grate_floor",
+    "ironlung:warning_plate",
+    "ironlung:pipe",
+    "ironlung:cage_lamp",
+    "ironlung:helm",
+    "ironlung:camera",
+    "ironlung:chart",
+    "ironlung:breaker",
+    "ironlung:ballast",
+    "ironlung:pressure_gauge",
+    "ironlung:depth_gauge",
+    "ironlung:proximity",
+    "ironlung:sealant",
+    "ironlung:hatch"
+  ]
+}

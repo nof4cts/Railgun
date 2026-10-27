@@ -1,0 +1,13 @@
+{
+  "type": "ironlung:iron_lung",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "ironlung:blood_sea",
+      "layers": [],
+      "lakes": false,
+      "features": false,
+      "structure_overrides": []
+    }
+  }
+}

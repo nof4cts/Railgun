@@ -1,0 +1,180 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "lamp": "ironlung:block/cage_lamp_off",
+    "stem": "ironlung:block/console_side",
+    "particle": "ironlung:block/console_side"
+  },
+  "elements": [
+    {
+      "from": [
+        4.5,
+        6,
+        4.5
+      ],
+      "to": [
+        11.5,
+        13,
+        11.5
+      ],
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        13,
+        7
+      ],
+      "to": [
+        9,
+        16,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stem",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#stem",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#stem",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#stem",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#stem",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#stem",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        15,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stem"
+        },
+        "south": {
+          "texture": "#stem"
+        },
+        "east": {
+          "texture": "#stem"
+        },
+        "west": {
+          "texture": "#stem"
+        },
+        "up": {
+          "texture": "#stem"
+        },
+        "down": {
+          "texture": "#stem"
+        }
+      }
+    }
+  ]
+}

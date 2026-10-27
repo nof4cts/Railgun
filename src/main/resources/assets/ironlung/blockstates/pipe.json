@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "ironlung:block/pipe"
+    },
+    "axis=z": {
+      "model": "ironlung:block/pipe",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "ironlung:block/pipe",
+      "x": 90,
+      "y": 90
+    }
+  }
+}
