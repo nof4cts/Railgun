@@ -71,6 +71,9 @@ public final class FeedSystem {
         PHOTO_PENDING.clear();
         liveResult = null;
         renderer = null;
+        if (scareLoc != null) mc.getTextureManager().release(scareLoc);
+        scareLoc = null;
+        scareBuffer = null;
     }
 
     public static int liveWidth() {
@@ -127,6 +130,48 @@ public final class FeedSystem {
             });
         }
         return liveLoc;
+    }
+
+    private static volatile int[] scareBuffer;
+    private static ResourceLocation scareLoc;
+    public static final int SCARE_W = 480, SCARE_H = 270;
+
+    /** Render the finale's face in the background so it is ready the instant it is needed. */
+    public static void prepareJumpscare() {
+        final FeedRenderer r = renderer;
+        if (r == null || scareBuffer != null || scareLoc != null) return;
+        final double[] pose = ClientMissionState.cameraPose();
+        final double yaw = ClientMissionState.heading();
+        WORKER.submit(() -> {
+            try {
+                double cx = pose[0], cy = pose[1], cz = pose[2];
+                double px = cx + Math.sin(yaw) * 7.6, pz = cz - Math.cos(yaw) * 7.6;
+                double oy = Math.atan2(cx - px, -(cz - pz));
+                FeedRenderer.Params p = new FeedRenderer.Params();
+                p.photo = true;
+                p.lightRange = 30;
+                p.grain = 0.15;
+                p.glitch = 0.12;
+                p.frame = 13;
+                p.transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.FACE, px, cy + 0.2, pz, 0, 0, 0, 0.95, oy, -1, 1e9));
+                int[] out = new int[SCARE_W * SCARE_H];
+                r.render(out, SCARE_W, SCARE_H, cx, cy, cz, yaw, 0, p);
+                scareBuffer = out;
+            } catch (Throwable t) {
+                IronLungMod.LOGGER.error("Finale render failed", t);
+            }
+        });
+    }
+
+    public static ResourceLocation jumpscare() {
+        if (scareLoc != null) return scareLoc;
+        int[] buf = scareBuffer;
+        if (buf == null) return null;
+        DynamicTexture tex = new DynamicTexture(new NativeImage(NativeImage.Format.RGBA, SCARE_W, SCARE_H, true));
+        upload(tex, buf, SCARE_W, SCARE_H);
+        scareLoc = Minecraft.getInstance().getTextureManager().register("ironlung_finale", tex);
+        scareBuffer = null;
+        return scareLoc;
     }
 
     /** Develop a photograph in the background. Current transients are captured so fleeting things stay in the picture. */

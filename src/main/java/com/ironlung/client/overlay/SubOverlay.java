@@ -65,6 +65,26 @@ public final class SubOverlay {
             g.drawString(font, ClientMissionState.toast, (w - tw) / 2, h / 2 + 30, (a << 24) | 0xB03020, false);
         }
 
+        if (ClientMissionState.finaleBlack) {
+            g.fill(0, 0, w, h, 0xFF000000);
+            int js = ClientMissionState.jumpscareTicks;
+            if (js > 0) {
+                net.minecraft.resources.ResourceLocation face = com.ironlung.client.FeedSystem.jumpscare();
+                boolean cut = js % 6 == 0 || js % 7 == 3;
+                if (face != null && !cut) {
+                    int fw = com.ironlung.client.FeedSystem.SCARE_W, fh = com.ironlung.client.FeedSystem.SCARE_H;
+                    // cover the screen, lurching closer every frame
+                    double grow = 1.0 + (28 - js) * 0.012;
+                    int dw = (int) (Math.max(w, h * fw / (double) fh) * grow), dh = dw * fh / fw;
+                    int ox = (int) ((Math.random() - 0.5) * 24), oy = (int) ((Math.random() - 0.5) * 18);
+                    g.blit(face, (w - dw) / 2 + ox, (h - dh) / 2 + oy, dw, dh, 0, 0, fw, fh, fw, fh);
+                    g.fill(0, 0, w, h, (js % 4 < 2 ? 0x50 : 0x20) << 24 | 0x900000);
+                }
+                StaticNoise.draw(g, 0, 0, w, h, cut ? 0.6f : 0.22f);
+            }
+            return;
+        }
+
         int intro = ClientMissionState.introTicks;
         if (intro > 0) {
             int black = intro > 60 ? 255 : (int) (intro / 60.0 * 255);

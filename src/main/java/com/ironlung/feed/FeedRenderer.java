@@ -17,7 +17,7 @@ public final class FeedRenderer {
 
     /** A thing that is only there for a moment. */
     public static final class Transient {
-        public static final int SILHOUETTE = 0, LEVIATHAN = 1, FIGURE = 2, EYES = 3;
+        public static final int SILHOUETTE = 0, LEVIATHAN = 1, FIGURE = 2, EYES = 3, FACE = 4;
         public final int kind;
         public final double x, y, z, vx, vy, vz, size, yaw;
         public final double start, duration;
@@ -188,6 +188,42 @@ public final class FeedRenderer {
                     d = Math.min(e1, e2);
                     alb = 2.2;
                     flesh = 0.0;
+                    break;
+                }
+                case Transient.FACE: {
+                    // local frame: +z points from the face toward the viewer
+                    double c = Math.cos(t.yaw), sn = Math.sin(t.yaw);
+                    double fz = lx * sn - lz * c;          // toward viewer
+                    double fx = lx * c + lz * sn;          // right
+                    double fy = ly;
+                    double fs = t.size;
+                    double qx = fx / fs, qy = fy / fs, qz = fz / fs;
+                    double head = com.ironlung.ocean.Sdf.ellipsoid(qx, qy, qz, 4.4, 3.8, 3.0);
+                    head += 0.32 * Math.sin(qx * 2.3 + qy * 1.1) * Math.sin(qy * 2.9) * Math.sin(qz * 1.7 + 0.5) + 0.08 * Math.sin(qx * 9.1) * Math.sin(qy * 8.3);
+                    double mouth = com.ironlung.ocean.Sdf.ellipsoid(qx, qy + 1.45, qz - 2.4, 3.1, 1.6, 2.2);
+                    head = Math.max(head, -mouth);
+                    double teeth = 1e9;
+                    for (int k = -7; k <= 7; k++) {
+                        double tx2 = k * 0.4 + 0.07 * Math.sin(k * 3.1);
+                        double len = 0.55 + 0.45 * Math.abs(Math.sin(k * 2.7));
+                        double zz = 2.35 - Math.abs(k) * 0.07;
+                        double up = com.ironlung.ocean.Sdf.capsule(qx, qy, qz, tx2, -0.2, zz, tx2 + 0.05 * Math.sin(k), -0.2 - len, zz + 0.25, 0.032);
+                        double lo = com.ironlung.ocean.Sdf.capsule(qx, qy, qz, tx2 + 0.2, -2.75, zz - 0.1, tx2 + 0.17, -2.75 + len * 0.8, zz + 0.15, 0.03);
+                        teeth = Math.min(teeth, Math.min(up, lo));
+                    }
+                    double eyes = 1e9, pupils = 1e9;
+                    double[][] eyePos = {{-1.6, 0.95, 2.2, 0.55}, {1.75, 1.05, 2.15, 0.5}, {-2.8, 1.9, 1.45, 0.25}, {2.7, 2.2, 1.4, 0.22}, {-0.3, 2.5, 2.05, 0.18}, {0.9, 2.3, 2.15, 0.2}};
+                    for (double[] e : eyePos) {
+                        eyes = Math.min(eyes, com.ironlung.ocean.Sdf.sphere(qx - e[0], qy - e[1], qz - e[2], e[3]));
+                        pupils = Math.min(pupils, com.ironlung.ocean.Sdf.ellipsoid(qx - e[0], qy - e[1], qz - e[2] - e[3] * 0.8, e[3] * 0.22, e[3] * 0.78, e[3] * 0.3));
+                    }
+                    d = head;
+                    alb = 0.38;
+                    flesh = 0.85;
+                    if (teeth < d) { d = teeth; alb = 0.85; flesh = 0.2; }
+                    if (eyes < d) { d = eyes; alb = 1.15; flesh = 0.35; }
+                    if (pupils < d) { d = pupils; alb = 0.0; flesh = 0.0; }
+                    d *= fs;
                     break;
                 }
                 default: { // FIGURE

@@ -245,6 +245,25 @@ im = thud(d, 32, 1.5, 2.0) * 1.5 + lp(noise(d), 2500) * np.exp(-t * 3) * 1.4
 im += metal_partials(d, 160, [1, 1.3, 1.9, 2.6, 3.5], [1, 1.2, 1.6, 2, 3], [.8, .7, .6, .5, .3], seed=130, glide=-0.3)
 save('implosion', reverb(im, 2.5, 0.4, 1200, seed=130), peak=1.0); register('implosion', ['implosion'])
 
+
+# ---------- the finale
+d = 2.6; t = t_(d)
+hb = thud(d, 40, 3, 2.0) * 1.4 + metal_partials(d, 140, [1, 1.41, 2.2, 3.3, 4.7, 6.1], [1.5, 2, 2.5, 3.5, 5, 7], [1, .9, .8, .6, .4, .3], seed=140, glide=-0.15)
+tear = bp(noise(d), 300, 2500) * np.exp(-t * 2.5) * (1 + np.sin(2 * np.pi * 19 * t)) * 1.2
+hb += tear + signal.sawtooth(2 * np.pi * np.cumsum(900 - 600 * t / d) / SR) * 0.25 * np.exp(-t * 1.5)
+save('hatch_breach', reverb(lp(hb, 5000), 1.6, 0.35, 2000, seed=141), peak=1.0); register('hatch_breach', ['hatch_breach'])
+
+d = 2.2; t = t_(d)
+sc = np.zeros(len(t))
+for k, det in enumerate([1.0, 1.013, 0.987, 1.5, 0.75]):
+    f = (380 + 520 * (1 - np.exp(-t * 9))) * det * (1 + 0.04 * np.sin(2 * np.pi * 31 * t))
+    sc += signal.sawtooth(2 * np.pi * np.cumsum(f) / SR) * (0.7 if k < 3 else 0.35)
+sc = bp(sc, 300, 7000, 2) * 1.2 + hp(noise(d), 1500) * 0.6
+sc += thud(d, 35, 4, 1.5) * 2.0
+sc *= np.minimum(1, t * 80) * np.exp(-np.maximum(0, t - 1.2) * 3)
+sc = np.tanh(sc * 1.8)
+save('jumpscare', reverb(sc, 1.0, 0.25, 4000, seed=150), peak=1.0); register('jumpscare', ['jumpscare'])
+
 with open('src/main/resources/assets/ironlung/sounds.json', 'w') as f:
     json.dump(sounds, f, indent=2)
 print('sounds ok', len(sounds), 'events', len(os.listdir(OUT)), 'files')

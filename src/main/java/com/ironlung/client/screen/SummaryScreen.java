@@ -40,11 +40,13 @@ public class SummaryScreen extends Screen {
         String outcome = switch (e.outcome) {
             case Packets.MissionEnd.RECOVERED -> "VESSEL RECOVERED";
             case Packets.MissionEnd.ABORTED -> "DIVE ABORTED";
+            case Packets.MissionEnd.TAKEN -> "NO SURVIVORS";
             default -> "CONTACT LOST";
         };
         String sub = switch (e.outcome) {
             case Packets.MissionEnd.RECOVERED -> "Survey accepted. Further dives are scheduled.";
             case Packets.MissionEnd.ABORTED -> "Survey incomplete. The pilot has been recalled.";
+            case Packets.MissionEnd.TAKEN -> "Survey received in full. The vessel was not.";
             default -> "Hull failure at depth. No recovery is planned.";
         };
         int line = 0;

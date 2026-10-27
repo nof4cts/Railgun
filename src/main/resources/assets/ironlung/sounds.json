@@ -261,5 +261,23 @@
       }
     ],
     "subtitle": "subtitles.ironlung.implosion"
+  },
+  "hatch_breach": {
+    "sounds": [
+      {
+        "name": "ironlung:hatch_breach",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.hatch_breach"
+  },
+  "jumpscare": {
+    "sounds": [
+      {
+        "name": "ironlung:jumpscare",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.jumpscare"
   }
 }

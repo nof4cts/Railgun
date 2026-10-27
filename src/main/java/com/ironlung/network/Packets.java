@@ -225,7 +225,7 @@ public final class Packets {
     }
 
     public static final class MissionEnd {
-        public static final int RECOVERED = 0, ABORTED = 1, LOST = 2;
+        public static final int RECOVERED = 0, ABORTED = 1, LOST = 2, TAKEN = 3;
         public final int outcome;
         public final long ticks;
         public final int objectivesDone, objectivesTotal, photos, anomalies, collisions, powerFailures, sightings;

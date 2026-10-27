@@ -41,6 +41,7 @@ public final class MissionManager {
     private MissionManager() {}
 
     public static final ResourceKey<DamageType> CRUSHED = ResourceKey.create(Registries.DAMAGE_TYPE, IronLungMod.id("crushed"));
+    public static final ResourceKey<DamageType> TAKEN = ResourceKey.create(Registries.DAMAGE_TYPE, IronLungMod.id("taken"));
     private static final DustParticleOptions BLOOD = new DustParticleOptions(new Vector3f(0.35f, 0.0f, 0.0f), 0.9f);
     private static final Map<UUID, Packets.MissionEnd> PENDING_SUMMARIES = new HashMap<>();
 
@@ -274,7 +275,7 @@ public final class MissionManager {
     public static void onDeath(ServerPlayer p) {
         Mission m = get(p);
         if (m == null || m.phase == Mission.Phase.DONE) return;
-        if (m.phase == Mission.Phase.IMPLODING) return; // the implosion ends the dive for everyone
+        if (m.phase == Mission.Phase.IMPLODING || m.phase == Mission.Phase.ASCENDING) return; // the ending handles everyone
         if (m.crew.size() <= 1) {
             finish(p.server, m, Packets.MissionEnd.LOST, false);
         } else {
@@ -574,17 +575,32 @@ public final class MissionManager {
             }
             case 430 -> HorrorDirector.trigger(m, lvl, HorrorType.SILENCE);
             case 520 -> HorrorDirector.playAtControl(m, lvl, ControlType.HATCH, ModSounds.HATCH_KNOCK.get(), 1.2f, 0.8f);
-            case 600 -> {
-                m.power = Mission.Power.RESTORING;
-                m.restoreTicks = 30;
+            case 600 -> HorrorDirector.playAtControl(m, lvl, ControlType.HATCH, ModSounds.HATCH_KNOCK.get(), 1.6f, 0.65f);
+            case 660 -> {
+                // the hatch gives
+                HorrorDirector.playAtControl(m, lvl, ControlType.HATCH, ModSounds.HATCH_BREACH.get(), 2.5f, 0.9f);
+                broadcast(m, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 1.6f, r.nextLong(), 0, 0));
+                BlockPos h = m.base().offset(SubInterior.CONTROL_POS.get(ControlType.HATCH));
+                lvl.sendParticles(BLOOD, h.getX() + 0.5, h.getY() + 0.5, h.getZ() - 0.2, 60, 0.6, 0.8, 0.2, 0.05);
+            }
+            case 700 -> {
+                BlockPos h = m.base().offset(1, 1, 2);
+                lvl.playSound(null, h.getX() + 0.5, h.getY() + 0.5, h.getZ() + 0.5, ModSounds.JUMPSCARE.get(), SoundSource.HOSTILE, 3.0f, 1.0f);
+                broadcast(m, new Packets.HorrorEvent(HorrorType.JUMPSCARE.ordinal(), 2.5f, r.nextLong(), 1.4f, 0));
+            }
+            case 730 -> {
+                if (IronLungConfig.FINALE_KILLS.get()) {
+                    DamageSource src = new DamageSource(lvl.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(TAKEN));
+                    for (ServerPlayer p : aboard(m)) {
+                        if (!p.isCreative() && !p.isSpectator()) p.hurt(src, Float.MAX_VALUE);
+                    }
+                }
             }
             default -> {}
         }
-        if (m.power == Mission.Power.RESTORING && --m.restoreTicks <= 0) {
-            m.power = Mission.Power.ONLINE;
-            m.flickerTicks = 40;
+        if (t >= 760) {
+            finish(lvl.getServer(), m, IronLungConfig.FINALE_KILLS.get() ? Packets.MissionEnd.TAKEN : Packets.MissionEnd.RECOVERED, true);
         }
-        if (t >= 680) finish(lvl.getServer(), m, Packets.MissionEnd.RECOVERED, true);
     }
 
     private static void implode(Mission m, List<ServerPlayer> crew, ServerLevel lvl, RandomSource r) {
@@ -729,6 +745,7 @@ public final class MissionManager {
         m.phase = Mission.Phase.ASCENDING;
         m.phaseTicks = 0;
         m.clearInputs();
+        broadcast(m, new Packets.HorrorEvent(HorrorType.JUMPSCARE_PRIME.ordinal(), 0f, p.getRandom().nextLong(), 0, 0));
     }
 
     public static void onControlUsed(ServerPlayer p, ControlType type, BlockPos pos) {

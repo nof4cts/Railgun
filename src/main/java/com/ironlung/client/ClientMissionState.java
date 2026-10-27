@@ -50,6 +50,8 @@ public final class ClientMissionState {
     public static int spikeTicks;
     public static float spikeAmount;
     public static int introTicks;
+    public static int jumpscareTicks;
+    public static boolean finaleBlack;
     public static int lastPhotoId = -1;
     public static long developStart;
     public static String toast;
@@ -100,7 +102,8 @@ public final class ClientMissionState {
         crew.clear();
         transients.clear();
         done = new boolean[0];
-        glitchTicks = silenceTicks = flashTicks = spikeTicks = shakeLongTicks = introTicks = 0;
+        glitchTicks = silenceTicks = flashTicks = spikeTicks = shakeLongTicks = introTicks = jumpscareTicks = 0;
+        finaleBlack = false;
         shake = 0;
         FeedSystem.release();
     }
@@ -249,6 +252,15 @@ public final class ClientMissionState {
                 glitchTicks = Math.max(glitchTicks, 12);
                 if (e.a > 0.5f) flashTicks = 0;
             }
+            case JUMPSCARE_PRIME -> FeedSystem.prepareJumpscare();
+            case JUMPSCARE -> {
+                jumpscareTicks = (int) (e.a * 20);
+                finaleBlack = true;
+                shake = 2.5f;
+                shakeLongTicks = jumpscareTicks;
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.screen != null) mc.setScreen(null);
+            }
             default -> {}
         }
     }
@@ -289,6 +301,7 @@ public final class ClientMissionState {
         if (flashTicks > 0) flashTicks--;
         if (spikeTicks > 0) spikeTicks--;
         if (introTicks > 0) introTicks--;
+        if (jumpscareTicks > 0) jumpscareTicks--;
         if (toastTicks > 0) toastTicks--;
         double t = now();
         transients.removeIf(tr -> t > tr.start + tr.duration + 1);

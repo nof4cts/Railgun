@@ -19,6 +19,7 @@ public final class IronLungConfig {
     public static ForgeConfigSpec.BooleanValue ENABLE_LEVIATHAN;
     public static ForgeConfigSpec.BooleanValue LETHAL_IMPLOSION;
     public static ForgeConfigSpec.IntValue MAX_CREW;
+    public static ForgeConfigSpec.BooleanValue FINALE_KILLS;
     public static ForgeConfigSpec.BooleanValue OPEN_JOIN;
 
     // ---- client / presentation ----
@@ -48,6 +49,7 @@ public final class IronLungConfig {
         EVENT_FREQUENCY = c.comment("Multiplier for how often unsettling events occur. 1.0 = default pacing.").defineInRange("eventFrequency", 1.0, 0.1, 4.0);
         HULL_DAMAGE = c.comment("Multiplier for hull damage from collisions, pressure and impacts.").defineInRange("hullDamage", 1.0, 0.0, 4.0);
         ENABLE_LEVIATHAN = c.comment("Allow the rare encounter with something very large.").define("enableLeviathan", true);
+        FINALE_KILLS = c.comment("At the end of the ascent, it gets in and kills the whole crew. If false, the crew survives the ending.").define("finaleKills", true);
         LETHAL_IMPLOSION = c.comment("If the hull fails, the pilot dies. If false, the dive is simply lost.").define("lethalImplosion", true);
         c.pop();
         COMMON_SPEC = c.build();

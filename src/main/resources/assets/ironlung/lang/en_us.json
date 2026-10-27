@@ -94,5 +94,9 @@
   "ironlung.cmd.invited": "%s is asking you to crew their submarine.",
   "ironlung.cmd.invite_sent": "Invite sent to %s. It expires in 2 minutes.",
   "ironlung.cmd.host_not_diving": "That player is not on a dive.",
-  "ironlung.cmd.no_invite": "You need an invite. Ask them to run /ironlung invite <you>."
+  "ironlung.cmd.no_invite": "You need an invite. Ask them to run /ironlung invite <you>.",
+  "subtitles.ironlung.hatch_breach": "The hatch tears open",
+  "subtitles.ironlung.jumpscare": "Something screams",
+  "death.attack.ironlung.taken": "%1$s was taken",
+  "death.attack.ironlung.taken.player": "%1$s was taken"
 }
