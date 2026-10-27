@@ -213,7 +213,7 @@ public final class FeedRenderer {
      */
     public void render(int[] argb, int w, int h, double cx, double cy, double cz, double yaw, double pitch, Params p) {
         ensureCache(cx, cz);
-        final double maxDist = Math.min(70, p.lightRange * 2.6);
+        final double maxDist = Math.min(90, p.lightRange * 2.0);
         List<Poi> near = map.poisNear(cx, cz, maxDist + 5);
         List<Transient> trans = new ArrayList<>();
         for (Transient t : p.transients) if (t.alive(p.time)) trans.add(t);
@@ -306,7 +306,7 @@ public final class FeedRenderer {
                         nx /= nl; ny /= nl; nz /= nl;
                     }
                     double lambert = Math.max(0, -(nx * dx + ny * dy + nz * dz));
-                    double att = Math.exp(-2 * t * absorb) / (1 + 0.004 * t * t);
+                    double att = Math.exp(-2 * t * absorb) / (1 + 0.0007 * t * t);
                     double spec = albedo > 1.2 ? Math.pow(lambert, 24) * 1.5 : 0;
                     L += (albedo * (0.15 + 0.85 * lambert) + spec) * spot * att * lightMul * 1.25;
                 }

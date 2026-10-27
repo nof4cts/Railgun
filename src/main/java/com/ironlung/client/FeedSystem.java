@@ -106,7 +106,7 @@ public final class FeedSystem {
             liveBusy = true;
             final double[] pose = ClientMissionState.cameraPose();
             final FeedRenderer.Params p = new FeedRenderer.Params();
-            p.lightRange = 26;
+            p.lightRange = 46;
             p.grain = grain;
             p.glitch = glitch;
             p.light = light;
@@ -137,7 +137,7 @@ public final class FeedSystem {
         final int h = w * 3 / 4;
         final FeedRenderer.Params p = new FeedRenderer.Params();
         p.photo = true;
-        p.lightRange = 40;
+        p.lightRange = 62;
         p.grain = 0.12;
         p.frame = rec.frameSeed;
         p.time = ClientMissionState.now();

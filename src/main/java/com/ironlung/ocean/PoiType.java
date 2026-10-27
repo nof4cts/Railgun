@@ -5,7 +5,7 @@ public enum PoiType {
     RIBCAGE("Skeletal remains", true, 0.80, 0.05),
     GROWTH("Biological formation", true, 0.55, 0.55),
     SPIRE("Spire formation", true, 0.45, 0.15),
-    MONOLITH("Unclassified structure", true, 0.12, 0.0),
+    MONOLITH("Unclassified structure", true, 0.24, 0.0),
     CARCASS("Large carcass", true, 0.50, 0.45),
     // Uncatalogued: never listed on the survey chart.
     EYE_ROCK("Uncatalogued anomaly", false, 0.30, 0.25),

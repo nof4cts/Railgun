@@ -86,6 +86,10 @@ public class HelmScreen extends SubScreen {
             text(g, String.format(Locale.ROOT, "SPD  %+.1f m/s", s.speed), sx + 10, sy + 56, c);
             int depthColor = depth > OceanMap.CRUSH_DEPTH ? (blink(4) ? TEXT_HOT : TEXT_DIM) : depth > OceanMap.WARN_DEPTH ? AMBER : c;
             text(g, String.format(Locale.ROOT, "DEPTH  %05.1f m", depth), sx + 10, sy + 74, depthColor);
+            if (ClientMissionState.map != null) {
+                double alt = ClientMissionState.map.floorDepth(ClientMissionState.x(), ClientMissionState.z()) - ClientMissionState.depth() - 1.8;
+                text(g, String.format(Locale.ROOT, "ALT  %04.1f m", Math.max(0, alt)), sx + 100, sy + 74, alt < 4 ? TEXT_HOT : TEXT_DIM);
+            }
 
             // compass strip
             int cx = sx + 190, cy = sy + 18;

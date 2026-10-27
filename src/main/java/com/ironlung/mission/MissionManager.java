@@ -158,7 +158,7 @@ public final class MissionManager {
         m.x = map.startX;
         m.z = map.startZ;
         m.heading = 0;
-        m.depth = Math.max(OceanMap.MIN_SUB_DEPTH + 5, map.floorDepth(m.x, m.z) - 22);
+        m.depth = Math.max(OceanMap.MIN_SUB_DEPTH + 5, map.floorDepth(m.x, m.z) - 12);
         m.sealant = IronLungConfig.SEALANT_CHARGES.get();
         m.nextEventTick = 700 + p.getRandom().nextInt(700);
         Mission.CrewMember c = new Mission.CrewMember(p.getUUID(), p.getGameProfile().getName());
@@ -671,7 +671,7 @@ public final class MissionManager {
             for (Poi poi : map.pois) {
                 double vx = poi.x - pose[0], vy = poi.centerY() - pose[1], vz = poi.z - pose[2];
                 double dist = Math.sqrt(vx * vx + vy * vy + vz * vz);
-                if (dist > 40 + poi.radius * 0.4) continue;
+                if (dist > 52 + poi.radius * 0.4) continue;
                 double cos = (vx * dx + vy * dy + vz * dz) / Math.max(1e-6, dist);
                 double slack = Math.atan2(poi.radius * 0.5, Math.max(1, dist));
                 if (Math.acos(Math.max(-1, Math.min(1, cos))) > Math.acos(cosLimit) + slack) continue;
