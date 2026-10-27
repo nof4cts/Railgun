@@ -1,1 +1,6 @@
-{ "pack": { "description": "Railgun resources", "pack_format": 15 } }
+{
+  "pack": {
+    "description": "The Abomination resources",
+    "pack_format": 15
+  }
+}

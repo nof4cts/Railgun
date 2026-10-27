@@ -1,23 +1,27 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-license="MIT"
+license="All Rights Reserved"
 
 [[mods]]
-modId="railgun"
+modId="abomination"
 version="1.0.0"
-displayName="Railgun"
-description='''A handheld sci-fi railgun: procedural smooth-shaded model, volumetric beam, impact frames, screen shake.'''
+displayName="The Abomination"
+authors="You"
+description='''
+Something escaped the experiment. It watches from the treeline. It follows you home.
+When it catches you, it takes your head - and your spine comes with it.
+'''
 
-[[dependencies.railgun]]
-modId="forge"
-mandatory=true
-versionRange="[47,)"
-ordering="NONE"
-side="BOTH"
+[[dependencies.abomination]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
 
-[[dependencies.railgun]]
-modId="minecraft"
-mandatory=true
-versionRange="[1.20.1,1.21)"
-ordering="NONE"
-side="BOTH"
+[[dependencies.abomination]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"

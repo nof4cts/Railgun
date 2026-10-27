@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " F ",
+    "FRF",
+    " F "
+  ],
+  "key": {
+    "F": {
+      "item": "abomination:heart_fragment"
+    },
+    "R": {
+      "item": "minecraft:fermented_spider_eye"
+    }
+  },
+  "result": {
+    "item": "abomination:throbbing_heart",
+    "count": 1
+  }
+}

@@ -1,7 +1,10 @@
-name: Build Railgun jar
+name: Build Abomination jar
 on:
   push:
+    branches: [abomination]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,25 +14,25 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - name: Fetch Forge 1.20.1 MDK and overlay the mod
-        run: |
-          curl -L -o mdk.zip https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.2.0/forge-1.20.1-47.2.0-mdk.zip
-          mkdir mdk && unzip -q mdk.zip -d mdk
-          rm -rf mdk/src
-          cp -r src mdk/src
-          cp gradle.properties mdk/gradle.properties
+      - uses: gradle/actions/setup-gradle@v3
       - name: Build
-        working-directory: mdk
         run: |
           chmod +x gradlew
-          ./gradlew build --no-daemon
+          ./gradlew build --no-daemon --stacktrace
       - name: Collect jar
         run: |
           mkdir out
-          cp mdk/build/libs/*.jar out/
+          cp build/libs/*.jar out/
           rm -f out/*-sources.jar
           ls -la out
       - uses: actions/upload-artifact@v4
         with:
-          name: railgun-mod-jar
+          name: abomination-mod-jar
           path: out/*.jar
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: abomination-build-${{ github.run_number }}
+          name: The Abomination (build ${{ github.run_number }})
+          target_commitish: ${{ github.sha }}
+          files: out/*.jar

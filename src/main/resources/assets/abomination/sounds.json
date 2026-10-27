@@ -1,0 +1,171 @@
+{
+  "ambient": {
+    "subtitle": "subtitles.abomination.ambient",
+    "sounds": [
+      "abomination:breath_1",
+      "abomination:breath_2",
+      "abomination:breath_3"
+    ]
+  },
+  "step": {
+    "subtitle": "subtitles.abomination.step",
+    "sounds": [
+      "abomination:step_wet_1",
+      "abomination:step_wet_2",
+      "abomination:step_wet_3",
+      "abomination:step_wet_4"
+    ]
+  },
+  "scrape": {
+    "subtitle": "subtitles.abomination.scrape",
+    "sounds": [
+      "abomination:scrape_1",
+      "abomination:scrape_2",
+      "abomination:scrape_3"
+    ]
+  },
+  "whisper": {
+    "subtitle": "subtitles.abomination.whisper",
+    "sounds": [
+      "abomination:whisper_1",
+      "abomination:whisper_2",
+      "abomination:whisper_3",
+      "abomination:whisper_4"
+    ]
+  },
+  "sub_bass": {
+    "subtitle": "subtitles.abomination.sub_bass",
+    "sounds": [
+      "abomination:sub_bass"
+    ]
+  },
+  "heartbeat": {
+    "subtitle": "subtitles.abomination.heartbeat",
+    "sounds": [
+      "abomination:heartbeat"
+    ]
+  },
+  "scream": {
+    "subtitle": "subtitles.abomination.scream",
+    "sounds": [
+      "abomination:scream_1",
+      "abomination:scream_2"
+    ]
+  },
+  "roar": {
+    "subtitle": "subtitles.abomination.roar",
+    "sounds": [
+      "abomination:roar"
+    ]
+  },
+  "impact": {
+    "subtitle": "subtitles.abomination.impact",
+    "sounds": [
+      "abomination:impact"
+    ]
+  },
+  "crack": {
+    "subtitle": "subtitles.abomination.crack",
+    "sounds": [
+      "abomination:crack_1",
+      "abomination:crack_2",
+      "abomination:crack_3",
+      "abomination:crack_4"
+    ]
+  },
+  "grab": {
+    "subtitle": "subtitles.abomination.grab",
+    "sounds": [
+      "abomination:grab"
+    ]
+  },
+  "vanish": {
+    "subtitle": "subtitles.abomination.vanish",
+    "sounds": [
+      "abomination:vanish"
+    ]
+  },
+  "death": {
+    "subtitle": "subtitles.abomination.death",
+    "sounds": [
+      "abomination:death"
+    ]
+  },
+  "hurt": {
+    "subtitle": "subtitles.abomination.hurt",
+    "sounds": [
+      "abomination:hurt_1",
+      "abomination:hurt_2",
+      "abomination:hurt_3"
+    ]
+  },
+  "gore": {
+    "subtitle": "subtitles.abomination.gore",
+    "sounds": [
+      "abomination:gore_1",
+      "abomination:gore_2",
+      "abomination:gore_3",
+      "abomination:gore_4",
+      "abomination:gore_5",
+      "abomination:gore_6"
+    ]
+  },
+  "rip": {
+    "subtitle": "subtitles.abomination.rip",
+    "sounds": [
+      "abomination:rip_tear"
+    ]
+  },
+  "gush": {
+    "subtitle": "subtitles.abomination.gush",
+    "sounds": [
+      "abomination:gush_1",
+      "abomination:gush_2"
+    ]
+  },
+  "finisher_sting": {
+    "subtitle": "subtitles.abomination.finisher_sting",
+    "sounds": [
+      {
+        "name": "abomination:finisher_sting",
+        "stream": true
+      }
+    ]
+  },
+  "emerge_sting": {
+    "subtitle": "subtitles.abomination.emerge_sting",
+    "sounds": [
+      {
+        "name": "abomination:emerge_sting",
+        "stream": true
+      }
+    ]
+  },
+  "music_stalk": {
+    "subtitle": "subtitles.abomination.music",
+    "sounds": [
+      {
+        "name": "abomination:music_stalk",
+        "stream": true
+      }
+    ]
+  },
+  "music_hunt": {
+    "subtitle": "subtitles.abomination.music",
+    "sounds": [
+      {
+        "name": "abomination:music_hunt",
+        "stream": true
+      }
+    ]
+  },
+  "music_nightmare": {
+    "subtitle": "subtitles.abomination.music",
+    "sounds": [
+      {
+        "name": "abomination:music_nightmare",
+        "stream": true
+      }
+    ]
+  }
+}
