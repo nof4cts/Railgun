@@ -130,7 +130,7 @@ final class Finale {
         }
         // eye sockets: the eyes sit sunk into the hide, not on it
         for (double[] e : EYES) {
-            double sock = sphere(x - e[0], y - e[1], z - (e[2] - e[3] * 0.75), e[3] * 1.08);
+            double sock = sphere(x - e[0], y - e[1], z - (e[2] - e[3] * 0.5), e[3] * 1.05);
             outer = Math.max(outer, -sock);
         }
         // the maw, with torn, ragged edges, and the throat behind it
@@ -222,7 +222,7 @@ final class Finale {
         }
         // sunken eyes: glossy black, with a cloudy, milky centre
         for (double[] e : EYES) {
-            double cz = e[2] - e[3] * 0.95;
+            double cz = e[2] - e[3] * 1.3;
             double ex = x - e[0], ey = y - e[1], ez = z - cz;
             double ball = sphere(ex, ey, ez, e[3]);
             if (ball < d) {
