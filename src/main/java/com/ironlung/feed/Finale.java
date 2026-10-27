@@ -21,9 +21,8 @@ final class Finale {
     private static final double[][] TENDRIL_BOUNDS = buildBounds();
     /** x, y, z, radius, gazeX, gazeY */
     private static final double[][] EYES = {
-            {-1.05, 2.75, 3.72, 0.30, 0.10, -0.15}, {0.8, 2.85, 3.68, 0.27, -0.05, -0.2}, {1.75, 2.45, 3.45, 0.22, -0.2, -0.05},
-            {-2.0, 2.3, 3.2, 0.18, 0.25, 0.0}, {-0.1, 3.2, 3.35, 0.15, 0.0, -0.3}, {2.3, 2.85, 2.9, 0.13, -0.3, -0.1},
-            {-0.45, 2.35, 3.95, 0.11, 0.05, -0.1}};
+            {-1.05, 2.45, 3.85, 0.30, 0.10, -0.15}, {0.85, 2.5, 3.85, 0.27, -0.05, -0.2}, {1.8, 2.15, 3.55, 0.2, -0.2, -0.05},
+            {-1.95, 2.05, 3.45, 0.17, 0.25, 0.0}, {-0.1, 2.85, 3.7, 0.14, 0.0, -0.3}, {2.35, 2.55, 3.05, 0.12, -0.3, -0.1}};
     /** strands between the jaws: x, top y, bottom y, sag, radius */
     private static final double[][] STRANDS = {
             {-1.6, 0.9, -3.0, 0.5, 0.05}, {-0.9, 1.3, -3.4, 0.8, 0.035}, {-0.2, 1.4, -3.5, 1.0, 0.06}, {0.55, 1.35, -3.45, 0.7, 0.03},
@@ -129,6 +128,11 @@ final class Finale {
             double pits = 0.025 * Math.max(0, vnoise(x * 9, y * 9, z * 9) - 0.6) * 4;
             outer += folds + wrinkle + pits;
         }
+        // eye sockets: the eyes sit sunk into the hide, not on it
+        for (double[] e : EYES) {
+            double sock = sphere(x - e[0], y - e[1], z - (e[2] - e[3] * 0.75), e[3] * 1.08);
+            outer = Math.max(outer, -sock);
+        }
         // the maw, with torn, ragged edges, and the throat behind it
         double maw = ellipsoid(x - MX, y - MY, z - 3.1, RX + 0.2, RY + 0.2, 3.0);
         maw += 0.14 * Math.sin(y * 4.1 + z * 2) * Math.sin(x * 3.7);
@@ -216,23 +220,23 @@ final class Finale {
                 }
             }
         }
-        // bloodshot human eyes, too many, looking at you
+        // sunken eyes: glossy black, with a cloudy, milky centre
         for (double[] e : EYES) {
-            double ex = x - e[0], ey = y - e[1], ez = z - e[2];
+            double cz = e[2] - e[3] * 0.95;
+            double ex = x - e[0], ey = y - e[1], ez = z - cz;
             double ball = sphere(ex, ey, ez, e[3]);
             if (ball < d) {
                 d = ball;
-                double fx = ex / e[3] - e[4], fy = ey / e[3] - e[5];
-                double front = ez / e[3];
+                double fx = ex / e[3] - e[4] * 0.5, fy = ey / e[3] - e[5] * 0.5;
                 double r2 = fx * fx + fy * fy;
-                if (front > 0.6 && r2 < 0.035) {
-                    alb = 0.0; fl = 0.0;
-                } else if (front > 0.6 && r2 < 0.16) {
-                    alb = 0.16 + 0.12 * Math.sin(Math.atan2(fy, fx) * 23); fl = 0.2; // iris fibres
+                double front = ez / e[3];
+                if (front > 0.5 && r2 < 0.2) {
+                    double cloud = 1 - r2 / 0.2;
+                    alb = 0.18 + 0.5 * cloud * (0.8 + 0.2 * vnoise(x * 30, y * 30, z * 30));
+                    fl = 0.05;
                 } else {
-                    double vein = veins(ex * 9 / e[3], ey * 9 / e[3], ez * 9 / e[3]);
-                    alb = 0.78 - 0.35 * vein;
-                    fl = 0.3 + 0.6 * vein; // bloodshot
+                    alb = 0.025;
+                    fl = 0.1;
                 }
                 wet = 1.0;
             }
