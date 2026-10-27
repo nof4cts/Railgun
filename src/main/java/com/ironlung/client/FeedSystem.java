@@ -145,15 +145,15 @@ public final class FeedSystem {
         WORKER.submit(() -> {
             try {
                 double cx = pose[0], cy = pose[1], cz = pose[2];
-                double px = cx + Math.sin(yaw) * 7.6, pz = cz - Math.cos(yaw) * 7.6;
-                double oy = Math.atan2(cx - px, -(cz - pz));
+                double px = cx + Math.sin(yaw) * 8.6 + Math.cos(yaw) * 1.2, pz = cz - Math.cos(yaw) * 8.6 + Math.sin(yaw) * 1.2;
+                double oy = Math.atan2(cx - px, -(cz - pz)) + 0.5;
                 FeedRenderer.Params p = new FeedRenderer.Params();
                 p.photo = true;
                 p.lightRange = 30;
                 p.grain = 0.15;
                 p.glitch = 0.12;
                 p.frame = 13;
-                p.transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.FACE, px, cy + 0.2, pz, 0, 0, 0, 0.95, oy, -1, 1e9));
+                p.transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.FACE, px, cy + 0.6, pz, 0, 0, 0, 1.0, oy, -1, 1e9));
                 int[] out = new int[SCARE_W * SCARE_H];
                 r.render(out, SCARE_W, SCARE_H, cx, cy, cz, yaw, 0, p);
                 scareBuffer = out;
