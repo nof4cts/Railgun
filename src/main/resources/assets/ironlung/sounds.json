@@ -279,5 +279,14 @@
       }
     ],
     "subtitle": "subtitles.ironlung.jumpscare"
+  },
+  "breathing": {
+    "sounds": [
+      {
+        "name": "ironlung:breathing",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.breathing"
   }
 }

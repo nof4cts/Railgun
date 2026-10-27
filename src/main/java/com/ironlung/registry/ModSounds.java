@@ -39,6 +39,7 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> HATCH_KNOCK = reg("hatch_knock");
     public static final RegistryObject<SoundEvent> HATCH_BREACH = reg("hatch_breach");
     public static final RegistryObject<SoundEvent> JUMPSCARE = reg("jumpscare");
+    public static final RegistryObject<SoundEvent> BREATHING = reg("breathing");
 
     private static RegistryObject<SoundEvent> reg(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(IronLungMod.id(name)));

@@ -98,5 +98,6 @@
   "subtitles.ironlung.hatch_breach": "The hatch tears open",
   "subtitles.ironlung.jumpscare": "Something screams",
   "death.attack.ironlung.taken": "%1$s was taken",
-  "death.attack.ironlung.taken.player": "%1$s was taken"
+  "death.attack.ironlung.taken.player": "%1$s was taken",
+  "subtitles.ironlung.breathing": "Something breathes nearby"
 }

@@ -4,6 +4,7 @@ import com.ironlung.client.ClientMissionState;
 import com.ironlung.client.StaticNoise;
 import com.ironlung.config.IronLungConfig;
 import com.ironlung.mission.Mission;
+import com.ironlung.network.Packets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -44,6 +45,23 @@ public final class SubOverlay {
             }
         }
 
+        if (ClientMissionState.feedInsetTicks > 0 && !(mc.screen instanceof com.ironlung.client.screen.CameraScreen)
+                && ClientMissionState.powered() && ClientMissionState.introTicks == 0) {
+            int iw = (int) Math.min(w * 0.55, h * 0.55 * 4 / 3), ih = iw * 3 / 4;
+            int ix = (w - iw) / 2, iy = Math.max(8, h / 2 - ih / 2 - 20);
+            g.fill(ix - 4, iy - 14, ix + iw + 4, iy + ih + 4, 0xFF0A0606);
+            g.fill(ix - 1, iy - 1, ix + iw + 1, iy + ih + 1, 0xFF2A0C0A);
+            Packets.SubState s = ClientMissionState.cur;
+            float cond = s == null ? 1f : s.cameraCondition;
+            double glitch = ClientMissionState.glitchTicks > 0 ? 0.65 : (1 - cond) * 0.2;
+            net.minecraft.resources.ResourceLocation feed = com.ironlung.client.FeedSystem.live(glitch, 0.28 + (1 - cond) * 0.6, 1.0);
+            int lw = com.ironlung.client.FeedSystem.liveWidth(), lh = com.ironlung.client.FeedSystem.liveHeight();
+            if (feed != null && lw > 0) g.blit(feed, ix, iy, iw, ih, 0, 0, lw, lh, lw, lh);
+            StaticNoise.draw(g, ix, iy, iw, ih, 0.06f + (ClientMissionState.glitchTicks > 0 ? 0.3f : 0f));
+            if ((ClientMissionState.feedInsetTicks / 8) % 2 == 0) g.fill(ix + 2, iy - 10, ix + 7, iy - 5, 0xFFD02818);
+            g.drawString(font, "EXTERNAL CAMERA", ix + 10, iy - 11, 0xFFB0352A, false);
+        }
+
         if (IronLungConfig.HUD_READOUT.get() && mc.screen == null && ClientMissionState.cur != null && ClientMissionState.introTicks == 0) {
             String line;
             if (pw == Mission.Power.ONLINE) {
@@ -68,19 +86,32 @@ public final class SubOverlay {
         if (ClientMissionState.finaleBlack) {
             g.fill(0, 0, w, h, 0xFF000000);
             int js = ClientMissionState.jumpscareTicks;
+            int total = ClientMissionState.jumpscareTotal;
+            int age = total - js;
             if (js > 0) {
-                net.minecraft.resources.ResourceLocation face = com.ironlung.client.FeedSystem.jumpscare();
-                boolean cut = js % 6 == 0 || js % 7 == 3;
-                if (face != null && !cut) {
-                    int fw = com.ironlung.client.FeedSystem.SCARE_W, fh = com.ironlung.client.FeedSystem.SCARE_H;
-                    // cover the screen, lurching closer every frame
-                    double grow = 1.0 + (28 - js) * 0.012;
-                    int dw = (int) (Math.max(w, h * fw / (double) fh) * grow), dh = dw * fh / fw;
-                    int ox = (int) ((Math.random() - 0.5) * 24), oy = (int) ((Math.random() - 0.5) * 18);
-                    g.blit(face, (w - dw) / 2 + ox, (h - dh) / 2 + oy, dw, dh, 0, 0, fw, fh, fw, fh);
-                    g.fill(0, 0, w, h, (js % 4 < 2 ? 0x50 : 0x20) << 24 | 0x900000);
+                int fw = com.ironlung.client.FeedSystem.SCARE_W, fh = com.ironlung.client.FeedSystem.SCARE_H;
+                if (age < 7) {
+                    // a glimpse at the far end of the dark: just the eyes catching the light
+                    net.minecraft.resources.ResourceLocation far = com.ironlung.client.FeedSystem.jumpscareFar();
+                    if (far != null && age % 3 != 2) {
+                        int dw = (int) Math.max(w, h * fw / (double) fh), dh = dw * fh / fw;
+                        g.blit(far, (w - dw) / 2, (h - dh) / 2, dw, dh, 0, 0, fw, fh, fw, fh);
+                    }
+                    StaticNoise.draw(g, 0, 0, w, h, 0.12f);
+                } else if (age < 12) {
+                    StaticNoise.draw(g, 0, 0, w, h, 0.05f); // nothing. then:
+                } else {
+                    net.minecraft.resources.ResourceLocation face = com.ironlung.client.FeedSystem.jumpscare();
+                    boolean cut = js % 6 == 0 || js % 7 == 3;
+                    if (face != null && !cut) {
+                        double grow = 1.15 + (age - 12) * 0.018;
+                        int dw = (int) (Math.max(w, h * fw / (double) fh) * grow), dh = dw * fh / fw;
+                        int ox = (int) ((Math.random() - 0.5) * 30), oy = (int) ((Math.random() - 0.5) * 22);
+                        g.blit(face, (w - dw) / 2 + ox, (h - dh) / 2 + oy, dw, dh, 0, 0, fw, fh, fw, fh);
+                        g.fill(0, 0, w, h, (js % 4 < 2 ? 0x58 : 0x20) << 24 | 0x900000);
+                    }
+                    StaticNoise.draw(g, 0, 0, w, h, cut ? 0.6f : 0.22f);
                 }
-                StaticNoise.draw(g, 0, 0, w, h, cut ? 0.6f : 0.22f);
             }
             return;
         }

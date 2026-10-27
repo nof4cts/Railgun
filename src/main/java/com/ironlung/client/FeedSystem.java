@@ -72,8 +72,11 @@ public final class FeedSystem {
         liveResult = null;
         renderer = null;
         if (scareLoc != null) mc.getTextureManager().release(scareLoc);
+        if (scareFarLoc != null) mc.getTextureManager().release(scareFarLoc);
         scareLoc = null;
+        scareFarLoc = null;
         scareBuffer = null;
+        scareFarBuffer = null;
     }
 
     public static int liveWidth() {
@@ -132,8 +135,8 @@ public final class FeedSystem {
         return liveLoc;
     }
 
-    private static volatile int[] scareBuffer;
-    private static ResourceLocation scareLoc;
+    private static volatile int[] scareBuffer, scareFarBuffer;
+    private static ResourceLocation scareLoc, scareFarLoc;
     public static final int SCARE_W = 480, SCARE_H = 270;
 
     /** Render the finale's face in the background so it is ready the instant it is needed. */
@@ -144,23 +147,40 @@ public final class FeedSystem {
         final double yaw = ClientMissionState.heading();
         WORKER.submit(() -> {
             try {
-                double cx = pose[0], cy = pose[1], cz = pose[2];
-                double px = cx + Math.sin(yaw) * 8.6 + Math.cos(yaw) * 1.2, pz = cz - Math.cos(yaw) * 8.6 + Math.sin(yaw) * 1.2;
-                double oy = Math.atan2(cx - px, -(cz - pz)) + 0.5;
-                FeedRenderer.Params p = new FeedRenderer.Params();
-                p.photo = true;
-                p.lightRange = 30;
-                p.grain = 0.15;
-                p.glitch = 0.12;
-                p.frame = 13;
-                p.transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.FACE, px, cy + 0.6, pz, 0, 0, 0, 1.0, oy, -1, 1e9));
-                int[] out = new int[SCARE_W * SCARE_H];
-                r.render(out, SCARE_W, SCARE_H, cx, cy, cz, yaw, 0, p);
-                scareBuffer = out;
+                scareFarBuffer = renderFace(r, pose, yaw, 17.0, 0.0, 0.0, 0.3, 7);
+                scareBuffer = renderFace(r, pose, yaw, 9.5, 0.8, 0.28, 0.4, 13);
             } catch (Throwable t) {
                 IronLungMod.LOGGER.error("Finale render failed", t);
             }
         });
+    }
+
+    private static int[] renderFace(FeedRenderer r, double[] pose, double yaw, double dist, double side, double turn, double light, long frame) {
+        double cx = pose[0], cy = pose[1], cz = pose[2];
+        double px = cx + Math.sin(yaw) * dist + Math.cos(yaw) * side, pz = cz - Math.cos(yaw) * dist + Math.sin(yaw) * side;
+        double oy = Math.atan2(cx - px, -(cz - pz)) + turn;
+        FeedRenderer.Params p = new FeedRenderer.Params();
+        p.photo = true;
+        p.lightRange = 18 + light * 40;
+        p.light = 0.5 + light;
+        p.grain = 0.18;
+        p.glitch = 0.12;
+        p.frame = frame;
+        p.transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.FACE, px, cy - 1.6, pz, 0, 0, 0, 1.0, oy, -1, 1e9));
+        int[] out = new int[SCARE_W * SCARE_H];
+        r.render(out, SCARE_W, SCARE_H, cx, cy, cz, yaw, 0, p);
+        return out;
+    }
+
+    public static ResourceLocation jumpscareFar() {
+        if (scareFarLoc != null) return scareFarLoc;
+        int[] buf = scareFarBuffer;
+        if (buf == null) return null;
+        DynamicTexture tex = new DynamicTexture(new NativeImage(NativeImage.Format.RGBA, SCARE_W, SCARE_H, true));
+        upload(tex, buf, SCARE_W, SCARE_H);
+        scareFarLoc = Minecraft.getInstance().getTextureManager().register("ironlung_finale_far", tex);
+        scareFarBuffer = null;
+        return scareFarLoc;
     }
 
     public static ResourceLocation jumpscare() {

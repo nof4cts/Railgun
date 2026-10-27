@@ -583,12 +583,19 @@ public final class MissionManager {
                 BlockPos h = m.base().offset(SubInterior.CONTROL_POS.get(ControlType.HATCH));
                 lvl.sendParticles(BLOOD, h.getX() + 0.5, h.getY() + 0.5, h.getZ() - 0.2, 60, 0.6, 0.8, 0.2, 0.05);
             }
-            case 700 -> {
+            case 680, 715, 745 -> {
+                // something wet breathing, coming in from the hatch toward you
+                double zz = t == 680 ? 4.6 : t == 715 ? 3.4 : 2.4;
+                BlockPos b = m.base();
+                lvl.playSound(null, b.getX() + 1.5, b.getY() + 1.5, b.getZ() + zz, ModSounds.BREATHING.get(), SoundSource.HOSTILE, 1.2f + (t - 680) * 0.01f, 0.85f);
+            }
+            case 785 -> broadcast(m, new Packets.HorrorEvent(HorrorType.JUMPSCARE.ordinal(), 0.4f, r.nextLong(), 1.9f, 0));
+            case 797 -> {
                 BlockPos h = m.base().offset(1, 1, 2);
                 lvl.playSound(null, h.getX() + 0.5, h.getY() + 0.5, h.getZ() + 0.5, ModSounds.JUMPSCARE.get(), SoundSource.HOSTILE, 3.0f, 1.0f);
-                broadcast(m, new Packets.HorrorEvent(HorrorType.JUMPSCARE.ordinal(), 2.5f, r.nextLong(), 1.4f, 0));
+                broadcast(m, new Packets.HorrorEvent(HorrorType.COLLISION.ordinal(), 2.5f, r.nextLong(), 0, 0));
             }
-            case 730 -> {
+            case 826 -> {
                 if (IronLungConfig.FINALE_KILLS.get()) {
                     DamageSource src = new DamageSource(lvl.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(TAKEN));
                     for (ServerPlayer p : aboard(m)) {
@@ -598,7 +605,7 @@ public final class MissionManager {
             }
             default -> {}
         }
-        if (t >= 760) {
+        if (t >= 856) {
             finish(lvl.getServer(), m, IronLungConfig.FINALE_KILLS.get() ? Packets.MissionEnd.TAKEN : Packets.MissionEnd.RECOVERED, true);
         }
     }

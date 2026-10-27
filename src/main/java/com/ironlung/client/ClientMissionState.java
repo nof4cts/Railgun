@@ -50,7 +50,9 @@ public final class ClientMissionState {
     public static int spikeTicks;
     public static float spikeAmount;
     public static int introTicks;
-    public static int jumpscareTicks;
+    public static int jumpscareTicks, jumpscareTotal = 1;
+    /** Ticks to show the external camera inset to crew who are not at the monitor. */
+    public static int feedInsetTicks;
     public static boolean finaleBlack;
     public static int lastPhotoId = -1;
     public static long developStart;
@@ -90,7 +92,7 @@ public final class ClientMissionState {
         leader = m.leader;
         photos.clear();
         photos.addAll(m.photos);
-        if (fresh) introTicks = m.ticks < 40 ? 160 : 0;
+        if (fresh) introTicks = 160;
         prev = cur = null;
     }
 
@@ -102,7 +104,7 @@ public final class ClientMissionState {
         crew.clear();
         transients.clear();
         done = new boolean[0];
-        glitchTicks = silenceTicks = flashTicks = spikeTicks = shakeLongTicks = introTicks = jumpscareTicks = 0;
+        glitchTicks = silenceTicks = flashTicks = spikeTicks = shakeLongTicks = introTicks = jumpscareTicks = feedInsetTicks = 0;
         finaleBlack = false;
         shake = 0;
         FeedSystem.release();
@@ -228,6 +230,7 @@ public final class ClientMissionState {
                 double oy = Math.atan2(-vx, vz);
                 transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.SILHOUETTE, sx, sy, sz, vx, (rnd.nextDouble() - 0.5) * 0.3, vz,
                         0.8 + rnd.nextDouble() * 0.7, oy, t, dur));
+                feedInsetTicks = (int) (dur * 20) + 20;
             }
             case LEVIATHAN -> {
                 boolean finale = e.b > 0.5f;
@@ -240,6 +243,7 @@ public final class ClientMissionState {
                 transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.LEVIATHAN, px, py, pz, rx * 1.2, 0.1, rz * 1.2, size, oy, t, e.a));
                 glitchTicks = Math.max(glitchTicks, 40);
                 shakeLongTicks = (int) (e.a * 20);
+                feedInsetTicks = (int) (e.a * 20) + 20;
             }
             case EYES -> {
                 double dist = 13 + rnd.nextDouble() * 6;
@@ -247,6 +251,7 @@ public final class ClientMissionState {
                 double px = cx + fx * dist + rx * off, pz = cz + fz * dist + rz * off;
                 transients.add(new FeedRenderer.Transient(FeedRenderer.Transient.EYES, px, cy + (rnd.nextDouble() - 0.6) * 2, pz, 0, 0, 0,
                         1.0, yaw, t, e.a));
+                feedInsetTicks = (int) (e.a * 20) + 20;
             }
             case IMPACT -> {
                 glitchTicks = Math.max(glitchTicks, 12);
@@ -255,6 +260,7 @@ public final class ClientMissionState {
             case JUMPSCARE_PRIME -> FeedSystem.prepareJumpscare();
             case JUMPSCARE -> {
                 jumpscareTicks = (int) (e.a * 20);
+                jumpscareTotal = Math.max(1, jumpscareTicks);
                 finaleBlack = true;
                 shake = 2.5f;
                 shakeLongTicks = jumpscareTicks;
@@ -302,6 +308,7 @@ public final class ClientMissionState {
         if (spikeTicks > 0) spikeTicks--;
         if (introTicks > 0) introTicks--;
         if (jumpscareTicks > 0) jumpscareTicks--;
+        if (feedInsetTicks > 0) feedInsetTicks--;
         if (toastTicks > 0) toastTicks--;
         double t = now();
         transients.removeIf(tr -> t > tr.start + tr.duration + 1);

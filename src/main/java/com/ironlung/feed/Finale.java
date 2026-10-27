@@ -17,6 +17,11 @@ final class Finale {
 
     // tendrils: each a chain of points
     private static final double[][][] TENDRILS = buildTendrils();
+    /** x, y, z, radius, gazeX, gazeY */
+    private static final double[][] EYES = {
+            {-1.05, 2.75, 3.72, 0.30, 0.10, -0.15}, {0.8, 2.85, 3.68, 0.27, -0.05, -0.2}, {1.75, 2.45, 3.45, 0.22, -0.2, -0.05},
+            {-2.0, 2.3, 3.2, 0.18, 0.25, 0.0}, {-0.1, 3.2, 3.35, 0.15, 0.0, -0.3}, {2.3, 2.85, 2.9, 0.13, -0.3, -0.1},
+            {-0.45, 2.35, 3.95, 0.11, 0.05, -0.1}};
     private static final double[][] TENDRIL_BOUNDS = buildBounds();
 
     private static double[][][] buildTendrils() {
@@ -102,12 +107,45 @@ final class Finale {
                 }
             }
         }
-        // small pale eyes high on the head
-        double eyes = Math.min(sphere(x - 0.9, y - 3.05, z - 1.7, 0.17), sphere(x + 0.95, y - 3.0, z - 1.65, 0.16));
-        if (eyes < d) {
-            d = eyes;
-            alb = 1.25;
-            fl = -0.2;
+        // human eyes, too many, in the wrong places on the brow; whites with dark irises looking at you
+        for (double[] e : EYES) {
+            double ex = x - e[0], ey = y - e[1], ez = z - e[2];
+            double ball = sphere(ex, ey, ez, e[3]);
+            if (ball < d) {
+                d = ball;
+                // iris/pupil: the part of the eyeball facing the viewer (+z), offset by its gaze
+                double fx = ex / e[3] - e[4], fy = ey / e[3] - e[5];
+                double front = ez / e[3];
+                double r2 = fx * fx + fy * fy;
+                if (front > 0.6 && r2 < 0.16) {
+                    alb = r2 < 0.035 ? 0.0 : 0.12;
+                    fl = r2 < 0.035 ? 0.0 : 0.3;
+                } else {
+                    alb = 1.1;
+                    fl = 0.25; // bloodshot white
+                }
+            }
+        }
+        // a row of flat human teeth in the gums behind the needles
+        if (z > 1.0 && z < 2.6) {
+            double gum = 1e9;
+            int idx = (int) Math.round(ang / (Math.PI * 2) * 34);
+            for (int j = idx - 1; j <= idx + 1; j++) {
+                double a = j * Math.PI * 2 / 34;
+                double ca = Math.cos(a), sa = Math.sin(a);
+                if (Math.abs(ca) > 0.95) continue;
+                double bx = MX + RX * 0.62 * ca, by = MY + RY * 0.62 * sa;
+                // rotate the box so its flat face points at the throat
+                double px = x - bx, py = y - by, pz = z - 1.9;
+                double ux = -sa, uy = ca;
+                double lu = px * ux + py * uy, lv = px * ca + py * sa;
+                gum = Math.min(gum, box(lu, lv, pz, 0.13, 0.24, 0.07) - 0.025);
+            }
+            if (gum < d) {
+                d = gum;
+                alb = 0.88;
+                fl = 0.35;
+            }
         }
         // tendrils
         for (int i = 0; i < TENDRILS.length; i++) {

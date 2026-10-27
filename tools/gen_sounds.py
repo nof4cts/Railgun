@@ -253,16 +253,34 @@ tear = bp(noise(d), 300, 2500) * np.exp(-t * 2.5) * (1 + np.sin(2 * np.pi * 19 *
 hb += tear + signal.sawtooth(2 * np.pi * np.cumsum(900 - 600 * t / d) / SR) * 0.25 * np.exp(-t * 1.5)
 save('hatch_breach', reverb(lp(hb, 5000), 1.6, 0.35, 2000, seed=141), peak=1.0); register('hatch_breach', ['hatch_breach'])
 
-d = 2.2; t = t_(d)
+d = 2.4; t = t_(d)
 sc = np.zeros(len(t))
 for k, det in enumerate([1.0, 1.013, 0.987, 1.5, 0.75]):
     f = (380 + 520 * (1 - np.exp(-t * 9))) * det * (1 + 0.04 * np.sin(2 * np.pi * 31 * t))
     sc += signal.sawtooth(2 * np.pi * np.cumsum(f) / SR) * (0.7 if k < 3 else 0.35)
-sc = bp(sc, 300, 7000, 2) * 1.2 + hp(noise(d), 1500) * 0.6
-sc += thud(d, 35, 4, 1.5) * 2.0
-sc *= np.minimum(1, t * 80) * np.exp(-np.maximum(0, t - 1.2) * 3)
-sc = np.tanh(sc * 1.8)
+sc = bp(sc, 300, 7000, 2) * 1.1
+# a human-ish scream: jittery glottal source through 'aah' formants
+f0 = (310 + 140 * (1 - np.exp(-t * 6))) * (1 + 0.03 * rng.standard_normal(len(t)).cumsum() / np.sqrt(np.arange(1, len(t) + 1)))
+glot = signal.sawtooth(2 * np.pi * np.cumsum(f0) / SR)
+voice = bp(glot, 700, 1100, 2) * 1.0 + bp(glot, 1100, 1500, 2) * 0.8 + bp(glot, 2400, 3000, 2) * 0.5
+sc += voice * 1.3
+# teeth chattering
+chat = (np.sin(2 * np.pi * 23 * t) > 0.92).astype(float) * hp(noise(d), 2500) * 1.5
+sc += chat + hp(noise(d), 1500) * 0.5 + thud(d, 32, 4, 1.5) * 2.2
+sc *= np.minimum(1, t * 90) * np.exp(-np.maximum(0, t - 1.4) * 3)
+sc = np.tanh(sc * 1.9)
 save('jumpscare', reverb(sc, 1.0, 0.25, 4000, seed=150), peak=1.0); register('jumpscare', ['jumpscare'])
+
+d = 3.4; t = t_(d)
+br = np.zeros(len(t))
+for c0, dur, inhale in [(0.0, 1.3, True), (1.5, 1.6, False)]:
+    i0, n = int(c0 * SR), int(dur * SR)
+    e = np.sin(np.linspace(0, np.pi, n)) ** 1.5
+    seg = bp(noise(dur), 250 if inhale else 180, 1400 if inhale else 900, 2) * e
+    gurgle = (np.sin(2 * np.pi * np.linspace(0, dur, n) * (9 if inhale else 13)) > 0.7) * lp(noise(dur), 500) * e * 1.2
+    br[i0:i0 + n] += seg + gurgle
+br = lp(br, 2200)
+save('breathing', reverb(br, 0.7, 0.3, 1800, seed=160), peak=0.9); register('breathing', ['breathing'])
 
 with open('src/main/resources/assets/ironlung/sounds.json', 'w') as f:
     json.dump(sounds, f, indent=2)

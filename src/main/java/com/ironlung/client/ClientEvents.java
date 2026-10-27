@@ -44,6 +44,7 @@ public final class ClientEvents {
             Minecraft mc = Minecraft.getInstance();
             if (mc.level == null) return;
             ClientMissionState.tick();
+            if (ClientMissionState.finaleBlack && mc.screen instanceof com.ironlung.client.screen.SubScreen) mc.setScreen(null);
             ClientSounds.tick();
             if (ClientMissionState.pendingSummary != null && mc.player != null && mc.player.isAlive() && mc.screen == null) {
                 mc.setScreen(new SummaryScreen(ClientMissionState.pendingSummary));
