@@ -129,13 +129,13 @@ public final class FeedRenderer {
             double bound = Math.sqrt(dx * dx + dz * dz) - p.radius;
             if (bound > best || bound > 6) {
                 if (bound < best) best = bound;
-                if (mat != null && bound <= best) { mat[0] = p.type.albedo; mat[1] = p.type.flesh; }
+                if (mat != null && bound <= best) { mat[0] = p.type.albedo; mat[1] = p.type.flesh; mat[2] = 0.15; }
                 continue;
             }
             double d = p.sdf(x, y, z, tmp);
             if (d < best) {
                 best = d;
-                if (mat != null) { mat[0] = tmp[0]; mat[1] = tmp[1]; }
+                if (mat != null) { mat[0] = tmp[0]; mat[1] = tmp[1]; mat[2] = 0.15; }
             }
         }
         for (int i = 0, n = s.trans.size(); i < n; i++) {
@@ -144,7 +144,7 @@ public final class FeedRenderer {
             double tx = t.x + t.vx * age, ty = t.y + t.vy * age, tz = t.z + t.vz * age;
             double lx = x - tx, ly = y - ty, lz = z - tz;
             double d;
-            double alb, flesh;
+            double alb, flesh, wet = -1;
             switch (t.kind) {
                 case Transient.SILHOUETTE: {
                     double c = Math.cos(t.yaw), sn = Math.sin(t.yaw);
@@ -196,10 +196,11 @@ public final class FeedRenderer {
                     double qz = (lx * sn - lz * c) / fs;   // toward viewer
                     double qx = (lx * c + lz * sn) / fs;   // right
                     double qy = ly / fs;
-                    double[] fm = new double[2];
+                    double[] fm = new double[3];
                     d = Finale.sdf(qx, qy, qz, fm) * fs;
                     alb = fm[0];
                     flesh = fm[1];
+                    wet = fm[2];
                     break;
                 }
                 default: { // FIGURE
@@ -213,7 +214,7 @@ public final class FeedRenderer {
             }
             if (d < best) {
                 best = d;
-                if (mat != null) { mat[0] = alb; mat[1] = flesh; }
+                if (mat != null) { mat[0] = alb; mat[1] = flesh; mat[2] = wet >= 0 ? wet : (alb > 1.2 ? 1.0 : 0.25); }
             }
         }
         return best;
@@ -248,8 +249,8 @@ public final class FeedRenderer {
         final double[] red = new double[w * h];
 
         IntStream.range(0, h).parallel().forEach(j -> {
-            double[] mat = new double[2];
-            double[] tmp = new double[2];
+            double[] mat = new double[3];
+            double[] tmp = new double[3];
             for (int i = 0; i < w; i++) {
                 double sx = (2 * (i + 0.5) / w - 1) * tanHalf * aspect;
                 double sy = (1 - 2 * (j + 0.5) / h) * tanHalf;
@@ -293,7 +294,7 @@ public final class FeedRenderer {
                 double L = haze * lightMul;
                 double flesh = 0.25;
                 if (hit != 0) {
-                    double nx, ny, nz, albedo;
+                    double nx, ny, nz, albedo, wet = 0.05, occ = 1.0;
                     if (hit == 1) {
                         double e = 0.25;
                         nx = floorY(hx - e, hz) - floorY(hx + e, hz);
@@ -316,11 +317,19 @@ public final class FeedRenderer {
                         nz = sceneSdf(scene, hx, hy, hz + e, null, tmp) - d0;
                         double nl = Math.sqrt(nx * nx + ny * ny + nz * nz) + 1e-9;
                         nx /= nl; ny /= nl; nz /= nl;
+                        wet = mat[2];
+                        // crevice shadowing: how buried is this point?
+                        for (int k = 1; k <= 4; k++) {
+                            double hstep = 0.09 * k;
+                            double dd = sceneSdf(scene, hx + nx * hstep, hy + ny * hstep, hz + nz * hstep, null, tmp);
+                            occ -= (hstep - dd) * (1.6 / k);
+                        }
+                        occ = Math.max(0.12, Math.min(1, occ));
                     }
                     double lambert = Math.max(0, -(nx * dx + ny * dy + nz * dz));
                     double att = Math.exp(-2 * t * absorb) / (1 + 0.0007 * t * t);
-                    double spec = albedo > 1.2 ? Math.pow(lambert, 24) * 1.5 : 0;
-                    L += (albedo * (0.15 + 0.85 * lambert) + spec) * spot * att * lightMul * 1.25;
+                    double spec = (albedo > 1.2 ? Math.pow(lambert, 24) * 1.5 : 0) + Math.pow(lambert, 48) * wet * 0.85;
+                    L += (albedo * (0.12 + 0.88 * lambert) * occ + spec * Math.sqrt(occ)) * spot * att * lightMul * 1.25;
                 }
                 // drifting particulate caught in the beam
                 long hsh = mix(frame * 0x9E3779B97F4A7C15L + (long) i * 73856093L + (long) j * 19349663L);
@@ -348,7 +357,22 @@ public final class FeedRenderer {
         return h;
     }
 
+    private static void soften(double[] a, int w, int h) {
+        double[] src = a.clone();
+        for (int j = 1; j < h - 1; j++) {
+            for (int i = 1; i < w - 1; i++) {
+                int k = j * w + i;
+                a[k] = (src[k] * 4 + (src[k - 1] + src[k + 1] + src[k - w] + src[k + w]) * 2
+                        + src[k - w - 1] + src[k - w + 1] + src[k + w - 1] + src[k + w + 1]) / 16.0;
+            }
+        }
+    }
+
     private static void postProcess(int[] argb, double[] lum, double[] red, int w, int h, Params p) {
+        if (p.photo) {
+            soften(lum, w, h);
+            soften(red, w, h);
+        }
         java.util.Random rnd = new java.util.Random(p.frame * 31 + 7);
         int[] shift = new int[h];
         if (p.glitch > 0) {

@@ -148,7 +148,7 @@ public final class FeedSystem {
         WORKER.submit(() -> {
             try {
                 scareFarBuffer = renderFace(r, pose, yaw, 17.0, 0.0, 0.0, 0.3, 7);
-                scareBuffer = renderFace(r, pose, yaw, 9.5, 0.8, 0.28, 0.4, 13);
+                scareBuffer = renderFace(r, pose, yaw, 8.2, 0.7, 0.25, 0.55, 13);
             } catch (Throwable t) {
                 IronLungMod.LOGGER.error("Finale render failed", t);
             }
