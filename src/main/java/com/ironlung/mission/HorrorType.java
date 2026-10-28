@@ -21,7 +21,10 @@ public enum HorrorType {
     PHOTO_ANOMALY(false),
     COLLISION(false),
     JUMPSCARE_PRIME(false),
-    JUMPSCARE(true);
+    JUMPSCARE(true),
+    FINALE_CHAOS(true),
+    GRABBED(true),
+    GORE(true);
 
     /** Major events share a long cooldown so they never stack. */
     public final boolean major;

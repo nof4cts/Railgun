@@ -64,6 +64,10 @@ public final class ClientEvents {
             float roll = (float) Math.sin(t * 7.7) * s * 2.2f;
             event.setYaw(event.getYaw() + yaw);
             event.setPitch(event.getPitch() + pitch);
+            if (ClientMissionState.chaosTicks > 0) {
+                roll += (float) (Math.sin(t * 0.9) * 7 + Math.sin(t * 2.3) * 3);
+                pitch += (float) Math.sin(t * 0.7) * 3;
+            }
             event.setRoll(event.getRoll() + roll);
         }
 

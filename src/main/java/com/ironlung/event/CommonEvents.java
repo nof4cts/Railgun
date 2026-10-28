@@ -59,6 +59,16 @@ public final class CommonEvents {
         if (event.getEntity() instanceof ServerPlayer sp) MissionManager.onRespawn(sp);
     }
 
+    /** Deaths to the deep or to the thing in it don't scatter your gear into the void; it comes back on respawn. */
+    @SubscribeEvent
+    public static void onDrops(net.minecraftforge.event.entity.living.LivingDropsEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer sp)) return;
+        if (!event.getSource().is(MissionManager.TAKEN) && !event.getSource().is(MissionManager.CRUSHED)) return;
+        java.util.List<net.minecraft.world.item.ItemStack> held = MissionManager.HELD_ITEMS.computeIfAbsent(sp.getUUID(), k -> new java.util.ArrayList<>());
+        for (net.minecraft.world.entity.item.ItemEntity it : event.getDrops()) held.add(it.getItem().copy());
+        event.setCanceled(true);
+    }
+
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer sp) MissionManager.onDeath(sp);

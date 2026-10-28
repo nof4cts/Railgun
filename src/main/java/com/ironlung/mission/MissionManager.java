@@ -44,6 +44,8 @@ public final class MissionManager {
     public static final ResourceKey<DamageType> TAKEN = ResourceKey.create(Registries.DAMAGE_TYPE, IronLungMod.id("taken"));
     private static final DustParticleOptions BLOOD = new DustParticleOptions(new Vector3f(0.35f, 0.0f, 0.0f), 0.9f);
     private static final Map<UUID, Packets.MissionEnd> PENDING_SUMMARIES = new HashMap<>();
+    /** Items held back from deaths inside the vessel, returned on respawn. */
+    public static final Map<UUID, List<net.minecraft.world.item.ItemStack>> HELD_ITEMS = new HashMap<>();
 
     /** Spawn spots inside the 3x5 interior, one per crew slot. */
     private static final double[][] SPAWNS = {{1.5, 2.5}, {0.6, 3.6}, {2.4, 3.6}, {1.5, 4.4}};
@@ -265,6 +267,8 @@ public final class MissionManager {
     }
 
     public static void onRespawn(ServerPlayer p) {
+        List<net.minecraft.world.item.ItemStack> held = HELD_ITEMS.remove(p.getUUID());
+        if (held != null) for (net.minecraft.world.item.ItemStack st : held) if (!p.getInventory().add(st)) p.drop(st, false);
         Packets.MissionEnd s = PENDING_SUMMARIES.remove(p.getUUID());
         if (s != null) {
             ModNetwork.toPlayer(p, Packets.MissionInit.inactive());
@@ -332,12 +336,13 @@ public final class MissionManager {
             // anyone who walked out of the dimension by other means has left the crew
             for (UUID u : new ArrayList<>(m.crew.keySet())) {
                 ServerPlayer p = server.getPlayerList().getPlayer(u);
-                if (p != null && p.isAlive() && !p.level().dimension().equals(IronLungMod.DIMENSION)) leaveMission(p, m, false);
+                if (p != null && p.isAlive() && !p.level().dimension().equals(IronLungMod.DIMENSION) && m.phase != Mission.Phase.ASCENDING) leaveMission(p, m, false);
             }
             if (m.phase == Mission.Phase.DONE) continue;
             List<ServerPlayer> crew = aboard(m);
             crew.removeIf(p -> !p.isAlive());
-            if (crew.isEmpty()) continue; // paused while nobody is aboard
+            boolean finale = m.phase == Mission.Phase.ASCENDING && m.phaseTicks >= FinaleDirector.BREACH;
+            if (crew.isEmpty() && !finale) continue; // paused while nobody is aboard (the finale plays out regardless)
             try {
                 tickMission(m, crew, sub);
             } catch (Exception e) {
@@ -576,38 +581,14 @@ public final class MissionManager {
             case 430 -> HorrorDirector.trigger(m, lvl, HorrorType.SILENCE);
             case 520 -> HorrorDirector.playAtControl(m, lvl, ControlType.HATCH, ModSounds.HATCH_KNOCK.get(), 1.2f, 0.8f);
             case 600 -> HorrorDirector.playAtControl(m, lvl, ControlType.HATCH, ModSounds.HATCH_KNOCK.get(), 1.6f, 0.65f);
-            case 660 -> {
-                // the hatch gives
-                HorrorDirector.playAtControl(m, lvl, ControlType.HATCH, ModSounds.HATCH_BREACH.get(), 2.5f, 0.9f);
-                broadcast(m, new Packets.HorrorEvent(HorrorType.IMPACT.ordinal(), 1.6f, r.nextLong(), 0, 0));
-                BlockPos h = m.base().offset(SubInterior.CONTROL_POS.get(ControlType.HATCH));
-                lvl.sendParticles(BLOOD, h.getX() + 0.5, h.getY() + 0.5, h.getZ() - 0.2, 60, 0.6, 0.8, 0.2, 0.05);
-            }
-            case 680, 715, 745 -> {
-                // something wet breathing, coming in from the hatch toward you
-                double zz = t == 680 ? 4.6 : t == 715 ? 3.4 : 2.4;
-                BlockPos b = m.base();
-                lvl.playSound(null, b.getX() + 1.5, b.getY() + 1.5, b.getZ() + zz, ModSounds.BREATHING.get(), SoundSource.HOSTILE, 1.2f + (t - 680) * 0.01f, 0.85f);
-            }
-            case 785 -> broadcast(m, new Packets.HorrorEvent(HorrorType.JUMPSCARE.ordinal(), 0.4f, r.nextLong(), 1.9f, 0));
-            case 797 -> {
-                BlockPos h = m.base().offset(1, 1, 2);
-                lvl.playSound(null, h.getX() + 0.5, h.getY() + 0.5, h.getZ() + 0.5, ModSounds.JUMPSCARE.get(), SoundSource.HOSTILE, 3.0f, 1.0f);
-                broadcast(m, new Packets.HorrorEvent(HorrorType.COLLISION.ordinal(), 2.5f, r.nextLong(), 0, 0));
-            }
-            case 826 -> {
-                if (IronLungConfig.FINALE_KILLS.get()) {
-                    DamageSource src = new DamageSource(lvl.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(TAKEN));
-                    for (ServerPlayer p : aboard(m)) {
-                        if (!p.isCreative() && !p.isSpectator()) p.hurt(src, Float.MAX_VALUE);
-                    }
-                }
+            case 560, 625 -> {
+                // something wet breathing on the other side of the hatch
+                BlockPos bb = m.base();
+                lvl.playSound(null, bb.getX() + 1.5, bb.getY() + 1.5, bb.getZ() + 5.8, ModSounds.BREATHING.get(), SoundSource.HOSTILE, 1.4f, 0.8f);
             }
             default -> {}
         }
-        if (t >= 856) {
-            finish(lvl.getServer(), m, IronLungConfig.FINALE_KILLS.get() ? Packets.MissionEnd.TAKEN : Packets.MissionEnd.RECOVERED, true);
-        }
+        if (t >= FinaleDirector.BREACH) FinaleDirector.tick(m, lvl, r, t);
     }
 
     private static void implode(Mission m, List<ServerPlayer> crew, ServerLevel lvl, RandomSource r) {
@@ -760,7 +741,6 @@ public final class MissionManager {
         m.phase = Mission.Phase.ASCENDING;
         m.phaseTicks = 0;
         m.clearInputs();
-        broadcast(m, new Packets.HorrorEvent(HorrorType.JUMPSCARE_PRIME.ordinal(), 0f, p.getRandom().nextLong(), 0, 0));
     }
 
     public static void onControlUsed(ServerPlayer p, ControlType type, BlockPos pos) {

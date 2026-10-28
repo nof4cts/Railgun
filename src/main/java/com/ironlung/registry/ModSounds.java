@@ -43,6 +43,8 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> OPENING_AMBIENCE = reg("opening_ambience");
     public static final RegistryObject<SoundEvent> CHAINS = reg("chains");
     public static final RegistryObject<SoundEvent> SUBMERGE = reg("submerge");
+    public static final RegistryObject<SoundEvent> TONGUE = reg("tongue");
+    public static final RegistryObject<SoundEvent> GORE = reg("gore");
 
     private static RegistryObject<SoundEvent> reg(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(IronLungMod.id(name)));

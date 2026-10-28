@@ -53,6 +53,7 @@ public final class ClientMissionState {
     public static int jumpscareTicks, jumpscareTotal = 1;
     /** Ticks to show the external camera inset to crew who are not at the monitor. */
     public static int feedInsetTicks;
+    public static int chaosTicks, grabbedTicks, goreFlash;
     public static boolean finaleBlack;
     public static int lastPhotoId = -1;
     public static long developStart;
@@ -111,7 +112,7 @@ public final class ClientMissionState {
         crew.clear();
         transients.clear();
         done = new boolean[0];
-        glitchTicks = silenceTicks = flashTicks = spikeTicks = shakeLongTicks = introTicks = jumpscareTicks = feedInsetTicks = 0;
+        glitchTicks = silenceTicks = flashTicks = spikeTicks = shakeLongTicks = introTicks = jumpscareTicks = feedInsetTicks = chaosTicks = grabbedTicks = goreFlash = 0;
         finaleBlack = false;
         shake = 0;
         FeedSystem.release();
@@ -265,6 +266,21 @@ public final class ClientMissionState {
                 glitchTicks = Math.max(glitchTicks, 12);
                 if (e.a > 0.5f) flashTicks = 0;
             }
+            case FINALE_CHAOS -> {
+                chaosTicks = (int) (e.a * 20);
+                shake = 2.5f;
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.screen != null) mc.setScreen(null);
+            }
+            case GRABBED -> {
+                grabbedTicks = (int) (e.a * 20) + 12;
+                shake = 2.2f;
+                shakeLongTicks = grabbedTicks;
+            }
+            case GORE -> {
+                goreFlash = 10;
+                addShake(1.5f);
+            }
             case JUMPSCARE_PRIME -> FeedSystem.prepareJumpscare();
             case JUMPSCARE -> {
                 jumpscareTicks = (int) (e.a * 20);
@@ -317,6 +333,12 @@ public final class ClientMissionState {
         if (introTicks > 0) introTicks--;
         if (jumpscareTicks > 0) jumpscareTicks--;
         if (feedInsetTicks > 0) feedInsetTicks--;
+        if (chaosTicks > 0) {
+            chaosTicks--;
+            shake = Math.max(shake, 0.35f);
+        }
+        if (grabbedTicks > 0) grabbedTicks--;
+        if (goreFlash > 0) goreFlash--;
         if (toastTicks > 0) toastTicks--;
         double t = now();
         transients.removeIf(tr -> t > tr.start + tr.duration + 1);

@@ -317,6 +317,28 @@ for k in range(40):
 sub += bub + thud(d, 30, 1.2, 0.5)
 save('submerge', reverb(lp(sub, 2500), 2.0, 0.4, 900, seed=220), peak=0.9); register('submerge', ['submerge'])
 
+
+# ---------- the end
+d = 1.4; t = t_(d)
+lash = bp(noise(d), 300, 3000) * np.exp(-((t - 0.12) / 0.06) ** 2) * 2.0           # whip-crack of air
+slap = thud(d, 90, 18, 1.5) * (t > 0.2)                                               # wet impact
+slap = np.roll(thud(d, 90, 18, 1.5), int(0.2 * SR)) * 1.2
+gurg = lp(noise(d), 600) * (np.sin(2 * np.pi * 14 * t) > 0.4) * np.exp(-t * 2) * 1.2
+save('tongue', reverb(lash + slap + gurg, 0.8, 0.3, 2500, seed=230), peak=0.95); register('tongue', ['tongue'])
+
+d = 2.2; t = t_(d)
+g = np.zeros(len(t))
+for k in range(9):                                                                     # bones snapping
+    c = 0.02 + k * 0.035 + rng.random() * 0.02; i0 = int(c * SR); n = int(0.03 * SR)
+    g[i0:i0 + n] += hp(noise(0.03), 1800) * np.exp(-np.linspace(0, 12, n)) * 1.6
+sq = lp(noise(d), 1200) * np.exp(-t * 3) * 1.6 * (1 + np.sin(2 * np.pi * 9 * t))         # squelch
+splat = np.zeros(len(t))
+for k in range(30):                                                                    # spatter landing
+    c = 0.25 + rng.random() * 1.4; i0 = int(c * SR); n = int(0.04 * SR)
+    splat[i0:i0 + n] += bp(noise(0.04), 400, 2500) * np.exp(-np.linspace(0, 8, n)) * rng.random()
+g += sq + splat + thud(d, 45, 6, 1.0) * 1.4
+save('gore', reverb(np.tanh(g * 1.4), 0.9, 0.3, 2500, seed=240), peak=1.0); register('gore', ['gore'])
+
 with open('src/main/resources/assets/ironlung/sounds.json', 'w') as f:
     json.dump(sounds, f, indent=2)
 print('sounds ok', len(sounds), 'events', len(os.listdir(OUT)), 'files')

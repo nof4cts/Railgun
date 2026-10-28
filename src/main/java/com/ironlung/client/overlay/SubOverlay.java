@@ -87,6 +87,39 @@ public final class SubOverlay {
             g.drawString(font, ClientMissionState.toast, (w - tw) / 2, h / 2 + 30, (a << 24) | 0xB03020, false);
         }
 
+        if (ClientMissionState.chaosTicks > 0 || ClientMissionState.grabbedTicks > 0 || ClientMissionState.goreFlash > 0) {
+            java.util.concurrent.ThreadLocalRandom rr = java.util.concurrent.ThreadLocalRandom.current();
+            int ct = ClientMissionState.chaosTicks;
+            // torn signal: bars of the screen shoved sideways, colour bleeding into red
+            if (ct > 0) {
+                int bars = 2 + rr.nextInt(5);
+                for (int i = 0; i < bars; i++) {
+                    int by = rr.nextInt(h), bh = 2 + rr.nextInt(Math.max(3, h / 18));
+                    g.fill(0, by, w, by + bh, (rr.nextInt(60, 150) << 24) | (rr.nextBoolean() ? 0x200000 : 0x000000));
+                }
+                int pulse = (int) (40 + 40 * Math.sin(ct * 0.45));
+                g.fill(0, 0, w, h, (pulse << 24) | 0x5A0000);
+                StaticNoise.draw(g, 0, 0, w, h, rr.nextFloat() < 0.1f ? 0.55f : 0.12f + rr.nextFloat() * 0.12f);
+                if (rr.nextInt(14) == 0) g.fill(0, 0, w, h, 0xE0000000);
+            }
+            // being dragged: everything closes in, red
+            int gt = ClientMissionState.grabbedTicks;
+            if (gt > 0) {
+                int inset = (int) Math.min(w / 2.2, (60 - Math.min(60, gt)) * 6 + 30);
+                int col = 0xD0300000;
+                g.fill(0, 0, w, inset / 2, col);
+                g.fill(0, h - inset / 2, w, h, col);
+                g.fill(0, 0, inset / 2, h, col);
+                g.fill(w - inset / 2, 0, w, h, col);
+                g.fill(0, 0, w, h, 0x60800000);
+                StaticNoise.draw(g, 0, 0, w, h, 0.25f);
+            }
+            if (ClientMissionState.goreFlash > 0) {
+                int a = ClientMissionState.goreFlash * 22;
+                g.fill(0, 0, w, h, (Math.min(220, a) << 24) | 0x7A0000);
+            }
+        }
+
         if (ClientMissionState.finaleBlack) {
             g.fill(0, 0, w, h, 0xFF000000);
             int js = ClientMissionState.jumpscareTicks;

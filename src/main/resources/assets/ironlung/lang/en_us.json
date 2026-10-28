@@ -97,10 +97,13 @@
   "ironlung.cmd.no_invite": "You need an invite. Ask them to run /ironlung invite <you>.",
   "subtitles.ironlung.hatch_breach": "The hatch tears open",
   "subtitles.ironlung.jumpscare": "Something screams",
-  "death.attack.ironlung.taken": "%1$s was taken",
-  "death.attack.ironlung.taken.player": "%1$s was taken",
+  "death.attack.ironlung.taken": "%1$s was devoured",
+  "death.attack.ironlung.taken.player": "%1$s was devoured",
   "subtitles.ironlung.breathing": "Something breathes nearby",
   "subtitles.ironlung.opening_ambience": "Wind over the blood sea",
   "subtitles.ironlung.chains": "Chains rattle",
-  "subtitles.ironlung.submerge": "The vessel goes under"
+  "subtitles.ironlung.submerge": "The vessel goes under",
+  "ironlung.msg.taken": "It has %s.",
+  "subtitles.ironlung.tongue": "Something lashes out",
+  "subtitles.ironlung.gore": "Flesh tears"
 }

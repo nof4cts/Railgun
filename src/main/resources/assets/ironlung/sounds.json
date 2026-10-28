@@ -315,5 +315,23 @@
       }
     ],
     "subtitle": "subtitles.ironlung.submerge"
+  },
+  "tongue": {
+    "sounds": [
+      {
+        "name": "ironlung:tongue",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.tongue"
+  },
+  "gore": {
+    "sounds": [
+      {
+        "name": "ironlung:gore",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.gore"
   }
 }

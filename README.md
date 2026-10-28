@@ -60,8 +60,9 @@ Survival:
   contacts, silence, distant calls, knocking at the hatch, photos containing something the live feed never
   showed, and one rare encounter with something very large. Things in the feed only happen while you watch it.
   Major events share a long cooldown; nothing stacks or spams.
-- A finale on ascent: the power dies, something knocks, the hatch tears open and it gets in — a full-screen
-  jumpscare that kills the whole crew (config `finaleKills`). Then a typed dive report.
+- A finale on ascent: the power dies, something breathes behind the hatch, then it tears through the back of the
+  boat, wrecks the cabin and takes the crew one by one with its tongue. Bodies burst; gear is returned on respawn.
+  (`finaleKills = false` makes it retreat instead.)
 - 25 synthesized sound events (no stock audio), positional where it matters, plus drone / motor / wiring loops
   that fall away during silences.
 - Camera shake, darkness on blackout, blood vignette on hull failure, minimal HUD readout.
