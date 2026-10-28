@@ -65,7 +65,7 @@ HEAD_SCALE = 1.4  # applied at runtime via ModelPart scale so the maw dominates 
 
 # =============================================================================================== materials / atlas
 TILE, ATLAS = 256, 1024
-MATS = ['flesh', 'skin', 'bone', 'teeth', 'gum', 'eye', 'claw', 'gut', 'cavity', 'sinew', 'drool', 'tumor', 'soaked']
+MATS = ['flesh', 'skin', 'bone', 'teeth', 'gum', 'eye', 'claw', 'gut', 'cavity', 'sinew', 'drool', 'tumor', 'soaked', 'vein', 'mold']
 def tile_of(m):
     i = MATS.index(m); return (i % 4) * TILE, (i // 4) * TILE
 
@@ -141,7 +141,7 @@ def frames(path):
         Ns.append(Nn.copy()); Bs.append(np.cross(T[i], Nn))
     return path, np.array(Ns), np.array(Bs)
 
-def tube(target, path, radii, mat, seg=12, noise=0.25, nscale=0.35, flat=1.0, cap=True, dark_bottom=0.0):
+def tube(target, path, radii, mat, seg=12, noise=0.25, nscale=0.35, flat=1.0, cap=True, dark_bottom=0.0, veins=0):
     """Generalized cylinder along a polyline; radii per path point (scalar or (rx,ry)). Rounded caps by pinching."""
     path = list(map(np.array, path)); radii = list(radii)
     if cap:
@@ -162,6 +162,41 @@ def tube(target, path, radii, mat, seg=12, noise=0.25, nscale=0.35, flat=1.0, ca
             a = 2 * math.pi * s / seg
             P[k, s] = pth[k] + Ns[k] * math.cos(a) * rx + Bs[k] * math.sin(a) * ry
     finish(target, P, mat, noise, nscale, dark_bottom=dark_bottom)
+    for v in range(veins):   # bulging veins snaking over the surface
+        a0, ph, amp = rng.random() * 2 * math.pi, rng.random() * 6, 0.5 + rng.random() * 0.8
+        k0, k1 = (2, K - 3) if cap else (0, K - 1)
+        pts, rads = [], []
+        for k in range(k0, k1 + 1):
+            r = radii[k]; rx, ry = (r, r * flat) if np.isscalar(r) else r
+            a = a0 + amp * math.sin(k * 0.8 + ph)
+            pts.append(pth[k] + Ns[k] * math.cos(a) * rx * 1.02 + Bs[k] * math.sin(a) * ry * 1.02)
+            rads.append(0.11 + 0.1 * rng.random())
+        if len(pts) > 2:
+            tube(target, pts, rads, 'vein', seg=5, noise=0.02, cap=True)
+            if rng.random() < 0.6:   # branch
+                j = len(pts) // 2
+                br = [pts[j] + (pts[min(j + 2, len(pts) - 1)] - pts[j]) * t + (Ns[k0 + j] * 0.4 * t) for t in np.linspace(0, 1, 4)]
+                tube(target, br, [0.1, 0.09, 0.07, 0.05], 'vein', seg=4, noise=0.0, cap=True)
+
+def surface_bits(target, c, r, count, mat, size=(0.25, 0.6), flatten=1.0, lat_range=(-1.2, 1.2), lon_range=(0, 2 * math.pi), lift=0.95):
+    """Boils, mould colonies and sores stuck onto an ellipsoid's surface."""
+    for _ in range(count):
+        la = lat_range[0] + rng.random() * (lat_range[1] - lat_range[0]); lo = lon_range[0] + rng.random() * (lon_range[1] - lon_range[0])
+        n = np.array([math.cos(la) * math.cos(lo), math.sin(la), math.cos(la) * math.sin(lo)])
+        pos = np.array(c) + n * np.array(r) * lift
+        sz = size[0] + rng.random() * (size[1] - size[0])
+        ellipsoid(target, tuple(pos), (sz, sz * flatten, sz), mat, seg=8, rings=6, noise=0.06 if mat != 'mold' else 0.12, nscale=1.5)
+
+def surface_veins(target, c, r, count):
+    for _ in range(count):
+        la0, lo0 = (rng.random() - 0.5) * 2.4, rng.random() * 2 * math.pi
+        dla, dlo = (rng.random() - 0.5) * 1.2, (rng.random() - 0.5) * 1.6
+        pts = []
+        for t in np.linspace(0, 1, 7):
+            la = la0 + dla * t + 0.12 * math.sin(t * 9); lo = lo0 + dlo * t
+            n = np.array([math.cos(la) * math.cos(lo), math.sin(la), math.cos(la) * math.sin(lo)])
+            pts.append(np.array(c) + n * np.array(r) * 1.01)
+        tube(target, pts, [0.1, 0.15, 0.17, 0.16, 0.14, 0.11, 0.07], 'vein', seg=5, noise=0.02)
 
 def ellipsoid(target, c, r, mat, seg=16, rings=12, noise=0.3, nscale=0.4, lon=(0, 2*math.pi), lat=(-math.pi/2, math.pi/2)):
     P = np.zeros((rings + 1, seg + 1, 3))
@@ -203,10 +238,13 @@ def arc(cx, cz, rx, rz, y, a0, a1, n):
 M = MESH
 # pelvis + iliac bone wings
 ellipsoid(M['hips'], (0, 1.0, 0.3), (3.6, 2.3, 2.7), 'skin', noise=0.35)
+surface_veins(M['hips'], (0, 1.0, 0.3), (3.6, 2.3, 2.7), 5)
+surface_bits(M['hips'], (0, 1.0, 0.3), (3.6, 2.3, 2.7), 6, 'mold', (0.4, 0.9), flatten=0.4)
+surface_bits(M['hips'], (0, 1.0, 0.3), (3.6, 2.3, 2.7), 6, 'tumor', (0.2, 0.45))
 for sx in (-1, 1):
     tube(M['hips'], lerp_path((sx*1.5, -0.5, 1.8), (sx*3.6, 1.2, 0.2), 6, (0, -0.6, 0.4)), [0.6, 0.7, 0.6, 0.5, 0.45, 0.4], 'bone', seg=8, noise=0.08)
 # waist: emaciated sinew column, exposed vertebrae on the back, torn open abdomen
-tube(M['torso'], lerp_path((0, 0.5, 0), (0, -7.5, 0), 8, (0, 0, -0.3)), [(2.6, 2.0), (2.2, 1.8), (2.0, 1.6), (2.1, 1.7), (2.4, 1.9), (2.7, 2.1), (3.0, 2.3), (3.2, 2.4)], 'sinew', seg=14, noise=0.3)
+tube(M['torso'], lerp_path((0, 0.5, 0), (0, -7.5, 0), 8, (0, 0, -0.3)), [(2.6, 2.0), (2.2, 1.8), (2.0, 1.6), (2.1, 1.7), (2.4, 1.9), (2.7, 2.1), (3.0, 2.3), (3.2, 2.4)], 'sinew', seg=14, noise=0.3, veins=4)
 ellipsoid(M['torso'], (0, -3.2, -1.2), (1.9, 2.6, 1.1), 'cavity', noise=0.25)
 for i in range(5):
     ellipsoid(M['torso'], (0, -0.5 - i * 1.5, 2.0), (0.8, 0.6, 0.7), 'bone', seg=8, rings=6, noise=0.05)
@@ -226,12 +264,17 @@ for lvl, y in enumerate([-2.0, -3.8, -5.6, -7.4, -9.2, -10.8]):
         pts = [(sx * w * math.sin(a), y + 0.4 * math.sin(a), 0.4 - 3.0 * math.cos(a)) for a in np.linspace(math.pi * 0.95, torn, 9)]
         tube(M['chest'], pts, [0.42] * 9, 'bone', seg=7, noise=0.06)
 ellipsoid(M['chest'], (-5.2, -11.2, 0.0), (1.8, 1.4, 1.5), 'tumor', noise=0.5)
+surface_veins(M['chest'], (0, -10.6, 1.0), (6.0, 2.8, 3.0), 10)
+surface_veins(M['chest'], (0, -6.5, 1.9), (5.2, 6.2, 2.0), 8)
+surface_bits(M['chest'], (0, -10.6, 1.0), (6.0, 2.8, 3.0), 14, 'tumor', (0.25, 0.55))
+surface_bits(M['chest'], (0, -6.5, 1.9), (5.2, 6.2, 2.0), 10, 'mold', (0.5, 1.3), flatten=0.4, lon_range=(0.3, math.pi - 0.3))
+surface_bits(M['chest'], (0, -10.6, 1.0), (6.0, 2.8, 3.0), 6, 'mold', (0.6, 1.2), flatten=0.4)
 ellipsoid(M['chest'], (-4.4, -9.7, -1.2), (1.0, 0.9, 0.9), 'tumor', noise=0.4)
 ellipsoid(M['chest'], (3.4, -4.2, -2.6), (1.2, 1.0, 0.8), 'tumor', noise=0.4)
 ellipsoid(M['chest'], (5.0, -11.0, 0.8), (1.6, 1.5, 1.7), 'flesh', noise=0.35)   # shoulder caps
 ellipsoid(M['chest'], (-5.0, -11.0, 0.2), (1.6, 1.5, 1.7), 'flesh', noise=0.35)
 # long neck with tendons
-tube(M['neck'], lerp_path((0, 0.5, 0), (0, -9.2, 0), 9, (0, 0, 0.4)), [1.9, 1.5, 1.3, 1.25, 1.2, 1.2, 1.25, 1.35, 1.5], 'sinew', seg=12, noise=0.2)
+tube(M['neck'], lerp_path((0, 0.5, 0), (0, -9.2, 0), 9, (0, 0, 0.4)), [1.9, 1.5, 1.3, 1.25, 1.2, 1.2, 1.25, 1.35, 1.5], 'sinew', seg=12, noise=0.2, veins=4)
 for sx in (-0.9, 0.9):
     tube(M['neck'], lerp_path((sx, 0, -0.8), (sx * 0.8, -8.8, -0.9), 7, (sx * 0.4, 0, -0.3)), [0.3] * 7, 'flesh', seg=6, noise=0.05)
 for i in range(6):
@@ -240,6 +283,9 @@ for i in range(6):
 # ------------------------------------------------------------------ head: a gaping maw of fangs
 H = M['head']
 ellipsoid(H, (0, -4.0, 0.4), (3.3, 3.0, 4.4), 'skin', noise=0.4)                     # elongated cranium
+surface_veins(H, (0, -4.0, 0.4), (3.3, 3.0, 4.4), 12)
+surface_bits(H, (0, -4.0, 0.4), (3.3, 3.0, 4.4), 9, 'tumor', (0.15, 0.4), lon_range=(0.2, 3.0))
+surface_bits(H, (0, -4.0, 0.4), (3.3, 3.0, 4.4), 6, 'mold', (0.4, 0.9), flatten=0.4, lon_range=(0.4, 2.7), lat_range=(-1.3, -0.1))
 ellipsoid(H, (0, -2.6, -3.4), (2.4, 1.6, 3.6), 'skin', noise=0.45)                   # long skull snout
 ellipsoid(H, (0, -1.9, -3.0), (2.3, 0.6, 2.4), 'gum', noise=0.15)                    # palate
 ellipsoid(H, (0, -0.6, -1.4), (2.3, 2.4, 2.4), 'cavity', noise=0.2)                  # black wet throat
@@ -289,25 +335,25 @@ for i in range(8):
 for tn in ('tendril_a', 'tendril_b'):
     for i in range(4):
         r0, r1 = 0.75 - 0.15 * i, 0.6 - 0.15 * i
-        tube(M[f'{tn}{i+1}'], lerp_path((0, -0.3, 0), (0, 5.3, 0), 6, (0.2, 0, 0.2)), np.linspace(r0, max(r1, 0.15), 6), 'flesh' if i < 2 else 'sinew', seg=9, noise=0.15)
+        tube(M[f'{tn}{i+1}'], lerp_path((0, -0.3, 0), (0, 5.3, 0), 6, (0.2, 0, 0.2)), np.linspace(r0, max(r1, 0.15), 6), 'flesh' if i < 2 else 'sinew', seg=9, noise=0.15, veins=2 if i < 2 else 1)
         if i == 3: fang(M[f'{tn}{i+1}'], (0, 5, 0), (0, 1, -0.3), 2.2, 0.28, 'claw', curve=(0, 0, -1.2))
 
 # ------------------------------------------------------------------ arms
 def upper_arm(B, length, rprof):
-    tube(B, lerp_path((0, -1.2, 0), (0, length, 0), len(rprof), (0, 0, -0.4)), rprof, 'flesh', seg=12, noise=0.35, dark_bottom=0.2)
+    tube(B, lerp_path((0, -1.2, 0), (0, length, 0), len(rprof), (0, 0, -0.4)), rprof, 'flesh', seg=12, noise=0.35, dark_bottom=0.2, veins=5)
     tube(B, lerp_path((0.6, 0.5, -1.2), (0.4, length - 1, -1.1), 6, (0.4, 0, -0.5)), [0.35] * 6, 'sinew', seg=6, noise=0.05)
 upper_arm(M['rshoulder'], 14.5, [1.9, 2.3, 2.1, 1.7, 1.3, 1.25, 1.4])
 fang(M['rshoulder'], (-1.2, -0.8, 0.6), (-0.6, -1, 0.5), 3.0, 0.5, 'bone', curve=(0, 0, 0.6))
-tube(M['rfore'], lerp_path((0, -0.3, 0), (0, 15.3, 0), 8, (0, 0, 0.5)), [1.2, 1.1, 0.95, 0.8, 0.75, 0.75, 0.8, 0.9], 'sinew', seg=10, noise=0.2, dark_bottom=0.35)
+tube(M['rfore'], lerp_path((0, -0.3, 0), (0, 15.3, 0), 8, (0, 0, 0.5)), [1.2, 1.1, 0.95, 0.8, 0.75, 0.75, 0.8, 0.9], 'sinew', seg=10, noise=0.2, dark_bottom=0.35, veins=3)
 tube(M['rfore'], lerp_path((0, 0.5, 0.9), (0, 13.5, 0.7), 6, (0, 0, 0.4)), [0.3] * 6, 'bone', seg=6, noise=0.03)
 fang(M['rfore'], (0, 0.4, 1.0), (0, -0.2, 1), 2.4, 0.42, 'bone', curve=(0, -0.6, 0))  # elbow spike
 ellipsoid(M['rhand'], (0, 1.0, -0.3), (1.6, 1.3, 1.0), 'soaked', noise=0.2)
-tube(M['lshoulder'], lerp_path((0, -1.2, 0), (0, 12.3, 0), 7, (0, 0, -0.3)), [1.9, 2.2, 1.9, 1.6, 1.3, 1.25, 1.35], 'flesh', seg=12, noise=0.35, dark_bottom=0.2)
+tube(M['lshoulder'], lerp_path((0, -1.2, 0), (0, 12.3, 0), 7, (0, 0, -0.3)), [1.9, 2.2, 1.9, 1.6, 1.3, 1.25, 1.35], 'flesh', seg=12, noise=0.35, dark_bottom=0.2, veins=5)
 ellipsoid(M['lshoulder'], (1.4, -1.0, -0.2), (1.7, 1.6, 1.7), 'tumor', noise=0.5)
-tube(M['lmid'], lerp_path((0, -0.2, 0), (0, 9.2, 0), 6, (0, 0, 0.3)), [1.25, 1.05, 0.95, 0.95, 1.0, 1.1], 'sinew', seg=10, noise=0.2)
+tube(M['lmid'], lerp_path((0, -0.2, 0), (0, 9.2, 0), 6, (0, 0, 0.3)), [1.25, 1.05, 0.95, 0.95, 1.0, 1.1], 'sinew', seg=10, noise=0.2, veins=3)
 ellipsoid(M['lmid'], (0, 0, 0.3), (1.2, 1.2, 1.3), 'bone', seg=10, rings=8, noise=0.1)
 fang(M['lmid'], (0, 0.2, 1.0), (0, -0.3, 1), 2.0, 0.38, 'bone', curve=(0, -0.5, 0))
-tube(M['lfore'], lerp_path((0, -0.2, 0), (0, 11.3, 0), 7, (0, 0, 0.4)), [1.05, 0.95, 0.8, 0.72, 0.72, 0.8, 0.9], 'sinew', seg=10, noise=0.2, dark_bottom=0.4)
+tube(M['lfore'], lerp_path((0, -0.2, 0), (0, 11.3, 0), 7, (0, 0, 0.4)), [1.05, 0.95, 0.8, 0.72, 0.72, 0.8, 0.9], 'sinew', seg=10, noise=0.2, dark_bottom=0.4, veins=3)
 ellipsoid(M['lhand'], (0, 1.0, -0.3), (1.7, 1.3, 1.0), 'soaked', noise=0.2)
 for f in ('rf1', 'rf2', 'rf3', 'lf1', 'lf2', 'lf3', 'lf4'):
     L = 6.2 if f.startswith('r') else 7.2
@@ -319,9 +365,9 @@ for c in ('rc1', 'rc2', 'rc3', 'lc1', 'lc2', 'lc3', 'lc4'):
     fang(M[c], (0, -0.2, 0), (0, 1, -0.15), L, 0.42, 'claw', curve=(0, 0, -1.4), seg=7)
 # ------------------------------------------------------------------ legs
 for side in ('l', 'r'):
-    tube(M[f'{side}thigh'], lerp_path((0, -0.6, 0), (0, 13.6, 0), 7, (0, 0, -0.5)), [2.0, 2.3, 2.1, 1.8, 1.4, 1.2, 1.25], 'flesh', seg=12, noise=0.35)
+    tube(M[f'{side}thigh'], lerp_path((0, -0.6, 0), (0, 13.6, 0), 7, (0, 0, -0.5)), [2.0, 2.3, 2.1, 1.8, 1.4, 1.2, 1.25], 'flesh', seg=12, noise=0.35, veins=5)
     fang(M[f'{side}thigh'], (0, 12.5, -1.0), (0, 0.2, -1), 2.0, 0.45, 'bone', curve=(0, 0.6, 0))
-    tube(M[f'{side}shin'], lerp_path((0, -0.4, 0), (0, 12.2, 0), 7, (0, 0, 0.6)), [1.2, 1.0, 0.85, 0.75, 0.7, 0.75, 0.85], 'sinew', seg=10, noise=0.2, dark_bottom=0.45)
+    tube(M[f'{side}shin'], lerp_path((0, -0.4, 0), (0, 12.2, 0), 7, (0, 0, 0.6)), [1.2, 1.0, 0.85, 0.75, 0.7, 0.75, 0.85], 'sinew', seg=10, noise=0.2, dark_bottom=0.45, veins=3)
     tube(M[f'{side}shin'], lerp_path((0, 0.5, 0.9), (0, 11.0, 0.8), 6, (0, 0, 0.4)), [0.32] * 6, 'bone', seg=6, noise=0.03)
     tube(M[f'{side}foot'], lerp_path((0, 0.3, 0.6), (0, 0.8, -3.6), 6), [(0.9, 0.6), (1.1, 0.7), (1.0, 0.6), (0.9, 0.55), (0.8, 0.5), (0.7, 0.45)], 'soaked', seg=10, noise=0.15)
     for tx in (-0.8, 0, 0.8):
@@ -444,6 +490,35 @@ img = np.stack([110 + 60 * n, 18 + 25 * n, 25 + 15 * n], -1)
 pus = fbm2(T, T, 14, 81) > 0.64; img[pus] = [190, 170, 70]; gloss(img, 82, 0.1); tiles['tumor'] = img
 n = fbm2(T, T, 5, 90)
 img = np.stack([60 + 45 * n, 2 + 6 * n, 4 + 6 * n], -1); gloss(img, 91, 0.1, (255, 150, 150)); drips(img, 20, 92, (40, 0, 2)); tiles['soaked'] = img
+
+n = fbm2(T, T, 6, 100)
+img = np.stack([40 + 30 * n, 22 + 18 * n, 55 + 35 * n], -1); gloss(img, 101, 0.12, (200, 170, 220)); tiles['vein'] = img
+n = fbm2(T, T, 12, 110); n2m = fbm2(T, T, 40, 111)
+img = np.stack([95 + 70 * n * n2m, 105 + 70 * n * n2m, 70 + 40 * n], -1)          # fuzzy mould colony
+spore = np.random.default_rng(112).random((T, T)) > 0.93; img[spore] = [210, 215, 190]
+dark = np.random.default_rng(113).random((T, T)) > 0.95; img[dark] = [25, 35, 20]; tiles['mold'] = img
+
+def rot_pass(img, seed, mold=0.5, veins=1.0, grime=0.5, blood=1.0):
+    r = np.random.default_rng(seed)
+    g = fbm2(T, T, 5, seed + 1)                                        # tarnish / grime
+    img *= (1 - grime * 0.7 * np.clip((g - 0.35) * 1.6, 0, 1))[..., None]
+    m = fbm2(T, T, 7, seed + 2) * fbm2(T, T, 30, seed + 3)                   # mould blooms
+    mm = np.clip((m - (0.42 - 0.12 * mold)) * 8, 0, 1)[..., None] * mold
+    mcol = np.stack([110 + 60 * fbm2(T, T, 50, seed + 4), 120 + 60 * fbm2(T, T, 50, seed + 5), 80 + 30 * fbm2(T, T, 50, seed + 6)], -1)
+    img[:] = img * (1 - mm) + mcol * mm
+    sp = (r.random((T, T)) > 0.985) & (mm[..., 0] > 0.2); img[sp] = [220, 225, 200]
+    for k, (cells, thr, col) in enumerate([(4, 0.012, (45, 10, 60)), (9, 0.008, (60, 12, 50)), (18, 0.006, (90, 15, 40))]):
+        vn = np.abs(fbm2(T, T, cells, seed + 10 + k) - 0.5) < thr * veins * 1.6
+        img[vn] = img[vn] * 0.25 + np.array(col) * 0.75
+    if blood:
+        drips(img, int(25 * blood), seed + 20, (55, 0, 3))
+        sp2 = fbm2(T, T, 10, seed + 21) > 0.7; img[sp2] = img[sp2] * 0.3 + np.array([75, 2, 5]) * 0.7
+        gloss(img, seed + 22, 0.04, (230, 160, 150))
+for i, (mname, mold, veins, grime, blood) in enumerate([('flesh', 0.35, 1.2, 0.5, 1.0), ('skin', 0.8, 1.4, 0.7, 1.2), ('sinew', 0.3, 1.0, 0.5, 0.8),
+                                                       ('soaked', 0.2, 0.8, 0.4, 1.0), ('bone', 0.6, 0.0, 0.7, 0.8), ('teeth', 0.3, 0.0, 0.6, 0.6),
+                                                       ('gut', 0.3, 1.0, 0.4, 0.8), ('tumor', 0.2, 1.4, 0.3, 0.5), ('claw', 0.2, 0.0, 0.3, 0.6)]):
+    tiles[mname] = np.clip(tiles[mname].astype(float), 0, 255)
+    rot_pass(tiles[mname], 500 + i * 31, mold, veins, grime, blood)
 
 atlas = np.zeros((ATLAS, ATLAS, 4), np.uint8); glow = np.zeros((ATLAS, ATLAS, 4), np.uint8)
 for m in MATS:
