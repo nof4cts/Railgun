@@ -119,7 +119,9 @@ public final class ClientFx {
             stopMusic();
             musicEvent = want;
             if (want != null) {
-                music = SimpleSoundInstance.forMusic(want);
+                // non-positional, on the Master volume slider (not the Music slider)
+                music = new SimpleSoundInstance(want.getLocation(), SoundSource.MASTER, 1.0F, 1.0F,
+                        RandomSource.create(), false, 0, SoundInstance.Attenuation.NONE, 0.0D, 0.0D, 0.0D, true);
                 mc.getSoundManager().play(music);
                 musicRetry = 40;
             }

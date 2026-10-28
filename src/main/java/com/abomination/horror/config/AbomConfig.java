@@ -64,7 +64,7 @@ public final class AbomConfig {
             screenEffects = b.comment("Vignettes, chromatic fringing, static, flicker and flashes.")
                     .define("screenEffects", true);
             cameraShake = b.define("cameraShake", true);
-            dynamicMusic = b.comment("Escalating music while it stalks and hunts you.")
+            dynamicMusic = b.comment("Escalating music while it is nearby (plays on the Master volume slider).")
                     .define("dynamicMusic", true);
             goreLevel = b.comment("0 = no blood particles, 1 = light, 2 = heavy, 3 = absurd.")
                     .defineInRange("goreLevel", 2, 0, 3);
