@@ -52,6 +52,10 @@ public final class FeedSystem {
     private static final Map<Integer, ResourceLocation> PHOTO_TEX = new HashMap<>();
     private static final Map<Integer, int[]> PHOTO_SIZE = new HashMap<>();
 
+    public static void submit(Runnable r) {
+        WORKER.submit(r);
+    }
+
     public static void reset(OceanMap map) {
         release();
         renderer = new FeedRenderer(map);

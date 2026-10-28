@@ -92,7 +92,14 @@ public final class ClientMissionState {
         leader = m.leader;
         photos.clear();
         photos.addAll(m.photos);
-        if (fresh) introTicks = 160;
+        if (fresh) {
+            if (com.ironlung.config.IronLungConfig.OPENING_CUTSCENE.get()) {
+                introTicks = 0;
+                Cutscene.start();
+            } else {
+                introTicks = 160;
+            }
+        }
         prev = cur = null;
     }
 
@@ -108,6 +115,7 @@ public final class ClientMissionState {
         finaleBlack = false;
         shake = 0;
         FeedSystem.release();
+        Cutscene.stop();
     }
 
     public static void onState(Packets.SubState s) {

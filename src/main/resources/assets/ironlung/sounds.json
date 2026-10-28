@@ -288,5 +288,32 @@
       }
     ],
     "subtitle": "subtitles.ironlung.breathing"
+  },
+  "opening_ambience": {
+    "sounds": [
+      {
+        "name": "ironlung:opening_ambience",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.ironlung.opening_ambience"
+  },
+  "chains": {
+    "sounds": [
+      {
+        "name": "ironlung:chains",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.chains"
+  },
+  "submerge": {
+    "sounds": [
+      {
+        "name": "ironlung:submerge",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.ironlung.submerge"
   }
 }

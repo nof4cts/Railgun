@@ -44,6 +44,8 @@ Survival:
 
 ## What's in it
 
+- An opening cutscene for every crew member: a rig on the blood sea under a blood moon, the pilot boarding the
+  hanging submarine, the hatch slamming and the boat lowered under (SPACE skips; client config `openingCutscene`).
 - Custom void dimension (`ironlung:iron_lung`), no sky, fixed night, procedurally built rusty interior with
   lamps and consoles whose lit/unlit states follow the power bus.
 - A seeded 1.1 km blood ocean computed identically on server and client: rolling seabed, trenches, rock pillars,

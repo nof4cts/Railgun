@@ -161,7 +161,7 @@ public final class MissionManager {
         m.heading = 0;
         m.depth = Math.max(OceanMap.MIN_SUB_DEPTH + 5, map.floorDepth(m.x, m.z) - 12);
         m.sealant = IronLungConfig.SEALANT_CHARGES.get();
-        m.nextEventTick = 700 + p.getRandom().nextInt(700);
+        m.nextEventTick = 1000 + p.getRandom().nextInt(600); // quiet while the opening plays
         Mission.CrewMember c = new Mission.CrewMember(p.getUUID(), p.getGameProfile().getName());
         c.ret = returnPointOf(p);
         m.crew.put(c.id, c);

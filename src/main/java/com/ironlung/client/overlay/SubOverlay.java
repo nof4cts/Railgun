@@ -20,6 +20,10 @@ public final class SubOverlay {
         if (!ClientMissionState.inSub()) return;
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
+        if (com.ironlung.client.Cutscene.active) {
+            com.ironlung.client.Cutscene.render(g, w, h, partialTick);
+            return;
+        }
         boolean distortion = IronLungConfig.SCREEN_DISTORTION.get();
         Mission.Power pw = ClientMissionState.power();
 

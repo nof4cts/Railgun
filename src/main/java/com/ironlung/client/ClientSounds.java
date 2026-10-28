@@ -24,7 +24,7 @@ public final class ClientSounds {
             stopAll();
             return;
         }
-        boolean silent = ClientMissionState.silenceTicks > 0;
+        boolean silent = ClientMissionState.silenceTicks > 0 || Cutscene.active;
         silenceFade += ((silent ? 0f : 1f) - silenceFade) * (silent ? 0.05f : 0.01f);
         double master = IronLungConfig.AMBIENT_VOLUME.get();
 

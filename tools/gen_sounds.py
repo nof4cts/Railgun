@@ -282,6 +282,41 @@ for c0, dur, inhale in [(0.0, 1.3, True), (1.5, 1.6, False)]:
 br = lp(br, 2200)
 save('breathing', reverb(br, 0.7, 0.3, 1800, seed=160), peak=0.9); register('breathing', ['breathing'])
 
+
+# ---------- the opening
+d = 28.0; t = t_(d)
+wind = bp(noise(d), 200, 1400, 2) * (0.5 + 0.5 * np.sin(2 * np.pi * t / 9.3) ** 2) * 0.6
+waves = lp(noise(d), 300, 2) * (0.4 + 0.6 * np.abs(np.sin(2 * np.pi * t / 5.1))) * 2.5
+swell = np.sin(2 * np.pi * 41 * t) * 0.3 * (0.5 + 0.5 * np.sin(2 * np.pi * t / 14))
+creak = np.zeros(len(t))
+for c in [3.1, 9.7, 17.2, 23.5]:
+    i0 = int(c * SR); n = int(1.2 * SR)
+    seg = bp(noise(1.2), 400, 1500) * (np.sin(np.linspace(0, np.pi, n)) ** 2) * (np.sin(2 * np.pi * np.linspace(0, 1.2, n) * 23) > 0.5)
+    creak[i0:i0 + n] += seg * 0.5
+amb = (wind + waves + swell + creak) * np.minimum(1, t / 3) * np.minimum(1, (d - t) / 3)
+save('opening_ambience', lp(amb, 3000), peak=0.7); register('opening_ambience', ['opening_ambience'], stream=True)
+
+d = 2.4; t = t_(d)
+ch = np.zeros(len(t))
+for k in range(16):
+    c = 0.05 + k * 0.13 + rng.random() * 0.04
+    i0 = int(c * SR)
+    ping = metal_partials(0.3, 1100 + rng.random() * 900, [1, 2.4, 3.8], [25, 35, 50], [1, .6, .3], seed=200 + k)
+    ch[i0:i0 + len(ping)] += ping[:max(0, len(ch) - i0)] * (0.4 + 0.6 * rng.random())
+ch += thud(d, 70, 6, 0.3) * 0.4
+save('chains', reverb(ch * env(d, 0.01, 0.6, 2), 1.2, 0.3, 3000, seed=210), peak=0.8); register('chains', ['chains'])
+
+d = 4.5; t = t_(d)
+sub = lp(noise(d), 600, 2) * np.exp(-t * 0.9) * 2 + bp(noise(d), 800, 4000) * np.exp(-t * 3) * 0.8
+bub = np.zeros(len(t))
+for k in range(40):
+    c = rng.random() * 3.5; i0 = int(c * SR); n = int(0.06 * SR)
+    f = 300 + rng.random() * 700
+    tt = np.arange(n) / SR
+    bub[i0:i0 + n] += np.sin(2 * np.pi * f * (1 + 2 * tt) * tt) * np.exp(-tt * 60) * 0.5
+sub += bub + thud(d, 30, 1.2, 0.5)
+save('submerge', reverb(lp(sub, 2500), 2.0, 0.4, 900, seed=220), peak=0.9); register('submerge', ['submerge'])
+
 with open('src/main/resources/assets/ironlung/sounds.json', 'w') as f:
     json.dump(sounds, f, indent=2)
 print('sounds ok', len(sounds), 'events', len(os.listdir(OUT)), 'files')

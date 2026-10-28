@@ -31,6 +31,7 @@ public final class IronLungConfig {
     public static ForgeConfigSpec.BooleanValue SCREEN_DISTORTION;
     public static ForgeConfigSpec.BooleanValue HUD_READOUT;
     public static ForgeConfigSpec.DoubleValue AMBIENT_VOLUME;
+    public static ForgeConfigSpec.BooleanValue OPENING_CUTSCENE;
 
     static {
         ForgeConfigSpec.Builder c = new ForgeConfigSpec.Builder();
@@ -65,6 +66,7 @@ public final class IronLungConfig {
         SHAKE_INTENSITY = k.defineInRange("shakeIntensity", 1.0, 0.0, 3.0);
         SCREEN_DISTORTION = k.comment("Static and darkness overlays during failures.").define("screenDistortion", true);
         HUD_READOUT = k.comment("Small status readout while inside the submarine.").define("hudReadout", true);
+        OPENING_CUTSCENE = k.comment("Play the boarding cutscene at the start of every dive (SPACE skips it).").define("openingCutscene", true);
         AMBIENT_VOLUME = k.comment("Volume of the ambient drone and machinery loops.").defineInRange("ambientVolume", 1.0, 0.0, 2.0);
         k.pop();
         CLIENT_SPEC = k.build();
