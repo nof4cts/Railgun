@@ -86,7 +86,8 @@ public final class FinaleDirector {
     private static void cmd(ServerLevel lvl, String c) {
         MinecraftServer server = lvl.getServer();
         CommandSourceStack src = server.createCommandSourceStack().withLevel(lvl).withSuppressedOutput().withPermission(4);
-        server.getCommands().performPrefixedCommand(src, c);
+        int result = server.getCommands().performPrefixedCommand(src, c);
+        if (result <= 0 && !c.startsWith("kill")) IronLungMod.LOGGER.warn("Finale command did nothing: {}", c);
     }
 
     private static String f(double v) {
@@ -208,7 +209,7 @@ public final class FinaleDirector {
             double[] q = mul(lookQuat(0, 0, -1, p.roll()), new double[]{Math.sin(-p.pitch() / 2), 0, 0, Math.cos(-p.pitch() / 2)});
             // local z points into the cabin, which is world -z
             String far = transform(-p.x(), p.y(), -(p.z() - 7.0), p.sx(), p.sy(), p.sz(), q);
-            summon(lvl, o, p.block(), far, "\"" + tag(m) + "\",\"" + tag(m) + "c" + i + "\"", p.block().contains("concrete") ? 2 : 7);
+            summon(lvl, o, p.block(), far, "\"" + tag(m) + "\",\"" + tag(m) + "c" + i + "\"", p.block().startsWith("black") ? 3 : 13);
         }
     }
 
@@ -238,7 +239,7 @@ public final class FinaleDirector {
         if (t % 5 == 0 && t > BREACH) {
             // emergency light stutter from the torn wiring
             BlockPos light = b.offset(1, 2, 2);
-            int lv = r.nextFloat() < 0.4f ? 0 : 4 + r.nextInt(6);
+            int lv = r.nextFloat() < 0.3f ? 3 : 8 + r.nextInt(6);
             lvl.setBlock(light, lv == 0 ? Blocks.AIR.defaultBlockState() : Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, lv), 3);
             if (r.nextFloat() < 0.3f) lvl.sendParticles(ParticleTypes.ELECTRIC_SPARK, b.getX() + 0.3 + r.nextDouble() * 2.4, b.getY() + 2.8, b.getZ() + 0.3 + r.nextDouble() * 4.4, 8, 0.1, 0.1, 0.1, 0.2);
         }
@@ -288,19 +289,22 @@ public final class FinaleDirector {
             double fy = -(at.y - b.getY()) + 0.05;
             animate(lvl, name, transform(r.nextDouble() * 1.6 - 0.8, fy, -1.5 - r.nextDouble() * 2.5, 0.5, 0.08, 0.5, q2), 8);
         }
-        lvl.sendParticles(MIST, b.getX() + 1.5, b.getY() + 1.2, b.getZ() + 4.8, 160, 1.0, 1.0, 0.6, 0.2);
+        lvl.sendParticles(MIST, b.getX() + 1.5, b.getY() + 1.2, b.getZ() + 4.6, 50, 1.0, 0.9, 0.4, 0.15);
         lvl.sendParticles(ParticleTypes.EXPLOSION, b.getX() + 1.5, b.getY() + 1.2, b.getZ() + 4.8, 3, 0.6, 0.6, 0.3, 0);
         lvl.playSound(null, b.getX() + 1.5, b.getY() + 1.2, b.getZ() + 5.0, ModSounds.HATCH_BREACH.get(), SoundSource.HOSTILE, 3.0f, 0.75f);
         lvl.playSound(null, b.getX() + 1.5, b.getY() + 1.2, b.getZ() + 5.0, ModSounds.IMPLOSION.get(), SoundSource.HOSTILE, 2.0f, 1.2f);
         // lamps shatter
         for (BlockPos l : SubInterior.LAMPS) {
             BlockPos p = b.offset(l);
-            lvl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()), p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, 30, 0.2, 0.2, 0.2, 0.2);
-            lvl.playSound(null, p, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 1.0f, 0.8f);
-            lvl.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
+            lvl.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, 30, 0.2, 0.2, 0.2, 0.3);
+            lvl.playSound(null, p, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.7f, 1.2f);
         }
         spawnCreature(m, lvl);
-        m.power = Mission.Power.TRIPPED;
+        // everyone is thrown around to face the hole
+        for (ServerPlayer p : MissionManager.aboard(m)) {
+            if (!p.isAlive()) continue;
+            p.teleportTo(lvl, p.getX(), p.getY(), p.getZ(), 0f, 5f);
+        }
         MissionManager.broadcast(m, new Packets.HorrorEvent(HorrorType.FINALE_CHAOS.ordinal(), 2.5f, r.nextLong(), 40f, 0));
     }
 
@@ -408,7 +412,7 @@ public final class FinaleDirector {
     private static void burst(Mission m, ServerLevel lvl, RandomSource r, State s, Vec3 at) {
         BlockPos b = m.base();
         lvl.sendParticles(BLOOD, at.x, at.y, at.z, 400, 0.6, 0.7, 0.6, 0.35);
-        lvl.sendParticles(MIST, at.x, at.y, at.z, 120, 1.0, 0.8, 1.0, 0.1);
+        lvl.sendParticles(MIST, at.x, at.y, at.z, 40, 0.8, 0.6, 0.8, 0.1);
         lvl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.REDSTONE_BLOCK.defaultBlockState()), at.x, at.y, at.z, 160, 0.4, 0.5, 0.4, 0.6);
         lvl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.NETHER_WART_BLOCK.defaultBlockState()), at.x, at.y, at.z, 120, 0.4, 0.5, 0.4, 0.6);
         lvl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.BONE_BLOCK.defaultBlockState()), at.x, at.y, at.z, 50, 0.3, 0.4, 0.3, 0.5);

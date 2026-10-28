@@ -565,7 +565,7 @@ public final class MissionManager {
             case 90 -> HorrorDirector.trigger(m, lvl, HorrorType.GROAN);
             case 170 -> m.flickerTicks = 50;
             case 240 -> {
-                HorrorDirector.tripPower(m, lvl);
+                // the lights don't die: they stutter for the rest of the ascent
                 HorrorDirector.trigger(m, lvl, HorrorType.SILENCE);
                 m.chainedEvent = -1;
             }
@@ -587,6 +587,10 @@ public final class MissionManager {
                 lvl.playSound(null, bb.getX() + 1.5, bb.getY() + 1.5, bb.getZ() + 5.8, ModSounds.BREATHING.get(), SoundSource.HOSTILE, 1.4f, 0.8f);
             }
             default -> {}
+        }
+        if (t >= 240) {
+            if (m.power != Mission.Power.ONLINE) m.power = Mission.Power.ONLINE;
+            m.flickerTicks = Math.max(m.flickerTicks, 4);
         }
         if (t >= FinaleDirector.BREACH) FinaleDirector.tick(m, lvl, r, t);
     }

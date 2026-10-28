@@ -92,15 +92,14 @@ public final class SubOverlay {
             int ct = ClientMissionState.chaosTicks;
             // torn signal: bars of the screen shoved sideways, colour bleeding into red
             if (ct > 0) {
-                int bars = 2 + rr.nextInt(5);
+                int bars = 1 + rr.nextInt(3);
                 for (int i = 0; i < bars; i++) {
-                    int by = rr.nextInt(h), bh = 2 + rr.nextInt(Math.max(3, h / 18));
-                    g.fill(0, by, w, by + bh, (rr.nextInt(60, 150) << 24) | (rr.nextBoolean() ? 0x200000 : 0x000000));
+                    int by = rr.nextInt(h), bh = 1 + rr.nextInt(Math.max(2, h / 40));
+                    g.fill(0, by, w, by + bh, (rr.nextInt(40, 100) << 24) | 0x300000);
                 }
-                int pulse = (int) (40 + 40 * Math.sin(ct * 0.45));
-                g.fill(0, 0, w, h, (pulse << 24) | 0x5A0000);
-                StaticNoise.draw(g, 0, 0, w, h, rr.nextFloat() < 0.1f ? 0.55f : 0.12f + rr.nextFloat() * 0.12f);
-                if (rr.nextInt(14) == 0) g.fill(0, 0, w, h, 0xE0000000);
+                int pulse = (int) (18 + 18 * Math.sin(ct * 0.45));
+                g.fill(0, 0, w, h, (pulse << 24) | 0x6A0000);
+                StaticNoise.draw(g, 0, 0, w, h, rr.nextFloat() < 0.06f ? 0.35f : 0.05f + rr.nextFloat() * 0.05f);
             }
             // being dragged: everything closes in, red
             int gt = ClientMissionState.grabbedTicks;
