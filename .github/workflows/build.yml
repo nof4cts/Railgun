@@ -18,7 +18,11 @@ jobs:
       - name: Build
         run: |
           chmod +x gradlew
-          ./gradlew build --no-daemon --stacktrace
+          set +e
+          ./gradlew build --no-daemon 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
+          grep -E "error:|\.java:[0-9]+|FAILURE|What went wrong" -A2 build.log | head -60 | while IFS= read -r l; do echo "::error::$l"; done
+          exit $status
       - name: Collect jar
         run: |
           mkdir out
