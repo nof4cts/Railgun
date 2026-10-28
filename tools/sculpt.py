@@ -374,11 +374,76 @@ for side in ('l', 'r'):
         fang(M[f'{side}foot'], (tx, 0.9, -3.5), (tx * 0.3, 0.3, -1), 2.2, 0.3, 'claw', curve=(0, 0.8, 0))
 # ------------------------------------------------------------------ hanging gore
 for i in range(3):
-    pts = [(math.sin(t * 2.2 + i) * 0.7, t * 4.3, -0.4 + math.cos(t * 3.0 + i) * 0.5) for t in np.linspace(0, 1, 7)]
-    tube(M[f'gut_{i+1}'], pts, [0.62, 0.65, 0.6, 0.66, 0.6, 0.62, 0.58 if i < 2 else 0.3], 'gut', seg=10, noise=0.1)
+    pts = [(math.sin(t * 3.4 + i) * 0.9, t * 5.0, -0.4 + math.cos(t * 4.0 + i) * 0.7) for t in np.linspace(0, 1, 11)]
+    tube(M[f'gut_{i+1}'], pts, [0.62 * (1 + 0.18 * math.sin(k * 2.3)) for k in range(10)] + [0.62 if i < 2 else 0.25], 'gut', seg=10, noise=0.08)
 ribbon(M['flap_1'], [(0, t * 5.0, -0.1 * t) for t in np.linspace(0, 1, 7)], [2.4, 2.2, 2.0, 1.7, 1.3, 0.9, 0.3], 'skin')
 ribbon(M['flap_2'], [(0, t * 4.2, -0.2 * t) for t in np.linspace(0, 1, 6)], [2.0, 1.9, 1.6, 1.2, 0.8, 0.2], 'skin')
 ribbon(M['flap_3'], [(0, t * 4.6, 0.3 * t) for t in np.linspace(0, 1, 6)], [2.6, 2.3, 1.9, 1.4, 0.9, 0.3], 'skin', normal_hint=(0, 0, 1))
+
+# ------------------------------------------------------------------ torn wounds with muscle spilling out
+def _basis(n):
+    n = np.array(n, float); n /= np.linalg.norm(n)
+    a = np.array([0, 1.0, 0]) if abs(n[1]) < 0.9 else np.array([1.0, 0, 0])
+    u = np.cross(n, a); u /= np.linalg.norm(u); v = np.cross(n, u)
+    return n, u, v
+
+def wound(target, c, normal, size, strands=3, hang=4.0, flaps=6):
+    c = np.array(c, float); n, u, v = _basis(normal)
+    ellipsoid(target, tuple(c - n * 0.2), (size * 0.9, size * 0.9, size * 0.9), 'cavity', seg=10, rings=8, noise=0.2, nscale=1.0)
+    for k in range(flaps):          # ragged skin peeled back around the hole
+        a = 2 * math.pi * k / flaps + rng.random() * 0.4
+        d = u * math.cos(a) + v * math.sin(a)
+        L = size * (0.8 + rng.random() * 0.9)
+        pts = [c + d * size * 0.85 + d * L * t + n * (0.6 * L * t * t) + np.array([0, 0.5 * L * t * t, 0]) for t in np.linspace(0, 1, 5)]
+        ribbon(target, pts, [size * 0.75, size * 0.7, size * 0.55, size * 0.35, 0.08], 'skin', normal_hint=tuple(n))
+    for k in range(strands):        # thick striated muscle bulging out and sagging under its own weight
+        off = (u * (rng.random() - 0.5) + v * (rng.random() - 0.5)) * size * 0.9
+        L = hang * (0.6 + rng.random() * 0.7)
+        side = (u * (rng.random() - 0.5) + v * (rng.random() - 0.5)) * 1.5
+        pts = [c + off + n * (1.6 * math.sin(t * 1.4)) + side * t + np.array([0, L * t * t, 0]) for t in np.linspace(0, 1, 8)]
+        r0 = 0.7 + rng.random() * 0.35
+        rad = [r0 * (1.0 + 0.25 * math.sin(i * 1.7)) * (1 - 0.35 * i / 7) for i in range(8)]
+        tube(target, pts, rad, 'flesh', seg=9, noise=0.12, nscale=1.2)
+        tip = pts[-1]
+        ellipsoid(target, tuple(tip), (rad[-1] * 1.3,) * 3, 'soaked', seg=8, rings=6, noise=0.3, nscale=1.5)  # torn bloody end
+        if rng.random() < 0.7:      # sinew threads still connecting
+            tube(target, lerp_path(c + off * 0.5, pts[4], 5, (0, 0.6, 0)), [0.08] * 5, 'sinew', seg=4, noise=0.0)
+
+wound(M['rshoulder'], (-0.3, 6.0, -1.8), (-0.3, 0, -1), 1.4, strands=3, hang=4.5)
+wound(M['lshoulder'], (0.6, 5.0, -1.7), (0.3, 0, -1), 1.3, strands=2, hang=4.0)
+wound(M['lshoulder'], (1.4, 9.0, 0.6), (1, 0, 0.4), 0.9, strands=1, hang=3.0, flaps=4)
+wound(M['lthigh'], (1.0, 5.0, -1.6), (0.5, 0, -1), 1.5, strands=3, hang=5.0)
+wound(M['rthigh'], (-1.4, 7.0, -0.8), (-1, 0, -0.5), 1.2, strands=2, hang=4.0)
+wound(M['chest'], (2.6, -9.0, 2.6), (0.6, -0.2, 1), 1.6, strands=3, hang=5.0)      # torn open back
+wound(M['chest'], (-4.3, -5.0, 1.2), (-1, 0, 0.3), 1.2, strands=2, hang=4.0)
+wound(M['neck'], (1.0, -4.0, -0.8), (1, 0, -0.6), 0.8, strands=1, hang=3.0, flaps=4)
+wound(M['torso'], (-1.8, -5.0, 1.2), (-1, 0, 0.5), 1.0, strands=2, hang=4.0)
+
+# ------------------------------------------------------------------ intestines spilling out
+def intestine(target, start, length, seed, bias=(0, 1.0, 0), radius=0.8):
+    r = np.random.default_rng(seed); p = np.array(start, float); d = np.array([0, 1.0, -0.4]); pts = [p.copy()]
+    steps = int(length / 0.7)
+    for i in range(steps):
+        turn = np.array([r.normal(), r.normal() * 0.5, r.normal()]) * 0.55
+        d = d + turn + np.array(bias) * 0.35 + np.array([math.sin(i * 0.9), 0, math.cos(i * 0.9)]) * 0.6   # coiling
+        d /= np.linalg.norm(d); p = p + d * 0.7; pts.append(p.copy())
+    rad = [radius * (1 + 0.18 * math.sin(i * 2.3)) for i in range(len(pts))]   # bowel constrictions
+    tube(target, pts, rad, 'gut', seg=9, noise=0.06, nscale=1.0)
+    for i in range(1, len(pts) - 1, 5):   # mesentery webbing and blood
+        if r.random() < 0.5:
+            ellipsoid(target, tuple(pts[i]), (radius * 0.9, radius * 0.5, radius * 0.9), 'soaked', seg=8, rings=5, noise=0.2)
+
+ellipsoid(M['torso'], (0, -2.5, -2.0), (2.2, 2.4, 0.8), 'cavity', noise=0.3)          # split belly
+for k in range(6):
+    a = (k / 6) * 2 * math.pi
+    pts = [(math.cos(a) * 2.2 + math.cos(a) * t * 1.2, -2.5 + math.sin(a) * 2.2 + t * 1.5, -2.2 - t * 1.0) for t in np.linspace(0, 1, 4)]
+    ribbon(M['torso'], pts, [1.4, 1.2, 0.8, 0.2], 'skin', normal_hint=(0, 0, -1))
+intestine(M['torso'], (0.4, -2.0, -2.4), 20.0, 301)
+intestine(M['torso'], (-0.8, -3.2, -2.3), 13.0, 302)
+intestine(M['torso'], (1.2, -1.0, -2.2), 12.0, 303, radius=0.7)
+intestine(M['hips'], (-1.0, 1.5, -2.6), 11.0, 304, radius=0.72)
+intestine(M['chest'], (1.5, -2.0, -2.8), 7.0, 305, bias=(0.2, 1.0, -0.2), radius=0.65)   # sliding out of the ribcage
+intestine(M['chest'], (-1.6, -4.0, -2.8), 6.0, 306, bias=(-0.2, 1.0, -0.2), radius=0.6)
 
 # ------------------------------------------------------------------ props for the finisher
 PROPS['prop_vertebra'] = []
@@ -444,7 +509,7 @@ def fibers(h, w, seed, freq=0.9):
 tiles = {}
 n1, n2 = fbm2(T, T, 4, 1), fbm2(T, T, 16, 2)
 f = fibers(T, T, 3)
-img = np.stack([62 + 70 * f * n1, 10 + 16 * f * n1, 12 + 12 * n2], -1)          # raw muscle with fibre striation
+img = np.stack([85 + 85 * f * n1, 12 + 20 * f * n1, 14 + 14 * n2], -1)          # raw muscle with fibre striation
 bruise = fbm2(T, T, 5, 4) > 0.62; img[bruise] = img[bruise] * 0.45 + np.array([50, 10, 45]) * 0.55
 drips(img, 30, 5, (35, 0, 2)); gloss(img, 6, 0.08, (230, 170, 160)); wounds(img, 6, 7)
 tiles['flesh'] = img
@@ -478,7 +543,7 @@ n = fbm2(T, T, 10, 40)
 img = np.stack([22 + 25 * n, 12 + 10 * n, 14 + 10 * n], -1); gloss(img, 41, 0.05, (200, 200, 210))
 tip = yy > T * 0.6; img[tip] = img[tip] * 0.4 + np.array([100, 0, 5]) * 0.6; tiles['claw'] = img
 n = fbm2(T, T, 6, 50)
-img = np.stack([140 + 45 * n, 80 + 35 * n, 85 + 35 * n], -1); img = img * (0.8 + 0.2 * np.sin(xx * 0.4)[..., None])
+img = np.stack([185 + 50 * n, 105 + 40 * n, 110 + 40 * n], -1); img = img * (0.8 + 0.2 * np.sin(xx * 0.4)[..., None])
 drips(img, 14, 51, (110, 10, 15)); gloss(img, 52, 0.1); tiles['gut'] = img
 n = fbm2(T, T, 7, 60)
 img = np.stack([55 + 60 * n, 3 + 8 * n, 6 + 8 * n], -1); gloss(img, 61, 0.05, (200, 80, 80)); tiles['cavity'] = img
@@ -516,7 +581,7 @@ def rot_pass(img, seed, mold=0.5, veins=1.0, grime=0.5, blood=1.0):
         gloss(img, seed + 22, 0.04, (230, 160, 150))
 for i, (mname, mold, veins, grime, blood) in enumerate([('flesh', 0.35, 1.2, 0.5, 1.0), ('skin', 0.8, 1.4, 0.7, 1.2), ('sinew', 0.3, 1.0, 0.5, 0.8),
                                                        ('soaked', 0.2, 0.8, 0.4, 1.0), ('bone', 0.6, 0.0, 0.7, 0.8), ('teeth', 0.3, 0.0, 0.6, 0.6),
-                                                       ('gut', 0.3, 1.0, 0.4, 0.8), ('tumor', 0.2, 1.4, 0.3, 0.5), ('claw', 0.2, 0.0, 0.3, 0.6)]):
+                                                       ('gut', 0.1, 0.8, 0.15, 0.7), ('tumor', 0.2, 1.4, 0.3, 0.5), ('claw', 0.2, 0.0, 0.3, 0.6)]):
     tiles[mname] = np.clip(tiles[mname].astype(float), 0, 255)
     rot_pass(tiles[mname], 500 + i * 31, mold, veins, grime, blood)
 
