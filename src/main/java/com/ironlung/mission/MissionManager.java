@@ -736,6 +736,14 @@ public final class MissionManager {
         }
     }
 
+    /** Debug/testing: mark every survey site as photographed. */
+    public static void completeAll(Mission m) {
+        m.map();
+        java.util.Arrays.fill(m.objectiveDone, true);
+        tellCrew(m, Component.translatable("ironlung.msg.all_logged").withStyle(ChatFormatting.DARK_RED), true);
+        data(ServerLifecycleHooks.getCurrentServer()).setDirty();
+    }
+
     /** Surface (anyone, once the survey is complete) or abort (leader ends it for all; crew just leave). */
     public static void onSurface(ServerPlayer p, boolean abort) {
         Mission m = get(p);

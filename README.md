@@ -44,7 +44,7 @@ Survival:
 
 ## What's in it
 
-- An opening cutscene for every crew member: a rig on the blood sea under a blood moon, the pilot boarding the
+- An opening cutscene for every crew member: a rig on the blood sea of the blood moon, its parent planet looming over the horizon, the pilot boarding the
   hanging submarine, the hatch slamming and the boat lowered under (SPACE skips; client config `openingCutscene`).
 - Custom void dimension (`ironlung:iron_lung`), no sky, fixed night, procedurally built rusty interior with
   lamps and consoles whose lit/unlit states follow the power bus.
@@ -68,7 +68,7 @@ Survival:
 - Config (`config/ironlung-common.toml`, `ironlung-client.toml`): sites per dive, uncatalogued count, map size,
   speed, sealant, event frequency, hull damage, leviathan on/off, lethal implosion; feed resolution/fps, photo
   resolution, shake, distortion, HUD, ambient volume.
-- Commands: `/ironlung start [seed|player]`, `/ironlung invite <player>`, `/ironlung join <player>`, `/ironlung leave`, `/ironlung abort`, `/ironlung status`, `/ironlung event <type>` (op).
+- Commands: `/ironlung start [seed|player]`, `/ironlung invite <player>`, `/ironlung join <player>`, `/ironlung leave`, `/ironlung abort`, `/ironlung status`, `/ironlung event <type>` (op), `/ironlung complete` (op: log every site), `/ironlung finale` (op: skip to the ending).
 
 ## Multiplayer
 

@@ -100,6 +100,27 @@ public final class CommonEvents {
                     else MissionManager.leaveMission(p, m, true);
                     return 1;
                 }))
+                .then(Commands.literal("complete").requires(s -> s.hasPermission(2)).executes(ctx -> {
+                    ServerPlayer p = ctx.getSource().getPlayerOrException();
+                    Mission m = MissionManager.get(p);
+                    if (m == null) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.not_diving"));
+                        return 0;
+                    }
+                    MissionManager.completeAll(m);
+                    return 1;
+                }))
+                .then(Commands.literal("finale").requires(s -> s.hasPermission(2)).executes(ctx -> {
+                    ServerPlayer p = ctx.getSource().getPlayerOrException();
+                    Mission m = MissionManager.get(p);
+                    if (m == null) {
+                        ctx.getSource().sendFailure(Component.translatable("ironlung.cmd.not_diving"));
+                        return 0;
+                    }
+                    MissionManager.completeAll(m);
+                    MissionManager.onSurface(p, false);
+                    return 1;
+                }))
                 .then(Commands.literal("leave").executes(ctx -> {
                     ServerPlayer p = ctx.getSource().getPlayerOrException();
                     Mission m = MissionManager.get(p);

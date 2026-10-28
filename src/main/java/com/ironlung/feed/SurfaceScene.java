@@ -14,9 +14,12 @@ public final class SurfaceScene {
 
     public static final int SHOTS = 5;
 
-    // moon low over the sea, in front of most cameras
-    private static final double[] MOON = norm(0.18, 0.24, 1.0);
-    private static final double MOON_R = 0.075;
+    // we are ON the blood moon: what hangs over the horizon is the planet it orbits.
+    // MOON here is the direction of that planet (the scene's backlight).
+    private static final double[] MOON = norm(0.22, 0.13, 1.0);
+    private static final double PLANET_R = 0.31;
+    // a distant sun behind and above the planet: lights only a thin crescent
+    private static final double[] SUN = norm(0.87, 0.55, 0.18);
     // rig floodlight
     private static final double LX = 2.6, LY = 9.0, LZ = 3.2;
 
@@ -229,19 +232,35 @@ public final class SurfaceScene {
         double cosM = dx * MOON[0] + dy * MOON[1] + dz * MOON[2];
         double angle = Math.acos(Math.max(-1, Math.min(1, cosM)));
         // glow
-        double glow = Math.exp(-angle * 9) * 0.9 + Math.exp(-angle * 2.5) * 0.12;
+        double edge = Math.max(0, angle - PLANET_R);
+        double glow = Math.exp(-edge * 22) * 0.35 + Math.exp(-edge * 4) * 0.1;
         r += glow * 0.9;
         g += glow * 0.12;
         b += glow * 0.06;
-        if (angle < MOON_R) {
-            // the disc: blood red, darker maria, slightly brighter limb
-            double u = dx - MOON[0], v = dy - MOON[1], w = dz - MOON[2];
-            double maria = vnoise(u * 60 + 5, v * 60, w * 60) * 0.6 + vnoise(u * 160, v * 160 + 3, w * 160) * 0.4;
-            double shade = 0.75 + 0.25 * (angle / MOON_R);
-            double lum = (maria > 0.55 ? 0.6 : 1.0) * shade;
-            r = 1.5 * lum + 0.2;
-            g = 0.28 * lum;
-            b = 0.16 * lum;
+        if (angle < PLANET_R) {
+            // the parent planet: a banded gas giant, almost all night side, a thin lit crescent
+            double u = angle / PLANET_R;
+            double tx = dx - MOON[0] * cosM, ty = dy - MOON[1] * cosM, tz = dz - MOON[2] * cosM;
+            double tl = Math.sqrt(tx * tx + ty * ty + tz * tz) + 1e-9;
+            tx /= tl; ty /= tl; tz /= tl;
+            double sq = Math.sqrt(Math.max(0, 1 - u * u));
+            double nx = -MOON[0] * sq + tx * u, ny = -MOON[1] * sq + ty * u, nz = -MOON[2] * sq + tz * u;
+            double lit = Math.max(0, nx * SUN[0] + ny * SUN[1] + nz * SUN[2]);
+            lit = Math.pow(lit, 1.3);
+            // bands follow the planet's latitude (tilted a little)
+            double lat = ny * 0.95 + nx * 0.3;
+            double band = 0.5 + 0.5 * Math.sin(lat * 26 + vnoise(nx * 6, ny * 6, nz * 6) * 3.5);
+            double storm = vnoise(nx * 14 + 3, ny * 14, nz * 14);
+            double br = 0.55 + 0.45 * band, bg = 0.3 + 0.25 * band, bb = 0.22 + 0.15 * band;
+            if (storm > 0.78) { br *= 0.6; bg *= 0.5; bb *= 0.5; }
+            double night = 0.012 + 0.03 * Math.pow(u, 6); // faint red airglow at the limb
+            r = br * lit * 2.2 + night * 1.4 + 0.004;
+            g = bg * lit * 1.4 + night * 0.15;
+            b = bb * lit * 1.1 + night * 0.1;
+            // the planet blots out the haze behind it, except a thin atmosphere at the edge
+            double limb = Math.pow(u, 14) * 0.25;
+            r += limb * 0.8; g += limb * 0.1; b += limb * 0.06;
+            return new double[]{r, g, b};
         }
         // faint stars, smothered by the haze
         if (dy > 0.15) {
