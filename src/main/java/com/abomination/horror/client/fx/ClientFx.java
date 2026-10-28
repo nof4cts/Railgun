@@ -89,7 +89,20 @@ public final class ClientFx {
             }
             dread = (float) Mth.clamp(1.0D - best / 24.0D, 0.0D, 1.0D) * (phase >= AbominationEntity.PHASE_HUNT ? 0.5F : 0.3F);
         }
-        tickMusic(mc, nearest, best);
+        // music follows it anywhere within ~96 blocks, not only when it is close
+        AbominationEntity musicSource = nearest;
+        double musicDist = best;
+        if (musicSource == null) {
+            for (AbominationEntity a : mc.level.getEntitiesOfClass(AbominationEntity.class, mc.player.getBoundingBox().inflate(96.0D))) {
+                if (!a.isAlive() || a.deathTime > 0) continue;
+                double d = a.distanceTo(mc.player);
+                if (d < musicDist) {
+                    musicDist = d;
+                    musicSource = a;
+                }
+            }
+        }
+        tickMusic(mc, musicSource, musicDist);
     }
 
     private static void tickMusic(Minecraft mc, AbominationEntity nearest, double d) {
@@ -98,7 +111,7 @@ public final class ClientFx {
             int phase = nearest.getPhase();
             if (phase == AbominationEntity.PHASE_NIGHTMARE || (nearest.isAwakened() && nearest.getBossStage() >= 2)) want = ModSounds.MUSIC_NIGHTMARE.get();
             else if (phase == AbominationEntity.PHASE_HUNT || nearest.isAwakened()) want = ModSounds.MUSIC_HUNT.get();
-            else if (phase == AbominationEntity.PHASE_STALK && d < 40.0D) want = ModSounds.MUSIC_STALK.get();
+            else want = ModSounds.MUSIC_STALK.get(); // watching or stalking: the dread theme never stops while it is out there
         }
         if (musicRetry > 0) musicRetry--;
         boolean ended = music != null && !mc.getSoundManager().isActive(music);
