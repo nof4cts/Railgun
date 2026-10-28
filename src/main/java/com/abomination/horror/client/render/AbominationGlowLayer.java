@@ -30,6 +30,9 @@ public class AbominationGlowLayer extends RenderLayer<AbominationEntity, Abomina
         float a = this.getParentModel().alpha;
         float c = pulse * a;
         VertexConsumer vc = buffers.getBuffer(RenderType.eyes(GLOW));
-        this.getParentModel().renderToBuffer(pose, vc, 0xF000F0, OverlayTexture.NO_OVERLAY, c, c, c, 1.0F);
+        AbominationModel model = this.getParentModel();
+        model.glowPass = true;
+        model.renderToBuffer(pose, vc, 0xF000F0, OverlayTexture.NO_OVERLAY, c, c, c, 1.0F);
+        model.glowPass = false;
     }
 }

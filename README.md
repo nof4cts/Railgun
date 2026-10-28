@@ -33,7 +33,7 @@ Boss: craft a **Throbbing Heart** (4 Heart Fragments around a Fermented Spider E
 - `finisher/FinisherManager` – server timeline: cancels the death, pins the victim, kills with `abomination:spine_rip` at tick 96.
 - `client/fx/ClientFinisher` – head + verlet spine rendering, blood, camera takeover, sound timeline.
 - `client/fx/ClientFx` – sub-bass/heartbeat proximity, music, shake, aberration, flicker overlay.
-- `client/render/AbominationModel` – 57-bone procedural animation (generated geometry; see `tools/`).
+- `client/render/AbominationModel` + `MeshLibrary` – sculpted smooth-shaded mesh (no cubes) on a 63-bone procedurally animated skeleton. Regenerate mesh, atlas and skeleton with `python3 tools/sculpt.py src/main/resources/assets/abomination <skeleton.txt> <preview.png>`.
 
 ## Audio
 `gore_*`, `rip_tear`, `gush_*` are cut from the supplied GoreBox clip; `music_*`, `finisher_sting`, `emerge_sting` are cut from the supplied eerie compilation; everything else is synthesized. The sections were chosen by loudness, not by ear, so swap any `.ogg` in `assets/abomination/sounds/` you don't like. Those two source files come from other creators - fine for personal play, but clear the rights before publishing the mod.

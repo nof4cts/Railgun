@@ -4,6 +4,7 @@ import com.abomination.horror.AbominationMod;
 import com.abomination.horror.config.AbomConfig;
 import com.abomination.horror.entity.AbominationEntity;
 import com.abomination.horror.network.FinisherPacket;
+import com.abomination.horror.client.render.MeshLibrary;
 import com.abomination.horror.registry.ModParticles;
 import com.abomination.horror.registry.ModSounds;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -61,8 +62,7 @@ import static com.abomination.horror.finisher.FinisherManager.*;
  * </ul>
  */
 public final class ClientFinisher {
-    private static final ResourceLocation SPINE_TEX = AbominationMod.id("textures/entity/spine.png");
-    private static final ResourceLocation GORE_TEX = AbominationMod.id("textures/entity/gore.png");
+    private static final ResourceLocation ATLAS = AbominationMod.id("textures/entity/abomination.png");
     private static final int SEGMENTS = 13;
     private static final double SPACING = 0.13D;
     private static final double NECK = 1.45D;
@@ -98,7 +98,7 @@ public final class ClientFinisher {
     private static CameraType savedCamera;
     private static boolean cameraTaken;
 
-    private static ModelPart headPart, hatPart, vertebra, goreChunk, stump;
+    private static ModelPart headPart, hatPart;
 
     private ClientFinisher() {}
 
@@ -368,7 +368,7 @@ public final class ClientFinisher {
     // =============================================================================== sound timeline
     private static void events(Minecraft mc, Active a, int k) {
         switch (k) {
-            case 0 -> { play(mc, a, ModSounds.GRAB.get(), 1.6F, 0.9F); play(mc, a, ModSounds.AMBIENT.get(), 2.0F, 0.7F); }
+            case 0 -> { play(mc, a, ModSounds.GRAB.get(), 1.6F, 0.9F); play(mc, a, ModSounds.GORE.get(), 2.2F, 0.8F); play(mc, a, ModSounds.AMBIENT.get(), 2.0F, 0.7F); }
             case 6 -> play(mc, a, ModSounds.AMBIENT.get(), 2.2F, 0.6F);
             case 10 -> play(mc, a, ModSounds.WHISPER.get(), 1.4F, 0.6F);
             case 14 -> play(mc, a, ModSounds.HEARTBEAT.get(), 1.5F, 1.0F);
@@ -382,12 +382,14 @@ public final class ClientFinisher {
             }
             case IMPACT_TICK -> {
                 play(mc, a, ModSounds.IMPACT.get(), 2.2F, 0.8F);
-                play(mc, a, ModSounds.CRACK.get(), 2.0F, 0.6F);
-                play(mc, a, ModSounds.GORE.get(), 2.0F, 0.8F);
+                play(mc, a, ModSounds.GORE.get(), 3.0F, 0.7F);
+                play(mc, a, ModSounds.GORE.get(), 3.0F, 1.0F);
+                play(mc, a, ModSounds.CRACK.get(), 2.6F, 0.8F);
             }
             case RIP_START -> {
-                play(mc, a, ModSounds.RIP.get(), 2.4F, 0.9F);
-                play(mc, a, ModSounds.GUSH.get(), 2.0F, 0.9F);
+                play(mc, a, ModSounds.RIP.get(), 3.2F, 0.9F);
+                play(mc, a, ModSounds.RIP.get(), 3.2F, 0.7F);
+                play(mc, a, ModSounds.GUSH.get(), 3.0F, 0.9F);
             }
             case 56 -> {
                 play(mc, a, ModSounds.ROAR.get(), 2.5F, 0.7F);
@@ -407,10 +409,10 @@ public final class ClientFinisher {
         }
         if (k > RIP_START && k < RIP_END && k % 2 == 0) {
             // vertebrae popping free one by one, pitch climbing
-            play(mc, a, ModSounds.CRACK.get(), 1.6F, 0.8F + (k - RIP_START) * 0.02F);
+            play(mc, a, ModSounds.CRACK.get(), 2.4F, 0.9F + (k - RIP_START) * 0.015F);
         }
-        if (k == 36 || k == 44 || k == 52) play(mc, a, ModSounds.GORE.get(), 1.8F, 0.7F + (k - 36) * 0.02F);
-        if (k == 40 || k == 50) play(mc, a, ModSounds.GUSH.get(), 1.8F, 0.8F);
+        if (k == 34 || k == 38 || k == 42 || k == 46 || k == 50 || k == 54) play(mc, a, ModSounds.GORE.get(), 2.8F, 0.65F + (k - 34) * 0.015F);
+        if (k == 40 || k == 50 || k == 60) play(mc, a, ModSounds.GUSH.get(), 2.6F, 0.8F);
     }
 
     private static void play(Minecraft mc, Active a, SoundEvent sound, float vol, float pitch) {
@@ -424,29 +426,6 @@ public final class ClientFinisher {
         ModelPart player = LayerDefinition.create(PlayerModel.createMesh(CubeDeformation.NONE, false), 64, 64).bakeRoot();
         headPart = player.getChild("head");
         hatPart = player.getChild("hat");
-
-        MeshDefinition v = new MeshDefinition();
-        v.getRoot().addOrReplaceChild("v", CubeListBuilder.create()
-                .texOffs(0, 0).addBox(-1.5F, -1.0F, -1.5F, 3.0F, 2.0F, 3.0F)       // vertebral body
-                .texOffs(12, 0).addBox(-0.5F, -0.6F, 1.5F, 1.0F, 1.0F, 2.5F)       // spinous process
-                .texOffs(0, 6).addBox(-2.6F, -0.4F, -0.4F, 5.2F, 0.8F, 0.8F)       // transverse processes
-                .texOffs(0, 16).addBox(-1.2F, 1.0F, -1.2F, 2.4F, 0.7F, 2.4F),      // torn disc and meat
-                PartPose.ZERO);
-        vertebra = LayerDefinition.create(v, 32, 32).bakeRoot().getChild("v");
-
-        MeshDefinition g = new MeshDefinition();
-        g.getRoot().addOrReplaceChild("chunk", CubeListBuilder.create()
-                .texOffs(0, 0).addBox(-2.5F, 0.0F, -2.5F, 5.0F, 3.0F, 5.0F)       // ragged neck flesh hanging off the skull
-                .texOffs(0, 10).addBox(-1.5F, 3.0F, -1.0F, 1.0F, 2.0F, 1.0F)      // dangling strands
-                .texOffs(4, 10).addBox(0.6F, 3.0F, 0.2F, 1.0F, 3.0F, 1.0F),
-                PartPose.ZERO);
-        g.getRoot().addOrReplaceChild("stump", CubeListBuilder.create()
-                .texOffs(0, 0).addBox(-3.0F, -1.0F, -2.0F, 6.0F, 1.5F, 4.0F)      // open neck on the body
-                .texOffs(0, 16).addBox(-1.0F, -1.6F, -1.0F, 2.0F, 0.8F, 2.0F),
-                PartPose.ZERO);
-        ModelPart gr = LayerDefinition.create(g, 32, 32).bakeRoot();
-        goreChunk = gr.getChild("chunk");
-        stump = gr.getChild("stump");
     }
 
     public static void render(RenderLevelStageEvent e) {
@@ -464,6 +443,8 @@ public final class ClientFinisher {
             if (tf < RIP_START || !a.chainInit) continue;
             Vec3 hb = headBase(a, tf);
             int light = LevelRenderer.getLightColor(mc.level, BlockPos.containing(hb));
+            MeshLibrary lib = MeshLibrary.get();
+            VertexConsumer gore = buf.getBuffer(RenderType.entityCutoutNoCull(ATLAS));
 
             // ---- the severed head, wearing the victim's own skin
             float u = Mth.clamp((tf - RIP_START) / (RIP_END - RIP_START), 0.0F, 1.0F);
@@ -476,16 +457,22 @@ public final class ClientFinisher {
             headPart.xRot = droop;
             headPart.zRot = roll;
             hatPart.copyFrom(headPart);
-            goreChunk.copyFrom(headPart);
             headPart.render(ps, buf.getBuffer(RenderType.entityCutoutNoCull(a.skin)), light, OverlayTexture.NO_OVERLAY);
-            goreChunk.render(ps, buf.getBuffer(RenderType.entityCutoutNoCull(GORE_TEX)), light, OverlayTexture.NO_OVERLAY);
             hatPart.render(ps, buf.getBuffer(RenderType.entityTranslucent(a.skin)), light, OverlayTexture.NO_OVERLAY);
+            if (lib != null) {
+                // ragged neck meat and dangling strands hanging off the base of the skull
+                ps.pushPose();
+                ps.mulPose(Axis.ZP.rotation(roll));
+                ps.mulPose(Axis.XP.rotation(droop));
+                lib.draw("prop_neckgore", ps.last(), gore, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                ps.popPose();
+            }
             headPart.xRot = 0.0F;
             headPart.zRot = 0.0F;
             ps.popPose();
 
             // ---- the spine, vertebra by vertebra
-            VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(SPINE_TEX));
+            VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(ATLAS));
             int n = a.detached ? SEGMENTS : a.extracted;
             for (int i = 0; i < n; i++) {
                 Vec3 p0 = a.prev[i].lerp(a.pos[i], pt);
@@ -499,7 +486,7 @@ public final class ClientFinisher {
                 }
                 float sc = 1.0F - i * 0.025F;
                 ps.scale(sc, sc, sc);
-                vertebra.render(ps, vc, light, OverlayTexture.NO_OVERLAY);
+                if (lib != null) lib.draw("prop_vertebra", ps.last(), vc, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
                 ps.popPose();
             }
 
@@ -511,7 +498,7 @@ public final class ClientFinisher {
                 ps.translate(np.x - cam.x, np.y - cam.y, np.z - cam.z);
                 ps.mulPose(Axis.YP.rotationDegrees(180.0F - Mth.rotLerp(pt, lv.yBodyRotO, lv.yBodyRot)));
                 ps.scale(-1.0F, -1.0F, 1.0F);
-                stump.render(ps, buf.getBuffer(RenderType.entityCutoutNoCull(GORE_TEX)), light, OverlayTexture.NO_OVERLAY);
+                if (lib != null) lib.draw("prop_stump", ps.last(), buf.getBuffer(RenderType.entityCutoutNoCull(ATLAS)), light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
                 ps.popPose();
             }
         }

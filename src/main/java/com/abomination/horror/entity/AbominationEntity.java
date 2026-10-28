@@ -906,8 +906,25 @@ public class AbominationEntity extends Monster {
         if (this.random.nextInt(5) == 0) {
             this.level().addParticle(ModParticles.ICHOR.get(), getRandomX(0.6D), getY() + 1.0D + this.random.nextDouble() * 2.4D, getRandomZ(0.6D), 0.0D, -0.01D, 0.0D);
         }
-        if (this.random.nextInt(9) == 0) {
-            this.level().addParticle(ModParticles.BLOOD.get(), getRandomX(0.4D), getY() + 1.6D + this.random.nextDouble(), getRandomZ(0.4D), 0.0D, 0.0D, 0.0D);
+        if (this.random.nextInt(4) == 0) {
+            this.level().addParticle(ModParticles.BLOOD.get(), getRandomX(0.5D), getY() + 1.4D + this.random.nextDouble() * 1.2D, getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
+        }
+        // blood and drool pouring from the open maw
+        float s = isAwakened() ? 1.18F : 1.0F;
+        Vec3 mouth = this.position().add(forward(this.yBodyRot).scale(1.05D * s)).add(0.0D, (3.0D - this.sprintBlend * 1.2D) * s, 0.0D);
+        if (this.random.nextInt(2) == 0) {
+            this.level().addParticle(ModParticles.BLOOD.get(), mouth.x + (this.random.nextDouble() - 0.5D) * 0.5D, mouth.y, mouth.z + (this.random.nextDouble() - 0.5D) * 0.5D, 0.0D, -0.05D, 0.0D);
+        }
+        // claws drip, feet leave bloody prints
+        if (this.random.nextInt(6) == 0) {
+            Vec3 side = new Vec3(Mth.cos(this.yBodyRot * ((float) Math.PI / 180.0F)), 0, Mth.sin(this.yBodyRot * ((float) Math.PI / 180.0F)));
+            Vec3 claw = this.position().add(side.scale(this.random.nextBoolean() ? 0.45D : -0.45D)).add(0, 0.3D, 0);
+            this.level().addParticle(ModParticles.BLOOD.get(), claw.x, claw.y, claw.z, 0.0D, -0.02D, 0.0D);
+        }
+        if (this.onGround() && this.getDeltaMovement().horizontalDistanceSqr() > 0.002D && this.tickCount % 5 == 0) {
+            for (int i = 0; i < 4; i++) {
+                this.level().addParticle(ModParticles.BLOOD.get(), getRandomX(0.6D), getY() + 0.05D, getRandomZ(0.6D), 0.0D, 0.0D, 0.0D);
+            }
         }
         if (this.sprintBlend > 0.5F && this.getDeltaMovement().horizontalDistanceSqr() > 0.01D) {
             for (int i = 0; i < 3; i++) {
