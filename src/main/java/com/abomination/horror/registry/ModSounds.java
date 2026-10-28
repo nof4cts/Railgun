@@ -28,6 +28,9 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> GUSH = reg("gush");
     public static final RegistryObject<SoundEvent> FINISHER_STING = reg("finisher_sting");
     public static final RegistryObject<SoundEvent> EMERGE_STING = reg("emerge_sting");
+    public static final RegistryObject<SoundEvent> JUMPSCARE_SCREAM = reg("jumpscare_scream");
+    public static final RegistryObject<SoundEvent> JUMPSCARE_SCREAM_LONG = reg("jumpscare_scream_long");
+    public static final RegistryObject<SoundEvent> PAIN = reg("pain");
     public static final RegistryObject<SoundEvent> MUSIC_STALK = reg("music_stalk");
     public static final RegistryObject<SoundEvent> MUSIC_HUNT = reg("music_hunt");
     public static final RegistryObject<SoundEvent> MUSIC_NIGHTMARE = reg("music_nightmare");

@@ -12,6 +12,10 @@ public final class ClientPacketHandler {
         ClientFinisher.onPacket(msg);
     }
 
+    public static void onJumpscare(com.abomination.horror.network.JumpscarePacket msg) {
+        com.abomination.horror.client.fx.ClientJumpscare.start(msg.creatureId);
+    }
+
     public static void onFx(FxPacket msg) {
         ClientFx.apply(msg.shake, msg.aberration, msg.flash, msg.flicker);
     }

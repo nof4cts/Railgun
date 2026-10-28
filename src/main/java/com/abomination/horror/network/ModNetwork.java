@@ -22,6 +22,9 @@ public final class ModNetwork {
         CHANNEL.messageBuilder(FxPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(FxPacket::encode).decoder(FxPacket::new)
                 .consumerMainThread(FxPacket::handle).add();
+        CHANNEL.messageBuilder(JumpscarePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(JumpscarePacket::encode).decoder(JumpscarePacket::new)
+                .consumerMainThread(JumpscarePacket::handle).add();
     }
 
     public static void fx(ServerPlayer player, float shake, float aberration, float flash, int flicker) {

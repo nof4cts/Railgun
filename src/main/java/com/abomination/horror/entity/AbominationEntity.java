@@ -81,6 +81,9 @@ public class AbominationEntity extends Monster {
     public static final int ANIM_EMERGE = 5;
     public static final int ANIM_LEAP = 6;
     public static final int ANIM_SLAM = 7;
+    public static final int ANIM_JUMPSCARE = 8;
+    public static final int JUMPSCARE_TICKS = 36;
+    private static final int JUMPSCARE_COOLDOWN = 2400;
 
     // ---- AI phases (synced) ----
     public static final int PHASE_OBSERVE = 0;
@@ -118,6 +121,8 @@ public class AbominationEntity extends Monster {
     private boolean stageRoar;
     private float finisherYaw;
     private final List<BlockPos> arenaCorruption = new ArrayList<>();
+    private final java.util.Map<java.util.UUID, Long> lastJumpscare = new java.util.HashMap<>();
+    private int sightJumpscareRetry;
 
     // ---- client animation state ----
     public int animStartTick;
@@ -254,7 +259,7 @@ public class AbominationEntity extends Monster {
     /** Animations during which the body is rooted in place and the normal goals are suspended. */
     public boolean isLocked() {
         int a = getAnim();
-        return a == ANIM_FINISHER || a == ANIM_ROAR || a == ANIM_EMERGE || a == ANIM_DETECT;
+        return a == ANIM_FINISHER || a == ANIM_ROAR || a == ANIM_EMERGE || a == ANIM_DETECT || a == ANIM_JUMPSCARE;
     }
 
     public boolean inFinisher() { return getAnim() == ANIM_FINISHER; }
@@ -300,6 +305,17 @@ public class AbominationEntity extends Monster {
 
     private void onAnimFinished(int anim) {
         if (anim == ANIM_ROAR) this.stageRoar = false;
+        if (anim == ANIM_JUMPSCARE) {
+            // the cutscene is over: now it runs you down, with a beat of head start before it can strike
+            this.entityData.set(DATA_ANIM, ANIM_IDLE);
+            if (getPhase() < PHASE_HUNT) {
+                this.entityData.set(DATA_PHASE, PHASE_HUNT);
+                this.phaseTicks = 0;
+            }
+            this.attackCooldown = 30;
+            this.playSound(ModSounds.ROAR.get(), 3.0F, 0.8F);
+            return;
+        }
         if (anim == ANIM_EMERGE) {
             this.playSound(ModSounds.ROAR.get(), 4.0F, 0.7F);
             shockwave(10.0D, 1.4D, 1.0F);
@@ -318,6 +334,19 @@ public class AbominationEntity extends Monster {
             return;
         }
         double dist = this.distanceTo(t);
+        // first sighting: no attack - it appears in your face, screams, then gives chase
+        if (phase < PHASE_HUNT && !isAwakened() && !isLocked() && t instanceof ServerPlayer sp && dist < 56.0D) {
+            if (this.sightJumpscareRetry > 0) {
+                this.sightJumpscareRetry--;
+            } else if (this.hasLineOfSight(sp)) {
+                Long last = this.lastJumpscare.get(sp.getUUID());
+                long now = this.level().getGameTime();
+                if (last == null || now - last > JUMPSCARE_COOLDOWN) {
+                    if (sightJumpscare(sp)) return;
+                    this.sightJumpscareRetry = 20;
+                }
+            }
+        }
         boolean hurtRecently = this.getLastHurtByMob() != null && this.tickCount - this.getLastHurtByMobTimestamp() < 100;
         switch (phase) {
             case PHASE_OBSERVE -> {
@@ -453,6 +482,49 @@ public class AbominationEntity extends Monster {
                 }
             }
         }
+    }
+
+    /** Teleport into the player's face and play the animatronic jumpscare. */
+    public boolean sightJumpscare(ServerPlayer sp) {
+        Vec3 view = sp.getViewVector(1.0F).multiply(1, 0, 1);
+        if (view.lengthSqr() < 1.0E-4D) view = forward(sp.getYRot());
+        view = view.normalize();
+        Vec3 spot = null;
+        for (double d : new double[]{2.3D, 3.0D, 1.8D, 3.8D}) {
+            spot = findGround(sp.getX() + view.x * d, sp.getY(), sp.getZ() + view.z * d, 3);
+            if (spot != null) break;
+        }
+        if (spot == null) {
+            for (int i = 0; i < 10 && spot == null; i++) {
+                Vec3 o = randomOffset(2.0D, 3.5D);
+                spot = findGround(sp.getX() + o.x, sp.getY(), sp.getZ() + o.z, 3);
+            }
+        }
+        if (spot == null) return false;
+        if (this.level() instanceof ServerLevel sl) {
+            sl.sendParticles(ParticleTypes.REVERSE_PORTAL, getX(), getY() + 1.8D, getZ(), 60, 0.5D, 1.2D, 0.5D, 0.06D);
+            sl.sendParticles(ModParticles.ICHOR.get(), getX(), getY() + 1.8D, getZ(), 40, 0.5D, 1.0D, 0.5D, 0.04D);
+        }
+        this.teleportTo(spot.x, spot.y, spot.z);
+        float yaw = (float) (Mth.atan2(sp.getZ() - spot.z, sp.getX() - spot.x) * (180.0F / (float) Math.PI)) - 90.0F;
+        this.setYRot(yaw);
+        this.yRotO = yaw;
+        this.yBodyRot = yaw;
+        this.yHeadRot = yaw;
+        this.getNavigation().stop();
+        this.setTarget(sp);
+        this.setAnim(ANIM_JUMPSCARE, JUMPSCARE_TICKS);
+        this.lastJumpscare.put(sp.getUUID(), this.level().getGameTime());
+        if (this.level() instanceof ServerLevel sl) {
+            sl.sendParticles(ModParticles.BLOOD.get(), spot.x, spot.y + 2.5D, spot.z, 40, 0.6D, 0.8D, 0.6D, 0.25D);
+        }
+        // everyone else hears it from where it stands; the victim hears it in their head (client side)
+        this.level().playSound(sp, spot.x, spot.y + 2.0D, spot.z, ModSounds.JUMPSCARE_SCREAM.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+        sp.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, JUMPSCARE_TICKS, 5, false, false));
+        sp.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 0, false, false));
+        ModNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> sp),
+                new com.abomination.horror.network.JumpscarePacket(this.getId()));
+        return true;
     }
 
     private boolean tryJumpscare(ServerPlayer sp) {

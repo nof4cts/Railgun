@@ -37,6 +37,9 @@ public class AbominationRenderer extends MobRenderer<AbominationEntity, Abominat
             float p = Mth.clamp(age / 60.0F, 0.0F, 1.0F);
             float rise = 1.0F - (1.0F - p) * (1.0F - p);
             pose.translate(Mth.sin(ageInTicks * 1.7F) * 0.04F * (1.0F - p), -(1.0F - rise) * 3.8F, 0.0F);
+        } else if (e.getAnim() == AbominationEntity.ANIM_JUMPSCARE && age < 26.0F) {
+            int step = (int) (ageInTicks * 2.0F);
+            pose.translate(((step * 7919) % 13 - 6) * 0.012F, ((step * 104729) % 11 - 5) * 0.01F, ((step * 31) % 9 - 4) * 0.012F);
         } else if (e.getAnim() == AbominationEntity.ANIM_ROAR) {
             pose.translate(Mth.sin(ageInTicks * 3.3F) * 0.025F, 0.0F, Mth.cos(ageInTicks * 2.9F) * 0.025F);
         }

@@ -3,6 +3,7 @@ package com.abomination.horror.client;
 import com.abomination.horror.AbominationMod;
 import com.abomination.horror.client.fx.ClientFinisher;
 import com.abomination.horror.client.fx.ClientFx;
+import com.abomination.horror.client.fx.ClientJumpscare;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,6 +20,7 @@ public final class ClientEvents {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             ClientFinisher.tick();
+            ClientJumpscare.tick();
             ClientFx.tick();
         }
     }
@@ -48,21 +50,25 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onCameraAngles(ViewportEvent.ComputeCameraAngles event) {
         ClientFx.onCameraAngles(event);
+        ClientJumpscare.onCameraAngles(event);
     }
 
     @SubscribeEvent
     public static void onFov(ViewportEvent.ComputeFov event) {
         ClientFinisher.onFov(event);
+        ClientJumpscare.onFov(event);
     }
 
     @SubscribeEvent
     public static void onInput(MovementInputUpdateEvent event) {
         ClientFinisher.onInput(event);
+        ClientJumpscare.onInput(event);
     }
 
     @SubscribeEvent
     public static void onOverlayPre(RenderGuiOverlayEvent.Pre event) {
         ClientFinisher.onOverlayPre(event);
+        if (!event.isCanceled()) ClientJumpscare.onOverlayPre(event);
     }
 
     @SubscribeEvent
@@ -73,11 +79,13 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientFinisher.reset();
+        ClientJumpscare.stop();
         ClientFx.reset();
     }
 
     @SubscribeEvent
     public static void onRespawn(ClientPlayerNetworkEvent.Clone event) {
         ClientFinisher.onLocalRespawn();
+        ClientJumpscare.stop();
     }
 }

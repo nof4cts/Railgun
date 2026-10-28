@@ -31,7 +31,7 @@ public class LockedGoal extends Goal {
         if (mob.getAnim() == AbominationEntity.ANIM_DETECT && mob.getTarget() != null) {
             // the body stays frozen; only the head slowly turns (handled by the model), but we track the target
             mob.getLookControl().setLookAt(mob.getTarget(), 4.0F, 4.0F);
-        } else if (mob.getAnim() == AbominationEntity.ANIM_ROAR && mob.getTarget() != null) {
+        } else if ((mob.getAnim() == AbominationEntity.ANIM_ROAR || mob.getAnim() == AbominationEntity.ANIM_JUMPSCARE) && mob.getTarget() != null) {
             mob.getLookControl().setLookAt(mob.getTarget(), 30.0F, 30.0F);
         }
     }

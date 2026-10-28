@@ -184,5 +184,33 @@
         "stream": true
       }
     ]
+  },
+  "jumpscare_scream": {
+    "subtitle": "subtitles.abomination.jumpscare",
+    "sounds": [
+      "abomination:jumpscare_scream_1",
+      "abomination:jumpscare_scream_2",
+      "abomination:jumpscare_scream_3",
+      "abomination:jumpscare_scream_4"
+    ]
+  },
+  "jumpscare_scream_long": {
+    "subtitle": "subtitles.abomination.jumpscare",
+    "sounds": [
+      {
+        "name": "abomination:jumpscare_scream_long",
+        "stream": true
+      }
+    ]
+  },
+  "pain": {
+    "subtitle": "subtitles.abomination.pain",
+    "sounds": [
+      "abomination:pain_1",
+      "abomination:pain_2",
+      "abomination:pain_3",
+      "abomination:pain_4",
+      "abomination:pain_5"
+    ]
   }
 }

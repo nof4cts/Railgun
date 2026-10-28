@@ -27,7 +27,7 @@ public final class ClientFx {
     private static final ResourceLocation NOISE = AbominationMod.id("textures/misc/noise.png");
     private static final RandomSource RANDOM = RandomSource.create();
 
-    private static float shake, aberration, flash, ambientAberration, dread;
+    private static float shake, aberration, flash, ambientAberration, dread, chaseShake;
     private static int flicker;
     private static boolean flickerOn;
     private static int bassTimer, heartTimer, musicRetry;
@@ -70,6 +70,7 @@ public final class ClientFx {
         }
         dread = 0.0F;
         ambientAberration = 0.0F;
+        chaseShake = 0.0F;
         if (nearest != null) {
             int phase = nearest.getPhase();
             if (phase >= AbominationEntity.PHASE_STALK || nearest.isAwakened()) {
@@ -86,6 +87,13 @@ public final class ClientFx {
             if (phase == AbominationEntity.PHASE_NIGHTMARE && best < 24.0D) {
                 ambientAberration = 0.12F + 0.08F * Mth.sin(nearest.tickCount * 0.1F);
                 if (RANDOM.nextInt(40) == 0) flicker = Math.max(flicker, 6 + RANDOM.nextInt(10));
+            }
+            if (phase >= AbominationEntity.PHASE_HUNT && best < 24.0D && !ClientJumpscare.active()) {
+                // being chased: the screen never stops shaking and tearing
+                float k = (float) (1.0D - best / 24.0D);
+                ambientAberration = Math.max(ambientAberration, 0.18F + 0.25F * k + 0.08F * Mth.sin(nearest.tickCount * 0.3F));
+                chaseShake = 0.12F + 0.35F * k;
+                if (RANDOM.nextInt(60) == 0) flicker = Math.max(flicker, 3 + RANDOM.nextInt(6));
             }
             dread = (float) Mth.clamp(1.0D - best / 24.0D, 0.0D, 1.0D) * (phase >= AbominationEntity.PHASE_HUNT ? 0.5F : 0.3F);
         }
@@ -107,7 +115,7 @@ public final class ClientFx {
 
     private static void tickMusic(Minecraft mc, AbominationEntity nearest, double d) {
         SoundEvent want = null;
-        if (AbomConfig.CLIENT.dynamicMusic.get() && nearest != null && !ClientFinisher.localActive()) {
+        if (AbomConfig.CLIENT.dynamicMusic.get() && nearest != null && !ClientFinisher.localActive() && !ClientJumpscare.active()) {
             int phase = nearest.getPhase();
             if (phase == AbominationEntity.PHASE_NIGHTMARE || (nearest.isAwakened() && nearest.getBossStage() >= 2)) want = ModSounds.MUSIC_NIGHTMARE.get();
             else if (phase == AbominationEntity.PHASE_HUNT || nearest.isAwakened()) want = ModSounds.MUSIC_HUNT.get();
@@ -137,7 +145,7 @@ public final class ClientFx {
 
     public static void onCameraAngles(ViewportEvent.ComputeCameraAngles e) {
         if (!AbomConfig.CLIENT.cameraShake.get()) return;
-        float s = Math.max(shake, ClientFinisher.shakeAmount((float) e.getPartialTick()));
+        float s = Math.max(Math.max(shake, chaseShake), ClientFinisher.shakeAmount((float) e.getPartialTick()));
         if (s < 0.001F) return;
         e.setYaw(e.getYaw() + (RANDOM.nextFloat() - 0.5F) * s * 3.0F);
         e.setPitch(e.getPitch() + (RANDOM.nextFloat() - 0.5F) * s * 3.0F);
@@ -150,6 +158,7 @@ public final class ClientFx {
         if (mc.player == null) return;
         boolean fx = AbomConfig.CLIENT.screenEffects.get();
         if (ClientFinisher.renderOverlay(g, w, h, partial, fx)) return;
+        if (ClientJumpscare.renderOverlay(g, w, h, partial, fx)) return;
         if (!fx) return;
         if (dread > 0.01F) vignette(g, w, h, 0.05F, 0.0F, 0.0F, dread, 0);
         float ab = Math.max(aberration, ambientAberration);

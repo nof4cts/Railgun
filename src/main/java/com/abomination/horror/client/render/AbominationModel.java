@@ -361,6 +361,7 @@ public class AbominationModel extends HierarchicalModel<AbominationEntity> {
             case AbominationEntity.ANIM_ROAR -> roar(age, t);
             case AbominationEntity.ANIM_EMERGE -> emerge(age, t);
             case AbominationEntity.ANIM_FINISHER -> finisher(age, t);
+            case AbominationEntity.ANIM_JUMPSCARE -> jumpscare(age, t);
             default -> { }
         }
 
@@ -631,6 +632,45 @@ public class AbominationModel extends HierarchicalModel<AbominationEntity> {
         this.head.zRot += 0.65F * admire;
         this.lshoulder.xRot += Mth.sin(t * 0.15F) * 0.1F * admire;
         this.jaw.xRot += (0.3F + Math.abs(Mth.sin(t * 0.21F)) * 0.4F) * admire;
+    }
+
+    /** Rigid, twitching, servo-jerk lunge at the camera with the jaw unhinged - an animatronic jumpscare. */
+    private void jumpscare(float a, float t) {
+        float snap = a < 2.0F ? 1.0F : 0.0F;
+        float lunge = a < 3.0F ? a / 3.0F : (a < 26.0F ? 1.0F : 1.0F - smooth((a - 26.0F) / 10.0F));
+        int step = (int) (t * 2.0F);                       // quantized jitter reads as broken servos
+        float j1 = hash(step * 13 + 1), j2 = hash(step * 7 + 5), j3 = hash(step * 3 + 9);
+        float jit = (a < 26.0F ? 1.0F : 0.3F) * lunge;
+        this.root.z -= 7.0F * lunge;                       // body thrown at the lens
+        this.root.y += 2.0F * lunge;
+        this.chest.xRot += 0.35F * lunge + j1 * 0.12F * jit;
+        this.neck.xRot -= 0.95F * lunge;
+        this.neck.yScale *= 1.0F + 0.35F * lunge;
+        this.head.xRot += 0.15F * lunge + j2 * 0.25F * jit;
+        this.head.zRot += j3 * 0.45F * jit + snap * 0.9F;
+        this.head.yRot += j1 * 0.3F * jit;
+        this.jaw.xRot += 1.45F * lunge + Math.abs(j2) * 0.25F * jit;
+        this.jaw_inner.z -= 3.5F * lunge;
+        // arms flung wide then clawing at the screen
+        float claw = Math.max(0.0F, Mth.sin(a * 0.45F));
+        this.rshoulder.xRot -= (1.6F + 0.5F * claw) * lunge;
+        this.lshoulder.xRot -= (1.8F + 0.5F * (1 - claw)) * lunge;
+        this.rshoulder.zRot += (0.8F + j3 * 0.25F) * lunge;
+        this.lshoulder.zRot -= (0.8F + j1 * 0.25F) * lunge;
+        for (ModelPart f : this.lFingers) f.xRot -= 0.9F * lunge + j2 * 0.3F * jit;
+        for (ModelPart f : this.rFingers) f.xRot -= 0.9F * lunge + j3 * 0.3F * jit;
+        for (int i = 0; i < this.eyes.length; i++) {
+            this.eyes[i].yRot += hash(step * 5 + i * 11) * 1.4F * jit;
+            float s = 1.0F + 0.5F * lunge;
+            this.eyes[i].xScale *= s;
+            this.eyes[i].yScale *= s;
+            this.eyes[i].zScale *= s;
+        }
+        for (int i = 0; i < this.spine.length; i++) this.spine[i].xRot -= 0.25F * lunge + hash(step + i * 3) * 0.2F * jit;
+        for (int i = 0; i < 4; i++) {
+            this.tendrilA[i].xRot -= 0.9F * lunge;
+            this.tendrilB[i].xRot -= 0.9F * lunge;
+        }
     }
 
     private void hurt(float h, float t) {

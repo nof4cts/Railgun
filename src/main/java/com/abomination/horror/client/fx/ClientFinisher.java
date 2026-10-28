@@ -368,11 +368,12 @@ public final class ClientFinisher {
     // =============================================================================== sound timeline
     private static void events(Minecraft mc, Active a, int k) {
         switch (k) {
-            case 0 -> { play(mc, a, ModSounds.GRAB.get(), 1.6F, 0.9F); play(mc, a, ModSounds.GORE.get(), 2.2F, 0.8F); play(mc, a, ModSounds.AMBIENT.get(), 2.0F, 0.7F); }
-            case 6 -> play(mc, a, ModSounds.AMBIENT.get(), 2.2F, 0.6F);
-            case 10 -> play(mc, a, ModSounds.WHISPER.get(), 1.4F, 0.6F);
-            case 14 -> play(mc, a, ModSounds.HEARTBEAT.get(), 1.5F, 1.0F);
-            case 18 -> play(mc, a, ModSounds.HEARTBEAT.get(), 1.7F, 1.25F);
+            case 0 -> { play(mc, a, ModSounds.GORE.get(), 1.0F, 0.8F); play(mc, a, ModSounds.PAIN.get(), 1.0F, 1.0F); play(mc, a, ModSounds.GRAB.get(), 0.5F, 0.9F); }
+            case 6 -> play(mc, a, ModSounds.AMBIENT.get(), 0.6F, 0.6F);
+            case 8 -> play(mc, a, ModSounds.PAIN.get(), 1.0F, 1.05F);
+            case 10 -> play(mc, a, ModSounds.WHISPER.get(), 0.5F, 0.6F);
+            case 14 -> { play(mc, a, ModSounds.HEARTBEAT.get(), 0.8F, 1.0F); play(mc, a, ModSounds.PAIN.get(), 1.0F, 0.95F); }
+            case 18 -> play(mc, a, ModSounds.HEARTBEAT.get(), 0.9F, 1.25F);
             case 22 -> {
                 if (a.local) { // sudden silence
                     mc.getSoundManager().stop(null, SoundSource.MUSIC);
@@ -381,22 +382,25 @@ public final class ClientFinisher {
                 }
             }
             case IMPACT_TICK -> {
-                play(mc, a, ModSounds.IMPACT.get(), 2.2F, 0.8F);
-                play(mc, a, ModSounds.GORE.get(), 3.0F, 0.7F);
-                play(mc, a, ModSounds.GORE.get(), 3.0F, 1.0F);
-                play(mc, a, ModSounds.CRACK.get(), 2.6F, 0.8F);
+                play(mc, a, ModSounds.GORE.get(), 1.0F, 0.7F);
+                play(mc, a, ModSounds.GORE.get(), 1.0F, 1.0F);
+                play(mc, a, ModSounds.CRACK.get(), 1.0F, 0.8F);
+                play(mc, a, ModSounds.PAIN.get(), 1.0F, 1.1F);
+                play(mc, a, ModSounds.IMPACT.get(), 0.35F, 0.8F);
             }
             case RIP_START -> {
-                play(mc, a, ModSounds.RIP.get(), 3.2F, 0.9F);
-                play(mc, a, ModSounds.RIP.get(), 3.2F, 0.7F);
-                play(mc, a, ModSounds.GUSH.get(), 3.0F, 0.9F);
+                play(mc, a, ModSounds.RIP.get(), 1.0F, 0.9F);
+                play(mc, a, ModSounds.RIP.get(), 1.0F, 0.7F);
+                play(mc, a, ModSounds.GUSH.get(), 1.0F, 0.9F);
+                play(mc, a, ModSounds.PAIN.get(), 1.0F, 1.2F);
             }
             case 56 -> {
-                play(mc, a, ModSounds.ROAR.get(), 2.5F, 0.7F);
+                play(mc, a, ModSounds.ROAR.get(), 0.4F, 0.7F);
+                play(mc, a, ModSounds.GORE.get(), 1.0F, 0.6F);
                 if (a.local) mc.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.FINISHER_STING.get(), 1.0F, 1.0F));
             }
-            case 64, 76 -> play(mc, a, ModSounds.GUSH.get(), 1.2F, 0.7F);
-            case 70 -> play(mc, a, ModSounds.GORE.get(), 1.2F, 0.6F);
+            case 64, 76 -> play(mc, a, ModSounds.GUSH.get(), 1.0F, 0.7F);
+            case 70 -> play(mc, a, ModSounds.GORE.get(), 1.0F, 0.6F);
             case BLACKOUT_TICK -> {
                 if (a.local) {
                     mc.getSoundManager().stop(null, SoundSource.HOSTILE);
@@ -404,20 +408,30 @@ public final class ClientFinisher {
                     mc.getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.SUB_BASS.get(), 0.7F, 1.0F));
                 }
             }
-            case CREATURE_RELEASE_TICK - 1 -> play(mc, a, ModSounds.GORE.get(), 1.5F, 0.5F);
+            case CREATURE_RELEASE_TICK - 1 -> play(mc, a, ModSounds.GORE.get(), 1.0F, 0.5F);
             default -> { }
         }
         if (k > RIP_START && k < RIP_END && k % 2 == 0) {
             // vertebrae popping free one by one, pitch climbing
-            play(mc, a, ModSounds.CRACK.get(), 2.4F, 0.9F + (k - RIP_START) * 0.015F);
+            play(mc, a, ModSounds.CRACK.get(), 1.0F, 0.9F + (k - RIP_START) * 0.015F);
         }
-        if (k == 34 || k == 38 || k == 42 || k == 46 || k == 50 || k == 54) play(mc, a, ModSounds.GORE.get(), 2.8F, 0.65F + (k - 34) * 0.015F);
-        if (k == 40 || k == 50 || k == 60) play(mc, a, ModSounds.GUSH.get(), 2.6F, 0.8F);
+        if (k == 34 || k == 38 || k == 42 || k == 46 || k == 50 || k == 54) play(mc, a, ModSounds.GORE.get(), 1.0F, 0.65F + (k - 34) * 0.015F);
+        if (k == 40 || k == 50 || k == 60) play(mc, a, ModSounds.GUSH.get(), 1.0F, 0.8F);
+        if (k == 38 || k == 48) play(mc, a, ModSounds.PAIN.get(), 1.0F, 1.0F + (k - 38) * 0.03F);
     }
 
+    /**
+     * The victim hears every layer directly in their ears on the Master slider (Minecraft caps sound volume at 1.0, so
+     * positional playback let the louder synthesized layers bury the gore). Onlookers hear it from the body, carried
+     * further than a normal sound.
+     */
     private static void play(Minecraft mc, Active a, SoundEvent sound, float vol, float pitch) {
         if (mc.level == null) return;
-        mc.level.playLocalSound(a.neck.x, a.neck.y, a.neck.z, sound, SoundSource.HOSTILE, vol, pitch, false);
+        if (a.local) {
+            ClientJumpscare.ear(mc, sound, vol, pitch);
+        } else {
+            mc.level.playLocalSound(a.neck.x, a.neck.y, a.neck.z, sound, SoundSource.HOSTILE, Math.max(vol, 1.0F) * 2.0F, pitch, false);
+        }
     }
 
     // =============================================================================== world rendering
