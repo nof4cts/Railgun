@@ -15,12 +15,20 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-disabled: true
       - name: Build
         run: |
           chmod +x gradlew
           set +e
-          ./gradlew build --no-daemon 2>&1 | tee build.log
-          status=${PIPESTATUS[0]}
+          # ForgeGradle downloads occasionally fail on CI runners: retry up to 3 times
+          for attempt in 1 2 3; do
+            if [ "$attempt" -gt 1 ]; then extra="--refresh-dependencies"; sleep 20; else extra=""; fi
+            ./gradlew build --no-daemon $extra 2>&1 | tee build.log
+            status=${PIPESTATUS[0]}
+            [ "$status" -eq 0 ] && break
+            grep -q "error:" build.log && break   # real compile error: don't retry
+          done
           grep -E "error:|\.java:[0-9]+|FAILURE|What went wrong" -A2 build.log | head -60 | while IFS= read -r l; do echo "::error::$l"; done
           exit $status
       - name: Collect jar
