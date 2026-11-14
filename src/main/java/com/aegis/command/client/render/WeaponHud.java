@@ -32,7 +32,7 @@ public final class WeaponHud {
         Ui.textR(t.classification, x1 - 5, y0 + 5, Theme.a(Theme.MUTED, 1f), 0.5f);
 
         float bx0 = x0 + 5, bx1 = x1 - 30, by = y0 + 17;
-        int segs = Math.min(t.capacity, 24);
+        int segs = Math.max(1, Math.min(t.capacity, 24));
         float per = t.capacity / (float) segs;
         float sw = (bx1 - bx0) / segs;
         for (int i = 0; i < segs; i++) {

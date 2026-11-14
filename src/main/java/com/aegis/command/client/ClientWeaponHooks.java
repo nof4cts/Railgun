@@ -1,6 +1,9 @@
 package com.aegis.command.client;
 
+import com.aegis.command.client.fx.FxWorld;
+import com.aegis.command.client.fx.ImpactFrames;
 import com.aegis.command.client.fx.ScreenFx;
+import com.aegis.command.client.fx.WeaponFx;
 import com.aegis.command.client.render.WeaponAnimator;
 import com.aegis.command.item.AegisWeaponItem;
 import com.aegis.command.item.WeaponType;
@@ -35,21 +38,29 @@ public final class ClientWeaponHooks {
         float kick = type.recoil * strength;
         p.setXRot(p.getXRot() - kick * 1.6f);
         p.setYRot(p.getYRot() + (p.getRandom().nextFloat() - 0.5f) * kick * 0.8f);
-        ScreenFx.addTrauma(type == WeaponType.TITAN_X ? 0.3f * strength : type == WeaponType.PHANTOM_9 ? 0.07f : 0.025f);
-        if (type == WeaponType.TITAN_X) {
-            Vec3 back = p.getLookAngle().scale(-0.45 * strength);
-            p.push(back.x, Math.max(0, back.y) + 0.05, back.z);
-        }
+        ScreenFx.addTrauma(type.heavy ? 0.32f * strength : type == WeaponType.HELIX_4 ? 0.14f : type == WeaponType.PHANTOM_9 ? 0.07f : 0.025f);
         int c = AegisWeaponItem.energyColor(stack);
+        if (type.heavy) {
+            Vec3 back = p.getLookAngle().scale(-(type == WeaponType.TITAN_X ? 0.45 : 0.3) * strength);
+            p.push(back.x, Math.max(0, back.y) + 0.05, back.z);
+            // cannon blast: the shot itself gets an impact frame
+            ImpactFrames.trigger(0.55f * strength, c);
+            Vec3 mz = muzzle(shooter);
+            FxWorld.ring(mz.add(p.getLookAngle().scale(0.8)), 0.2f, 2.4f, 0.35f, c, false);
+            FxWorld.sparkBurst(mz, 26, 9f, 0.45f, c, 6f);
+        } else {
+            WeaponFx.casing(muzzle(shooter), p.getLookAngle(), c);
+            FxWorld.sparkBurst(muzzle(shooter).add(p.getLookAngle().scale(0.3)), type == WeaponType.HELIX_4 ? 16 : 4, 5f, 0.18f, c, 4f);
+        }
         Vector3f col = new Vector3f(((c >> 16) & 255) / 255f, ((c >> 8) & 255) / 255f, (c & 255) / 255f);
         Vec3 m = muzzle(shooter);
         var level = shooter.level();
-        for (int i = 0; i < (type == WeaponType.TITAN_X ? 14 : 4); i++) {
+        for (int i = 0; i < (type.heavy ? 14 : 4); i++) {
             level.addParticle(new DustParticleOptions(col, 0.6f), m.x, m.y, m.z,
                     (level.random.nextDouble() - 0.5) * 0.1, (level.random.nextDouble() - 0.5) * 0.1, (level.random.nextDouble() - 0.5) * 0.1);
         }
-        if (type == WeaponType.TITAN_X) {
-            for (int i = 0; i < 8; i++) level.addParticle(ParticleTypes.LARGE_SMOKE, m.x, m.y, m.z, 0, 0.02, 0);
+        if (type.heavy || type == WeaponType.HELIX_4) {
+            for (int i = 0; i < (type.heavy ? 8 : 4); i++) level.addParticle(ParticleTypes.LARGE_SMOKE, m.x, m.y, m.z, 0, 0.02, 0);
         }
     }
 

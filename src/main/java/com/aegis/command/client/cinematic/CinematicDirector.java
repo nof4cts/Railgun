@@ -3,9 +3,11 @@ package com.aegis.command.client.cinematic;
 import com.aegis.command.AegisConfig;
 import com.aegis.command.client.ClientData;
 import com.aegis.command.client.Sfx;
+import com.aegis.command.client.fx.ImpactFrames;
 import com.aegis.command.client.fx.ScreenFx;
 import com.aegis.command.client.screen.LaptopScreen;
 import com.aegis.command.client.ui.Ease;
+import com.aegis.command.entity.AerialBomb;
 import com.aegis.command.entity.CinematicCamera;
 import com.aegis.command.mission.AircraftType;
 import com.aegis.command.registry.ModEntities;
@@ -207,6 +209,7 @@ public final class CinematicDirector {
         cineClock = 0;
         impactClock = -1;
         shot = -1;
+        riderId = -1;
         awaitingDebrief = true;
         mc.setScreen(new CinematicScreen());
     }
@@ -242,6 +245,7 @@ public final class CinematicDirector {
         if (impacts == 1) {
             firstImpactMs = System.currentTimeMillis();
             impactClock = cineClock;
+            if (phase == Phase.CINEMATIC) ImpactFrames.trigger(1.15f, 0xFFC27A);
             ClientData.status = "ACTIVE";
             ClientData.feed("IMPACT CONFIRMED // BDA IN PROGRESS", ClientData.Level.ALERT);
         }
@@ -343,22 +347,48 @@ public final class CinematicDirector {
         Vec3 pos, look;
         float roll = 0;
         int s;
-        if (t < flyby) {
-            // B1: low flyby — fixed camera beside the flight path, aircraft roars past
+        double uplink = Math.min(30, flyby * 0.7);
+        double impactT = fd + fall;
+        AerialBomb rider = (t >= fd && t < impactT + 2 && impactClock < 0) ? ordnanceToFollow(target) : null;
+        if (t < uplink) {
+            // A2: orbital uplink - straight down from high altitude, rotating and pushing in as the lock resolves
+            s = 4;
+            float p = Ease.inOutCubic((float) Mth.clamp(t / uplink, 0, 1));
+            double alt = 115 - 55 * p;
+            pos = target.add(0, alt, 0);
+            look = target.add(fwd.scale(0.05));
+            roll = 30 * p - 15;
+        } else if (t < flyby) {
+            // B1: low flyby - fixed camera beside the flight path, aircraft roars past
             s = 0;
             Vec3 pass = planPos(flyby * 0.95);
             pos = pass.add(side.scale(10 + 4 * ac.scale)).add(0, -5, 0);
             look = jet;
             roll = -4;
-        } else if (t < fd - 6) {
-            // B2: chase camera
+        } else if (t < fd - 4) {
+            // B2: chase camera, tightening as the release point approaches
             s = 1;
             double sway = Math.sin(t * 0.05) * 4;
-            pos = jet.subtract(fwd.scale(16 + 3 * ac.scale)).add(0, 3 + ac.scale, 0).add(side.scale(sway));
-            look = jet.add(fwd.scale(14)).add(0, -2, 0);
+            double tight = Mth.clamp((t - (fd - 30)) / 26.0, 0, 1);
+            pos = jet.subtract(fwd.scale(16 + 3 * ac.scale - 6 * tight)).add(0, 3 + ac.scale - 2 * tight, 0).add(side.scale(sway * (1 - tight)));
+            look = jet.add(fwd.scale(14)).add(0, -2 - 4 * tight, 0);
             roll = (float) (Math.sin(t * 0.06) * 4);
+        } else if (rider != null) {
+            // C1: ordnance cam - ride the first bomb down onto the target
+            s = 5;
+            Vec3 bp = rider.getPosition(partial);
+            Vec3 v = rider.getDeltaMovement();
+            Vec3 back = v.lengthSqr() > 1e-4 ? v.normalize() : new Vec3(0, -1, 0);
+            pos = bp.subtract(back.scale(4.5)).add(side.scale(1.2)).add(0, 1.4, 0);
+            look = bp.add(back.scale(6));
+            roll = (float) (Math.sin(t * 0.4) * 3);
+        } else if (t < fd + 2 && impactClock < 0) {
+            // C0: release - under the aircraft, looking up at the bay as the weapons fall away
+            s = 1;
+            pos = jet.subtract(fwd.scale(10)).add(side.scale(6)).add(0, -7, 0);
+            look = jet.add(0, -3, 0);
         } else if (t < ld + fall + 40) {
-            // C: wide establishing shot on the ground, then a slow push toward the impact
+            // C2: wide ground shot for the impacts, then a slow push toward the blast
             s = 2;
             Vec3 anchor = target.add(side.scale(32)).subtract(fwd.scale(14));
             double gy = groundY(anchor.x, anchor.z);
@@ -370,14 +400,16 @@ public final class CinematicDirector {
             }
             pos = anchor;
             double tl = Ease.inOutCubic((float) Mth.clamp((t - (fd + 4)) / 16.0, 0, 1));
-            look = jet.lerp(target.add(0, 3, 0), tl);
+            look = impactClock >= 0 ? target.add(0, 4, 0) : jet.lerp(target.add(0, 3, 0), tl);
         } else {
-            // D: overhead orbit of the smoke column
+            // D: aftermath - orbit the smoke column while craning up and away
             s = 3;
+            double since = t - (ld + fall + 40);
             double base = Math.atan2(side.z, side.x);
-            double a = base + (t - (ld + fall + 40)) * 0.012;
-            pos = target.add(Math.cos(a) * 30, 20, Math.sin(a) * 30);
-            look = target.add(0, 5, 0);
+            double a = base + since * 0.012;
+            double crane = Ease.inOutCubic((float) Mth.clamp(since / 70.0, 0, 1));
+            pos = target.add(Math.cos(a) * (30 + 14 * crane), 18 + 22 * crane, Math.sin(a) * (30 + 14 * crane));
+            look = target.add(0, 5 + 3 * crane, 0);
         }
         shot = s;
         Vec3 d = look.subtract(pos);
@@ -386,6 +418,38 @@ public final class CinematicDirector {
         camPitch = (float) -(Mth.atan2(d.y, h) * Mth.RAD_TO_DEG);
         camRoll = roll;
         cam.place(pos.x, pos.y, pos.z, camYaw, camPitch);
+    }
+
+    /** First aerial bomb of this strike still in the air near the target (client entity). */
+    private static AerialBomb ordnanceToFollow(Vec3 target) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) return null;
+        AerialBomb best = null;
+        if (riderId >= 0 && level.getEntity(riderId) instanceof AerialBomb b && b.isAlive()) return b;
+        for (var e : level.entitiesForRendering()) {
+            if (e instanceof AerialBomb b && b.isAlive() && b.position().distanceToSqr(target) < 160 * 160) {
+                if (best == null || b.getId() < best.getId()) best = b;
+            }
+        }
+        riderId = best == null ? -1 : best.getId();
+        return best;
+    }
+
+    private static int riderId = -1;
+
+    /** 0..1 progress of the orbital lock-on (for the HUD). */
+    public static float uplinkProgress(float partial) {
+        if (plan == null) return 0;
+        double fd = plan.getInt("FirstDrop");
+        double uplink = Math.min(30, Math.max(12, Math.min(40, fd * 0.45)) * 0.7);
+        return (float) Mth.clamp(flightT(partial) / uplink, 0, 1);
+    }
+
+    /** Height of the followed bomb above the target (for the ordnance-cam HUD). */
+    public static double riderAltitude() {
+        var level = Minecraft.getInstance().level;
+        if (level == null || plan == null || riderId < 0) return -1;
+        return level.getEntity(riderId) instanceof AerialBomb b ? b.getY() - plan.getDouble("TY") : -1;
     }
 
     public static boolean active() { return phase == Phase.CINEMATIC && cam != null; }
@@ -397,6 +461,8 @@ public final class CinematicDirector {
         if (!active()) return 1f;
         float punch = firstImpactMs > 0 ? Math.max(0, 1 - (System.currentTimeMillis() - firstImpactMs) / 900f) : 0;
         float base = switch (shot) {
+            case 4 -> 0.55f;
+            case 5 -> 1.15f;
             case 0 -> 0.85f;
             case 1 -> 1.05f;
             case 3 -> 0.95f;

@@ -206,6 +206,7 @@ public class LaptopScreen extends net.minecraft.client.gui.screens.Screen {
         pose.popPose();
         Ui.alpha = 1;
         Ui.g.flush();
+        com.aegis.command.client.fx.ImpactFrames.render(graphics, width, height);
 
         // hover sound on entering a new control
         String hov = "";

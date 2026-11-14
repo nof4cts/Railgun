@@ -1,7 +1,7 @@
 {
   "parent": "builtin/entity",
   "gui_light": "front",
-  "textures": { "particle": "aegiscommand:item/weapon_metal" },
+  "textures": { "particle": "aegiscommand:item/weapon_panel" },
   "display": {
     "gui": { "rotation": [ 0, -90, 0 ], "translation": [ -1.8, 0, 0 ], "scale": [ 0.58, 0.58, 0.58 ] },
     "fixed": { "rotation": [ 0, -90, 0 ], "translation": [ -1.8, 0, 0 ], "scale": [ 0.58, 0.58, 0.58 ] },

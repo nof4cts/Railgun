@@ -22,6 +22,8 @@ public final class AegisConfig {
 
     public static final class Common {
         public final ForgeConfigSpec.BooleanValue destroyBlocks;
+        public final ForgeConfigSpec.BooleanValue craters;
+        public final ForgeConfigSpec.DoubleValue craterScale;
         public final ForgeConfigSpec.BooleanValue weaponBlockDamage;
         public final ForgeConfigSpec.IntValue cooldownSeconds;
         public final ForgeConfigSpec.IntValue maxRange;
@@ -29,8 +31,13 @@ public final class AegisConfig {
 
         Common(ForgeConfigSpec.Builder b) {
             b.push("airstrike");
-            destroyBlocks = b.comment("If true, airstrike ordnance breaks blocks. Off by default: strikes are visual + entity damage only.")
+            destroyBlocks = b.comment("If true, the vanilla explosion of each bomb also breaks blocks (with item drops). Usually leave this off and use craters.")
                     .define("destroyBlocks", false);
+            craters = b.comment("Airstrike destruction: carve craters, throw rubble, scorch the ground and collapse unsupported structures.",
+                            "Chests and other block entities are never destroyed.")
+                    .define("craters", true);
+            craterScale = b.comment("Crater size multiplier.")
+                    .defineInRange("craterScale", 1.0, 0.3, 2.5);
             cooldownSeconds = b.comment("Cooldown between strikes per player, in seconds.")
                     .defineInRange("cooldownSeconds", 20, 0, 3600);
             maxRange = b.comment("Maximum target distance from the laptop, in blocks.")

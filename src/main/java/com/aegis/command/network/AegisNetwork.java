@@ -8,7 +8,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class AegisNetwork {
-    private static final String PROTOCOL = "1";
+    private static final String PROTOCOL = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             AegisCommand.id("main"), () -> PROTOCOL, PROTOCOL::equals, PROTOCOL::equals);
 
@@ -37,6 +37,9 @@ public final class AegisNetwork {
         CHANNEL.messageBuilder(Packets.MissionComplete.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(Packets.MissionComplete::encode).decoder(Packets.MissionComplete::decode)
                 .consumerMainThread(Packets.MissionComplete::handle).add();
+        CHANNEL.messageBuilder(Packets.Tracer.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(Packets.Tracer::encode).decoder(Packets.Tracer::decode)
+                .consumerMainThread(Packets.Tracer::handle).add();
         // client -> server
         CHANNEL.messageBuilder(Packets.LaunchStrike.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(Packets.LaunchStrike::encode).decoder(Packets.LaunchStrike::decode)

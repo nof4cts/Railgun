@@ -77,6 +77,22 @@ public final class Packets {
         }
     }
 
+    /** A beam / tracer visual between two points. kind: 0 = PHANTOM beam, 1 = NOVA-RAIL lance. */
+    public record Tracer(double ax, double ay, double az, double bx, double by, double bz, int color, byte kind) {
+        public void encode(FriendlyByteBuf buf) {
+            buf.writeDouble(ax); buf.writeDouble(ay); buf.writeDouble(az);
+            buf.writeDouble(bx); buf.writeDouble(by); buf.writeDouble(bz);
+            buf.writeInt(color); buf.writeByte(kind);
+        }
+        public static Tracer decode(FriendlyByteBuf buf) {
+            return new Tracer(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(),
+                    buf.readInt(), buf.readByte());
+        }
+        public void handle(Supplier<NetworkEvent.Context> ctx) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.tracer(this));
+        }
+    }
+
     public record MissionComplete(CompoundTag record, CompoundTag data) {
         public void encode(FriendlyByteBuf buf) { buf.writeNbt(record); buf.writeNbt(data); }
         public static MissionComplete decode(FriendlyByteBuf buf) { return new MissionComplete(nbt(buf), nbt(buf)); }

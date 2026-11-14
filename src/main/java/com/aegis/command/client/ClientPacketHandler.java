@@ -38,6 +38,10 @@ public final class ClientPacketHandler {
         CinematicDirector.onLaunched(plan);
     }
 
+    public static void tracer(Packets.Tracer t) {
+        com.aegis.command.client.fx.WeaponFx.tracer(t.ax(), t.ay(), t.az(), t.bx(), t.by(), t.bz(), t.color(), t.kind());
+    }
+
     public static void impact(Packets.ImpactFx fx) {
         ImpactFx.spawn(fx.x(), fx.y(), fx.z(), fx.power(), fx.kind());
         if (fx.kind() == 0) CinematicDirector.onImpact(fx.x(), fx.y(), fx.z());

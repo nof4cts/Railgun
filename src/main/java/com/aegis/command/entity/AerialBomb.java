@@ -96,8 +96,10 @@ public class AerialBomb extends ThrowableProjectile {
         for (LivingEntity e : before) if (!e.isAlive()) kills++;
         if (ownerId != null) StrikeManager.onBombDetonated(ownerId, kills);
 
+        // the effect packet goes out first, so clients still see the intact blocks and can throw them as debris
         AegisNetwork.CHANNEL.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(x, y, z, 320, level().dimension())),
                 new Packets.ImpactFx(x, y, z, power, (byte) 0));
+        if (level() instanceof net.minecraft.server.level.ServerLevel sl) com.aegis.command.mission.Crater.carve(sl, position(), power);
     }
 
     @Override

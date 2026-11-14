@@ -57,6 +57,8 @@ public final class ImpactFx {
         if (ground.isAir()) ground = Blocks.DIRT.defaultBlockState();
         BlockParticleOption debris = new BlockParticleOption(ParticleTypes.BLOCK, ground);
 
+        if (big) cinematicLayers(level, x, y, z, power, scale, near);
+
         // ---- core fireball
         p(level, ParticleTypes.FLASH, x, y + 1, z, 0, 0, 0);
         p(level, ParticleTypes.EXPLOSION_EMITTER, x, y + 0.5, z, 1, 0, 0);
@@ -129,6 +131,39 @@ public final class ImpactFx {
             for (int i = 0; i < 8; i++) p(level, ParticleTypes.FLAME, ox, y + 0.8, oz, R.nextGaussian() * 0.08, 0.1, R.nextGaussian() * 0.08);
             Sfx.at(net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE, ox, y, oz, 1.4f, 1.5f);
         }
+    }
+
+    /** FxWorld layers for a bomb: star flash, shock dome, ground rings, spark storm and real block debris. */
+    private static void cinematicLayers(ClientLevel level, double x, double y, double z, float power, float scale, float near) {
+        Vec3 c = new Vec3(x, y, z);
+        FxWorld.flash(c.add(0, 2, 0), 16 * scale, 0.65f, 0xFFC27A, true);
+        FxWorld.flash(c.add(0, 1, 0), 7 * scale, 0.25f, 0xFFFFFF, false);
+        FxWorld.dome(c, 10 * scale, 0.75f, 0xFFB15A);
+        FxWorld.ring(c.add(0, 0.25, 0), 1, 24 * scale, 1.2f, 0xFFE2B8, true);
+        FxWorld.ring(c.add(0, 0.45, 0), 1, 14 * scale, 0.75f, 0xFF7A2A, true);
+        FxWorld.sparkBurst(c.add(0, 1, 0), 110, 24f * scale, 1.7f, 0xFFB050, 18f);
+        // debris: the actual blocks around the impact, thrown outward and up
+        int r = (int) Math.ceil(power * 1.15);
+        BlockPos centre = BlockPos.containing(x, y, z);
+        java.util.List<BlockPos> solid = new java.util.ArrayList<>();
+        for (BlockPos p : BlockPos.betweenClosed(centre.offset(-r, -r, -r), centre.offset(r, r, r))) {
+            if (p.distSqr(centre) > r * r) continue;
+            BlockState s = level.getBlockState(p);
+            if (!s.isAir() && s.getFluidState().isEmpty()) solid.add(p.immutable());
+        }
+        java.util.Collections.shuffle(solid, new java.util.Random(R.nextLong()));
+        int n = Math.min(solid.size(), 85);
+        for (int i = 0; i < n; i++) {
+            BlockPos p = solid.get(i);
+            Vec3 from = Vec3.atCenterOf(p);
+            Vec3 out = from.subtract(c);
+            if (out.lengthSqr() < 0.01) out = randomDir();
+            out = new Vec3(out.x, 0, out.z).normalize();
+            double sp = 5 + R.nextDouble() * 12 * scale;
+            Vec3 v = out.scale(sp * 0.55).add(0, 7 + R.nextDouble() * 15 * scale, 0);
+            FxWorld.debris(from.add(0, 0.6, 0), v, level.getBlockState(p), 0.3f + R.nextFloat() * 0.55f, 4f + R.nextFloat() * 4f);
+        }
+        if (near > 0.25f) ImpactFrames.trigger(near, 0xFFC070);
     }
 
     private static Vec3 randomDir() {

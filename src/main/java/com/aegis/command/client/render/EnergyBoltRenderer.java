@@ -26,6 +26,11 @@ public class EnergyBoltRenderer extends EntityRenderer<EnergyBolt> {
         float r = ((c >> 16) & 255) / 255f, g = ((c >> 8) & 255) / 255f, b = (c & 255) / 255f;
         float size = bolt.size() * (bolt.kind() == EnergyBolt.TITAN ? 0.9f : 0.5f);
         float pulse = 0.85f + 0.15f * (float) Math.sin((bolt.tickCount + partial) * 2.1f);
+        if (bolt.kind() == EnergyBolt.SINGULARITY) {
+            renderSingularity(bolt, partial, ps, buffers, r, g, b);
+            super.render(bolt, yaw, partial, ps, buffers, light);
+            return;
+        }
         VertexConsumer vc = buffers.getBuffer(RenderType.eyes(WeaponRenderer.FLARE));
 
         ps.pushPose();
@@ -51,6 +56,29 @@ public class EnergyBoltRenderer extends EntityRenderer<EnergyBolt> {
         }
         ps.popPose();
         super.render(bolt, yaw, partial, ps, buffers, light);
+    }
+
+    /** Black-hole look: violet accretion halo, spinning ring, white rim; it swells while collapsing. */
+    private void renderSingularity(EnergyBolt bolt, float partial, PoseStack ps, MultiBufferSource buffers, float r, float g, float b) {
+        float t = bolt.tickCount + partial;
+        int c = bolt.collapse();
+        float k = c < 0 ? 0 : Math.min(1, (c + partial) / EnergyBolt.COLLAPSE_TICKS);
+        float s = 0.55f + 1.6f * k * k;
+        ps.pushPose();
+        ps.translate(0, bolt.getBbHeight() / 2, 0);
+        ps.mulPose(entityRenderDispatcher.cameraOrientation());
+        VertexConsumer glow = buffers.getBuffer(RenderType.eyes(WeaponRenderer.GLOW_TEX));
+        quad(ps, glow, s * 2.6f, s * 2.6f, r * 0.8f, g * 0.8f, b * 0.8f);
+        VertexConsumer ring = buffers.getBuffer(RenderType.eyes(WeaponRenderer.RING));
+        ps.pushPose();
+        ps.mulPose(Axis.ZP.rotationDegrees(t * 25));
+        quad(ps, ring, s * 1.3f, s * 1.3f, 1f, 1f, 1f);
+        quad(ps, ring, s * 1.9f * (1 + 0.1f * (float) Math.sin(t)), s * 1.9f, r, g, b);
+        ps.popPose();
+        VertexConsumer star = buffers.getBuffer(RenderType.eyes(WeaponRenderer.STAR));
+        ps.mulPose(Axis.ZP.rotationDegrees(-t * 40));
+        quad(ps, star, s * 3.2f, s * 3.2f, r * 0.7f, g * 0.7f, b * 0.7f);
+        ps.popPose();
     }
 
     private static void quad(PoseStack ps, VertexConsumer vc, float w, float h, float r, float g, float b) {

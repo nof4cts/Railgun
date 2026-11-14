@@ -23,11 +23,21 @@ public final class ModItems {
     public static final RegistryObject<Item> SPECTRE_7 = ITEMS.register("spectre_7",
             () -> new AegisWeaponItem(WeaponType.SPECTRE_7, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
 
+    public static final RegistryObject<Item> NOVA_RAIL = ITEMS.register("nova_rail",
+            () -> new AegisWeaponItem(WeaponType.NOVA_RAIL, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> HELIX_4 = ITEMS.register("helix_4",
+            () -> new AegisWeaponItem(WeaponType.HELIX_4, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> OBLIVION = ITEMS.register("oblivion",
+            () -> new AegisWeaponItem(WeaponType.OBLIVION, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
     public static Item weapon(WeaponType type) {
         return switch (type) {
             case PHANTOM_9 -> PHANTOM_9.get();
             case TITAN_X -> TITAN_X.get();
             case SPECTRE_7 -> SPECTRE_7.get();
+            case NOVA_RAIL -> NOVA_RAIL.get();
+            case HELIX_4 -> HELIX_4.get();
+            case OBLIVION -> OBLIVION.get();
         };
     }
 

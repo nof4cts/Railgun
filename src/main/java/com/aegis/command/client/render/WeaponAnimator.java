@@ -25,6 +25,12 @@ public final class WeaponAnimator {
         public float glow = 1f;
         public float coreFlash;
         public float charge;
+        /** 0..1: how far the magazine / cell group is pulled out (reload). */
+        public float magOut;
+        /** Degrees for the SPIN group and the counter-rotating AUX group. */
+        public float spin, auxSpin;
+        /** 0..1 heavy-shot hold: the weapon freezes at peak recoil for a beat (impact frame). */
+        public float hitStop;
     }
 
     private static long now() { return System.currentTimeMillis(); }
@@ -63,10 +69,15 @@ public final class WeaponAnimator {
     public Pose pose(WeaponType type, boolean idle) {
         Pose p = new Pose();
         long now = now();
-        float t = now / 1000f;
+        float t = (now % 3_600_000L) / 1000f;
 
         p.glow = 0.78f + 0.22f * (float) Math.sin(t * 3.0);
         if (type == WeaponType.SPECTRE_7) p.glow += 0.12f * (float) Math.sin(t * 11.0) * (float) Math.sin(t * 1.7);
+        if (type == WeaponType.NOVA_RAIL) p.glow += 0.1f * (float) Math.sin(t * 23.0) * (float) Math.sin(t * 3.1);
+        float sinceFire = (now - fireMs) / 1000f;
+        float boost = sinceFire >= 0 && sinceFire < 1.2f ? (1.2f - sinceFire) : 0;
+        p.spin = (t * (type == WeaponType.OBLIVION ? 70f : 40f) + boost * boost * 260f) % 360f;
+        p.auxSpin = -(t * 25f + boost * 180f) % 360f;
         if (idle) {
             p.ty += (float) Math.sin(t * 1.6) * 0.006f;
             p.rz += (float) Math.sin(t * 1.1) * 0.6f;
@@ -86,13 +97,21 @@ public final class WeaponAnimator {
 
         // recoil spring
         float fe = now - fireMs;
-        if (fe >= 0 && fe < 450) {
-            float k = recoil * (float) Math.exp(-fe / 85f) * Mth.clamp(fe / 14f, 0, 1);
+        boolean heavy = type.heavy;
+        if (fe >= 0 && fe < (heavy ? 900 : 450)) {
+            // heavy weapons hold at peak recoil for ~70ms (hit-stop), then spring back slowly
+            float hold = heavy ? 70f : 0f;
+            float fe2 = heavy ? Math.max(0, fe - hold) : fe;
+            float decay = heavy ? 150f : 85f;
+            float k = recoil * (float) Math.exp(-fe2 / decay) * Mth.clamp(fe / 14f, 0, 1);
+            if (heavy && fe < hold) p.hitStop = 1f;
             p.tz += 0.2f * k;
             p.rx += 10f * k;
             p.ry += (float) Math.sin(seed) * 1.6f * k;
             p.rz += (float) Math.cos(seed) * 2.2f * k;
-            p.flash = fe < 70 ? 1 - fe / 70f : 0;
+            float fl = heavy ? 110f : 70f;
+            p.flash = fe < fl ? 1 - fe / fl : 0;
+            if (heavy) p.rx += 6f * k;
             p.glow += 0.7f * Math.max(0, 1 - fe / 160f);
         }
 
@@ -110,6 +129,10 @@ public final class WeaponAnimator {
             float g = rp < 0.3f ? 1 - rp / 0.3f * 0.9f : (rp < 0.75f ? 0.1f : 0.1f + (rp - 0.75f) / 0.25f * 0.9f);
             p.glow *= g;
             p.coreFlash = Math.max(p.coreFlash, Math.max(0, 1 - Math.abs(rp - 0.78f) / 0.06f));
+            // cell out at 25-45%, back in at 55-70%
+            float out = Ease.inOutCubic(Mth.clamp((rp - 0.22f) / 0.2f, 0, 1));
+            float in = Ease.outBack(Mth.clamp((rp - 0.55f) / 0.16f, 0, 1));
+            p.magOut = Mth.clamp(out * (1 - in), 0, 1.1f);
         }
 
         // inspect: rotate to show the flank, roll, return

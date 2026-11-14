@@ -19,6 +19,9 @@ public final class ModTabs {
                 out.accept(ModItems.PHANTOM_9.get());
                 out.accept(ModItems.SPECTRE_7.get());
                 out.accept(ModItems.TITAN_X.get());
+                out.accept(ModItems.HELIX_4.get());
+                out.accept(ModItems.NOVA_RAIL.get());
+                out.accept(ModItems.OBLIVION.get());
             })
             .build());
 

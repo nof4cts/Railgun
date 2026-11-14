@@ -42,6 +42,9 @@ public class ArsenalPanel extends Panel {
     private WeaponType sel = WeaponType.PHANTOM_9;
     private long gridMs, inspectMs;
     private int revealed;
+    /** Armory page: 0 = SERIES I (first three), 1 = SERIES II (next three). */
+    private int page;
+    private static final String[] PAGE_NAMES = {"SERIES I // STANDARD ISSUE", "SERIES II // HEAVY ORDNANCE"};
 
     // inspection camera
     private float yaw = -60, pitch = 14, zoom = 1, panX, panY, panZ;
@@ -82,7 +85,10 @@ public class ArsenalPanel extends Panel {
         return switch (t) {
             case PHANTOM_9 -> 4f;
             case TITAN_X -> 3f;
-            case SPECTRE_7 -> 3.25f;
+            case SPECTRE_7 -> 2.5f;
+            case NOVA_RAIL -> 3.0f;
+            case HELIX_4 -> 3.6f;
+            case OBLIVION -> 3.7f;
         };
     }
 
@@ -90,7 +96,10 @@ public class ArsenalPanel extends Panel {
         return switch (t) {
             case PHANTOM_9 -> new float[]{8, 5.5f, 11};
             case TITAN_X -> new float[]{8, 4.5f, 9};
-            case SPECTRE_7 -> new float[]{8, 5.5f, 7};
+            case SPECTRE_7 -> new float[]{8, 5.0f, 7};
+            case NOVA_RAIL -> new float[]{8, 5.5f, 10};
+            case HELIX_4 -> new float[]{8, 5.0f, 9.5f};
+            case OBLIVION -> new float[]{8, 4.5f, 11};
         };
     }
 
@@ -159,10 +168,23 @@ public class ArsenalPanel extends Panel {
         float t = (now - gridMs) / 1000f;
         float scan = Math.min(1, t / 0.7f);
         Ui.text("ARMORY", 10, 39, Theme.a(Theme.TECH, 1f), 0.6f);
-        Ui.text("//  " + (scan < 1 ? "SCANNING SIGNATURES..." : "3 SIGNATURES RESOLVED"), 10 + Ui.width("ARMORY") * 0.6f + 4, 39, Theme.a(Theme.MUTED, 1f), 0.55f);
+        Ui.text("//  " + (scan < 1 ? "SCANNING SIGNATURES..." : WeaponType.values().length + " SIGNATURES RESOLVED  //  " + PAGE_NAMES[page]),
+                10 + Ui.width("ARMORY") * 0.6f + 4, 39, Theme.a(Theme.MUTED, 1f), 0.55f);
+        // page selector
+        for (int pg = 0; pg < 2; pg++) {
+            final int target = pg;
+            float bx0 = 440 + pg * 38, bx1 = bx0 + 34;
+            s.button("page" + pg, bx0, 35, bx1, 45, pg == 0 ? "I" : "II", page == pg ? Theme.TECH : Theme.MUTED, true, page == pg, () -> {
+                if (page == target) return;
+                page = target;
+                gridMs = System.currentTimeMillis();
+                revealed = 0;
+                Sfx.scan();
+            });
+        }
 
         for (int i = 0; i < 3; i++) {
-            WeaponType w = WeaponType.byIndex(i);
+            WeaponType w = WeaponType.byIndex(page * 3 + i);
             float x0 = 10 + i * 170, x1 = x0 + 162, y0 = 48, y1 = 292;
             float r = Ease.outBack((t - 0.7f - i * 0.22f) / 0.5f);
             if (r > 0 && revealed <= i) {
@@ -186,7 +208,7 @@ public class ArsenalPanel extends Panel {
             Ui.frame(cxs - hw, y0 + lift, cxs + hw, y1 + lift, 0.5f, Theme.a(Theme.TECH, hov ? 0.7f : 0.3f));
             Ui.brackets(cxs - hw - 1, y0 - 1 + lift, cxs + hw + 1, y1 + 1 + lift, 7, 1, Theme.a(hov ? ec : Theme.TECH, 0.95f));
 
-            Ui.text(String.format("SLOT %02d", i + 1), x0 + 6, y0 + 6 + lift, Theme.a(Theme.MUTED, 1f), 0.5f);
+            Ui.text(String.format("SLOT %02d", page * 3 + i + 1), x0 + 6, y0 + 6 + lift, Theme.a(Theme.MUTED, 1f), 0.5f);
             float chipW = Ui.width(w.rarity) * 0.5f + 8;
             Ui.rect(x1 - 6 - chipW, y0 + 4 + lift, x1 - 6, y0 + 12 + lift, Theme.a(w.rarityColor, 0.2f));
             Ui.frame(x1 - 6 - chipW, y0 + 4 + lift, x1 - 6, y0 + 12 + lift, 0.5f, Theme.a(w.rarityColor, 0.9f));
@@ -228,7 +250,7 @@ public class ArsenalPanel extends Panel {
             Ui.textC(hov ? "> INSPECT <" : "INSPECT", cxs, y1 - 14 + lift, Theme.a(hov ? ec : Theme.TECH, 1f), 0.6f);
             Ui.alpha /= Math.max(ra, 0.001f);
             final WeaponType target = w;
-            if (r > 0.6f) s.hit("slot" + i, x0, y0, x1, y1, true, () -> enterInspect(target));
+            if (r > 0.6f) s.hit("slot" + (page * 3 + i), x0, y0, x1, y1, true, () -> enterInspect(target));
         }
 
         if (scan < 1) {
@@ -540,6 +562,7 @@ public class ArsenalPanel extends Panel {
         y += 17;
         s.button("back", x, y, RX1 - 6, y + 11, "< RETURN TO ARMORY", Theme.MUTED, true, false, () -> {
             mode = Mode.GRID;
+            page = sel.ordinal() / 3;
             gridMs = System.currentTimeMillis() - 3000;
             revealed = 3;
         });
@@ -570,6 +593,26 @@ public class ArsenalPanel extends Panel {
                         }
                         cues.add(new Cue(now + 1000, () -> shot(w, 1f)));
                     }
+                    case NOVA_RAIL -> {
+                        Sfx.raw(SoundEvents.BEACON_POWER_SELECT, 0.6f, 0.4f);
+                        for (int i = 0; i <= 8; i++) {
+                            final float c = i / 8f;
+                            cues.add(new Cue(now + i * 70L, () -> WeaponAnimator.PREVIEW.setCharge(c * 0.6f)));
+                        }
+                        cues.add(new Cue(now + 650, () -> shot(w, 1f)));
+                    }
+                    case HELIX_4 -> {
+                        cues.add(new Cue(now, () -> shot(w, 1f)));
+                        cues.add(new Cue(now + 700, () -> shot(w, 1f)));
+                    }
+                    case OBLIVION -> {
+                        Sfx.raw(SoundEvents.WARDEN_SONIC_CHARGE, 1.6f, 0.5f);
+                        for (int i = 0; i <= 10; i++) {
+                            final float c = i / 10f;
+                            cues.add(new Cue(now + i * 80L, () -> WeaponAnimator.PREVIEW.setCharge(c)));
+                        }
+                        cues.add(new Cue(now + 900, () -> shot(w, 1f)));
+                    }
                 }
             }
             case 2 -> {
@@ -592,10 +635,26 @@ public class ArsenalPanel extends Panel {
     private void shot(WeaponType w, float strength) {
         WeaponAnimator.PREVIEW.fire(w, strength);
         long now = System.currentTimeMillis();
-        float width = w == WeaponType.TITAN_X ? 4f : w == WeaponType.PHANTOM_9 ? 1.6f : 1.2f;
-        float len = w == WeaponType.PHANTOM_9 ? 400 : w == WeaponType.TITAN_X ? 40 : 22;
-        float life = w == WeaponType.PHANTOM_9 ? 0.18f : 0.6f;
-        shots.add(new float[]{muzzleSx, muzzleSy, muzzleDx, muzzleDy, now, life, len, width});
+        float width = switch (w) {
+            case TITAN_X -> 4f; case NOVA_RAIL -> 5f; case OBLIVION -> 7f; case HELIX_4 -> 2f; case PHANTOM_9 -> 1.6f; default -> 1.2f;
+        };
+        float len = switch (w) {
+            case PHANTOM_9, NOVA_RAIL -> 400; case TITAN_X -> 40; case OBLIVION -> 26; case HELIX_4 -> 16; default -> 22;
+        };
+        float life = switch (w) {
+            case PHANTOM_9 -> 0.18f; case NOVA_RAIL -> 0.45f; case OBLIVION -> 1.1f; default -> 0.6f;
+        };
+        if (w == WeaponType.HELIX_4) {
+            for (int k = -3; k <= 3; k++) {
+                double a = k * 0.07 + (RNG.nextFloat() - 0.5f) * 0.05;
+                float dx = (float) (muzzleDx * Math.cos(a) - muzzleDy * Math.sin(a));
+                float dy = (float) (muzzleDx * Math.sin(a) + muzzleDy * Math.cos(a));
+                shots.add(new float[]{muzzleSx, muzzleSy, dx, dy, now, life, len, width});
+            }
+        } else {
+            shots.add(new float[]{muzzleSx, muzzleSy, muzzleDx, muzzleDy, now, life, len, width});
+        }
+        if (w.heavy) com.aegis.command.client.fx.ImpactFrames.trigger(0.5f, energyRgb(w));
         switch (w) {
             case PHANTOM_9 -> {
                 Sfx.raw(SoundEvents.BEACON_POWER_SELECT, 2.0f, 0.4f);
@@ -610,8 +669,23 @@ public class ArsenalPanel extends Panel {
                 Sfx.raw(SoundEvents.GENERIC_EXPLODE, 1.7f, 0.35f);
                 WeaponAnimator.PREVIEW.setCharge(0);
             }
+            case NOVA_RAIL -> {
+                Sfx.raw(SoundEvents.WARDEN_SONIC_BOOM, 1.9f, 0.6f);
+                Sfx.raw(SoundEvents.TRIDENT_THUNDER, 1.8f, 0.3f);
+                WeaponAnimator.PREVIEW.setCharge(0);
+            }
+            case HELIX_4 -> {
+                Sfx.raw(SoundEvents.FIREWORK_ROCKET_BLAST, 0.7f, 0.6f);
+                Sfx.raw(SoundEvents.PISTON_EXTEND, 1.6f, 0.4f);
+                Sfx.later(6, () -> Sfx.raw(SoundEvents.PISTON_CONTRACT, 1.4f, 0.4f));
+            }
+            case OBLIVION -> {
+                Sfx.raw(SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), 0.6f, 0.6f);
+                Sfx.raw(SoundEvents.WARDEN_SONIC_BOOM, 0.8f, 0.5f);
+                WeaponAnimator.PREVIEW.setCharge(0);
+            }
         }
-        for (int i = 0; i < (w == WeaponType.TITAN_X ? 30 : 8); i++) {
+        for (int i = 0; i < (w.heavy ? 30 : w == WeaponType.HELIX_4 ? 18 : 8); i++) {
             motes.add(new float[]{muzzleSx, muzzleSy, (RNG.nextFloat() - 0.5f) * 80 + muzzleDx * 40, (RNG.nextFloat() - 0.5f) * 80 + muzzleDy * 40, 2.5f});
         }
     }

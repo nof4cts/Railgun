@@ -2,7 +2,13 @@ package com.aegis.command.item;
 
 import com.aegis.command.client.ClientWeaponHooks;
 import com.aegis.command.client.render.WeaponRenderer;
+import com.aegis.command.AegisConfig;
 import com.aegis.command.entity.EnergyBolt;
+import com.aegis.command.network.AegisNetwork;
+import com.aegis.command.network.Packets;
+import net.minecraft.world.level.Explosion;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.network.PacketDistributor;
 import com.aegis.command.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
@@ -126,7 +132,8 @@ public class AegisWeaponItem extends Item {
             startReload(stack, level, player);
             return InteractionResultHolder.fail(stack);
         }
-        if (type == WeaponType.PHANTOM_9) {
+        if (type != WeaponType.SPECTRE_7 && type != WeaponType.TITAN_X) {
+            // semi-automatic: PHANTOM-9, NOVA-RAIL, HELIX-4, OBLIVION
             tryFire(level, player, stack, 1f);
             return InteractionResultHolder.consume(stack);
         }
@@ -173,7 +180,7 @@ public class AegisWeaponItem extends Item {
         } else {
             serverShot((ServerLevel) level, shooter, stack, charge);
         }
-        if (ammo - 1 <= 0 && type != WeaponType.TITAN_X) {
+        if (ammo - 1 <= 0 && !type.heavy) {
             startReload(stack, level, shooter);
         }
         return true;
@@ -201,15 +208,8 @@ public class AegisWeaponItem extends Item {
                     target.hurt(shooter instanceof Player p ? level.damageSources().playerAttack(p)
                             : level.damageSources().mobAttack(shooter), type.damage);
                 }
-                DustParticleOptions dust = new DustParticleOptions(rgb(color), 0.6f);
-                double len = hit.distanceTo(muzzle);
-                Vec3 step = hit.subtract(muzzle).normalize();
-                for (double d = 0; d < len; d += 0.75) {
-                    Vec3 p = muzzle.add(step.scale(d));
-                    level.sendParticles(dust, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-                }
-                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, hit.x, hit.y, hit.z, 10, 0.1, 0.1, 0.1, 0.25);
-                level.sendParticles(ParticleTypes.END_ROD, hit.x, hit.y, hit.z, 3, 0.05, 0.05, 0.05, 0.04);
+                tracer(level, muzzle, hit, color, (byte) 0);
+                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, hit.x, hit.y, hit.z, 6, 0.1, 0.1, 0.1, 0.25);
                 level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.55f, 2.0f);
                 level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.5f, 1.9f);
             }
@@ -221,6 +221,55 @@ public class AegisWeaponItem extends Item {
                 level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 0.25f, 2.0f);
                 level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 0.6f, 1.6f);
             }
+            case NOVA_RAIL -> {
+                // piercing lance: hits every entity along the line, then detonates on the first block
+                double range = 96;
+                Vec3 end = eye.add(look.scale(range));
+                BlockHitResult bhr = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, shooter));
+                Vec3 hit = bhr.getType() != HitResult.Type.MISS ? bhr.getLocation() : end;
+                AABB box = new AABB(eye, hit).inflate(1.2);
+                for (Entity target : level.getEntities(shooter, box, e -> !e.isSpectator() && e.isPickable())) {
+                    if (target.getBoundingBox().inflate(0.6).clip(eye, hit).isPresent()) {
+                        target.invulnerableTime = 0;
+                        target.hurt(shooter instanceof Player p ? level.damageSources().playerAttack(p)
+                                : level.damageSources().mobAttack(shooter), type.damage);
+                        target.push(look.x * 1.4, 0.35, look.z * 1.4);
+                    }
+                }
+                if (bhr.getType() != HitResult.Type.MISS) {
+                    Explosion.BlockInteraction bi = AegisConfig.COMMON.weaponBlockDamage.get()
+                            ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP;
+                    Explosion ex = new Explosion(level, shooter, level.damageSources().explosion(shooter, shooter), null,
+                            hit.x, hit.y, hit.z, 2.4f, false, bi);
+                    if (!ForgeEventFactory.onExplosionStart(level, ex)) {
+                        ex.explode();
+                        ex.finalizeExplosion(false);
+                    }
+                }
+                tracer(level, muzzle, hit, color, (byte) 1);
+                level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 1.0f, 1.9f);
+                level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 0.55f, 1.8f);
+                level.playSound(null, hit.x, hit.y, hit.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.9f, 1.3f);
+            }
+            case HELIX_4 -> {
+                for (int i = 0; i < 7; i++) {
+                    EnergyBolt bolt = new EnergyBolt(level, shooter, EnergyBolt.SPECTRE, color, type.damage, 0.6f);
+                    bolt.setPos(muzzle.x, muzzle.y, muzzle.z);
+                    bolt.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0f, 3.0f, 9.0f);
+                    level.addFreshEntity(bolt);
+                }
+                level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 1.0f, 0.7f);
+                level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 0.6f, 1.2f);
+                level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.PISTON_EXTEND, SoundSource.PLAYERS, 0.5f, 1.6f);
+            }
+            case OBLIVION -> {
+                EnergyBolt orb = new EnergyBolt(level, shooter, EnergyBolt.SINGULARITY, color, type.damage, 1.2f);
+                orb.setPos(muzzle.x, muzzle.y, muzzle.z);
+                orb.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0f, 1.5f, 0.1f);
+                level.addFreshEntity(orb);
+                level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.PLAYERS, 0.9f, 1.6f);
+                level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.RESPAWN_ANCHOR_DEPLETE.value(), SoundSource.PLAYERS, 0.8f, 0.6f);
+            }
             case TITAN_X -> {
                 EnergyBolt shell = new EnergyBolt(level, shooter, EnergyBolt.TITAN, color, type.damage * charge, 0.7f + charge * 0.6f);
                 shell.setPos(muzzle.x, muzzle.y, muzzle.z);
@@ -230,6 +279,11 @@ public class AegisWeaponItem extends Item {
                 level.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.5f, 1.7f);
             }
         }
+    }
+
+    private static void tracer(ServerLevel level, Vec3 a, Vec3 b, int color, byte kind) {
+        AegisNetwork.CHANNEL.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(a.x, a.y, a.z, 160, level.dimension())),
+                new Packets.Tracer(a.x, a.y, a.z, b.x, b.y, b.z, color, kind));
     }
 
     public void startReload(ItemStack stack, Level level, LivingEntity entity) {
