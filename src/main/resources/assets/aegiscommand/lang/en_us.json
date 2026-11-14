@@ -1,0 +1,18 @@
+{
+  "itemGroup.aegiscommand": "Aegis Command",
+  "block.aegiscommand.laptop": "Aegis Tactical Laptop",
+  "item.aegiscommand.phantom_9": "PHANTOM-9 Energy Rifle",
+  "item.aegiscommand.titan_x": "TITAN-X Arc Cannon",
+  "item.aegiscommand.spectre_7": "SPECTRE-7 Plasma SMG",
+  "entity.aegiscommand.strike_jet": "Strike Aircraft",
+  "entity.aegiscommand.aerial_bomb": "Aerial Ordnance",
+  "entity.aegiscommand.energy_bolt": "Energy Bolt",
+  "entity.aegiscommand.cinematic_camera": "Cinematic Camera",
+  "key.categories.aegiscommand": "Aegis Command",
+  "key.aegiscommand.reload": "Reload Weapon",
+  "key.aegiscommand.inspect": "Inspect Weapon",
+  "key.aegiscommand.switch": "Switch Aegis Weapon",
+  "aegiscommand.tooltip.ammo": "Cells: %s / %s",
+  "aegiscommand.tooltip.equip": "Manage from the Aegis Laptop > ARSENAL",
+  "aegiscommand.msg.complete": "[AEGIS] %s complete. Open the laptop for the debrief."
+}

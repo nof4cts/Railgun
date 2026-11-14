@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "aegiscommand:block/laptop" },
+    "facing=east": { "model": "aegiscommand:block/laptop", "y": 90 },
+    "facing=south": { "model": "aegiscommand:block/laptop", "y": 180 },
+    "facing=west": { "model": "aegiscommand:block/laptop", "y": 270 }
+  }
+}

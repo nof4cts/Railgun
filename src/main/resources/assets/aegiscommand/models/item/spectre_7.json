@@ -1,0 +1,15 @@
+{
+  "parent": "builtin/entity",
+  "gui_light": "front",
+  "textures": { "particle": "aegiscommand:item/weapon_metal" },
+  "display": {
+    "gui": { "rotation": [ 0, -90, 0 ], "translation": [ -1.8, 0, 0 ], "scale": [ 0.58, 0.58, 0.58 ] },
+    "fixed": { "rotation": [ 0, -90, 0 ], "translation": [ -1.8, 0, 0 ], "scale": [ 0.58, 0.58, 0.58 ] },
+    "ground": { "rotation": [ 0, 0, 0 ], "translation": [ 0, 2, 0 ], "scale": [ 0.3, 0.3, 0.3 ] },
+    "head": { "rotation": [ 0, 180, 0 ], "translation": [ 0, 10, 0 ], "scale": [ 0.6, 0.6, 0.6 ] },
+    "firstperson_righthand": { "rotation": [ 0, 0, 0 ], "translation": [ -1, 1.5, -1 ], "scale": [ 0.55, 0.55, 0.55 ] },
+    "firstperson_lefthand": { "rotation": [ 0, 0, 0 ], "translation": [ 1, 1.5, -1 ], "scale": [ 0.55, 0.55, 0.55 ] },
+    "thirdperson_righthand": { "rotation": [ 0, 0, 0 ], "translation": [ 0, 1.6, -1.6 ], "scale": [ 0.6, 0.6, 0.6 ] },
+    "thirdperson_lefthand": { "rotation": [ 0, 0, 0 ], "translation": [ 0, 1.6, -1.6 ], "scale": [ 0.6, 0.6, 0.6 ] }
+  }
+}
